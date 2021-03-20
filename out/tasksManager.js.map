@@ -1,0 +1,1 @@
+{"version":3,"file":"tasksManager.js","sourceRoot":"","sources":["../src/tasksManager.ts"],"names":[],"mappings":";;;AAGA,MAAa,WAAW;IAEpB,YACY,eAAgC,EAChC,aAA4B;QAD5B,oBAAe,GAAf,eAAe,CAAiB;QAChC,kBAAa,GAAb,aAAa,CAAe;IACxC,CAAC;IAED,YAAY;QACR,IAAI,CAAC,eAAe,CAAC,IAAI,EAAE,CAAC;QAC5B,IAAI,CAAC,aAAa,CAAC,oBAAoB,CAAC,IAAI,EAAE,CAAC;IACnD,CAAC;CACJ;AAXD,kCAWC"}

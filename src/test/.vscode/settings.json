@@ -1,0 +1,13 @@
+{
+    // Windows, Linux
+    "compilerC": "gcc",
+    "compilerCpp": "g++",
+    // MacOS
+    // "compilerC": "clang",
+    // "compilerCpp": "clang++",
+    // For all OS
+    "make": "make",
+    "files.associations": {
+        "assert.h": "c"
+    }
+}

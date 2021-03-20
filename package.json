@@ -31,46 +31,21 @@
     "url": "https://github.com/franneck94/vscode-c-cpp-runner/issues"
   },
   "activationEvents": [
-    "workspaceContains:*.c, *.cc, *.cpp"
+    "workspaceContains:*.c"
   ],
   "main": "./out/extension.js",
   "contributes": {
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "when": "yourCMD",
-          "id": "TasksExplorer",
-          "title": "TasksExplorer",
-          "icon": "resources/icon.svg"
-        }
-      ]
-    },
-    "views": {
-      "TasksExplorer": [
-        {
-          "id": "TasksView",
-          "name": "TasksView",
-          "icon": "resources/dep.svg",
-          "when": "tasksView:showView"
-        }
-      ]
-    },
     "commands": [
       {
-        "command": "TasksView.refreshTasks",
-        "title": "Refresh",
-        "icon": {
-          "light": "resources/light/refresh.svg",
-          "dark": "resources/dark/refresh.svg"
-        }
-      },
+        "command": "Runner.run",
+        "title": "Run Command"
+      }
+    ],
+    "keybindings": [
       {
-        "command": "TasksView.runTask",
-        "title": "Run Task",
-        "icon": {
-          "light": "resources/light/boolean.svg",
-          "dark": "resources/dark/boolean.svg"
-        }
+        "command": "Runner.run",
+        "key": "ctrl+shift+r",
+        "mac": "ctrl+shift+r"
       }
     ]
   },

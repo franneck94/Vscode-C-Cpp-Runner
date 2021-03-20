@@ -6,10 +6,9 @@ const path = require("path");
 const tasks_1 = require("./tasks");
 const utils_1 = require("./utils");
 class TasksRepository {
-    constructor(workspaceRoot) {
-        this.workspaceRoot = workspaceRoot;
+    constructor() {
         this.tasks = new Array();
-        this.tasksFile = path.join(this.workspaceRoot.fsPath, '.vscode', 'tasks.json');
+        this.tasksFile = path.join('./', 'tasks.json');
         if (!utils_1.pathExists(this.tasksFile)) {
             return;
         }

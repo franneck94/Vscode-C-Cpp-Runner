@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
 
-import { CustomBuildTaskProvider } from './customTaskProvider';
+import { CppBuildTaskProvider } from './customTaskProvider';
+import { commandHandler } from './commands';
 
-let customTaskProvider: CustomBuildTaskProvider | undefined;
+let customTaskProvider: CppBuildTaskProvider | undefined;
 let disposableCustomTaskProvider: vscode.Disposable | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
@@ -10,19 +11,28 @@ export function activate(context: vscode.ExtensionContext) {
 
     if (!workspace || workspace.length > 1) {
         return;
-    } 
+    }
 
-    customTaskProvider = new CustomBuildTaskProvider();
-	disposableCustomTaskProvider = vscode.tasks.registerTaskProvider(
-        'Runner.run',
+    const extensionName: string = 'C_Cpp_Runner';
+
+    customTaskProvider = new CppBuildTaskProvider();
+    disposableCustomTaskProvider = vscode.tasks.registerTaskProvider(
+        extensionName,
         customTaskProvider
     );
 
     context.subscriptions.push(disposableCustomTaskProvider);
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            `${extensionName}.run`,
+            (customTaskProvider.tasks) => commandHandler(customTaskProvider.tasks)
+        )
+    );
 }
 
 export function deactivate(): void {
-	if (disposableCustomTaskProvider) {
-		disposableCustomTaskProvider.dispose();
-	}
+    if (disposableCustomTaskProvider) {
+        disposableCustomTaskProvider.dispose();
+    }
 }

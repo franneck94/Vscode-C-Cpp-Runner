@@ -28,7 +28,10 @@
         "COMPILATION_MODE=Release",
         "C_COMPILER=gcc",
         "EXECUTABLE_NAME=${fileBasenameNoExtension}Release"
-      ]
+      ],
+      "options": {
+        "hide": true
+      }
     },
     {
       "label": "C: Debug (Single File)",

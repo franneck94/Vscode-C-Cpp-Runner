@@ -31,23 +31,53 @@
     "url": "https://github.com/franneck94/vscode-c-cpp-runner/issues"
   },
   "activationEvents": [
-    "workspaceContains:*.c"
+    "onCommand::workbench.action.tasks.runTask",
+    "onCommand:C_Cpp_Runner.run"
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "taskDefinitions": [
+      {
+        "type": "C_Cpp_Runner"
+      }
+    ],
     "commands": [
       {
-        "command": "Runner.run",
+        "command": "C_Cpp_Runner.run",
         "title": "Run Command"
       }
     ],
-    "keybindings": [
+    "problemMatchers": [
       {
-        "command": "Runner.run",
-        "key": "ctrl+shift+r",
-        "mac": "ctrl+shift+r"
+        "name": "gcc",
+        "source": "gcc",
+        "owner": "vscode-c-cpp-runner",
+        "fileLocation": [
+          "autoDetect",
+          "${workspaceFolder}"
+        ]
       }
-    ]
+    ],
+    "keybindings": [
+			{
+				"command": "C_Cpp_Runner.run",
+				"key": "ctrl+shift+r",
+				"mac": "ctrl+shift+r"
+			}
+		],
+    "configuration": {
+      "type": "object",
+      "title": "C/C++ Runner",
+      "properties": {
+        "C_Cpp_Runner.testMode": {
+          "type": "string",
+          "enum": [
+            "Test1",
+            "Test2"
+          ]
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

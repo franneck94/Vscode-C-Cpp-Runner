@@ -8,33 +8,48 @@ import * as vscode from "vscode";
 
 import { pathExists } from "./utils";
 
-export class CustomBuildTaskProvider implements vscode.TaskProvider {
+
+export class CppBuildTaskProvider implements vscode.TaskProvider {
   public tasks: vscode.Task[] | undefined;
   public tasksFile: string;
   public makefileFile: string;
   public extDirectory: string;
+  public problemMatcher: string;
 
   constructor() {
-	this.extDirectory = path.dirname(__dirname)
+    this.extDirectory = path.dirname(__dirname)
     this.tasksFile = path.join(this.extDirectory, "tasks", "tasks.json");
-	this.makefileFile = path.join(this.extDirectory, "tasks", "Makefile");
+    this.makefileFile = path.join(this.extDirectory, "tasks", "Makefile");
+
+    this.problemMatcher = "$gcc";
 
     if (!pathExists(this.tasksFile) || !pathExists(this.makefileFile)) {
       return;
     }
 
-	this.getTasks();
+    this.getTasks();
   }
 
   public async provideTasks(): Promise<vscode.Task[]> {
     return this.getTasks();
   }
 
-  public resolveTask(_task: vscode.Task): vscode.Task | undefined {
-    return _task;
-  }
+  public async getTasks(): Promise<vscode.Task[]> {
+    const editor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
+    const emptyTasks: vscode.Task[] = [];
+    if (!editor) {
+      return emptyTasks;
+    }
 
-  private getTasks(): vscode.Task[] {
+    const fileExt: string = path.extname(editor.document.fileName);
+    if (!fileExt) {
+      return emptyTasks;
+    }
+
+    if (!this.isSourceFile(fileExt)) {
+      return emptyTasks;
+    }
+
     this.tasks = [];
     if (!pathExists(this.tasksFile)) {
       return this.tasks;
@@ -62,22 +77,54 @@ export class CustomBuildTaskProvider implements vscode.TaskProvider {
         }
       }
 
-	  taskJson.args[1] = `--file=${this.makefileFile}`
+      taskJson.args[1] = `--file=${this.makefileFile}`
 
       const shellCommand = `${taskJson.command} ${taskJson.args.join(" ")}`;
 
+      const definition = {
+        type: "shell",
+        task: taskJson.label
+      };
+      const scope: vscode.TaskScope = vscode.TaskScope.Workspace;
       const task = new vscode.Task(
-        {
-          type: "shell",
-          task: taskJson.label,
-        },
+        definition,
+        scope,
         taskJson.label,
-        "Runner.run",
-        new vscode.ShellExecution(shellCommand)
+        "C_Cpp_Runner",
+        new vscode.ShellExecution(shellCommand),
+        this.problemMatcher
       );
       this.tasks.push(task);
     }
 
     return this.tasks;
   }
+
+  private isSourceFile(fileExt: string) {
+    // Don't offer tasks for header files.
+    const fileExtLower: string = fileExt.toLowerCase();
+    const isHeader: boolean = !fileExt || [
+      ".hpp", ".hh", ".hxx", ".h++", ".hp", ".h", ".ii", ".inl", ".idl", ""
+    ].some(ext => fileExtLower === ext);
+    if (isHeader) {
+      return false;
+    }
+
+    // Don't offer tasks if the active file's extension is not a recognized C/C++ extension.
+    let fileIsCpp: boolean;
+    let fileIsC: boolean;
+    if (fileExt === ".C") { // ".C" file extensions are both C and C++.
+      fileIsCpp = true;
+      fileIsC = true;
+    } else {
+      fileIsCpp = [".cpp", ".cc", ".cxx", ".c++", ".cp", ".ino", ".ipp", ".tcc"].some(ext => fileExtLower === ext);
+      fileIsC = fileExtLower === ".c";
+    }
+    if (!(fileIsCpp || fileIsC)) {
+      return false;
+    }
+
+    return true;
+  }
+
 }

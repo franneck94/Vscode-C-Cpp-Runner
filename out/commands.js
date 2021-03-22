@@ -11,21 +11,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commandHandler = void 0;
 const vscode = require("vscode");
-function commandHandler(tasks) {
+function commandHandler(taskProvider) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            if (taskProvider.tasks === undefined) {
+                throw TypeError;
+            }
             let taskNames = [];
-            tasks.forEach(task => {
+            taskProvider.tasks.forEach(task => {
                 taskNames.push(task._name);
             });
-            const cmd = yield vscode.window.showQuickPick(taskNames, { placeHolder: 'Type or select command to run' });
-            if (cmd) {
-                vscode.window.showInformationMessage(tasks[cmd]._name);
-                // vscode.tasks.executeTask(tasks[cmd]).then();
+            const pickedTaskName = yield vscode.window.showQuickPick(taskNames);
+            if (pickedTaskName) {
+                yield vscode.window.showInformationMessage(pickedTaskName);
+                // for (let task in taskProvider.tasks) {
+                //     if (pickedTaskName === task._name) {
+                //         vscode.tasks.executeTask(task).then();
+                //         break;
+                //     }
+                // };
             }
         }
         catch (err) {
-            // do nothings;
+            vscode.window.showInformationMessage(`Error ${err}`);
         }
     });
 }

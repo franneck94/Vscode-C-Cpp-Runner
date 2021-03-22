@@ -6,21 +6,27 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 
+import { SettingsProvider } from './settings';
 import { pathExists } from "./utils";
 
+enum LanguageMode {
+  C = 'C',
+  Cpp = 'Cpp'
+}
 
-export class CppBuildTaskProvider implements vscode.TaskProvider {
+const extensionName: string = 'C_Cpp_Runner';
+
+export class TaskProvider implements vscode.TaskProvider {
   public tasks: vscode.Task[] | undefined;
   public tasksFile: string;
   public makefileFile: string;
   public extDirectory: string;
   public problemMatcher: string;
 
-  constructor() {
+  constructor(public settingsProvider: SettingsProvider) {
     this.extDirectory = path.dirname(__dirname)
     this.tasksFile = path.join(this.extDirectory, "tasks", "tasks.json");
     this.makefileFile = path.join(this.extDirectory, "tasks", "Makefile");
-
     this.problemMatcher = "$gcc";
 
     if (!pathExists(this.tasksFile) || !pathExists(this.makefileFile)) {
@@ -67,6 +73,8 @@ export class CppBuildTaskProvider implements vscode.TaskProvider {
       return this.tasks;
     }
 
+    const languageMode = TaskProvider.getLanguageMode(fileExt);
+
     for (let taskJson of configJson.tasks) {
       if (taskJson.type !== "shell") {
         continue;
@@ -77,7 +85,7 @@ export class CppBuildTaskProvider implements vscode.TaskProvider {
         }
       }
 
-      taskJson.args[1] = `--file=${this.makefileFile}`
+      this.updateTaskBasedOnSettings(taskJson, languageMode);
 
       const shellCommand = `${taskJson.command} ${taskJson.args.join(" ")}`;
 
@@ -90,7 +98,7 @@ export class CppBuildTaskProvider implements vscode.TaskProvider {
         definition,
         scope,
         taskJson.label,
-        "C_Cpp_Runner",
+        extensionName,
         new vscode.ShellExecution(shellCommand),
         this.problemMatcher
       );
@@ -98,6 +106,26 @@ export class CppBuildTaskProvider implements vscode.TaskProvider {
     }
 
     return this.tasks;
+  }
+
+  public updateTaskBasedOnSettings(taskJson: any, languageMode: LanguageMode) {
+    taskJson.args[1] = `--file=${this.makefileFile}`
+    taskJson.args.push(
+      `ENABLE_WARNINGS=${+this.settingsProvider.enableWarnings}`
+    );
+    taskJson.args.push(
+      `WARNINGS_AS_ERRORS=${+this.settingsProvider.warningsAsError}`
+    );
+    taskJson.args.push(
+      `C_COMPILER=${this.settingsProvider.compilerPathC}`
+    );
+    taskJson.args.push(
+      `CPP_COMPILER=${this.settingsProvider.compilerPathCpp}`
+    );
+    taskJson.args.push(
+      `LANGUAGE_MODE=${languageMode}`
+    );
+    taskJson.command = this.settingsProvider.makePath;
   }
 
   private isSourceFile(fileExt: string) {
@@ -125,6 +153,16 @@ export class CppBuildTaskProvider implements vscode.TaskProvider {
     }
 
     return true;
+  }
+
+  static getLanguageMode(fileExt: string) {
+    const fileExtLower: string = fileExt.toLowerCase();
+
+    if (fileExtLower === ".c") {
+      return LanguageMode.C;
+    } else {
+      return LanguageMode.Cpp
+    }
   }
 
 }

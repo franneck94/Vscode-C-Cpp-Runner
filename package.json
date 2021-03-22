@@ -47,35 +47,37 @@
         "title": "Run Command"
       }
     ],
-    "problemMatchers": [
+    "keybindings": [
       {
-        "name": "gcc",
-        "source": "gcc",
-        "owner": "vscode-c-cpp-runner",
-        "fileLocation": [
-          "autoDetect",
-          "${workspaceFolder}"
-        ]
+        "command": "C_Cpp_Runner.run",
+        "key": "ctrl+shift+r",
+        "mac": "ctrl+shift+r"
       }
     ],
-    "keybindings": [
-			{
-				"command": "C_Cpp_Runner.run",
-				"key": "ctrl+shift+r",
-				"mac": "ctrl+shift+r"
-			}
-		],
     "configuration": {
       "type": "object",
       "title": "C/C++ Runner",
       "properties": {
-        "C_Cpp_Runner.testMode": {
-          "type": "string",
-          "enum": [
-            "Test1",
-            "Test2"
-          ]
+        "C_Cpp_Runner.enableWarnings": {
+          "type": "boolean",
+          "default": true
         }
+      },
+      "C_Cpp_Runner.warningsAsError": {
+        "type": "boolean",
+        "default": false
+      },
+      "C_Cpp_Runner.compilerPathC": {
+        "type": "string",
+        "default": "gcc"
+      },
+      "C_Cpp_Runner.compilerPathCpp": {
+        "type": "string",
+        "default": "g++"
+      },
+      "C_Cpp_Runner.makePath": {
+        "type": "string",
+        "default": "make"
       }
     }
   },

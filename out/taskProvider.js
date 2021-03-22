@@ -23,6 +23,7 @@ var LanguageMode;
     LanguageMode["C"] = "C";
     LanguageMode["Cpp"] = "Cpp";
 })(LanguageMode || (LanguageMode = {}));
+const extensionName = 'C_Cpp_Runner';
 class TaskProvider {
     constructor(settingsProvider) {
         this.settingsProvider = settingsProvider;
@@ -86,7 +87,7 @@ class TaskProvider {
                     task: taskJson.label
                 };
                 const scope = vscode.TaskScope.Workspace;
-                const task = new vscode.Task(definition, scope, taskJson.label, "C_Cpp_Runner", new vscode.ShellExecution(shellCommand), this.problemMatcher);
+                const task = new vscode.Task(definition, scope, taskJson.label, extensionName, new vscode.ShellExecution(shellCommand), this.problemMatcher);
                 this.tasks.push(task);
             }
             return this.tasks;
@@ -137,4 +138,4 @@ class TaskProvider {
     }
 }
 exports.TaskProvider = TaskProvider;
-//# sourceMappingURL=customTaskProvider.js.map
+//# sourceMappingURL=taskProvider.js.map

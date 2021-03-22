@@ -1,20 +1,29 @@
 import * as vscode from "vscode";
 
-export async function commandHandler(tasks: vscode.Task) {
+import { TaskProvider } from './taskProvider';
+
+export async function commandHandler(taskProvider: TaskProvider) {
     try {
+        if (taskProvider.tasks === undefined) {
+            throw TypeError;
+        }
+
         let taskNames: Array<string> = [];
-        tasks.forEach(task => {
+        taskProvider.tasks.forEach(task => {
             taskNames.push(task._name)
         });
-        const cmd = await vscode.window.showQuickPick(
-            taskNames, { placeHolder: 'Type or select command to run' }
-        );
 
-        if (cmd) {
-            vscode.window.showInformationMessage(tasks[cmd]._name);
-            // vscode.tasks.executeTask(tasks[cmd]).then();
+        const pickedTaskName = await vscode.window.showQuickPick(taskNames);
+        if (pickedTaskName) {
+            await vscode.window.showInformationMessage(pickedTaskName);
+            // for (let task in taskProvider.tasks) {
+            //     if (pickedTaskName === task._name) {
+            //         vscode.tasks.executeTask(task).then();
+            //         break;
+            //     }
+            // };
         }
     } catch (err) {
-        // do nothings;
+        vscode.window.showInformationMessage(`Error ${err}`);
     }
 };

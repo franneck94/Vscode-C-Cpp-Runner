@@ -1,10 +1,11 @@
 import * as vscode from 'vscode';
 
-import { CppBuildTaskProvider } from './customTaskProvider';
+import { TaskProvider } from './taskProvider';
 import { commandHandler } from './commands';
+import { SettingsProvider } from './settings';
 
-let customTaskProvider: CppBuildTaskProvider | undefined;
-let disposableCustomTaskProvider: vscode.Disposable | undefined;
+let taskProvider: TaskProvider;
+let disposableCustomTaskProvider: vscode.Disposable;
 
 export function activate(context: vscode.ExtensionContext) {
     const workspace = vscode.workspace.workspaceFolders;
@@ -14,21 +15,21 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     const extensionName: string = 'C_Cpp_Runner';
+    const settingsProvider = new SettingsProvider();
 
-    customTaskProvider = new CppBuildTaskProvider();
+    taskProvider = new TaskProvider(settingsProvider);
     disposableCustomTaskProvider = vscode.tasks.registerTaskProvider(
         extensionName,
-        customTaskProvider
+        taskProvider
     );
-
     context.subscriptions.push(disposableCustomTaskProvider);
 
-    context.subscriptions.push(
-        vscode.commands.registerCommand(
-            `${extensionName}.run`,
-            (customTaskProvider.tasks) => commandHandler(customTaskProvider.tasks)
-        )
-    );
+    // context.subscriptions.push(
+    //     vscode.commands.registerCommand(
+    //         `${extensionName}.run`,
+    //         commandHandler(taskProvider)
+    //     )
+    // );
 }
 
 export function deactivate(): void {

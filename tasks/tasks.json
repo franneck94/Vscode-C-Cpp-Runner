@@ -10,7 +10,6 @@
         "--file=Makefile",
         "--directory=${fileDirname}/",
         "COMPILATION_MODE=Debug",
-        "C_COMPILER=gcc",
         "EXECUTABLE_NAME=${fileBasenameNoExtension}Debug"
       ],
       "options": {
@@ -26,7 +25,6 @@
         "--file=Makefile",
         "--directory=${fileDirname}/",
         "COMPILATION_MODE=Release",
-        "C_COMPILER=gcc",
         "EXECUTABLE_NAME=${fileBasenameNoExtension}Release"
       ],
       "options": {
@@ -34,7 +32,7 @@
       }
     },
     {
-      "label": "C: Debug (Single File)",
+      "label": "Debug (Single File)",
       "type": "shell",
       "command": ["make"],
       "args": [
@@ -43,7 +41,6 @@
         "--directory=${fileDirname}/",
         "FILE_NAME=${file}",
         "COMPILATION_MODE=Debug",
-        "C_COMPILER=gcc",
         "EXECUTABLE_NAME=${fileBasenameNoExtension}Debug"
       ],
       "group": {
@@ -53,7 +50,7 @@
       "problemMatcher": ["$gcc"]
     },
     {
-      "label": "C: Release (Single File)",
+      "label": "Release (Single File)",
       "type": "shell",
       "command": ["make"],
       "args": [
@@ -62,7 +59,6 @@
         "--directory=${fileDirname}/",
         "FILE_NAME=${file}",
         "COMPILATION_MODE=Release",
-        "C_COMPILER=gcc",
         "EXECUTABLE_NAME=${fileBasenameNoExtension}Release"
       ],
       "group": {
@@ -72,7 +68,7 @@
       "problemMatcher": ["$gcc"]
     },
     {
-      "label": "C: Debug (Folder)",
+      "label": "Debug (Folder)",
       "type": "shell",
       "command": ["make"],
       "args": [
@@ -88,7 +84,7 @@
       "problemMatcher": ["$gcc"]
     },
     {
-      "label": "C: Release (Folder)",
+      "label": "Release (Folder)",
       "type": "shell",
       "command": ["make"],
       "args": [
@@ -104,7 +100,7 @@
       "problemMatcher": ["$gcc"]
     },
     {
-      "label": "Execute: Debug Program",
+      "label": "Execute Debug Program",
       "type": "shell",
       "command": ["make"],
       "args": [
@@ -121,7 +117,7 @@
       "problemMatcher": ["$gcc"]
     },
     {
-      "label": "Execute: Release Program",
+      "label": "Execute Release Program",
       "type": "shell",
       "command": ["make"],
       "args": [

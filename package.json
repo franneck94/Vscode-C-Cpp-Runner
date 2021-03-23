@@ -1,7 +1,7 @@
 {
   "name": "vscode-c-cpp-runner",
-  "displayName": "vscode-c-cpp-runner",
-  "description": "View for your tasks from the tasks.json file.",
+  "displayName": "C/C++ Runner",
+  "description": "Compile and run your C/C++ code.",
   "version": "0.0.1",
   "publisher": "franneck94",
   "icon": "icon.png",

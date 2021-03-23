@@ -20,8 +20,8 @@ const vscode = require("vscode");
 const utils_1 = require("./utils");
 var LanguageMode;
 (function (LanguageMode) {
-    LanguageMode["C"] = "C";
-    LanguageMode["Cpp"] = "Cpp";
+    LanguageMode["c"] = "C";
+    LanguageMode["cpp"] = "Cpp";
 })(LanguageMode || (LanguageMode = {}));
 const extensionName = 'C_Cpp_Runner';
 class TaskProvider {
@@ -35,6 +35,11 @@ class TaskProvider {
             return;
         }
         this.getTasks();
+    }
+    resolveTask(task, token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return task;
+        });
     }
     provideTasks() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -55,9 +60,8 @@ class TaskProvider {
             if (!this.isSourceFile(fileExt)) {
                 return emptyTasks;
             }
-            this.tasks = [];
             if (!utils_1.pathExists(this.tasksFile)) {
-                return this.tasks;
+                return [];
             }
             let configJson;
             try {
@@ -65,11 +69,12 @@ class TaskProvider {
                 configJson = JSON.parse(fileContent);
             }
             catch (err) {
-                return this.tasks;
+                return [];
             }
             if (!configJson.tasks) {
-                return this.tasks;
+                return [];
             }
+            this.tasks = [];
             const languageMode = TaskProvider.getLanguageMode(fileExt);
             for (let taskJson of configJson.tasks) {
                 if (taskJson.type !== "shell") {
@@ -96,14 +101,16 @@ class TaskProvider {
     updateTaskBasedOnSettings(taskJson, languageMode) {
         taskJson.args[1] = `--file=${this.makefileFile}`;
         taskJson.args.push(`ENABLE_WARNINGS=${+this.settingsProvider.enableWarnings}`);
+        taskJson.args.push(`WARNINGS="${this.settingsProvider.warnings}"`);
         taskJson.args.push(`WARNINGS_AS_ERRORS=${+this.settingsProvider.warningsAsError}`);
         taskJson.args.push(`C_COMPILER=${this.settingsProvider.compilerPathC}`);
         taskJson.args.push(`CPP_COMPILER=${this.settingsProvider.compilerPathCpp}`);
         taskJson.args.push(`LANGUAGE_MODE=${languageMode}`);
+        taskJson.args.push(`C_STANDARD=${this.settingsProvider.standardC}`);
+        taskJson.args.push(`CPP_STANDARD=${this.settingsProvider.standardCpp}`);
         taskJson.command = this.settingsProvider.makePath;
     }
     isSourceFile(fileExt) {
-        // Don't offer tasks for header files.
         const fileExtLower = fileExt.toLowerCase();
         const isHeader = !fileExt || [
             ".hpp", ".hh", ".hxx", ".h++", ".hp", ".h", ".ii", ".inl", ".idl", ""
@@ -111,15 +118,16 @@ class TaskProvider {
         if (isHeader) {
             return false;
         }
-        // Don't offer tasks if the active file's extension is not a recognized C/C++ extension.
         let fileIsCpp;
         let fileIsC;
-        if (fileExt === ".C") { // ".C" file extensions are both C and C++.
+        if (fileExt === ".C") {
             fileIsCpp = true;
             fileIsC = true;
         }
         else {
-            fileIsCpp = [".cpp", ".cc", ".cxx", ".c++", ".cp", ".ino", ".ipp", ".tcc"].some(ext => fileExtLower === ext);
+            fileIsCpp = [
+                ".cpp", ".cc", ".cxx", ".c++", ".cp", ".ino", ".ipp", ".tcc"
+            ].some(ext => fileExtLower === ext);
             fileIsC = fileExtLower === ".c";
         }
         if (!(fileIsCpp || fileIsC)) {
@@ -130,10 +138,10 @@ class TaskProvider {
     static getLanguageMode(fileExt) {
         const fileExtLower = fileExt.toLowerCase();
         if (fileExtLower === ".c") {
-            return LanguageMode.C;
+            return LanguageMode.c;
         }
         else {
-            return LanguageMode.Cpp;
+            return LanguageMode.cpp;
         }
     }
 }

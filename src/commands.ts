@@ -10,20 +10,18 @@ export async function commandHandler(taskProvider: TaskProvider) {
 
         let taskNames: Array<string> = [];
         taskProvider.tasks.forEach(task => {
-            taskNames.push(task._name)
+            taskNames.push(task.name);
         });
 
         const pickedTaskName = await vscode.window.showQuickPick(taskNames);
         if (pickedTaskName) {
-            await vscode.window.showInformationMessage(pickedTaskName);
-            // for (let task in taskProvider.tasks) {
-            //     if (pickedTaskName === task._name) {
-            //         vscode.tasks.executeTask(task).then();
-            //         break;
-            //     }
-            // };
+            taskProvider.tasks.forEach(task => {
+                if (pickedTaskName === task.name) {
+                    vscode.tasks.executeTask(task).then();
+                }
+            });
         }
     } catch (err) {
-        vscode.window.showInformationMessage(`Error ${err}`);
+        vscode.window.showInformationMessage(err);
     }
 };

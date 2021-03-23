@@ -24,12 +24,16 @@ export function activate(context: vscode.ExtensionContext) {
     );
     context.subscriptions.push(disposableCustomTaskProvider);
 
-    // context.subscriptions.push(
-    //     vscode.commands.registerCommand(
-    //         `${extensionName}.run`,
-    //         commandHandler(taskProvider)
-    //     )
-    // );
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            `${extensionName}.run`,
+            () => commandHandler(taskProvider)
+        )
+    );
+
+    vscode.workspace.onDidChangeConfiguration(() => {
+        taskProvider.settingsProvider.getSettings();
+    });
 }
 
 export function deactivate(): void {

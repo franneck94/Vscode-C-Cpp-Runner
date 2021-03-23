@@ -60,24 +60,80 @@
       "properties": {
         "C_Cpp_Runner.enableWarnings": {
           "type": "boolean",
-          "default": true
+          "default": true,
+          "description": "Whether to enable warnings (e.g. -Wall -Wextra -Wpedantic) or not.",
+          "scope": "machine-overridable"
+        },
+        "C_Cpp_Runner.warnings": {
+          "type": "string",
+          "default": "-Wall -Wextra -Wpedantic",
+          "description": "List of warnings to use for the selected compiler.",
+          "scope": "machine-overridable"
+        },
+        "C_Cpp_Runner.warningsAsError": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether the warnings will be treated as compiler errors.",
+          "scope": "machine-overridable"
+        },
+        "C_Cpp_Runner.compilerPathC": {
+          "type": "string",
+          "default": "gcc",
+          "description": "The path to the C Compiler (either gcc or clang).",
+          "scope": "machine-overridable"
+        },
+        "C_Cpp_Runner.compilerPathCpp": {
+          "type": "string",
+          "default": "g++",
+          "description": "The path to the C++ Compiler (either g++ or clang++).",
+          "scope": "machine-overridable"
+        },
+        "C_Cpp_Runner.makePath": {
+          "type": "string",
+          "default": "make",
+          "description": "The path to the make installation.",
+          "scope": "machine-overridable"
+        },
+        "C_Cpp_Runner.standardC": {
+          "type": "string",
+          "enum": [
+            "",
+            "c89",
+            "c90",
+            "c99",
+            "c11",
+            "c17",
+            "gnu89",
+            "gnu90",
+            "gnu99",
+            "gnu11",
+            "gnu17"
+          ],
+          "default": "c90",
+          "description": "C-Standard for the C Compiler.",
+          "scope": "machine-overridable"
+        },
+        "C_Cpp_Runner.standardCpp": {
+          "type": "string",
+          "enum": [
+            "",
+            "c++98",
+            "c++03",
+            "c++11",
+            "c++14",
+            "c++17",
+            "c++20",
+            "gnu++98",
+            "gnu++03",
+            "gnu++11",
+            "gnu++14",
+            "gnu++17",
+            "gnu++20"
+          ],
+          "default": "c++11",
+          "description": "C++ Standard for the Cpp Compiler.",
+          "scope": "machine-overridable"
         }
-      },
-      "C_Cpp_Runner.warningsAsError": {
-        "type": "boolean",
-        "default": false
-      },
-      "C_Cpp_Runner.compilerPathC": {
-        "type": "string",
-        "default": "gcc"
-      },
-      "C_Cpp_Runner.compilerPathCpp": {
-        "type": "string",
-        "default": "g++"
-      },
-      "C_Cpp_Runner.makePath": {
-        "type": "string",
-        "default": "make"
       }
     }
   },

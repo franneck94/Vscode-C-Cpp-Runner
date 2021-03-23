@@ -10,8 +10,8 @@ import { SettingsProvider } from './settings';
 import { pathExists } from "./utils";
 
 enum LanguageMode {
-  C = 'C',
-  Cpp = 'Cpp'
+  c = 'C',
+  cpp = 'Cpp'
 }
 
 const extensionName: string = 'C_Cpp_Runner';
@@ -24,7 +24,7 @@ export class TaskProvider implements vscode.TaskProvider {
   public problemMatcher: string;
 
   constructor(public settingsProvider: SettingsProvider) {
-    this.extDirectory = path.dirname(__dirname)
+    this.extDirectory = path.dirname(__dirname);
     this.tasksFile = path.join(this.extDirectory, "tasks", "tasks.json");
     this.makefileFile = path.join(this.extDirectory, "tasks", "Makefile");
     this.problemMatcher = "$gcc";
@@ -34,6 +34,10 @@ export class TaskProvider implements vscode.TaskProvider {
     }
 
     this.getTasks();
+  }
+
+  public async resolveTask(task: vscode.Task, token: vscode.CancellationToken) {
+    return task;
   }
 
   public async provideTasks(): Promise<vscode.Task[]> {
@@ -56,9 +60,9 @@ export class TaskProvider implements vscode.TaskProvider {
       return emptyTasks;
     }
 
-    this.tasks = [];
+
     if (!pathExists(this.tasksFile)) {
-      return this.tasks;
+      return [];
     }
 
     let configJson;
@@ -66,13 +70,14 @@ export class TaskProvider implements vscode.TaskProvider {
       const fileContent = fs.readFileSync(this.tasksFile, "utf-8");
       configJson = JSON.parse(fileContent);
     } catch (err) {
-      return this.tasks;
+      return [];
     }
 
     if (!configJson.tasks) {
-      return this.tasks;
+      return [];
     }
 
+    this.tasks = [];
     const languageMode = TaskProvider.getLanguageMode(fileExt);
 
     for (let taskJson of configJson.tasks) {
@@ -108,10 +113,13 @@ export class TaskProvider implements vscode.TaskProvider {
     return this.tasks;
   }
 
-  public updateTaskBasedOnSettings(taskJson: any, languageMode: LanguageMode) {
-    taskJson.args[1] = `--file=${this.makefileFile}`
+  private updateTaskBasedOnSettings(taskJson: any, languageMode: LanguageMode) {
+    taskJson.args[1] = `--file=${this.makefileFile}`;
     taskJson.args.push(
       `ENABLE_WARNINGS=${+this.settingsProvider.enableWarnings}`
+    );
+    taskJson.args.push(
+      `WARNINGS="${this.settingsProvider.warnings}"`
     );
     taskJson.args.push(
       `WARNINGS_AS_ERRORS=${+this.settingsProvider.warningsAsError}`
@@ -125,11 +133,16 @@ export class TaskProvider implements vscode.TaskProvider {
     taskJson.args.push(
       `LANGUAGE_MODE=${languageMode}`
     );
+    taskJson.args.push(
+      `C_STANDARD=${this.settingsProvider.standardC}`
+    );
+    taskJson.args.push(
+      `CPP_STANDARD=${this.settingsProvider.standardCpp}`
+    );
     taskJson.command = this.settingsProvider.makePath;
   }
 
   private isSourceFile(fileExt: string) {
-    // Don't offer tasks for header files.
     const fileExtLower: string = fileExt.toLowerCase();
     const isHeader: boolean = !fileExt || [
       ".hpp", ".hh", ".hxx", ".h++", ".hp", ".h", ".ii", ".inl", ".idl", ""
@@ -138,14 +151,15 @@ export class TaskProvider implements vscode.TaskProvider {
       return false;
     }
 
-    // Don't offer tasks if the active file's extension is not a recognized C/C++ extension.
     let fileIsCpp: boolean;
     let fileIsC: boolean;
-    if (fileExt === ".C") { // ".C" file extensions are both C and C++.
+    if (fileExt === ".C") {
       fileIsCpp = true;
       fileIsC = true;
     } else {
-      fileIsCpp = [".cpp", ".cc", ".cxx", ".c++", ".cp", ".ino", ".ipp", ".tcc"].some(ext => fileExtLower === ext);
+      fileIsCpp = [
+        ".cpp", ".cc", ".cxx", ".c++", ".cp", ".ino", ".ipp", ".tcc"
+      ].some(ext => fileExtLower === ext);
       fileIsC = fileExtLower === ".c";
     }
     if (!(fileIsCpp || fileIsC)) {
@@ -159,9 +173,9 @@ export class TaskProvider implements vscode.TaskProvider {
     const fileExtLower: string = fileExt.toLowerCase();
 
     if (fileExtLower === ".c") {
-      return LanguageMode.C;
+      return LanguageMode.c;
     } else {
-      return LanguageMode.Cpp
+      return LanguageMode.cpp;
     }
   }
 

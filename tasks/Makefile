@@ -5,6 +5,7 @@ LANGUAGE_MODE ?= C
 COMPILATION_MODE ?= Debug
 ENABLE_WARNINGS ?= 1
 WARNINGS_AS_ERRORS ?= 0
+WARNINGS ?= -Wall -Wextra -Wpedantic
 C_COMPILER ?= gcc # gcc, clang
 C_STANDARD ?= c99 # c90, c99, c11, c17
 CPP_COMPILER ?= g++ # g++, clang++
@@ -20,8 +21,8 @@ CPP_COMPILER_FLAGS = -O3 -std=$(CPP_STANDARD)
 endif
 
 ifeq ($(ENABLE_WARNINGS), 1)
-C_COMPILER_FLAGS += -Wall -Wextra -Wpedantic
-CPP_COMPILER_FLAGS += -Wall -Wextra -Wpedantic
+C_COMPILER_FLAGS += $(WARNINGS)
+CPP_COMPILER_FLAGS += $(WARNINGS)
 endif
 
 ifeq ($(WARNINGS_AS_ERRORS), 1)
@@ -43,6 +44,18 @@ CC_SRCS = $(wildcard *.cc)
 CC_OBJECTS = $(patsubst %.cc, %.o, $(CC_SRCS))
 
 ####################
+## LANGUAGE MODE  ##
+####################
+ifeq ($(LANGUAGE_MODE), C)
+COMPILER_CALL = $(C_COMPILER_CALL)
+OBJECTS = $(C_OBJECTS)
+endif
+ifeq ($(LANGUAGE_MODE), Cpp)
+COMPILER_CALL = $(CPP_COMPILER_CALL)
+OBJECTS = $(CPP_OBJECTS) $(CC_OBJECTS)
+endif
+
+####################
 ## PSEUDO TARGETS ##
 ####################
 build: $(EXECUTABLE_NAME)
@@ -50,21 +63,11 @@ build: $(EXECUTABLE_NAME)
 #############
 ## TARGETS ##
 #############
-ifeq ($(LANGUAGE_MODE), C)
 build_single:
-	$(C_COMPILER_CALL) -o $(EXECUTABLE_NAME) $(FILE_NAME)
+	$(COMPILER_CALL) -o $(EXECUTABLE_NAME) $(FILE_NAME)
 
-$(EXECUTABLE_NAME): $(C_OBJECTS)
-	$(C_COMPILER_CALL) $^ -o $@
-endif
-
-ifeq ($(LANGUAGE_MODE), Cpp)
-build_single:
-	$(CPP_COMPILER_CALL) -o $(EXECUTABLE_NAME) $(FILE_NAME)
-
-$(EXECUTABLE_NAME): $(CPP_OBJECTS) $(CC_OBJECTS)
-	$(CPP_COMPILER_CALL) $^ -o $@
-endif
+$(EXECUTABLE_NAME): $(OBJECTS)
+	$(COMPILER_CALL) $^ -o $@
 
 execute:
 	./$(EXECUTABLE_NAME)

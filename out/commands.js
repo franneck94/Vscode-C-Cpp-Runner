@@ -19,21 +19,19 @@ function commandHandler(taskProvider) {
             }
             let taskNames = [];
             taskProvider.tasks.forEach(task => {
-                taskNames.push(task._name);
+                taskNames.push(task.name);
             });
             const pickedTaskName = yield vscode.window.showQuickPick(taskNames);
             if (pickedTaskName) {
-                yield vscode.window.showInformationMessage(pickedTaskName);
-                // for (let task in taskProvider.tasks) {
-                //     if (pickedTaskName === task._name) {
-                //         vscode.tasks.executeTask(task).then();
-                //         break;
-                //     }
-                // };
+                taskProvider.tasks.forEach(task => {
+                    if (pickedTaskName === task.name) {
+                        vscode.tasks.executeTask(task).then();
+                    }
+                });
             }
         }
         catch (err) {
-            vscode.window.showInformationMessage(`Error ${err}`);
+            vscode.window.showInformationMessage(err);
         }
     });
 }

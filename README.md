@@ -1,4 +1,4 @@
-# VSCode C/Cpp Runner
+# VSCode C/C++ Runner
 
 Compile and run your C/C++ code with an ease.
 
@@ -12,7 +12,7 @@ By pressing the shortcut *ctrl+shift+r* and having at least one C/C++ file open
 in your workspace you will get a quick pick menu to choose an appropiate task to
 compile/run.
 
-![TaskQuickBar](https://github.com/franneck94/Vscode-C-Cpp-Runner/blob/main/media/TaskQuickPick.png?raw=true)
+![TaskQuickBar](https://github.com/franneck94/Vscode-C-Cpp-Runner/blob/master/media/TaskQuickPick.png?raw=true)
 
 - Debug (Single File): This task will compile the currently focused C/C++ file with debug symbols (-g) into a binary.
 - Release (Single File): This task will compile the currently focused C/C++ file with full optimization (-O3) into a binary.
@@ -24,7 +24,7 @@ compile/run.
 
 ## Example
 
-![TaskQuickBar](https://github.com/franneck94/Vscode-C-Cpp-Runner/blob/main/media/ExecuteTasks.gif?raw=true)
+![ExampleGif](https://github.com/franneck94/Vscode-C-Cpp-Runner/blob/master/media/ExecuteTasks.gif?raw=true)
 
 By executing the task *Debug (Single File)* for the opened C file *main*.c a binary (for windows executable) will be generated with the name *main*Debug.
 Note: In any release task the binary would be called *main*Release.

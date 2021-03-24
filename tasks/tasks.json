@@ -134,7 +134,7 @@
       "problemMatcher": ["$gcc"]
     },
     {
-      "label": "Makefile Clean",
+      "label": "Clean",
       "type": "shell",
       "command": ["make"],
       "args": [

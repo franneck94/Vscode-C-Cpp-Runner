@@ -20,13 +20,13 @@ export class TaskProvider implements vscode.TaskProvider {
   public tasks: vscode.Task[] | undefined;
   public tasksFile: string;
   public makefileFile: string;
-  public extDirectory: string;
   public problemMatcher: string;
 
   constructor(public settingsProvider: SettingsProvider) {
-    this.extDirectory = path.dirname(__dirname);
-    this.tasksFile = path.join(this.extDirectory, "tasks", "tasks.json");
-    this.makefileFile = path.join(this.extDirectory, "tasks", "Makefile");
+    const extDirectory = path.dirname(__dirname);
+    const tasksDirectory = path.join(extDirectory, "src", "tasks");
+    this.tasksFile = path.join(tasksDirectory, "tasks.json");
+    this.makefileFile = path.join(tasksDirectory, "Makefile");
     this.problemMatcher = "$gcc";
 
     if (!pathExists(this.tasksFile) || !pathExists(this.makefileFile)) {
@@ -40,29 +40,24 @@ export class TaskProvider implements vscode.TaskProvider {
     return task;
   }
 
-  public async provideTasks(): Promise<vscode.Task[]> {
+  public provideTasks(): vscode.Task[] {
     return this.getTasks();
   }
 
-  public async getTasks(): Promise<vscode.Task[]> {
-    const editor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
-    const emptyTasks: vscode.Task[] = [];
-    if (!editor) {
-      return emptyTasks;
-    }
+  public getTasks(ignoreLanguageMode: boolean = false): vscode.Task[] {
+    let languageMode;
 
-    const fileExt: string = path.extname(editor.document.fileName);
-    if (!fileExt) {
-      return emptyTasks;
-    }
+    if (false === ignoreLanguageMode) {
+      const editor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
 
-    if (!this.isSourceFile(fileExt)) {
-      return emptyTasks;
-    }
-
-
-    if (!pathExists(this.tasksFile)) {
-      return [];
+      if (!editor) {
+        return [];
+      }
+  
+      const fileExt: string = path.extname(editor.document.fileName);
+      languageMode = TaskProvider.getLanguageMode(fileExt);
+    } else {
+      languageMode = LanguageMode.c;
     }
 
     let configJson;
@@ -78,7 +73,6 @@ export class TaskProvider implements vscode.TaskProvider {
     }
 
     this.tasks = [];
-    const languageMode = TaskProvider.getLanguageMode(fileExt);
 
     for (let taskJson of configJson.tasks) {
       if (taskJson.type !== "shell") {
@@ -140,33 +134,6 @@ export class TaskProvider implements vscode.TaskProvider {
       `CPP_STANDARD=${this.settingsProvider.standardCpp}`
     );
     taskJson.command = this.settingsProvider.makePath;
-  }
-
-  private isSourceFile(fileExt: string) {
-    const fileExtLower: string = fileExt.toLowerCase();
-    const isHeader: boolean = !fileExt || [
-      ".hpp", ".hh", ".hxx", ".h++", ".hp", ".h", ".ii", ".inl", ".idl", ""
-    ].some(ext => fileExtLower === ext);
-    if (isHeader) {
-      return false;
-    }
-
-    let fileIsCpp: boolean;
-    let fileIsC: boolean;
-    if (fileExt === ".C") {
-      fileIsCpp = true;
-      fileIsC = true;
-    } else {
-      fileIsCpp = [
-        ".cpp", ".cc", ".cxx", ".c++", ".cp", ".ino", ".ipp", ".tcc"
-      ].some(ext => fileExtLower === ext);
-      fileIsC = fileExtLower === ".c";
-    }
-    if (!(fileIsCpp || fileIsC)) {
-      return false;
-    }
-
-    return true;
   }
 
   static getLanguageMode(fileExt: string) {

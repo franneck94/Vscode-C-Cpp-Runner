@@ -4,6 +4,8 @@ import { TaskProvider } from './taskProvider';
 import { commandHandler } from './commands';
 import { SettingsProvider } from './settings';
 
+const extensionName: string = 'C_Cpp_Runner';
+
 let taskProvider: TaskProvider;
 let disposableCustomTaskProvider: vscode.Disposable;
 
@@ -14,7 +16,6 @@ export function activate(context: vscode.ExtensionContext) {
         return;
     }
 
-    const extensionName: string = 'C_Cpp_Runner';
     const settingsProvider = new SettingsProvider();
 
     taskProvider = new TaskProvider(settingsProvider);
@@ -33,6 +34,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     vscode.workspace.onDidChangeConfiguration(() => {
         taskProvider.settingsProvider.getSettings();
+        taskProvider.getTasks(true);
     });
 }
 

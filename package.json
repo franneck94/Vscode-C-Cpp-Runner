@@ -31,8 +31,8 @@
     "url": "https://github.com/franneck94/vscode-c-cpp-runner/issues"
   },
   "activationEvents": [
-    "onCommand::workbench.action.tasks.runTask",
-    "onCommand:C_Cpp_Runner.run"
+    "onLanguage:c",
+    "onLanguage:cpp"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -62,37 +62,37 @@
           "type": "boolean",
           "default": true,
           "description": "Whether to enable warnings (e.g. -Wall -Wextra -Wpedantic) or not.",
-          "scope": "resource"
+          "scope": "window"
         },
         "C_Cpp_Runner.warnings": {
           "type": "string",
           "default": "-Wall -Wextra -Wpedantic",
           "description": "List of warnings to use for the selected compiler.",
-          "scope": "resource"
+          "scope": "window"
         },
         "C_Cpp_Runner.warningsAsError": {
           "type": "boolean",
           "default": false,
           "description": "Whether the warnings will be treated as compiler errors.",
-          "scope": "resource"
+          "scope": "window"
         },
         "C_Cpp_Runner.compilerPathC": {
           "type": "string",
           "default": "gcc",
           "description": "The path to the C Compiler (either gcc or clang).",
-          "scope": "resource"
+          "scope": "window"
         },
         "C_Cpp_Runner.compilerPathCpp": {
           "type": "string",
           "default": "g++",
           "description": "The path to the C++ Compiler (either g++ or clang++).",
-          "scope": "resource"
+          "scope": "window"
         },
         "C_Cpp_Runner.makePath": {
           "type": "string",
           "default": "make",
           "description": "The path to the make installation.",
-          "scope": "resource"
+          "scope": "window"
         },
         "C_Cpp_Runner.standardC": {
           "type": "string",
@@ -111,7 +111,7 @@
           ],
           "default": "c90",
           "description": "C-Standard for the C Compiler.",
-          "scope": "resource"
+          "scope": "window"
         },
         "C_Cpp_Runner.standardCpp": {
           "type": "string",
@@ -132,7 +132,7 @@
           ],
           "default": "c++11",
           "description": "C++ Standard for the Cpp Compiler.",
-          "scope": "resource"
+          "scope": "window"
         }
       }
     }
@@ -155,10 +155,10 @@
     "eslint": "^7.9.0",
     "glob": "^7.1.6",
     "mocha": "^8.1.3",
-    "typescript": "^4.0.2",
-    "vscode-c-cpp-runner": "^1.4.0"
+    "typescript": "^4.0.2"
   },
   "dependencies": {
+    "lookpath": "^1.2.0",
     "vsce": "^1.87.0"
   }
 }

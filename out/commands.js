@@ -10,12 +10,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commandHandler = void 0;
+const path = require("path");
 const vscode = require("vscode");
+const utils_1 = require("./utils");
 function commandHandler(taskProvider) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            if (taskProvider.tasks === undefined) {
-                throw TypeError;
+            const editor = vscode.window.activeTextEditor;
+            if (!editor || taskProvider.tasks === undefined) {
+                throw (TypeError("You must open a C/C++ file."));
+            }
+            const fileExt = path.extname(editor.document.fileName);
+            if (!fileExt || !utils_1.isSourceFile(fileExt)) {
+                throw (TypeError("You must open a C/C++ file."));
             }
             let taskNames = [];
             taskProvider.tasks.forEach(task => {

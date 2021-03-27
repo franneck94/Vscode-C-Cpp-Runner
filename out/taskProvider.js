@@ -27,9 +27,10 @@ const extensionName = 'C_Cpp_Runner';
 class TaskProvider {
     constructor(settingsProvider) {
         this.settingsProvider = settingsProvider;
-        this.extDirectory = path.dirname(__dirname);
-        this.tasksFile = path.join(this.extDirectory, "tasks", "tasks.json");
-        this.makefileFile = path.join(this.extDirectory, "tasks", "Makefile");
+        const extDirectory = path.dirname(__dirname);
+        const tasksDirectory = path.join(extDirectory, "src", "tasks");
+        this.tasksFile = path.join(tasksDirectory, "tasks.json");
+        this.makefileFile = path.join(tasksDirectory, "Makefile");
         this.problemMatcher = "$gcc";
         if (!utils_1.pathExists(this.tasksFile) || !utils_1.pathExists(this.makefileFile)) {
             return;
@@ -42,61 +43,53 @@ class TaskProvider {
         });
     }
     provideTasks() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.getTasks();
-        });
+        return this.getTasks();
     }
-    getTasks() {
-        return __awaiter(this, void 0, void 0, function* () {
+    getTasks(ignoreLanguageMode = false) {
+        let languageMode;
+        if (false === ignoreLanguageMode) {
             const editor = vscode.window.activeTextEditor;
-            const emptyTasks = [];
             if (!editor) {
-                return emptyTasks;
+                return [];
             }
             const fileExt = path.extname(editor.document.fileName);
-            if (!fileExt) {
-                return emptyTasks;
+            languageMode = TaskProvider.getLanguageMode(fileExt);
+        }
+        else {
+            languageMode = LanguageMode.c;
+        }
+        let configJson;
+        try {
+            const fileContent = fs.readFileSync(this.tasksFile, "utf-8");
+            configJson = JSON.parse(fileContent);
+        }
+        catch (err) {
+            return [];
+        }
+        if (!configJson.tasks) {
+            return [];
+        }
+        this.tasks = [];
+        for (let taskJson of configJson.tasks) {
+            if (taskJson.type !== "shell") {
+                continue;
             }
-            if (!this.isSourceFile(fileExt)) {
-                return emptyTasks;
-            }
-            if (!utils_1.pathExists(this.tasksFile)) {
-                return [];
-            }
-            let configJson;
-            try {
-                const fileContent = fs.readFileSync(this.tasksFile, "utf-8");
-                configJson = JSON.parse(fileContent);
-            }
-            catch (err) {
-                return [];
-            }
-            if (!configJson.tasks) {
-                return [];
-            }
-            this.tasks = [];
-            const languageMode = TaskProvider.getLanguageMode(fileExt);
-            for (let taskJson of configJson.tasks) {
-                if (taskJson.type !== "shell") {
+            if (taskJson.options !== undefined) {
+                if (taskJson.options.hide === true) {
                     continue;
                 }
-                if (taskJson.options !== undefined) {
-                    if (taskJson.options.hide === true) {
-                        continue;
-                    }
-                }
-                this.updateTaskBasedOnSettings(taskJson, languageMode);
-                const shellCommand = `${taskJson.command} ${taskJson.args.join(" ")}`;
-                const definition = {
-                    type: "shell",
-                    task: taskJson.label
-                };
-                const scope = vscode.TaskScope.Workspace;
-                const task = new vscode.Task(definition, scope, taskJson.label, extensionName, new vscode.ShellExecution(shellCommand), this.problemMatcher);
-                this.tasks.push(task);
             }
-            return this.tasks;
-        });
+            this.updateTaskBasedOnSettings(taskJson, languageMode);
+            const shellCommand = `${taskJson.command} ${taskJson.args.join(" ")}`;
+            const definition = {
+                type: "shell",
+                task: taskJson.label
+            };
+            const scope = vscode.TaskScope.Workspace;
+            const task = new vscode.Task(definition, scope, taskJson.label, extensionName, new vscode.ShellExecution(shellCommand), this.problemMatcher);
+            this.tasks.push(task);
+        }
+        return this.tasks;
     }
     updateTaskBasedOnSettings(taskJson, languageMode) {
         taskJson.args[1] = `--file=${this.makefileFile}`;
@@ -109,31 +102,6 @@ class TaskProvider {
         taskJson.args.push(`C_STANDARD=${this.settingsProvider.standardC}`);
         taskJson.args.push(`CPP_STANDARD=${this.settingsProvider.standardCpp}`);
         taskJson.command = this.settingsProvider.makePath;
-    }
-    isSourceFile(fileExt) {
-        const fileExtLower = fileExt.toLowerCase();
-        const isHeader = !fileExt || [
-            ".hpp", ".hh", ".hxx", ".h++", ".hp", ".h", ".ii", ".inl", ".idl", ""
-        ].some(ext => fileExtLower === ext);
-        if (isHeader) {
-            return false;
-        }
-        let fileIsCpp;
-        let fileIsC;
-        if (fileExt === ".C") {
-            fileIsCpp = true;
-            fileIsC = true;
-        }
-        else {
-            fileIsCpp = [
-                ".cpp", ".cc", ".cxx", ".c++", ".cp", ".ino", ".ipp", ".tcc"
-            ].some(ext => fileExtLower === ext);
-            fileIsC = fileExtLower === ".c";
-        }
-        if (!(fileIsCpp || fileIsC)) {
-            return false;
-        }
-        return true;
     }
     static getLanguageMode(fileExt) {
         const fileExtLower = fileExt.toLowerCase();

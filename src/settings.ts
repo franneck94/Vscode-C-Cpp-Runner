@@ -1,17 +1,13 @@
 import * as vscode from "vscode";
 
-import { getPlattformCategory } from './utils'
+import { getPlattformCategory, commandExists } from './utils';
 
 const extensionName: string = 'C_Cpp_Runner';
 
 export class SettingsProvider {
     // Global settings
-    public globalConfig : vscode.WorkspaceConfiguration | undefined;
-    // Workspace settings
-    public editor: vscode.TextEditor | undefined;
-    public uri: vscode.Uri  | undefined;
-    public workspaceFolder: vscode.WorkspaceFolder | undefined;
-    public workspaceConfig: vscode.WorkspaceConfiguration | undefined;
+    public config = vscode.workspace.getConfiguration(extensionName);
+    public plattformCategory = getPlattformCategory();
     // Settings
     public enableWarnings: boolean = true;
     public warnings: string = "";
@@ -21,47 +17,80 @@ export class SettingsProvider {
     public makePath: string = "";
     public standardC: string = "";
     public standardCpp: string = "";
-    public plattformCategory: string = "";
 
     constructor() {
-        this.globalConfig = vscode.workspace.getConfiguration(extensionName);
-
-        this.editor = vscode.window.activeTextEditor;
-        if (this.editor !== undefined) {
-            this.uri = this.editor.document.uri;
-            this.workspaceFolder = vscode.workspace.getWorkspaceFolder(this.uri);
-            this.workspaceConfig = vscode.workspace.getConfiguration('extension', this.workspaceFolder);
-        }
-
-        this.plattformCategory = getPlattformCategory();
-        if (this.plattformCategory === 'macos') {
-            this.globalConfig.update("compilerPathC", "clang", vscode.ConfigurationTarget.Global);
-            this.globalConfig.update("compilerPathCpp", "clang++", vscode.ConfigurationTarget.Global);
-        }
-
+        this.checkCompilers();
         this.getSettings();
     };
 
-    public getSettings() {
-        this.globalConfig = vscode.workspace.getConfiguration(extensionName);
-        this.enableWarnings = this.globalConfig.get("enableWarnings", true);
-        this.warnings = this.globalConfig.get("warnings", "-Wall -Wextra -Wpedantic");
-        this.warningsAsError = this.globalConfig.get("warningsAsError", false);
-        this.compilerPathC = this.globalConfig.get("compilerPathC", "gcc");
-        this.compilerPathCpp = this.globalConfig.get("compilerPathCpp", "g++");
-        this.makePath = this.globalConfig.get("makePath", "make");
-        this.standardC = this.globalConfig.get("standardC", "c90");
-        this.standardCpp = this.globalConfig.get("standardCpp", "c++11");
-
-        if (this.workspaceConfig !== undefined) {
-            this.workspaceConfig = vscode.workspace.getConfiguration(extensionName, this.workspaceFolder);
-
-            if (this.workspaceConfig.has("compilerPathC")) {
-                this.compilerPathC = this.globalConfig.get("compilerPathC", "gcc");
+    /**
+     * Check if gcc/g++ or clang/clang++ can be found in PATH.
+     */
+    public checkCompilers() {
+        if (this.plattformCategory === 'macos') {
+            if (commandExists('clang')) {
+                this.config.update(
+                    "compilerPathCpp",
+                    "clang",
+                    vscode.ConfigurationTarget.Global
+                );
             }
-            if (this.workspaceConfig.has("compilerPathCpp")) {
-                this.compilerPathC = this.globalConfig.get("compilerPathCpp", "gcc");
+            if (commandExists('clang++')) {
+                this.config.update(
+                    "compilerPathCpp",
+                    "clang++",
+                    vscode.ConfigurationTarget.Global
+                );
             }
         }
+
+        if (this.plattformCategory === 'linux') {
+            if (!commandExists('gcc') && commandExists('clang')) {
+                this.config.update(
+                    "compilerPathCpp",
+                    "clang",
+                    vscode.ConfigurationTarget.Global
+                );
+            }
+            if (!commandExists('g++') && commandExists('clang++')) {
+                this.config.update(
+                    "compilerPathCpp",
+                    "clang++",
+                    vscode.ConfigurationTarget.Global
+                );
+            }
+        }
+
+        if (this.plattformCategory === 'win32') {
+            if (!commandExists('gcc') && commandExists('clang')) {
+                this.config.update(
+                    "compilerPathCpp",
+                    "clang",
+                    vscode.ConfigurationTarget.Global
+                );
+            }
+            if (!commandExists('g++') && commandExists('clang++')) {
+                this.config.update(
+                    "compilerPathCpp",
+                    "clang++",
+                    vscode.ConfigurationTarget.Global
+                );
+            }
+        }
+    }
+
+    /**
+     * Read in the current settings.
+     */
+    public getSettings() {
+        this.config = vscode.workspace.getConfiguration(extensionName);
+        this.enableWarnings = this.config.get("enableWarnings", true);
+        this.warnings = this.config.get("warnings", "-Wall -Wextra -Wpedantic");
+        this.warningsAsError = this.config.get("warningsAsError", false);
+        this.compilerPathC = this.config.get("compilerPathC", "gcc");
+        this.compilerPathCpp = this.config.get("compilerPathCpp", "g++");
+        this.makePath = this.config.get("makePath", "make");
+        this.standardC = this.config.get("standardC", "c90");
+        this.standardCpp = this.config.get("standardCpp", "c++11");
     }
 }

@@ -32,9 +32,9 @@ Afterwards, the task *Execute Debug Program* is executed, such that the binary i
 
 ## Options to set
 
-- C Compiler path (default's to gcc on Windows/Linux, default's to clang in MacOS)
+- C Compiler path (default's to gcc/clang)
 - C Standard (default's to c89/c90)
-- C++ Compiler path (default's to g++ on Windows/Linux, default's to clang++ in MacOS)
+- C++ Compiler path (default's to g++/clang++)
 - C++ Standard (default's to c++11)
 - Make path (default's to make)
 - To enable warnings (default's to true)

@@ -1,11 +1,21 @@
+import * as path from "path";
 import * as vscode from "vscode";
 
 import { TaskProvider } from './taskProvider';
+import { isSourceFile } from "./utils";
 
 export async function commandHandler(taskProvider: TaskProvider) {
     try {
-        if (taskProvider.tasks === undefined) {
-            throw TypeError;
+        const editor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
+
+        if (!editor || taskProvider.tasks === undefined) {
+            throw(TypeError("You must open a C/C++ file."));
+        }
+
+        const fileExt: string = path.extname(editor.document.fileName);
+
+        if (!fileExt || !isSourceFile(fileExt)) {
+            throw(TypeError("You must open a C/C++ file."));
         }
 
         let taskNames: Array<string> = [];

@@ -2,7 +2,8 @@ import * as vscode from 'vscode';
 
 import { TaskProvider } from './taskProvider';
 import { commandHandler } from './commands';
-import { SettingsProvider } from './settings';
+import { SettingsProvider } from './settingsProvider';
+import { PropertiesProvider } from './propertiesProvider';
 
 const extensionName: string = 'C_Cpp_Runner';
 
@@ -17,6 +18,9 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     const settingsProvider = new SettingsProvider();
+
+    const workspacePath = workspace[0].uri.fsPath;
+    const propertiesProvider = new PropertiesProvider(settingsProvider, workspacePath);
 
     taskProvider = new TaskProvider(settingsProvider);
     disposableCustomTaskProvider = vscode.tasks.registerTaskProvider(

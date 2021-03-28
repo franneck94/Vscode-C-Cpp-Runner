@@ -10,19 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TaskProvider = void 0;
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
 const fs = require("fs");
 const path = require("path");
 const vscode = require("vscode");
 const utils_1 = require("./utils");
-var LanguageMode;
-(function (LanguageMode) {
-    LanguageMode["c"] = "C";
-    LanguageMode["cpp"] = "Cpp";
-})(LanguageMode || (LanguageMode = {}));
 const extensionName = 'C_Cpp_Runner';
 class TaskProvider {
     constructor(settingsProvider) {
@@ -52,11 +43,11 @@ class TaskProvider {
             if (!editor) {
                 return [];
             }
-            const fileExt = path.extname(editor.document.fileName);
-            languageMode = TaskProvider.getLanguageMode(fileExt);
+            const fileDirName = path.dirname(editor.document.fileName);
+            languageMode = utils_1.getLanguageMode(fileDirName);
         }
         else {
-            languageMode = LanguageMode.c;
+            languageMode = utils_1.LanguageMode.c;
         }
         let configJson;
         try {
@@ -102,15 +93,6 @@ class TaskProvider {
         taskJson.args.push(`C_STANDARD=${this.settingsProvider.standardC}`);
         taskJson.args.push(`CPP_STANDARD=${this.settingsProvider.standardCpp}`);
         taskJson.command = this.settingsProvider.makePath;
-    }
-    static getLanguageMode(fileExt) {
-        const fileExtLower = fileExt.toLowerCase();
-        if (fileExtLower === ".c") {
-            return LanguageMode.c;
-        }
-        else {
-            return LanguageMode.cpp;
-        }
     }
 }
 exports.TaskProvider = TaskProvider;

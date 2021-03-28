@@ -32,7 +32,11 @@
   },
   "activationEvents": [
     "onLanguage:c",
-    "onLanguage:cpp"
+    "onLanguage:cpp",
+    "workspaceContains:*.c",
+    "workspaceContains:*.cc",
+    "workspaceContains:*.cxx",
+    "workspaceContains:*.cpp"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -145,7 +149,7 @@
     "pretest": "npm run compile && npm run lint",
     "test": "node ./out/test/runTest.js",
     "webpack": "webpack --mode development",
-    "webpack-dev": "webpack --mode development --watch",
+    "webpack-dev": "webpack --mode development --watch"
   },
   "devDependencies": {
     "@types/glob": "^7.1.3",

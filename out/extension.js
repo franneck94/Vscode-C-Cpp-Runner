@@ -4,7 +4,8 @@ exports.deactivate = exports.activate = void 0;
 const vscode = require("vscode");
 const taskProvider_1 = require("./taskProvider");
 const commands_1 = require("./commands");
-const settings_1 = require("./settings");
+const settingsProvider_1 = require("./settingsProvider");
+const propertiesProvider_1 = require("./propertiesProvider");
 const extensionName = 'C_Cpp_Runner';
 let taskProvider;
 let disposableCustomTaskProvider;
@@ -13,7 +14,9 @@ function activate(context) {
     if (!workspace || workspace.length > 1) {
         return;
     }
-    const settingsProvider = new settings_1.SettingsProvider();
+    const settingsProvider = new settingsProvider_1.SettingsProvider();
+    const workspacePath = workspace[0].uri.fsPath;
+    const propertiesProvider = new propertiesProvider_1.PropertiesProvider(settingsProvider, workspacePath);
     taskProvider = new taskProvider_1.TaskProvider(settingsProvider);
     disposableCustomTaskProvider = vscode.tasks.registerTaskProvider(extensionName, taskProvider);
     context.subscriptions.push(disposableCustomTaskProvider);

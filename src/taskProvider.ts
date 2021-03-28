@@ -1,18 +1,9 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 
-import { SettingsProvider } from './settings';
-import { pathExists } from "./utils";
-
-enum LanguageMode {
-  c = 'C',
-  cpp = 'Cpp'
-}
+import { SettingsProvider } from './settingsProvider';
+import { pathExists, LanguageMode, getLanguageMode } from "./utils";
 
 const extensionName: string = 'C_Cpp_Runner';
 
@@ -53,9 +44,9 @@ export class TaskProvider implements vscode.TaskProvider {
       if (!editor) {
         return [];
       }
-  
-      const fileExt: string = path.extname(editor.document.fileName);
-      languageMode = TaskProvider.getLanguageMode(fileExt);
+
+      const fileDirName = path.dirname(editor.document.fileName);
+      languageMode = getLanguageMode(fileDirName);
     } else {
       languageMode = LanguageMode.c;
     }
@@ -135,15 +126,4 @@ export class TaskProvider implements vscode.TaskProvider {
     );
     taskJson.command = this.settingsProvider.makePath;
   }
-
-  static getLanguageMode(fileExt: string) {
-    const fileExtLower: string = fileExt.toLowerCase();
-
-    if (fileExtLower === ".c") {
-      return LanguageMode.c;
-    } else {
-      return LanguageMode.cpp;
-    }
-  }
-
 }

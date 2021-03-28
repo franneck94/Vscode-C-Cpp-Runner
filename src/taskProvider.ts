@@ -2,10 +2,10 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 
-import { SettingsProvider } from './settingsProvider';
-import { pathExists, LanguageMode, getLanguageMode } from "./utils";
+import { SettingsProvider } from "./settingsProvider";
+import { pathExists, Languages, getLanguage } from "./utils";
 
-const extensionName: string = 'C_Cpp_Runner';
+const EXTENSION_NAME = "C_Cpp_Runner";
 
 export class TaskProvider implements vscode.TaskProvider {
   public tasks: vscode.Task[] | undefined;
@@ -35,20 +35,20 @@ export class TaskProvider implements vscode.TaskProvider {
     return this.getTasks();
   }
 
-  public getTasks(ignoreLanguageMode: boolean = false): vscode.Task[] {
-    let languageMode;
+  public getTasks(ignoreLanguage: boolean = false): vscode.Task[] {
+    let language;
 
-    if (false === ignoreLanguageMode) {
-      const editor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
+    if (false === ignoreLanguage) {
+      const editor = vscode.window.activeTextEditor;
 
       if (!editor) {
         return [];
       }
 
       const fileDirName = path.dirname(editor.document.fileName);
-      languageMode = getLanguageMode(fileDirName);
+      language = getLanguage(fileDirName);
     } else {
-      languageMode = LanguageMode.c;
+      language = Languages.c;
     }
 
     let configJson;
@@ -66,29 +66,29 @@ export class TaskProvider implements vscode.TaskProvider {
     this.tasks = [];
 
     for (let taskJson of configJson.tasks) {
-      if (taskJson.type !== "shell") {
+      if ("shell" !== taskJson.type) {
         continue;
       }
-      if (taskJson.options !== undefined) {
-        if (taskJson.options.hide === true) {
+      if (undefined !== taskJson.options) {
+        if (true === taskJson.options.hide) {
           continue;
         }
       }
 
-      this.updateTaskBasedOnSettings(taskJson, languageMode);
+      this.updateTaskBasedOnSettings(taskJson, language);
 
       const shellCommand = `${taskJson.command} ${taskJson.args.join(" ")}`;
 
       const definition = {
         type: "shell",
-        task: taskJson.label
+        task: taskJson.label,
       };
-      const scope: vscode.TaskScope = vscode.TaskScope.Workspace;
+      const scope = vscode.TaskScope.Workspace;
       const task = new vscode.Task(
         definition,
         scope,
         taskJson.label,
-        extensionName,
+        EXTENSION_NAME,
         new vscode.ShellExecution(shellCommand),
         this.problemMatcher
       );
@@ -98,32 +98,20 @@ export class TaskProvider implements vscode.TaskProvider {
     return this.tasks;
   }
 
-  private updateTaskBasedOnSettings(taskJson: any, languageMode: LanguageMode) {
+  private updateTaskBasedOnSettings(taskJson: any, language: Languages) {
     taskJson.args[1] = `--file=${this.makefileFile}`;
     taskJson.args.push(
       `ENABLE_WARNINGS=${+this.settingsProvider.enableWarnings}`
     );
-    taskJson.args.push(
-      `WARNINGS="${this.settingsProvider.warnings}"`
-    );
+    taskJson.args.push(`WARNINGS="${this.settingsProvider.warnings}"`);
     taskJson.args.push(
       `WARNINGS_AS_ERRORS=${+this.settingsProvider.warningsAsError}`
     );
-    taskJson.args.push(
-      `C_COMPILER=${this.settingsProvider.compilerPathC}`
-    );
-    taskJson.args.push(
-      `CPP_COMPILER=${this.settingsProvider.compilerPathCpp}`
-    );
-    taskJson.args.push(
-      `LANGUAGE_MODE=${languageMode}`
-    );
-    taskJson.args.push(
-      `C_STANDARD=${this.settingsProvider.standardC}`
-    );
-    taskJson.args.push(
-      `CPP_STANDARD=${this.settingsProvider.standardCpp}`
-    );
+    taskJson.args.push(`C_COMPILER=${this.settingsProvider.compilerPathC}`);
+    taskJson.args.push(`CPP_COMPILER=${this.settingsProvider.compilerPathCpp}`);
+    taskJson.args.push(`LANGUAGE_MODE=${language}`);
+    taskJson.args.push(`C_STANDARD=${this.settingsProvider.standardC}`);
+    taskJson.args.push(`CPP_STANDARD=${this.settingsProvider.standardCpp}`);
     taskJson.command = this.settingsProvider.makePath;
   }
 }

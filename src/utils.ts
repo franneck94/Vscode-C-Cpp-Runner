@@ -1,9 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
-import * as vscode from "vscode";
 import { platform } from "os";
 import { lookpath } from "lookpath";
-import { execSync, ExecSyncOptionsWithStringEncoding } from "child_process";
+import { execSync } from "child_process";
 
 export enum Languages {
   c = "C",
@@ -28,9 +27,9 @@ export enum Architectures {
   x64 = "x64",
 }
 
-export function pathExists(path: string): boolean {
+export function pathExists(filePath: string): boolean {
   try {
-    fs.accessSync(path);
+    fs.accessSync(filePath);
   } catch (err) {
     return false;
   }
@@ -38,16 +37,12 @@ export function pathExists(path: string): boolean {
   return true;
 }
 
-export function readJsonFile(path: string): any | undefined {
+export function readJsonFile(filePath: string): any | undefined {
   let configJson;
   try {
-    const fileContent = fs.readFileSync(path, "utf-8");
+    const fileContent = fs.readFileSync(filePath, "utf-8");
     configJson = JSON.parse(fileContent);
   } catch (err) {
-    return undefined;
-  }
-
-  if (!configJson.configurations) {
     return undefined;
   }
 
@@ -70,13 +65,13 @@ export function getPlattformCategory() {
 }
 
 export async function commandExists(command: string) {
-  const path = await lookpath(command);
+  const commandPath = await lookpath(command);
 
-  if (undefined === path) {
-    return { found: false, path: path };
+  if (undefined === commandPath) {
+    return { found: false, path: commandPath };
   }
 
-  return { found: true, path: path };
+  return { found: true, path: commandPath };
 }
 
 export function getArchitecture(compiler: Compilers) {
@@ -93,16 +88,12 @@ export function getArchitecture(compiler: Compilers) {
 
 export function isSourceFile(fileExt: string) {
   const fileExtLower = fileExt.toLowerCase();
-  const isHeader = isHeaderFile(fileExtLower);
 
-  if (isHeader) {
+  if (isHeaderFile(fileExtLower)) {
     return false;
   }
 
-  let fileIsC = isCSourceFile(fileExtLower);
-  let fileIsCpp = isCppSourceFile(fileExtLower);
-
-  if (!(fileIsCpp || fileIsC)) {
+  if (!(isCSourceFile(fileExtLower) || isCppSourceFile(fileExtLower))) {
     return false;
   }
 
@@ -134,18 +125,18 @@ export function getLanguage(fileDirName: string) {
 
 export function getLanguageFromEditor(
   editor: any | undefined,
-  filepath: string
+  filePath: string
 ) {
   let language: Languages;
 
   if (!editor) {
-    language = getLanguage(filepath);
+    language = getLanguage(filePath);
   } else {
-    if (path.dirname(editor.document.fileName) !== ".vscode") {
+    if (".vscode" !== path.dirname(editor.document.fileName)) {
       const fileDirName = path.dirname(editor.document.fileName);
       language = getLanguage(fileDirName);
     }
-    language = getLanguage(filepath);
+    language = getLanguage(filePath);
   }
 
   return language;

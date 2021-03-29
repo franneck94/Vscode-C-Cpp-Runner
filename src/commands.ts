@@ -8,7 +8,7 @@ export async function commandHandler(taskProvider: TaskProvider) {
   try {
     const editor = vscode.window.activeTextEditor;
 
-    if (!editor || undefined === taskProvider.tasks) {
+    if (undefined === editor || undefined === taskProvider.tasks) {
       throw TypeError("You must open a C/C++ file.");
     }
 

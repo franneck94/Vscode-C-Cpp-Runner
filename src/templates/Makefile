@@ -40,6 +40,9 @@ CPP_COMPILER_CALL = $(CPP_COMPILER) $(CPP_COMPILER_FLAGS)
 CPP_SRCS = $(wildcard *.cpp)
 CPP_OBJECTS = $(patsubst %.cpp, %.o, $(CPP_SRCS))
 
+CXX_SRCS = $(wildcard *.cxx)
+CXX_OBJECTS = $(patsubst %.cxx, %.o, $(CXX_SRCS))
+
 CC_SRCS = $(wildcard *.cc)
 CC_OBJECTS = $(patsubst %.cc, %.o, $(CC_SRCS))
 
@@ -52,7 +55,7 @@ OBJECTS = $(C_OBJECTS)
 endif
 ifeq ($(LANGUAGE_MODE), Cpp)
 COMPILER_CALL = $(CPP_COMPILER_CALL)
-OBJECTS = $(CPP_OBJECTS) $(CC_OBJECTS)
+OBJECTS = $(CPP_OBJECTS) $(CC_OBJECTS) $(CXX_OBJECTS)
 endif
 
 ####################
@@ -73,7 +76,7 @@ execute:
 	./$(EXECUTABLE_NAME)
 
 clean:
-	$(RM) *.o
+	$(RM) -f *.o
 
 ##############
 ## PATTERNS ##

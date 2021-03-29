@@ -9,6 +9,8 @@ There are tasks for debug and release builds and to execute the programs.
 
 - For C code: gcc or clang and make
 - For C++ code: g++ or clang++ and make
+- Allowed file extensions for headers: *.h, *.hpp, *.hh, *.hxx
+- Allowed file extensions for sources: *.c, *.cpp, *.cc, *.cxx
 
 ## How to use
 

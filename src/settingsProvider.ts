@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-import { getPlattformCategory, commandExists } from "./utils";
+import { getPlattformCategory, commandExists, Compilers, OperatingSystems, Architectures } from "./utils";
 
 const EXTENSION_NAME = "C_Cpp_Runner";
 
@@ -8,8 +8,9 @@ export class SettingsProvider {
   // Global settings
   public config = vscode.workspace.getConfiguration(EXTENSION_NAME);
   public plattformCategory = getPlattformCategory();
-  public cCompiler: string | undefined = undefined;
-  public cppCompiler: string | undefined = undefined;
+  public architecure: Architectures = Architectures.x64;
+  public cCompiler: Compilers | undefined = undefined;
+  public cppCompiler: Compilers | undefined = undefined;
   // Settings
   public enableWarnings: boolean = true;
   public warnings: string = "";
@@ -26,104 +27,51 @@ export class SettingsProvider {
   }
 
   /**
-   * Check if gcc/g++ or clang/clang++ can be found in PATH.
+   * Check if gcc/g++ or clang/clang++ is in PATH and where it is located.
    */
   public async checkCompilers() {
-    if (this.plattformCategory === "macos") {
-      let { found: foundGcc, path: pathGcc } = await commandExists("gcc");
-      let { found: foundGpp, path: pathGpp } = await commandExists("g++");
-      let { found: foundClang, path: pathClang } = await commandExists("clang");
-      let { found: foundClangpp, path: pathClangpp } = await commandExists(
-        "clang++"
-      );
-
-      if (foundClang) {
-        this.config.update(
-          "compilerPathC",
-          pathClang,
-          vscode.ConfigurationTarget.Global
-        );
-        this.cCompiler = "clang";
-      } else if (foundGcc) {
-        this.config.update(
-          "compilerPathC",
-          pathGcc,
-          vscode.ConfigurationTarget.Global
-        );
-        this.cCompiler = "gcc";
+    let { found: foundGcc, path: pathGcc } = await commandExists("gcc");
+    let { found: foundGpp, path: pathGpp } = await commandExists("g++");
+    let { found: foundClang, path: pathClang } = await commandExists("clang");
+    let { found: foundClangpp, path: pathClangpp } = await commandExists(
+      "clang++"
+    );
+    if (OperatingSystems.mac === this.plattformCategory) {
+      if (foundClang && pathClang) {
+        this.setClang(pathClang);
+      } else if (foundGcc && pathGcc) {
+        this.setGcc(pathGcc);
       } else {
-        // TODO
         this.cCompiler = undefined;
       }
 
-      if (foundClangpp) {
-        this.config.update(
-          "compilerPathCpp",
-          pathClangpp,
-          vscode.ConfigurationTarget.Global
-        );
-        this.cppCompiler = "clang++";
-      } else if (foundGpp) {
-        this.config.update(
-          "compilerPathCpp",
-          pathGpp,
-          vscode.ConfigurationTarget.Global
-        );
-        this.cppCompiler = "g++";
+      if (foundClangpp && pathClangpp) {
+        this.setClangpp(pathClangpp);
+      } else if (foundGpp && pathGpp) {
+        this.setGpp(pathGpp);
       } else {
-        // TODO
         this.cppCompiler = undefined;
       }
     } else if (
-      this.plattformCategory === "linux" ||
-      this.plattformCategory === "windows"
+      OperatingSystems.linux === this.plattformCategory ||
+      OperatingSystems.windows === this.plattformCategory
     ) {
-      let { found: foundGcc, path: pathGcc } = await commandExists("gcc");
-      let { found: foundGpp, path: pathGpp } = await commandExists("g++");
-      let { found: foundClang, path: pathClang } = await commandExists("clang");
-      let { found: foundClangpp, path: pathClangpp } = await commandExists(
-        "clang++"
-      );
-
-      if (foundGcc) {
-        this.config.update(
-          "compilerPathC",
-          pathGcc,
-          vscode.ConfigurationTarget.Global
-        );
-        this.cCompiler = "gcc";
-      } else if (foundClang) {
-        this.config.update(
-          "compilerPathC",
-          pathClang,
-          vscode.ConfigurationTarget.Global
-        );
-        this.cCompiler = "clang";
+      if (foundGcc && pathGcc) {
+        this.setGcc(pathGcc);
+      } else if (foundClang && pathClang) {
+        this.setClang(pathClang);
       } else {
-        // TODO
         this.cCompiler = undefined;
       }
 
-      if (foundGpp) {
-        this.config.update(
-          "compilerPathCpp",
-          pathGpp,
-          vscode.ConfigurationTarget.Global
-        );
-        this.cppCompiler = "g++";
-      } else if (foundClangpp) {
-        this.config.update(
-          "compilerPathCpp",
-          pathClangpp,
-          vscode.ConfigurationTarget.Global
-        );
-        this.cppCompiler = "clang++";
+      if (foundGpp && pathGpp) {
+        this.setGpp(pathGpp);
+      } else if (foundClangpp && pathClangpp) {
+        this.setClangpp(pathClangpp);
       } else {
-        // TODO
         this.cppCompiler = undefined;
       }
     } else {
-      // TODO
       this.cCompiler = undefined;
       this.cppCompiler = undefined;
     }
@@ -142,5 +90,41 @@ export class SettingsProvider {
     this.makePath = this.config.get("makePath", "make");
     this.standardC = this.config.get("standardC", "c90");
     this.standardCpp = this.config.get("standardCpp", "c++11");
+  }
+
+  private setGcc(pathGcc: string) {
+    this.config.update(
+      "compilerPathC",
+      pathGcc,
+      vscode.ConfigurationTarget.Global
+    );
+    this.cCompiler = Compilers.gcc;
+  }
+
+  private setClang(pathClang: string) {
+    this.config.update(
+      "compilerPathC",
+      pathClang,
+      vscode.ConfigurationTarget.Global
+    );
+    this.cCompiler = Compilers.clang;
+  }
+
+  private setGpp(pathGpp: string) {
+    this.config.update(
+      "compilerPathCpp",
+      pathGpp,
+      vscode.ConfigurationTarget.Global
+    );
+    this.cppCompiler = Compilers.gpp;
+  }
+
+  private setClangpp(pathClangpp: string) {
+    this.config.update(
+      "compilerPathCpp",
+      pathClangpp,
+      vscode.ConfigurationTarget.Global
+    );
+    this.cppCompiler = Compilers.clangpp;
   }
 }

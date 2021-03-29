@@ -15,8 +15,8 @@ export class TaskProvider implements vscode.TaskProvider {
 
   constructor(public settingsProvider: SettingsProvider) {
     const extDirectory = path.dirname(__dirname);
-    const tasksDirectory = path.join(extDirectory, "src", "tasks");
-    this.tasksFile = path.join(tasksDirectory, "tasks.json");
+    const tasksDirectory = path.join(extDirectory, "src", "templates");
+    this.tasksFile = path.join(tasksDirectory, "tasks_template.json");
     this.makefileFile = path.join(tasksDirectory, "Makefile");
     this.problemMatcher = "$gcc";
 

@@ -9,16 +9,34 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLanguageMode = exports.isCSourceFile = exports.isCppSourceFile = exports.isSourceFile = exports.commandExists = exports.getPlattformCategory = exports.pathExists = exports.LanguageMode = void 0;
+exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getPlattformCategory = exports.pathExists = exports.Architectures = exports.OperatingSystems = exports.Compilers = exports.Languages = void 0;
 const fs = require("fs");
 const path = require("path");
 const os_1 = require("os");
 const lookpath_1 = require("lookpath");
-var LanguageMode;
-(function (LanguageMode) {
-    LanguageMode["c"] = "C";
-    LanguageMode["cpp"] = "Cpp";
-})(LanguageMode = exports.LanguageMode || (exports.LanguageMode = {}));
+var Languages;
+(function (Languages) {
+    Languages["c"] = "C";
+    Languages["cpp"] = "Cpp";
+})(Languages = exports.Languages || (exports.Languages = {}));
+var Compilers;
+(function (Compilers) {
+    Compilers["gcc"] = "gcc";
+    Compilers["gpp"] = "g++";
+    Compilers["clang"] = "clang";
+    Compilers["clangpp"] = "clang++";
+})(Compilers = exports.Compilers || (exports.Compilers = {}));
+var OperatingSystems;
+(function (OperatingSystems) {
+    OperatingSystems["windows"] = "windows";
+    OperatingSystems["linux"] = "linux";
+    OperatingSystems["mac"] = "macos";
+})(OperatingSystems = exports.OperatingSystems || (exports.OperatingSystems = {}));
+var Architectures;
+(function (Architectures) {
+    Architectures["x86"] = "x86";
+    Architectures["x64"] = "x64";
+})(Architectures = exports.Architectures || (exports.Architectures = {}));
 function pathExists(path) {
     try {
         fs.accessSync(path);
@@ -32,14 +50,14 @@ exports.pathExists = pathExists;
 function getPlattformCategory() {
     const plattformName = os_1.platform();
     let plattformCategory;
-    if (plattformName === 'win32' || plattformName === 'cygwin') {
-        plattformCategory = 'windows';
+    if ("win32" === plattformName || "cygwin" === plattformName) {
+        plattformCategory = OperatingSystems.windows;
     }
-    else if (plattformName === 'darwin') {
-        plattformCategory = 'macos';
+    else if ("darwin" === plattformName) {
+        plattformCategory = OperatingSystems.mac;
     }
     else {
-        plattformCategory = 'linux';
+        plattformCategory = OperatingSystems.linux;
     }
     return plattformCategory;
 }
@@ -47,50 +65,55 @@ exports.getPlattformCategory = getPlattformCategory;
 function commandExists(command) {
     return __awaiter(this, void 0, void 0, function* () {
         const path = yield lookpath_1.lookpath(command);
-        if (path === undefined) {
+        if (undefined === path) {
             return { found: false, path: path };
         }
         return { found: true, path: path };
     });
 }
 exports.commandExists = commandExists;
+function getArchitecture(command) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let { found: _, path: p } = yield commandExists(command);
+        let i = 2;
+    });
+}
+exports.getArchitecture = getArchitecture;
 function isSourceFile(fileExt) {
     const fileExtLower = fileExt.toLowerCase();
-    const isHeader = !fileExt || [
-        ".hpp", ".hh", ".hxx", ".h++", ".hp", ".h", ".ii", ".inl", ".idl", ""
-    ].some(ext => fileExtLower === ext);
+    const isHeader = isHeaderFile(fileExtLower);
     if (isHeader) {
         return false;
     }
-    let fileIsCpp;
-    let fileIsC;
-    fileIsC = isCSourceFile(fileExtLower);
-    fileIsCpp = isCppSourceFile(fileExtLower);
+    let fileIsC = isCSourceFile(fileExtLower);
+    let fileIsCpp = isCppSourceFile(fileExtLower);
     if (!(fileIsCpp || fileIsC)) {
         return false;
     }
     return true;
 }
 exports.isSourceFile = isSourceFile;
+function isHeaderFile(fileExtLower) {
+    return [".hpp", ".hh", ".hxx", ".h"].some((ext) => fileExtLower === ext);
+}
+exports.isHeaderFile = isHeaderFile;
 function isCppSourceFile(fileExtLower) {
-    return [
-        ".cpp", ".cc", ".cxx", ".c++", ".cp", ".ino", ".ipp", ".tcc"
-    ].some(ext => fileExtLower === ext);
+    return [".cpp", ".cc", ".cxx"].some((ext) => fileExtLower === ext);
 }
 exports.isCppSourceFile = isCppSourceFile;
 function isCSourceFile(fileExtLower) {
-    return fileExtLower === '.c';
+    return ".c" === fileExtLower;
 }
 exports.isCSourceFile = isCSourceFile;
-function getLanguageMode(fileDirName) {
+function getLanguage(fileDirName) {
     let files = fs.readdirSync(fileDirName);
-    let anyCppFile = files.some(file => isCppSourceFile(path.extname(file)));
+    let anyCppFile = files.some((file) => isCppSourceFile(path.extname(file)));
     if (anyCppFile) {
-        return LanguageMode.cpp;
+        return Languages.cpp;
     }
     else {
-        return LanguageMode.c;
+        return Languages.c;
     }
 }
-exports.getLanguageMode = getLanguageMode;
+exports.getLanguage = getLanguage;
 //# sourceMappingURL=utils.js.map

@@ -17,20 +17,20 @@ function commandHandler(taskProvider) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const editor = vscode.window.activeTextEditor;
-            if (!editor || taskProvider.tasks === undefined) {
-                throw (TypeError("You must open a C/C++ file."));
+            if (!editor || undefined === taskProvider.tasks) {
+                throw TypeError("You must open a C/C++ file.");
             }
             const fileExt = path.extname(editor.document.fileName);
             if (!fileExt || !utils_1.isSourceFile(fileExt)) {
-                throw (TypeError("You must open a C/C++ file."));
+                throw TypeError("You must open a C/C++ file.");
             }
             let taskNames = [];
-            taskProvider.tasks.forEach(task => {
+            taskProvider.tasks.forEach((task) => {
                 taskNames.push(task.name);
             });
             const pickedTaskName = yield vscode.window.showQuickPick(taskNames);
             if (pickedTaskName) {
-                taskProvider.tasks.forEach(task => {
+                taskProvider.tasks.forEach((task) => {
                     if (pickedTaskName === task.name) {
                         vscode.tasks.executeTask(task).then();
                     }
@@ -43,5 +43,4 @@ function commandHandler(taskProvider) {
     });
 }
 exports.commandHandler = commandHandler;
-;
 //# sourceMappingURL=commands.js.map

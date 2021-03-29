@@ -14,13 +14,13 @@ const fs = require("fs");
 const path = require("path");
 const vscode = require("vscode");
 const utils_1 = require("./utils");
-const extensionName = 'C_Cpp_Runner';
+const EXTENSION_NAME = "C_Cpp_Runner";
 class TaskProvider {
     constructor(settingsProvider) {
         this.settingsProvider = settingsProvider;
         const extDirectory = path.dirname(__dirname);
-        const tasksDirectory = path.join(extDirectory, "src", "tasks");
-        this.tasksFile = path.join(tasksDirectory, "tasks.json");
+        const tasksDirectory = path.join(extDirectory, "src", "templates");
+        this.tasksFile = path.join(tasksDirectory, "tasks_template.json");
         this.makefileFile = path.join(tasksDirectory, "Makefile");
         this.problemMatcher = "$gcc";
         if (!utils_1.pathExists(this.tasksFile) || !utils_1.pathExists(this.makefileFile)) {
@@ -36,18 +36,18 @@ class TaskProvider {
     provideTasks() {
         return this.getTasks();
     }
-    getTasks(ignoreLanguageMode = false) {
-        let languageMode;
-        if (false === ignoreLanguageMode) {
+    getTasks(ignoreLanguage = false) {
+        let language;
+        if (false === ignoreLanguage) {
             const editor = vscode.window.activeTextEditor;
             if (!editor) {
                 return [];
             }
             const fileDirName = path.dirname(editor.document.fileName);
-            languageMode = utils_1.getLanguageMode(fileDirName);
+            language = utils_1.getLanguage(fileDirName);
         }
         else {
-            languageMode = utils_1.LanguageMode.c;
+            language = utils_1.Languages.c;
         }
         let configJson;
         try {
@@ -62,34 +62,34 @@ class TaskProvider {
         }
         this.tasks = [];
         for (let taskJson of configJson.tasks) {
-            if (taskJson.type !== "shell") {
+            if ("shell" !== taskJson.type) {
                 continue;
             }
-            if (taskJson.options !== undefined) {
-                if (taskJson.options.hide === true) {
+            if (undefined !== taskJson.options) {
+                if (true === taskJson.options.hide) {
                     continue;
                 }
             }
-            this.updateTaskBasedOnSettings(taskJson, languageMode);
+            this.updateTaskBasedOnSettings(taskJson, language);
             const shellCommand = `${taskJson.command} ${taskJson.args.join(" ")}`;
             const definition = {
                 type: "shell",
-                task: taskJson.label
+                task: taskJson.label,
             };
             const scope = vscode.TaskScope.Workspace;
-            const task = new vscode.Task(definition, scope, taskJson.label, extensionName, new vscode.ShellExecution(shellCommand), this.problemMatcher);
+            const task = new vscode.Task(definition, scope, taskJson.label, EXTENSION_NAME, new vscode.ShellExecution(shellCommand), this.problemMatcher);
             this.tasks.push(task);
         }
         return this.tasks;
     }
-    updateTaskBasedOnSettings(taskJson, languageMode) {
+    updateTaskBasedOnSettings(taskJson, language) {
         taskJson.args[1] = `--file=${this.makefileFile}`;
         taskJson.args.push(`ENABLE_WARNINGS=${+this.settingsProvider.enableWarnings}`);
         taskJson.args.push(`WARNINGS="${this.settingsProvider.warnings}"`);
         taskJson.args.push(`WARNINGS_AS_ERRORS=${+this.settingsProvider.warningsAsError}`);
         taskJson.args.push(`C_COMPILER=${this.settingsProvider.compilerPathC}`);
         taskJson.args.push(`CPP_COMPILER=${this.settingsProvider.compilerPathCpp}`);
-        taskJson.args.push(`LANGUAGE_MODE=${languageMode}`);
+        taskJson.args.push(`LANGUAGE_MODE=${language}`);
         taskJson.args.push(`C_STANDARD=${this.settingsProvider.standardC}`);
         taskJson.args.push(`CPP_STANDARD=${this.settingsProvider.standardCpp}`);
         taskJson.command = this.settingsProvider.makePath;

@@ -15,6 +15,12 @@ export enum Compilers {
   clangpp = "clang++"
 }
 
+export enum OperatingSystems {
+  windows = "windows",
+  linux = "linux",
+  mac = "macos"
+}
+
 export enum Architectures {
   x86 = "x86",
   x64 = "x64"
@@ -32,14 +38,14 @@ export function pathExists(path: string): boolean {
 
 export function getPlattformCategory() {
   const plattformName = platform();
-  let plattformCategory: string;
+  let plattformCategory: OperatingSystems;
 
   if ("win32" === plattformName || "cygwin" === plattformName) {
-    plattformCategory = "windows";
+    plattformCategory = OperatingSystems.windows;
   } else if ("darwin" === plattformName) {
-    plattformCategory = "macos";
+    plattformCategory = OperatingSystems.mac;
   } else {
-    plattformCategory = "linux";
+    plattformCategory = OperatingSystems.linux;
   }
 
   return plattformCategory;
@@ -79,13 +85,13 @@ export function isSourceFile(fileExt: string) {
 }
 
 export function isHeaderFile(fileExtLower: string) {
-  return [".hpp", ".hh", ".hxx", ".h++", ".hp", ".h", ""].some(
+  return [".hpp", ".hh", ".hxx", ".h"].some(
     (ext) => fileExtLower === ext
   );
 }
 
 export function isCppSourceFile(fileExtLower: string) {
-  return [".cpp", ".cc", ".cxx", ".c++", ".cp", ".ino", ".ipp", ".tcc"].some(
+  return [".cpp", ".cc", ".cxx"].some(
     (ext) => fileExtLower === ext
   );
 }

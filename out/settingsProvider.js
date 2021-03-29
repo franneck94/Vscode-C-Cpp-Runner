@@ -12,12 +12,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SettingsProvider = void 0;
 const vscode = require("vscode");
 const utils_1 = require("./utils");
-const extensionName = 'C_Cpp_Runner';
+const EXTENSION_NAME = "C_Cpp_Runner";
 class SettingsProvider {
     constructor() {
         // Global settings
-        this.config = vscode.workspace.getConfiguration(extensionName);
+        this.config = vscode.workspace.getConfiguration(EXTENSION_NAME);
         this.plattformCategory = utils_1.getPlattformCategory();
+        this.architecure = utils_1.Architectures.x64;
         this.cCompiler = undefined;
         this.cppCompiler = undefined;
         // Settings
@@ -32,75 +33,59 @@ class SettingsProvider {
         this.checkCompilers();
         this.getSettings();
     }
-    ;
     /**
-     * Check if gcc/g++ or clang/clang++ can be found in PATH.
+     * Check if gcc/g++ or clang/clang++ is in PATH and where it is located.
      */
     checkCompilers() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.plattformCategory === 'macos') {
-                let { found: foundGcc, path: pathGcc } = yield utils_1.commandExists('gcc');
-                let { found: foundGpp, path: pathGpp } = yield utils_1.commandExists('g++');
-                let { found: foundClang, path: pathClang } = yield utils_1.commandExists('clang');
-                let { found: foundClangpp, path: pathClangpp } = yield utils_1.commandExists('clang++');
-                if (foundClang) {
-                    this.config.update("compilerPathC", pathClang, vscode.ConfigurationTarget.Global);
-                    this.cCompiler = "clang";
+            let { found: foundGcc, path: pathGcc } = yield utils_1.commandExists("gcc");
+            let { found: foundGpp, path: pathGpp } = yield utils_1.commandExists("g++");
+            let { found: foundClang, path: pathClang } = yield utils_1.commandExists("clang");
+            let { found: foundClangpp, path: pathClangpp } = yield utils_1.commandExists("clang++");
+            if (utils_1.OperatingSystems.mac === this.plattformCategory) {
+                if (foundClang && pathClang) {
+                    this.setClang(pathClang);
                 }
-                else if (foundGcc) {
-                    this.config.update("compilerPathC", pathGcc, vscode.ConfigurationTarget.Global);
-                    this.cCompiler = "gcc";
+                else if (foundGcc && pathGcc) {
+                    this.setGcc(pathGcc);
                 }
                 else {
-                    // TODO
                     this.cCompiler = undefined;
                 }
-                if (foundClangpp) {
-                    this.config.update("compilerPathCpp", pathClangpp, vscode.ConfigurationTarget.Global);
-                    this.cppCompiler = "clang++";
+                if (foundClangpp && pathClangpp) {
+                    this.setClangpp(pathClangpp);
                 }
-                else if (foundGpp) {
-                    this.config.update("compilerPathCpp", pathGpp, vscode.ConfigurationTarget.Global);
-                    this.cppCompiler = "g++";
+                else if (foundGpp && pathGpp) {
+                    this.setGpp(pathGpp);
                 }
                 else {
-                    // TODO
                     this.cppCompiler = undefined;
                 }
             }
-            else if (this.plattformCategory === 'linux' ||
-                this.plattformCategory === 'windows') {
-                let { found: foundGcc, path: pathGcc } = yield utils_1.commandExists('gcc');
-                let { found: foundGpp, path: pathGpp } = yield utils_1.commandExists('g++');
-                let { found: foundClang, path: pathClang } = yield utils_1.commandExists('clang');
-                let { found: foundClangpp, path: pathClangpp } = yield utils_1.commandExists('clang++');
-                if (foundGcc) {
-                    this.config.update("compilerPathC", pathGcc, vscode.ConfigurationTarget.Global);
-                    this.cCompiler = "gcc";
+            else if (utils_1.OperatingSystems.linux === this.plattformCategory ||
+                utils_1.OperatingSystems.windows === this.plattformCategory) {
+                if (foundGcc && pathGcc) {
+                    this.setGcc(pathGcc);
                 }
-                else if (foundClang) {
-                    this.config.update("compilerPathC", pathClang, vscode.ConfigurationTarget.Global);
-                    this.cCompiler = "clang";
+                else if (foundClang && pathClang) {
+                    this.setClang(pathClang);
                 }
                 else {
-                    // TODO
                     this.cCompiler = undefined;
                 }
-                if (foundGpp) {
-                    this.config.update("compilerPathCpp", pathGpp, vscode.ConfigurationTarget.Global);
-                    this.cppCompiler = "g++";
+                if (foundGpp && pathGpp) {
+                    this.setGpp(pathGpp);
                 }
-                else if (foundClangpp) {
-                    this.config.update("compilerPathCpp", pathClangpp, vscode.ConfigurationTarget.Global);
-                    this.cppCompiler = "clang++";
+                else if (foundClangpp && pathClangpp) {
+                    this.setClangpp(pathClangpp);
                 }
                 else {
-                    // TODO
                     this.cppCompiler = undefined;
                 }
             }
             else {
-                // TODO
+                this.cCompiler = undefined;
+                this.cppCompiler = undefined;
             }
         });
     }
@@ -108,7 +93,7 @@ class SettingsProvider {
      * Read in the current settings.
      */
     getSettings() {
-        this.config = vscode.workspace.getConfiguration(extensionName);
+        this.config = vscode.workspace.getConfiguration(EXTENSION_NAME);
         this.enableWarnings = this.config.get("enableWarnings", true);
         this.warnings = this.config.get("warnings", "-Wall -Wextra -Wpedantic");
         this.warningsAsError = this.config.get("warningsAsError", false);
@@ -117,6 +102,22 @@ class SettingsProvider {
         this.makePath = this.config.get("makePath", "make");
         this.standardC = this.config.get("standardC", "c90");
         this.standardCpp = this.config.get("standardCpp", "c++11");
+    }
+    setGcc(pathGcc) {
+        this.config.update("compilerPathC", pathGcc, vscode.ConfigurationTarget.Global);
+        this.cCompiler = utils_1.Compilers.gcc;
+    }
+    setClang(pathClang) {
+        this.config.update("compilerPathC", pathClang, vscode.ConfigurationTarget.Global);
+        this.cCompiler = utils_1.Compilers.clang;
+    }
+    setGpp(pathGpp) {
+        this.config.update("compilerPathCpp", pathGpp, vscode.ConfigurationTarget.Global);
+        this.cppCompiler = utils_1.Compilers.gpp;
+    }
+    setClangpp(pathClangpp) {
+        this.config.update("compilerPathCpp", pathClangpp, vscode.ConfigurationTarget.Global);
+        this.cppCompiler = utils_1.Compilers.clangpp;
     }
 }
 exports.SettingsProvider = SettingsProvider;

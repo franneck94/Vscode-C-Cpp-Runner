@@ -10,15 +10,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SettingsProvider = void 0;
+const path = require("path");
 const vscode = require("vscode");
 const utils_1 = require("./utils");
 const EXTENSION_NAME = "C_Cpp_Runner";
 class SettingsProvider {
-    constructor() {
+    constructor(workspacePath) {
         // Global settings
         this.config = vscode.workspace.getConfiguration(EXTENSION_NAME);
         this.plattformCategory = utils_1.getPlattformCategory();
-        this.architecure = utils_1.Architectures.x64;
+        this.architecure = undefined;
         this.cCompiler = undefined;
         this.cppCompiler = undefined;
         // Settings
@@ -30,7 +31,11 @@ class SettingsProvider {
         this.makePath = "";
         this.standardC = "";
         this.standardCpp = "";
-        this.checkCompilers();
+        const vscodeDirectory = path.join(workspacePath, ".vscode");
+        const propertiesPath = path.join(vscodeDirectory, "c_cpp_properties.json");
+        if (!utils_1.pathExists(propertiesPath)) {
+            this.checkCompilers();
+        }
         this.getSettings();
     }
     /**
@@ -87,6 +92,9 @@ class SettingsProvider {
                 this.cCompiler = undefined;
                 this.cppCompiler = undefined;
             }
+            if (undefined !== this.cCompiler) {
+                this.architecure = utils_1.getArchitecture(this.cCompiler);
+            }
         });
     }
     /**
@@ -102,6 +110,21 @@ class SettingsProvider {
         this.makePath = this.config.get("makePath", "make");
         this.standardC = this.config.get("standardC", "c90");
         this.standardCpp = this.config.get("standardCpp", "c++11");
+        const cBasename = path.basename(this.compilerPathC, "exe");
+        const cppBasename = path.basename(this.compilerPathCpp, "exe");
+        if (utils_1.Compilers.gcc === cBasename) {
+            this.cCompiler = utils_1.Compilers.gcc;
+        }
+        else {
+            this.cCompiler = utils_1.Compilers.clang;
+        }
+        if (utils_1.Compilers.gpp === cppBasename) {
+            this.cppCompiler = utils_1.Compilers.gpp;
+        }
+        else {
+            this.cppCompiler = utils_1.Compilers.clangpp;
+        }
+        this.architecure = utils_1.getArchitecture(this.cCompiler);
     }
     setGcc(pathGcc) {
         this.config.update("compilerPathC", pathGcc, vscode.ConfigurationTarget.Global);

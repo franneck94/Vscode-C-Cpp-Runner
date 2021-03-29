@@ -14,9 +14,10 @@ export function activate(context: vscode.ExtensionContext) {
     return;
   }
 
-  const settingsProvider = new SettingsProvider();
-
   const workspacePath = workspace[0].uri.fsPath;
+
+  const settingsProvider = new SettingsProvider(workspacePath);
+
   const propertiesProvider = new PropertiesProvider(
     settingsProvider,
     workspacePath
@@ -35,8 +36,9 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   vscode.workspace.onDidChangeConfiguration(() => {
-    taskProvider.settingsProvider.getSettings();
+    settingsProvider.getSettings();
     taskProvider.getTasks(true);
+    propertiesProvider.updateProperties(settingsProvider);
   });
 }
 

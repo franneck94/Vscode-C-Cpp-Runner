@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { platform } from "os";
 import { lookpath } from "lookpath";
+import { execSync, ExecSyncOptionsWithStringEncoding } from 'child_process';
 
 export enum Languages {
   c = "C",
@@ -36,6 +37,22 @@ export function pathExists(path: string): boolean {
   return true;
 }
 
+export function readJsonFile(path: string) {
+  let configJson;
+    try {
+      const fileContent = fs.readFileSync(path, "utf-8");
+      configJson = JSON.parse(fileContent);
+    } catch (err) {
+      return;
+    }
+
+    if (!configJson.configurations) {
+      return;
+    }
+
+    return configJson;
+}
+
 export function getPlattformCategory() {
   const plattformName = platform();
   let plattformCategory: OperatingSystems;
@@ -61,9 +78,16 @@ export async function commandExists(command: string) {
   return { found: true, path: path };
 }
 
-export async function getArchitecture(command: string) {
-  let { found: _, path: p } = await commandExists(command);
-  let i = 2;
+export function getArchitecture(compiler: Compilers) {
+  let command = `${compiler} -dumpmachine`;
+  let byteArray = execSync(command);
+  let str = String.fromCharCode(...byteArray);
+
+  if (str.includes("64")) {
+    return Architectures.x64;
+  } else {
+    return Architectures.x86;
+  }
 }
 
 export function isSourceFile(fileExt: string) {

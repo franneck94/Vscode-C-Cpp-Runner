@@ -9,11 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getPlattformCategory = exports.pathExists = exports.Architectures = exports.OperatingSystems = exports.Compilers = exports.Languages = void 0;
+exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getPlattformCategory = exports.readJsonFile = exports.pathExists = exports.Architectures = exports.OperatingSystems = exports.Compilers = exports.Languages = void 0;
 const fs = require("fs");
 const path = require("path");
 const os_1 = require("os");
 const lookpath_1 = require("lookpath");
+const child_process_1 = require("child_process");
 var Languages;
 (function (Languages) {
     Languages["c"] = "C";
@@ -47,6 +48,21 @@ function pathExists(path) {
     return true;
 }
 exports.pathExists = pathExists;
+function readJsonFile(path) {
+    let configJson;
+    try {
+        const fileContent = fs.readFileSync(path, "utf-8");
+        configJson = JSON.parse(fileContent);
+    }
+    catch (err) {
+        return;
+    }
+    if (!configJson.configurations) {
+        return;
+    }
+    return configJson;
+}
+exports.readJsonFile = readJsonFile;
 function getPlattformCategory() {
     const plattformName = os_1.platform();
     let plattformCategory;
@@ -72,11 +88,16 @@ function commandExists(command) {
     });
 }
 exports.commandExists = commandExists;
-function getArchitecture(command) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let { found: _, path: p } = yield commandExists(command);
-        let i = 2;
-    });
+function getArchitecture(compiler) {
+    let command = `${compiler} -dumpmachine`;
+    let byteArray = child_process_1.execSync(command);
+    let str = String.fromCharCode(...byteArray);
+    if (str.includes("64")) {
+        return Architectures.x64;
+    }
+    else {
+        return Architectures.x86;
+    }
 }
 exports.getArchitecture = getArchitecture;
 function isSourceFile(fileExt) {

@@ -16,8 +16,9 @@ const vscode = require("vscode");
 const utils_1 = require("./utils");
 const EXTENSION_NAME = "C_Cpp_Runner";
 class TaskProvider {
-    constructor(settingsProvider) {
+    constructor(settingsProvider, propertiesProvider) {
         this.settingsProvider = settingsProvider;
+        this.propertiesProvider = propertiesProvider;
         const extDirectory = path.dirname(__dirname);
         const tasksDirectory = path.join(extDirectory, "src", "templates");
         this.tasksFile = path.join(tasksDirectory, "tasks_template.json");
@@ -37,14 +38,10 @@ class TaskProvider {
         return this.getTasks();
     }
     getTasks(ignoreLanguage = false) {
+        const editor = vscode.window.activeTextEditor;
         let language;
         if (false === ignoreLanguage) {
-            const editor = vscode.window.activeTextEditor;
-            if (!editor) {
-                return [];
-            }
-            const fileDirName = path.dirname(editor.document.fileName);
-            language = utils_1.getLanguage(fileDirName);
+            language = utils_1.getLanguageFromEditor(editor, this.propertiesProvider.workspacePath);
         }
         else {
             language = utils_1.Languages.c;
@@ -92,6 +89,15 @@ class TaskProvider {
         taskJson.args.push(`LANGUAGE_MODE=${language}`);
         taskJson.args.push(`C_STANDARD=${this.settingsProvider.standardC}`);
         taskJson.args.push(`CPP_STANDARD=${this.settingsProvider.standardCpp}`);
+        if (this.settingsProvider.compilerArgs) {
+            taskJson.args.push(`COMPILER_ARGS=${this.settingsProvider.compilerArgs}`);
+        }
+        if (this.settingsProvider.linkerArgs) {
+            taskJson.args.push(`LINKER_ARGS=${this.settingsProvider.linkerArgs}`);
+        }
+        if (this.settingsProvider.includePaths) {
+            taskJson.args.push(`INCLUDE_PATHS=${this.settingsProvider.includePaths}`);
+        }
         taskJson.command = this.settingsProvider.makePath;
     }
 }

@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 
-import { getLanguage, Languages, pathExists, readJsonFile } from "./utils";
+import { getLanguageFromEditor, Languages, pathExists, readJsonFile } from "./utils";
 import { SettingsProvider } from "./settingsProvider";
 
 export class PropertiesProvider {
@@ -42,7 +42,8 @@ export class PropertiesProvider {
 
   public createProperties(settings: SettingsProvider) {
     let configJson = readJsonFile(this.templatePath);
-    const language = this.getLanguageFromEditor();
+    const editor = vscode.window.activeTextEditor;
+    const language = getLanguageFromEditor(editor, this.workspacePath);
     const triplet = `${settings.plattformCategory}-${settings.cCompiler}-${settings.architecure}`;
 
     configJson.configurations[0].compilerArgs = settings.warnings.split(" ");
@@ -68,7 +69,8 @@ export class PropertiesProvider {
   public updateProperties(settings: SettingsProvider) {
     let configJson = readJsonFile(this.propertiesPath);
 
-    const language = this.getLanguageFromEditor();
+    const editor = vscode.window.activeTextEditor;
+    const language = getLanguageFromEditor(editor, this.workspacePath);
     const triplet = `${settings.plattformCategory}-${settings.cCompiler}-${settings.architecure}`;
 
     if (Languages.cpp === language) {
@@ -81,22 +83,5 @@ export class PropertiesProvider {
 
     const jsonString = JSON.stringify(configJson, null, 2);
     fs.writeFileSync(this.propertiesPath, jsonString);
-  }
-
-  private getLanguageFromEditor() {
-    let language: Languages;
-    const editor = vscode.window.activeTextEditor;
-
-    if (!editor) {
-      language = getLanguage(this.workspacePath);
-    } else {
-      if (path.dirname(editor.document.fileName) !== '.vscode') {
-        const fileDirName = path.dirname(editor.document.fileName);
-        language = getLanguage(fileDirName);
-      }
-      language = getLanguage(this.workspacePath);
-    }
-
-    return language;
   }
 }

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getPlattformCategory = exports.readJsonFile = exports.pathExists = exports.Architectures = exports.OperatingSystems = exports.Compilers = exports.Languages = void 0;
+exports.getLanguageFromEditor = exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getPlattformCategory = exports.readJsonFile = exports.pathExists = exports.Architectures = exports.OperatingSystems = exports.Compilers = exports.Languages = void 0;
 const fs = require("fs");
 const path = require("path");
 const os_1 = require("os");
@@ -137,4 +137,19 @@ function getLanguage(fileDirName) {
     }
 }
 exports.getLanguage = getLanguage;
+function getLanguageFromEditor(editor, filepath) {
+    let language;
+    if (!editor) {
+        language = getLanguage(filepath);
+    }
+    else {
+        if (path.dirname(editor.document.fileName) !== '.vscode') {
+            const fileDirName = path.dirname(editor.document.fileName);
+            language = getLanguage(fileDirName);
+        }
+        language = getLanguage(filepath);
+    }
+    return language;
+}
+exports.getLanguageFromEditor = getLanguageFromEditor;
 //# sourceMappingURL=utils.js.map

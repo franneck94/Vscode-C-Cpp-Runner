@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import * as vscode from "vscode";
 import { platform } from "os";
 import { lookpath } from "lookpath";
 import { execSync, ExecSyncOptionsWithStringEncoding } from 'child_process';
@@ -133,4 +134,20 @@ export function getLanguage(fileDirName: string) {
   } else {
     return Languages.c;
   }
+}
+
+export function getLanguageFromEditor(editor: any | undefined, filepath: string) {
+  let language: Languages;
+
+  if (!editor) {
+    language = getLanguage(filepath);
+  } else {
+    if (path.dirname(editor.document.fileName) !== '.vscode') {
+      const fileDirName = path.dirname(editor.document.fileName);
+      language = getLanguage(fileDirName);
+    }
+    language = getLanguage(filepath);
+  }
+
+  return language;
 }

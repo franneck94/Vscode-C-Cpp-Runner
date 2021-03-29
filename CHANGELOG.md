@@ -4,7 +4,7 @@ All notable changes to the "c-cpp-runner" extension will be documented in this f
 
 ## [Upcomming Features]
 
-- 0.3.0 Add options for include path, additional compiler (w/o warnings) and linker args.
+- 0.2.0 Add options for include path, additional compiler (w/o warnings) and linker args.
 
 ## [Releases]
 

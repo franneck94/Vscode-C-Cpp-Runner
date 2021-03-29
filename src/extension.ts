@@ -23,7 +23,10 @@ export function activate(context: vscode.ExtensionContext) {
     workspacePath
   );
 
-  let taskProvider = new TaskProvider(settingsProvider);
+  let taskProvider = new TaskProvider(
+    settingsProvider,
+    propertiesProvider
+    );
 
   context.subscriptions.push(
     vscode.tasks.registerTaskProvider(EXTENSION_NAME, taskProvider)

@@ -137,6 +137,24 @@
           "default": "c++11",
           "description": "C++ Standard for the Cpp Compiler.",
           "scope": "window"
+        },
+        "C_Cpp_Runner.compilerArgs": {
+          "type": "string",
+          "default": "",
+          "description": "Additional compiler arguments.",
+          "scope": "window"
+        },
+        "C_Cpp_Runner.linkerArgs": {
+          "type": "string",
+          "default": "",
+          "description": "Additional linker arguments.",
+          "scope": "window"
+        },
+        "C_Cpp_Runner.includePaths": {
+          "type": "string",
+          "default": "",
+          "description": "Additional compiler arguments.",
+          "scope": "window"
         }
       }
     }

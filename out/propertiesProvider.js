@@ -27,7 +27,8 @@ class PropertiesProvider {
     }
     createProperties(settings) {
         let configJson = utils_1.readJsonFile(this.templatePath);
-        const language = this.getLanguageFromEditor();
+        const editor = vscode.window.activeTextEditor;
+        const language = utils_1.getLanguageFromEditor(editor, this.workspacePath);
         const triplet = `${settings.plattformCategory}-${settings.cCompiler}-${settings.architecure}`;
         configJson.configurations[0].compilerArgs = settings.warnings.split(" ");
         configJson.configurations[0].cppStandard = settings.standardCpp;
@@ -49,7 +50,8 @@ class PropertiesProvider {
     }
     updateProperties(settings) {
         let configJson = utils_1.readJsonFile(this.propertiesPath);
-        const language = this.getLanguageFromEditor();
+        const editor = vscode.window.activeTextEditor;
+        const language = utils_1.getLanguageFromEditor(editor, this.workspacePath);
         const triplet = `${settings.plattformCategory}-${settings.cCompiler}-${settings.architecure}`;
         if (utils_1.Languages.cpp === language) {
             configJson.configurations[0].compilerPath = settings.compilerPathCpp;
@@ -61,21 +63,6 @@ class PropertiesProvider {
         configJson.configurations[0].intelliSenseMode = triplet;
         const jsonString = JSON.stringify(configJson, null, 2);
         fs.writeFileSync(this.propertiesPath, jsonString);
-    }
-    getLanguageFromEditor() {
-        let language;
-        const editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            language = utils_1.getLanguage(this.workspacePath);
-        }
-        else {
-            if (path.dirname(editor.document.fileName) !== '.vscode') {
-                const fileDirName = path.dirname(editor.document.fileName);
-                language = utils_1.getLanguage(fileDirName);
-            }
-            language = utils_1.getLanguage(this.workspacePath);
-        }
-        return language;
     }
 }
 exports.PropertiesProvider = PropertiesProvider;

@@ -21,6 +21,9 @@ export class SettingsProvider {
   public makePath: string = "";
   public standardC: string = "";
   public standardCpp: string = "";
+  public compilerArgs: string = "";
+  public linkerArgs: string = "";
+  public includePaths: String = "";
 
   constructor(workspacePath: string) {
     const vscodeDirectory = path.join(workspacePath, ".vscode");
@@ -100,6 +103,9 @@ export class SettingsProvider {
     this.makePath = this.config.get("makePath", "make");
     this.standardC = this.config.get("standardC", "c90");
     this.standardCpp = this.config.get("standardCpp", "c++11");
+    this.compilerArgs = this.config.get("compilerArgs", "");
+    this.linkerArgs = this.config.get("linkerArgs", "");
+    this.includePaths = this.config.get("includePaths", "");
 
     const cBasename = path.basename(this.compilerPathC, "exe");
     const cppBasename = path.basename(this.compilerPathCpp, "exe");

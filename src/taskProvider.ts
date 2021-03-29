@@ -1,9 +1,10 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
+import { PropertiesProvider } from "./propertiesProvider";
 
 import { SettingsProvider } from "./settingsProvider";
-import { pathExists, Languages, getLanguage } from "./utils";
+import { pathExists, Languages, getLanguageFromEditor } from "./utils";
 
 const EXTENSION_NAME = "C_Cpp_Runner";
 
@@ -13,7 +14,10 @@ export class TaskProvider implements vscode.TaskProvider {
   public makefileFile: string;
   public problemMatcher: string;
 
-  constructor(public settingsProvider: SettingsProvider) {
+  constructor(
+    public settingsProvider: SettingsProvider,
+    public propertiesProvider: PropertiesProvider
+  ) {
     const extDirectory = path.dirname(__dirname);
     const tasksDirectory = path.join(extDirectory, "src", "templates");
     this.tasksFile = path.join(tasksDirectory, "tasks_template.json");
@@ -36,17 +40,10 @@ export class TaskProvider implements vscode.TaskProvider {
   }
 
   public getTasks(ignoreLanguage: boolean = false): vscode.Task[] {
+    const editor = vscode.window.activeTextEditor;
     let language;
-
     if (false === ignoreLanguage) {
-      const editor = vscode.window.activeTextEditor;
-
-      if (!editor) {
-        return [];
-      }
-
-      const fileDirName = path.dirname(editor.document.fileName);
-      language = getLanguage(fileDirName);
+      language = getLanguageFromEditor(editor, this.propertiesProvider.workspacePath);
     } else {
       language = Languages.c;
     }
@@ -112,6 +109,15 @@ export class TaskProvider implements vscode.TaskProvider {
     taskJson.args.push(`LANGUAGE_MODE=${language}`);
     taskJson.args.push(`C_STANDARD=${this.settingsProvider.standardC}`);
     taskJson.args.push(`CPP_STANDARD=${this.settingsProvider.standardCpp}`);
+    if (this.settingsProvider.compilerArgs) {
+      taskJson.args.push(`COMPILER_ARGS=${this.settingsProvider.compilerArgs}`);
+    }
+    if (this.settingsProvider.linkerArgs) {
+      taskJson.args.push(`LINKER_ARGS=${this.settingsProvider.linkerArgs}`);
+    }
+    if (this.settingsProvider.includePaths) {
+      taskJson.args.push(`INCLUDE_PATHS=${this.settingsProvider.includePaths}`);
+    }
     taskJson.command = this.settingsProvider.makePath;
   }
 }

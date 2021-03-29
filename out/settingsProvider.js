@@ -31,6 +31,9 @@ class SettingsProvider {
         this.makePath = "";
         this.standardC = "";
         this.standardCpp = "";
+        this.compilerArgs = "";
+        this.linkerArgs = "";
+        this.includePaths = "";
         const vscodeDirectory = path.join(workspacePath, ".vscode");
         const propertiesPath = path.join(vscodeDirectory, "c_cpp_properties.json");
         if (!utils_1.pathExists(propertiesPath)) {
@@ -110,6 +113,9 @@ class SettingsProvider {
         this.makePath = this.config.get("makePath", "make");
         this.standardC = this.config.get("standardC", "c90");
         this.standardCpp = this.config.get("standardCpp", "c++11");
+        this.compilerArgs = this.config.get("compilerArgs", "");
+        this.linkerArgs = this.config.get("linkerArgs", "");
+        this.includePaths = this.config.get("includePaths", "");
         const cBasename = path.basename(this.compilerPathC, "exe");
         const cppBasename = path.basename(this.compilerPathCpp, "exe");
         if (cBasename.includes(utils_1.Compilers.clang)) {

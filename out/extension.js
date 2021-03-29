@@ -15,7 +15,7 @@ function activate(context) {
     const workspacePath = workspace[0].uri.fsPath;
     const settingsProvider = new settingsProvider_1.SettingsProvider(workspacePath);
     const propertiesProvider = new propertiesProvider_1.PropertiesProvider(settingsProvider, workspacePath);
-    let taskProvider = new taskProvider_1.TaskProvider(settingsProvider);
+    let taskProvider = new taskProvider_1.TaskProvider(settingsProvider, propertiesProvider);
     context.subscriptions.push(vscode.tasks.registerTaskProvider(EXTENSION_NAME, taskProvider));
     context.subscriptions.push(vscode.commands.registerCommand(`${EXTENSION_NAME}.run`, () => commands_1.commandHandler(taskProvider)));
     vscode.workspace.onDidChangeConfiguration(() => {

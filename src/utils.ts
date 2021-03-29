@@ -3,7 +3,7 @@ import * as path from "path";
 import * as vscode from "vscode";
 import { platform } from "os";
 import { lookpath } from "lookpath";
-import { execSync, ExecSyncOptionsWithStringEncoding } from 'child_process';
+import { execSync, ExecSyncOptionsWithStringEncoding } from "child_process";
 
 export enum Languages {
   c = "C",
@@ -14,18 +14,18 @@ export enum Compilers {
   gcc = "gcc",
   gpp = "g++",
   clang = "clang",
-  clangpp = "clang++"
+  clangpp = "clang++",
 }
 
 export enum OperatingSystems {
   windows = "windows",
   linux = "linux",
-  mac = "macos"
+  mac = "macos",
 }
 
 export enum Architectures {
   x86 = "x86",
-  x64 = "x64"
+  x64 = "x64",
 }
 
 export function pathExists(path: string): boolean {
@@ -38,20 +38,20 @@ export function pathExists(path: string): boolean {
   return true;
 }
 
-export function readJsonFile(path: string) {
+export function readJsonFile(path: string): any | undefined {
   let configJson;
-    try {
-      const fileContent = fs.readFileSync(path, "utf-8");
-      configJson = JSON.parse(fileContent);
-    } catch (err) {
-      return;
-    }
+  try {
+    const fileContent = fs.readFileSync(path, "utf-8");
+    configJson = JSON.parse(fileContent);
+  } catch (err) {
+    return undefined;
+  }
 
-    if (!configJson.configurations) {
-      return;
-    }
+  if (!configJson.configurations) {
+    return undefined;
+  }
 
-    return configJson;
+  return configJson;
 }
 
 export function getPlattformCategory() {
@@ -110,15 +110,11 @@ export function isSourceFile(fileExt: string) {
 }
 
 export function isHeaderFile(fileExtLower: string) {
-  return [".hpp", ".hh", ".hxx", ".h"].some(
-    (ext) => fileExtLower === ext
-  );
+  return [".hpp", ".hh", ".hxx", ".h"].some((ext) => fileExtLower === ext);
 }
 
 export function isCppSourceFile(fileExtLower: string) {
-  return [".cpp", ".cc", ".cxx"].some(
-    (ext) => fileExtLower === ext
-  );
+  return [".cpp", ".cc", ".cxx"].some((ext) => fileExtLower === ext);
 }
 
 export function isCSourceFile(fileExtLower: string) {
@@ -136,13 +132,16 @@ export function getLanguage(fileDirName: string) {
   }
 }
 
-export function getLanguageFromEditor(editor: any | undefined, filepath: string) {
+export function getLanguageFromEditor(
+  editor: any | undefined,
+  filepath: string
+) {
   let language: Languages;
 
   if (!editor) {
     language = getLanguage(filepath);
   } else {
-    if (path.dirname(editor.document.fileName) !== '.vscode') {
+    if (path.dirname(editor.document.fileName) !== ".vscode") {
       const fileDirName = path.dirname(editor.document.fileName);
       language = getLanguage(fileDirName);
     }

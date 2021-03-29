@@ -2,7 +2,12 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 
-import { getLanguageFromEditor, Languages, pathExists, readJsonFile } from "./utils";
+import {
+  getLanguageFromEditor,
+  Languages,
+  pathExists,
+  readJsonFile,
+} from "./utils";
 import { SettingsProvider } from "./settingsProvider";
 
 export class PropertiesProvider {
@@ -42,6 +47,10 @@ export class PropertiesProvider {
 
   public createProperties(settings: SettingsProvider) {
     let configJson = readJsonFile(this.templatePath);
+    if (undefined === configJson) {
+      return;
+    }
+
     const editor = vscode.window.activeTextEditor;
     const language = getLanguageFromEditor(editor, this.workspacePath);
     const triplet = `${settings.plattformCategory}-${settings.cCompiler}-${settings.architecure}`;
@@ -68,6 +77,9 @@ export class PropertiesProvider {
 
   public updateProperties(settings: SettingsProvider) {
     let configJson = readJsonFile(this.propertiesPath);
+    if (undefined === configJson) {
+      return;
+    }
 
     const editor = vscode.window.activeTextEditor;
     const language = getLanguageFromEditor(editor, this.workspacePath);

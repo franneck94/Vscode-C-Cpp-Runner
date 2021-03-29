@@ -4,7 +4,12 @@ import * as vscode from "vscode";
 import { PropertiesProvider } from "./propertiesProvider";
 
 import { SettingsProvider } from "./settingsProvider";
-import { pathExists, Languages, getLanguageFromEditor } from "./utils";
+import {
+  pathExists,
+  Languages,
+  getLanguageFromEditor,
+  readJsonFile,
+} from "./utils";
 
 const EXTENSION_NAME = "C_Cpp_Runner";
 
@@ -43,20 +48,17 @@ export class TaskProvider implements vscode.TaskProvider {
     const editor = vscode.window.activeTextEditor;
     let language;
     if (false === ignoreLanguage) {
-      language = getLanguageFromEditor(editor, this.propertiesProvider.workspacePath);
+      language = getLanguageFromEditor(
+        editor,
+        this.propertiesProvider.workspacePath
+      );
     } else {
       language = Languages.c;
     }
 
-    let configJson;
-    try {
-      const fileContent = fs.readFileSync(this.tasksFile, "utf-8");
-      configJson = JSON.parse(fileContent);
-    } catch (err) {
-      return [];
-    }
+    let configJson = readJsonFile(this.tasksFile);
 
-    if (!configJson.tasks) {
+    if (undefined === configJson) {
       return [];
     }
 

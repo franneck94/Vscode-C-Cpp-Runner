@@ -1,7 +1,15 @@
 import * as path from "path";
 import * as vscode from "vscode";
 
-import { getPlattformCategory, commandExists, Compilers, OperatingSystems, Architectures, getArchitecture, pathExists } from "./utils";
+import {
+  getPlattformCategory,
+  commandExists,
+  Compilers,
+  OperatingSystems,
+  Architectures,
+  getArchitecture,
+  pathExists,
+} from "./utils";
 
 const EXTENSION_NAME = "C_Cpp_Runner";
 

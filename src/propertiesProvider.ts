@@ -8,10 +8,12 @@ import { SettingsProvider } from "./settingsProvider";
 export class PropertiesProvider {
   public templatePath: string;
   public propertiesPath: string;
+  public workspacePath: string;
   public fileWatcherOnDelete: vscode.FileSystemWatcher | undefined = undefined;
 
   constructor(settings: SettingsProvider, workspacePath: string) {
-    const vscodeDirectory = path.join(workspacePath, ".vscode");
+    this.workspacePath = workspacePath;
+    const vscodeDirectory = path.join(this.workspacePath, ".vscode");
     this.propertiesPath = path.join(vscodeDirectory, "c_cpp_properties.json");
 
     const extDirectory = path.dirname(__dirname);
@@ -40,17 +42,7 @@ export class PropertiesProvider {
 
   public createProperties(settings: SettingsProvider) {
     let configJson = readJsonFile(this.templatePath);
-
-    let language: Languages;
-    const editor = vscode.window.activeTextEditor;
-
-    if (!editor) {
-      language = Languages.c;
-    } else {
-      const fileDirName = path.dirname(editor.document.fileName);
-      language = getLanguage(fileDirName);
-    }
-
+    const language = this.getLanguageFromEditor();
     const triplet = `${settings.plattformCategory}-${settings.cCompiler}-${settings.architecure}`;
 
     configJson.configurations[0].compilerArgs = settings.warnings.split(" ");
@@ -60,31 +52,51 @@ export class PropertiesProvider {
 
     if (Languages.cpp === language) {
       configJson.configurations[0].compilerPath = settings.compilerPathCpp;
-      if (undefined !== settings.cppCompiler) {
-        configJson.configurations[0].name = triplet;
-        configJson.configurations[0].intelliSenseMode = triplet;
-      }
     } else {
       configJson.configurations[0].compilerPath = settings.compilerPathC;
-      if (undefined !== settings.cCompiler) {
-        configJson.configurations[0].name = triplet;
-        configJson.configurations[0].intelliSenseMode = triplet;
-      }
     }
+    configJson.configurations[0].name = triplet;
+    configJson.configurations[0].intelliSenseMode = triplet;
 
     const jsonString = JSON.stringify(configJson, null, 2);
+    if (!pathExists(this.propertiesPath)) {
+      fs.mkdirSync(path.dirname(this.propertiesPath), { recursive: true });
+    }
     fs.writeFileSync(this.propertiesPath, jsonString);
   }
 
   public updateProperties(settings: SettingsProvider) {
     let configJson = readJsonFile(this.propertiesPath);
 
+    const language = this.getLanguageFromEditor();
     const triplet = `${settings.plattformCategory}-${settings.cCompiler}-${settings.architecure}`;
-    configJson.configurations[0].compilerPath = settings.cCompiler;
+
+    if (Languages.cpp === language) {
+      configJson.configurations[0].compilerPath = settings.compilerPathCpp;
+    } else {
+      configJson.configurations[0].compilerPath = settings.compilerPathC;
+    }
     configJson.configurations[0].name = triplet;
     configJson.configurations[0].intelliSenseMode = triplet;
 
     const jsonString = JSON.stringify(configJson, null, 2);
     fs.writeFileSync(this.propertiesPath, jsonString);
+  }
+
+  private getLanguageFromEditor() {
+    let language: Languages;
+    const editor = vscode.window.activeTextEditor;
+
+    if (!editor) {
+      language = getLanguage(this.workspacePath);
+    } else {
+      if (path.dirname(editor.document.fileName) !== '.vscode') {
+        const fileDirName = path.dirname(editor.document.fileName);
+        language = getLanguage(fileDirName);
+      }
+      language = getLanguage(this.workspacePath);
+    }
+
+    return language;
   }
 }

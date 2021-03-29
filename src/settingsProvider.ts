@@ -104,16 +104,16 @@ export class SettingsProvider {
     const cBasename = path.basename(this.compilerPathC, "exe");
     const cppBasename = path.basename(this.compilerPathCpp, "exe");
 
-    if (Compilers.gcc === cBasename) {
-      this.cCompiler = Compilers.gcc;
-    } else {
+    if (cBasename.includes(Compilers.clang)) {
       this.cCompiler = Compilers.clang;
+    } else {
+      this.cCompiler = Compilers.gcc;
     }
 
-    if (Compilers.gpp === cppBasename) {
-      this.cppCompiler = Compilers.gpp;
-    } else {
+    if (cppBasename.includes(Compilers.clangpp)) {
       this.cppCompiler = Compilers.clangpp;
+    } else {
+      this.cppCompiler = Compilers.gpp;
     }
 
     this.architecure = getArchitecture(this.cCompiler);

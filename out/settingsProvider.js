@@ -112,17 +112,17 @@ class SettingsProvider {
         this.standardCpp = this.config.get("standardCpp", "c++11");
         const cBasename = path.basename(this.compilerPathC, "exe");
         const cppBasename = path.basename(this.compilerPathCpp, "exe");
-        if (utils_1.Compilers.gcc === cBasename) {
-            this.cCompiler = utils_1.Compilers.gcc;
-        }
-        else {
+        if (cBasename.includes(utils_1.Compilers.clang)) {
             this.cCompiler = utils_1.Compilers.clang;
         }
-        if (utils_1.Compilers.gpp === cppBasename) {
-            this.cppCompiler = utils_1.Compilers.gpp;
+        else {
+            this.cCompiler = utils_1.Compilers.gcc;
+        }
+        if (cppBasename.includes(utils_1.Compilers.clangpp)) {
+            this.cppCompiler = utils_1.Compilers.clangpp;
         }
         else {
-            this.cppCompiler = utils_1.Compilers.clangpp;
+            this.cppCompiler = utils_1.Compilers.gpp;
         }
         this.architecure = utils_1.getArchitecture(this.cCompiler);
     }

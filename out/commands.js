@@ -17,7 +17,7 @@ function commandHandler(taskProvider) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const editor = vscode.window.activeTextEditor;
-            if (!editor || undefined === taskProvider.tasks) {
+            if (undefined === editor || undefined === taskProvider.tasks) {
                 throw TypeError("You must open a C/C++ file.");
             }
             const fileExt = path.extname(editor.document.fileName);

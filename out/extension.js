@@ -9,7 +9,7 @@ const propertiesProvider_1 = require("./propertiesProvider");
 const EXTENSION_NAME = "C_Cpp_Runner";
 function activate(context) {
     const workspace = vscode.workspace.workspaceFolders;
-    if (!workspace || workspace.length > 1) {
+    if (!workspace || workspace.length !== 1) {
         return;
     }
     const workspacePath = workspace[0].uri.fsPath;

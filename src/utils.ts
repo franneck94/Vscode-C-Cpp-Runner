@@ -65,10 +65,14 @@ export function getPlattformCategory() {
 }
 
 export async function commandExists(command: string) {
-  const commandPath = await lookpath(command);
+  let commandPath = await lookpath(command);
 
   if (undefined === commandPath) {
     return { found: false, path: commandPath };
+  }
+
+  if (commandPath.includes(".EXE")) {
+    commandPath = commandPath.replace(".EXE", ".exe");
   }
 
   return { found: true, path: commandPath };
@@ -76,12 +80,17 @@ export async function commandExists(command: string) {
 
 export function getArchitecture(compiler: Compilers) {
   let command = `${compiler} -dumpmachine`;
-  let byteArray = execSync(command);
-  let str = String.fromCharCode(...byteArray);
 
-  if (str.includes("64")) {
-    return Architectures.x64;
-  } else {
+  try {
+    let byteArray = execSync(command);
+    let str = String.fromCharCode(...byteArray);
+
+    if (str.includes("64")) {
+      return Architectures.x64;
+    } else {
+      return Architectures.x86;
+    }
+  } catch (err) {
     return Architectures.x86;
   }
 }

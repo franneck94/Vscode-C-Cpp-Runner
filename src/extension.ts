@@ -10,7 +10,7 @@ const EXTENSION_NAME = "C_Cpp_Runner";
 export function activate(context: vscode.ExtensionContext) {
   const workspace = vscode.workspace.workspaceFolders;
 
-  if (!workspace || workspace.length > 1) {
+  if (!workspace || workspace.length !== 1) {
     return;
   }
 

@@ -27,6 +27,9 @@ class PropertiesProvider {
     }
     createProperties(settings) {
         let configJson = utils_1.readJsonFile(this.templatePath);
+        if (undefined === configJson) {
+            return;
+        }
         const editor = vscode.window.activeTextEditor;
         const language = utils_1.getLanguageFromEditor(editor, this.workspacePath);
         const triplet = `${settings.plattformCategory}-${settings.cCompiler}-${settings.architecure}`;
@@ -50,6 +53,9 @@ class PropertiesProvider {
     }
     updateProperties(settings) {
         let configJson = utils_1.readJsonFile(this.propertiesPath);
+        if (undefined === configJson) {
+            return;
+        }
         const editor = vscode.window.activeTextEditor;
         const language = utils_1.getLanguageFromEditor(editor, this.workspacePath);
         const triplet = `${settings.plattformCategory}-${settings.cCompiler}-${settings.architecure}`;

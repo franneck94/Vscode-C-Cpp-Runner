@@ -6,21 +6,37 @@ COMPILATION_MODE ?= Debug
 ENABLE_WARNINGS ?= 1
 WARNINGS_AS_ERRORS ?= 0
 WARNINGS ?= -Wall -Wextra -Wpedantic
-C_COMPILER ?= gcc # gcc, clang
-C_STANDARD ?= c99 # c90, c99, c11, c17
-CPP_COMPILER ?= g++ # g++, clang++
-CPP_STANDARD ?= c++2a # c++11, c++14, c++17, c++2a
+C_COMPILER ?= gcc
+C_STANDARD ?= c99
+CPP_COMPILER ?= g++
+CPP_STANDARD ?= c++2a
 EXECUTABLE_NAME ?= main
 COMPILER_ARGS ?= ""
 LINKER_ARGS ?= ""
 INCLUDE_PATHS ?= ""
+BUILD_DIR ?= build/$(COMPILATION_MODE)
 
 ifeq ($(COMPILATION_MODE), Debug)
-C_COMPILER_FLAGS = -g -std=$(C_STANDARD) $(COMPILER_ARGS) -I $(INCLUDE_PATHS)
-CPP_COMPILER_FLAGS = -g -std=$(CPP_STANDARD) $(COMPILER_ARGS) -I $(INCLUDE_PATHS)
+C_COMPILER_FLAGS = -g -O0 -std=$(C_STANDARD)
+CPP_COMPILER_FLAGS = -g -O0 -std=$(CPP_STANDARD)
 else ifeq ($(COMPILATION_MODE), Release)
-C_COMPILER_FLAGS = -O3 -std=$(C_STANDARD) $(COMPILER_ARGS) -I $(INCLUDE_PATHS)
-CPP_COMPILER_FLAGS = -O3 -std=$(CPP_STANDARD) $(COMPILER_ARGS) -I $(INCLUDE_PATHS)
+C_COMPILER_FLAGS = -O3 -DNDEBUG -std=$(C_STANDARD)
+CPP_COMPILER_FLAGS = -O3 -DNDEBUG -std=$(CPP_STANDARD)
+endif
+
+ifeq ($(COMPILER_ARGS),)
+C_COMPILER_FLAGS = $(C_COMPILER_FLAGS) $(COMPILER_ARGS)
+CPP_COMPILER_FLAGS = $(CPP_COMPILER_FLAGS) $(COMPILER_ARGS)
+endif
+
+ifeq ($(INCLUDE_PATHS),)
+C_COMPILER_FLAGS = $(C_COMPILER_FLAGS) -I $(INCLUDE_PATHS)
+CPP_COMPILER_FLAGS = $(CPP_COMPILER_FLAGS) -I $(INCLUDE_PATHS)
+endif
+
+ifeq ($(LINKER_ARGS),)
+C_COMPILER_FLAGS = $(C_COMPILER_FLAGS) $(LINKER_ARGS)
+CPP_COMPILER_FLAGS = $(CPP_COMPILER_FLAGS) $(LINKER_ARGS)
 endif
 
 ifeq ($(ENABLE_WARNINGS), 1)
@@ -34,20 +50,19 @@ CPP_COMPILER_FLAGS += -Werror
 endif
 
 C_COMPILER_CALL = $(C_COMPILER) $(C_COMPILER_FLAGS)
-
-C_SRCS = $(wildcard *.c)
-C_OBJECTS = $(filter %.o, $(patsubst %.c,  %.o, $(C_SRCS)))
-
 CPP_COMPILER_CALL = $(CPP_COMPILER) $(CPP_COMPILER_FLAGS)
 
+C_SRCS = $(wildcard *.c)
+C_OBJECTS = $(patsubst %.c, $(BUILD_DIR)/%.o, $(C_SRCS))
+
 CPP_SRCS = $(wildcard *.cpp)
-CPP_OBJECTS = $(patsubst %.cpp, %.o, $(CPP_SRCS))
+CPP_OBJECTS = $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(CPP_SRCS))
 
 CXX_SRCS = $(wildcard *.cxx)
-CXX_OBJECTS = $(patsubst %.cxx, %.o, $(CXX_SRCS))
+CXX_OBJECTS = $(patsubst %.cxx, $(BUILD_DIR)/%.o, $(CXX_SRCS))
 
 CC_SRCS = $(wildcard *.cc)
-CC_OBJECTS = $(patsubst %.cc, %.o, $(CC_SRCS))
+CC_OBJECTS = $(patsubst %.cc, $(BUILD_DIR)/%.o, $(CC_SRCS))
 
 ####################
 ## LANGUAGE MODE  ##
@@ -62,33 +77,47 @@ OBJECTS = $(CPP_OBJECTS) $(CC_OBJECTS) $(CXX_OBJECTS)
 endif
 
 ####################
+## HELPER TARGETS ##
+####################
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
+####################
 ## PSEUDO TARGETS ##
 ####################
-build: $(EXECUTABLE_NAME)
+build: $(BUILD_DIR) | $(BUILD_DIR)/$(EXECUTABLE_NAME)
 
 #############
 ## TARGETS ##
 #############
-build_single:
-	$(COMPILER_CALL) -o $(EXECUTABLE_NAME) $(FILE_NAME)
+build_single: $(BUILD_DIR)
+	$(COMPILER_CALL) -o $(BUILD_DIR)/$(EXECUTABLE_NAME) $(FILE_NAME)
 
-$(EXECUTABLE_NAME): $(OBJECTS)
-	$(COMPILER_CALL) $(LINKER_ARGS) $^ -o $@
+$(BUILD_DIR)/$(EXECUTABLE_NAME): $(OBJECTS)
+	$(COMPILER_CALL) $^ -o $@
 
 execute:
-	./$(EXECUTABLE_NAME)
+	./$(BUILD_DIR)/$(EXECUTABLE_NAME)
 
 clean:
-	$(RM) -f *.o
+	$(RM) -f $(BUILD_DIR)/*.o
 
 ##############
 ## PATTERNS ##
 ##############
-%.o : %.c
+$(BUILD_DIR)/%.o : %.c
 	$(C_COMPILER_CALL) -c $< -o $@
 
-%.o : %.cpp
+$(BUILD_DIR)/%.o : %.cpp
 	$(CPP_COMPILER_CALL) -c $< -o $@
 
-%.o : %.cc
+$(BUILD_DIR)/%.o : %.cc
 	$(CPP_COMPILER_CALL) -c $< -o $@
+
+$(BUILD_DIR)/%.o : %.cxx
+	$(CPP_COMPILER_CALL) -c $< -o $@
+
+###########
+## PHONY ##
+###########
+.PHONY: clean build

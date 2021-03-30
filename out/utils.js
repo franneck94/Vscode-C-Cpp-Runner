@@ -38,9 +38,9 @@ var Architectures;
     Architectures["x86"] = "x86";
     Architectures["x64"] = "x64";
 })(Architectures = exports.Architectures || (exports.Architectures = {}));
-function pathExists(path) {
+function pathExists(filePath) {
     try {
-        fs.accessSync(path);
+        fs.accessSync(filePath);
     }
     catch (err) {
         return false;
@@ -48,17 +48,14 @@ function pathExists(path) {
     return true;
 }
 exports.pathExists = pathExists;
-function readJsonFile(path) {
+function readJsonFile(filePath) {
     let configJson;
     try {
-        const fileContent = fs.readFileSync(path, "utf-8");
+        const fileContent = fs.readFileSync(filePath, "utf-8");
         configJson = JSON.parse(fileContent);
     }
     catch (err) {
-        return;
-    }
-    if (!configJson.configurations) {
-        return;
+        return undefined;
     }
     return configJson;
 }
@@ -80,35 +77,40 @@ function getPlattformCategory() {
 exports.getPlattformCategory = getPlattformCategory;
 function commandExists(command) {
     return __awaiter(this, void 0, void 0, function* () {
-        const path = yield lookpath_1.lookpath(command);
-        if (undefined === path) {
-            return { found: false, path: path };
+        let commandPath = yield lookpath_1.lookpath(command);
+        if (undefined === commandPath) {
+            return { found: false, path: commandPath };
         }
-        return { found: true, path: path };
+        if (commandPath.includes(".EXE")) {
+            commandPath = commandPath.replace(".EXE", ".exe");
+        }
+        return { found: true, path: commandPath };
     });
 }
 exports.commandExists = commandExists;
 function getArchitecture(compiler) {
     let command = `${compiler} -dumpmachine`;
-    let byteArray = child_process_1.execSync(command);
-    let str = String.fromCharCode(...byteArray);
-    if (str.includes("64")) {
-        return Architectures.x64;
+    try {
+        let byteArray = child_process_1.execSync(command);
+        let str = String.fromCharCode(...byteArray);
+        if (str.includes("64")) {
+            return Architectures.x64;
+        }
+        else {
+            return Architectures.x86;
+        }
     }
-    else {
+    catch (err) {
         return Architectures.x86;
     }
 }
 exports.getArchitecture = getArchitecture;
 function isSourceFile(fileExt) {
     const fileExtLower = fileExt.toLowerCase();
-    const isHeader = isHeaderFile(fileExtLower);
-    if (isHeader) {
+    if (isHeaderFile(fileExtLower)) {
         return false;
     }
-    let fileIsC = isCSourceFile(fileExtLower);
-    let fileIsCpp = isCppSourceFile(fileExtLower);
-    if (!(fileIsCpp || fileIsC)) {
+    if (!(isCSourceFile(fileExtLower) || isCppSourceFile(fileExtLower))) {
         return false;
     }
     return true;
@@ -137,17 +139,17 @@ function getLanguage(fileDirName) {
     }
 }
 exports.getLanguage = getLanguage;
-function getLanguageFromEditor(editor, filepath) {
+function getLanguageFromEditor(editor, filePath) {
     let language;
     if (!editor) {
-        language = getLanguage(filepath);
+        language = getLanguage(filePath);
     }
     else {
-        if (path.dirname(editor.document.fileName) !== '.vscode') {
+        if (".vscode" !== path.dirname(editor.document.fileName)) {
             const fileDirName = path.dirname(editor.document.fileName);
             language = getLanguage(fileDirName);
         }
-        language = getLanguage(filepath);
+        language = getLanguage(filePath);
     }
     return language;
 }

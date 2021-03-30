@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TaskProvider = void 0;
-const fs = require("fs");
 const path = require("path");
 const vscode = require("vscode");
 const utils_1 = require("./utils");
@@ -46,15 +45,8 @@ class TaskProvider {
         else {
             language = utils_1.Languages.c;
         }
-        let configJson;
-        try {
-            const fileContent = fs.readFileSync(this.tasksFile, "utf-8");
-            configJson = JSON.parse(fileContent);
-        }
-        catch (err) {
-            return [];
-        }
-        if (!configJson.tasks) {
+        let configJson = utils_1.readJsonFile(this.tasksFile);
+        if (undefined === configJson) {
             return [];
         }
         this.tasks = [];

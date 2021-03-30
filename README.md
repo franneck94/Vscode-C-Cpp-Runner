@@ -3,7 +3,7 @@
 Compile and run your C/C++ code with an ease.
 
 This extension provides tasks to compile and run your C/C++ code with gcc or clang.  
-There are tasks for debug (-g -O0) and release (-O3 -DNDEBUG) builds.
+There are tasks for debug (-g3 -O0) and release (-O3 -DNDEBUG) builds.
 
 ## Software Dependencies
 

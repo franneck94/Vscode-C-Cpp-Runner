@@ -4,7 +4,6 @@ All notable changes to the "c-cpp-runner" extension will be documented in this f
 
 ## [Upcomming Features]
 
-- 0.3.0 Command to generate launch.json configurations
 - 0.4.0 In a multi workspace use-case, add a prompt for the user to select which workspace should be used
 
 ## [Releases]
@@ -16,3 +15,4 @@ All notable changes to the "c-cpp-runner" extension will be documented in this f
   - Added options for include path, additional compiler and linker args
   - Updated Build/Run/Clean tasks
   - Now bundling with webpack for improved performance
+- 0.3.0 Command to generate launch.json configurations

@@ -92,6 +92,12 @@
           "description": "The path to the C++ Compiler (either g++ or clang++).",
           "scope": "window"
         },
+        "C_Cpp_Runner.debuggerPath": {
+          "type": "string",
+          "default": "gdb",
+          "description": "The path to the debugger (either gdb or lldb).",
+          "scope": "window"
+        },
         "C_Cpp_Runner.makePath": {
           "type": "string",
           "default": "make",

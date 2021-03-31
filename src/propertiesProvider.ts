@@ -16,7 +16,7 @@ export class PropertiesProvider {
   public workspacePath: string;
   public fileWatcherOnDelete: vscode.FileSystemWatcher | undefined = undefined;
 
-  constructor(settings: SettingsProvider, workspacePath: string) {
+  constructor(public settings: SettingsProvider, workspacePath: string) {
     this.workspacePath = workspacePath;
     const vscodeDirectory = path.join(this.workspacePath, ".vscode");
     this.propertiesPath = path.join(vscodeDirectory, "c_cpp_properties.json");
@@ -37,63 +37,51 @@ export class PropertiesProvider {
     );
 
     if (!pathExists(this.propertiesPath)) {
-      this.createProperties(settings);
+      this.createProperties();
     }
 
     this.fileWatcherOnDelete.onDidDelete(() => {
-      this.createProperties(settings);
+      this.createProperties();
     });
   }
 
-  public createProperties(settings: SettingsProvider) {
-    let configJson = readJsonFile(this.templatePath);
-    if (undefined === configJson) {
-      return;
-    }
-
-    const editor = vscode.window.activeTextEditor;
-    const language = getLanguageFromEditor(editor, this.workspacePath);
-    const triplet = `${settings.plattformCategory}-${settings.cCompiler}-${settings.architecure}`;
-
-    configJson.configurations[0].compilerArgs = settings.warnings.split(" ");
-    configJson.configurations[0].cppStandard = settings.standardCpp;
-    configJson.configurations[0].cStandard =
-      settings.standardC === "c90" ? "c89" : settings.standardC;
-
-    if (Languages.cpp === language) {
-      configJson.configurations[0].compilerPath = settings.compilerPathCpp;
-    } else {
-      configJson.configurations[0].compilerPath = settings.compilerPathC;
-    }
-    configJson.configurations[0].name = triplet;
-    configJson.configurations[0].intelliSenseMode = triplet;
-
-    const jsonString = JSON.stringify(configJson, null, 2);
+  public createProperties() {
     if (!pathExists(this.propertiesPath)) {
       fs.mkdirSync(path.dirname(this.propertiesPath), { recursive: true });
     }
-    fs.writeFileSync(this.propertiesPath, jsonString);
+    this.getProperties(this.templatePath, this.propertiesPath);
   }
 
-  public updateProperties(settings: SettingsProvider) {
-    let configJson = readJsonFile(this.propertiesPath);
+  public updateProperties() {
+    this.getProperties(this.propertiesPath, this.propertiesPath);
+  }
+
+  private getProperties(inputFilePath: string, outFilePath: string) {
+    let configJson = readJsonFile(inputFilePath);
     if (undefined === configJson) {
       return;
     }
 
     const editor = vscode.window.activeTextEditor;
     const language = getLanguageFromEditor(editor, this.workspacePath);
-    const triplet = `${settings.plattformCategory}-${settings.cCompiler}-${settings.architecure}`;
+    const triplet = `${this.settings.operatingSystem}-${this.settings.cCompiler}-${this.settings.architecure}`;
+
+    configJson.configurations[0].compilerArgs = this.settings.warnings.split(
+      " "
+    );
+    configJson.configurations[0].cppStandard = this.settings.standardCpp;
+    configJson.configurations[0].cStandard =
+      this.settings.standardC === "c90" ? "c89" : this.settings.standardC;
 
     if (Languages.cpp === language) {
-      configJson.configurations[0].compilerPath = settings.compilerPathCpp;
+      configJson.configurations[0].compilerPath = this.settings.compilerPathCpp;
     } else {
-      configJson.configurations[0].compilerPath = settings.compilerPathC;
+      configJson.configurations[0].compilerPath = this.settings.compilerPathC;
     }
     configJson.configurations[0].name = triplet;
     configJson.configurations[0].intelliSenseMode = triplet;
 
     const jsonString = JSON.stringify(configJson, null, 2);
-    fs.writeFileSync(this.propertiesPath, jsonString);
+    fs.writeFileSync(outFilePath, jsonString);
   }
 }

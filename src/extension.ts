@@ -4,6 +4,7 @@ import { TaskProvider } from "./taskProvider";
 import { commandHandler } from "./commands";
 import { SettingsProvider } from "./settingsProvider";
 import { PropertiesProvider } from "./propertiesProvider";
+import { LaunchProvider } from "./launchProvider";
 
 const EXTENSION_NAME = "C_Cpp_Runner";
 
@@ -23,10 +24,9 @@ export function activate(context: vscode.ExtensionContext) {
     workspacePath
   );
 
-  let taskProvider = new TaskProvider(
-    settingsProvider,
-    propertiesProvider
-  );
+  let taskProvider = new TaskProvider(settingsProvider, propertiesProvider);
+
+  let launchProvider = new LaunchProvider(settingsProvider, workspacePath);
 
   context.subscriptions.push(
     vscode.tasks.registerTaskProvider(EXTENSION_NAME, taskProvider)
@@ -41,7 +41,8 @@ export function activate(context: vscode.ExtensionContext) {
   vscode.workspace.onDidChangeConfiguration(() => {
     settingsProvider.getSettings();
     taskProvider.getTasks(true);
-    propertiesProvider.updateProperties(settingsProvider);
+    propertiesProvider.updateProperties();
+    launchProvider.updateDebugConfig();
   });
 }
 

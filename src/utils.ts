@@ -16,6 +16,11 @@ export enum Compilers {
   clangpp = "clang++",
 }
 
+export enum Debuggers {
+  lldb = "lldb",
+  gdb = "gdb",
+}
+
 export enum OperatingSystems {
   windows = "windows",
   linux = "linux",
@@ -49,19 +54,19 @@ export function readJsonFile(filePath: string): any | undefined {
   return configJson;
 }
 
-export function getPlattformCategory() {
+export function getOperatingSystem() {
   const plattformName = platform();
-  let plattformCategory: OperatingSystems;
+  let operatingSystem: OperatingSystems;
 
   if ("win32" === plattformName || "cygwin" === plattformName) {
-    plattformCategory = OperatingSystems.windows;
+    operatingSystem = OperatingSystems.windows;
   } else if ("darwin" === plattformName) {
-    plattformCategory = OperatingSystems.mac;
+    operatingSystem = OperatingSystems.mac;
   } else {
-    plattformCategory = OperatingSystems.linux;
+    operatingSystem = OperatingSystems.linux;
   }
 
-  return plattformCategory;
+  return operatingSystem;
 }
 
 export async function commandExists(command: string) {

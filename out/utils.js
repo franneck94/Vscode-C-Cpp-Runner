@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLanguageFromEditor = exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getPlattformCategory = exports.readJsonFile = exports.pathExists = exports.Architectures = exports.OperatingSystems = exports.Compilers = exports.Languages = void 0;
+exports.getLanguageFromEditor = exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getOperatingSystem = exports.readJsonFile = exports.pathExists = exports.Architectures = exports.OperatingSystems = exports.Debuggers = exports.Compilers = exports.Languages = void 0;
 const fs = require("fs");
 const path = require("path");
 const os_1 = require("os");
@@ -27,6 +27,11 @@ var Compilers;
     Compilers["clang"] = "clang";
     Compilers["clangpp"] = "clang++";
 })(Compilers = exports.Compilers || (exports.Compilers = {}));
+var Debuggers;
+(function (Debuggers) {
+    Debuggers["lldb"] = "lldb";
+    Debuggers["gdb"] = "gdb";
+})(Debuggers = exports.Debuggers || (exports.Debuggers = {}));
 var OperatingSystems;
 (function (OperatingSystems) {
     OperatingSystems["windows"] = "windows";
@@ -60,21 +65,21 @@ function readJsonFile(filePath) {
     return configJson;
 }
 exports.readJsonFile = readJsonFile;
-function getPlattformCategory() {
+function getOperatingSystem() {
     const plattformName = os_1.platform();
-    let plattformCategory;
+    let operatingSystem;
     if ("win32" === plattformName || "cygwin" === plattformName) {
-        plattformCategory = OperatingSystems.windows;
+        operatingSystem = OperatingSystems.windows;
     }
     else if ("darwin" === plattformName) {
-        plattformCategory = OperatingSystems.mac;
+        operatingSystem = OperatingSystems.mac;
     }
     else {
-        plattformCategory = OperatingSystems.linux;
+        operatingSystem = OperatingSystems.linux;
     }
-    return plattformCategory;
+    return operatingSystem;
 }
-exports.getPlattformCategory = getPlattformCategory;
+exports.getOperatingSystem = getOperatingSystem;
 function commandExists(command) {
     return __awaiter(this, void 0, void 0, function* () {
         let commandPath = yield lookpath_1.lookpath(command);

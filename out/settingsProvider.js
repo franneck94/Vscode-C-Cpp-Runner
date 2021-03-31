@@ -18,16 +18,18 @@ class SettingsProvider {
     constructor(workspacePath) {
         // Global settings
         this.config = vscode.workspace.getConfiguration(EXTENSION_NAME);
-        this.plattformCategory = utils_1.getPlattformCategory();
+        this.operatingSystem = utils_1.getOperatingSystem();
         this.architecure = undefined;
         this.cCompiler = undefined;
         this.cppCompiler = undefined;
+        this.debugger = undefined;
         // Settings
         this.enableWarnings = true;
         this.warnings = "";
         this.warningsAsError = true;
         this.compilerPathC = "";
         this.compilerPathCpp = "";
+        this.debuggerPath = "";
         this.makePath = "";
         this.standardC = "";
         this.standardCpp = "";
@@ -50,7 +52,9 @@ class SettingsProvider {
             let { found: foundGpp, path: pathGpp } = yield utils_1.commandExists("g++");
             let { found: foundClang, path: pathClang } = yield utils_1.commandExists("clang");
             let { found: foundClangpp, path: pathClangpp } = yield utils_1.commandExists("clang++");
-            if (utils_1.OperatingSystems.mac === this.plattformCategory) {
+            let { found: foundGDB, path: pathGDB } = yield utils_1.commandExists("gdb");
+            let { found: foundLLDB, path: pathLLDB } = yield utils_1.commandExists("lldb");
+            if (utils_1.OperatingSystems.mac === this.operatingSystem) {
                 if (foundClang && pathClang) {
                     this.setClang(pathClang);
                 }
@@ -69,9 +73,18 @@ class SettingsProvider {
                 else {
                     this.cppCompiler = undefined;
                 }
+                if (foundLLDB && pathLLDB) {
+                    this.setLLDB(pathLLDB);
+                }
+                else if (foundGDB && pathGDB) {
+                    this.setGDB(pathGDB);
+                }
+                else {
+                    this.debugger = undefined;
+                }
             }
-            else if (utils_1.OperatingSystems.linux === this.plattformCategory ||
-                utils_1.OperatingSystems.windows === this.plattformCategory) {
+            else if (utils_1.OperatingSystems.linux === this.operatingSystem ||
+                utils_1.OperatingSystems.windows === this.operatingSystem) {
                 if (foundGcc && pathGcc) {
                     this.setGcc(pathGcc);
                 }
@@ -89,6 +102,15 @@ class SettingsProvider {
                 }
                 else {
                     this.cppCompiler = undefined;
+                }
+                if (foundGDB && pathGDB) {
+                    this.setGDB(pathGDB);
+                }
+                else if (foundLLDB && pathLLDB) {
+                    this.setLLDB(pathLLDB);
+                }
+                else {
+                    this.debugger = undefined;
                 }
             }
             else {
@@ -110,6 +132,7 @@ class SettingsProvider {
         this.warningsAsError = this.config.get("warningsAsError", false);
         this.compilerPathC = this.config.get("compilerPathC", "gcc");
         this.compilerPathCpp = this.config.get("compilerPathCpp", "g++");
+        this.debuggerPath = this.config.get("debuggerPath", "gdb");
         this.makePath = this.config.get("makePath", "make");
         this.standardC = this.config.get("standardC", "c90");
         this.standardCpp = this.config.get("standardCpp", "c++11");
@@ -120,15 +143,19 @@ class SettingsProvider {
         const cppBasename = path.basename(this.compilerPathCpp, "exe");
         if (cBasename.includes(utils_1.Compilers.clang)) {
             this.cCompiler = utils_1.Compilers.clang;
+            this.debugger = utils_1.Debuggers.lldb;
         }
         else {
             this.cCompiler = utils_1.Compilers.gcc;
+            this.debugger = utils_1.Debuggers.gdb;
         }
         if (cppBasename.includes(utils_1.Compilers.clangpp)) {
             this.cppCompiler = utils_1.Compilers.clangpp;
+            this.debugger = utils_1.Debuggers.lldb;
         }
         else {
             this.cppCompiler = utils_1.Compilers.gpp;
+            this.debugger = utils_1.Debuggers.gdb;
         }
         this.architecure = utils_1.getArchitecture(this.cCompiler);
     }
@@ -147,6 +174,14 @@ class SettingsProvider {
     setClangpp(pathClangpp) {
         this.config.update("compilerPathCpp", pathClangpp, vscode.ConfigurationTarget.Global);
         this.cppCompiler = utils_1.Compilers.clangpp;
+    }
+    setLLDB(pathLLDB) {
+        this.config.update("debuggerPath", pathLLDB, vscode.ConfigurationTarget.Global);
+        this.debugger = utils_1.Debuggers.lldb;
+    }
+    setGDB(pathGDB) {
+        this.config.update("debuggerPath", pathGDB, vscode.ConfigurationTarget.Global);
+        this.debugger = utils_1.Debuggers.gdb;
     }
 }
 exports.SettingsProvider = SettingsProvider;

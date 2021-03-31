@@ -2,13 +2,14 @@ import * as path from "path";
 import * as vscode from "vscode";
 
 import {
-  getPlattformCategory,
+  getOperatingSystem,
   commandExists,
   Compilers,
   OperatingSystems,
   Architectures,
   getArchitecture,
   pathExists,
+  Debuggers,
 } from "./utils";
 
 const EXTENSION_NAME = "C_Cpp_Runner";
@@ -16,16 +17,18 @@ const EXTENSION_NAME = "C_Cpp_Runner";
 export class SettingsProvider {
   // Global settings
   public config = vscode.workspace.getConfiguration(EXTENSION_NAME);
-  public plattformCategory = getPlattformCategory();
+  public operatingSystem = getOperatingSystem();
   public architecure: Architectures | undefined = undefined;
   public cCompiler: Compilers | undefined = undefined;
   public cppCompiler: Compilers | undefined = undefined;
+  public debugger: Debuggers | undefined = undefined;
   // Settings
   public enableWarnings: boolean = true;
   public warnings: string = "";
   public warningsAsError: boolean = true;
   public compilerPathC: string = "";
   public compilerPathCpp: string = "";
+  public debuggerPath: string = "";
   public makePath: string = "";
   public standardC: string = "";
   public standardCpp: string = "";
@@ -53,7 +56,10 @@ export class SettingsProvider {
     let { found: foundClangpp, path: pathClangpp } = await commandExists(
       "clang++"
     );
-    if (OperatingSystems.mac === this.plattformCategory) {
+    let { found: foundGDB, path: pathGDB } = await commandExists("gdb");
+    let { found: foundLLDB, path: pathLLDB } = await commandExists("lldb");
+
+    if (OperatingSystems.mac === this.operatingSystem) {
       if (foundClang && pathClang) {
         this.setClang(pathClang);
       } else if (foundGcc && pathGcc) {
@@ -69,9 +75,17 @@ export class SettingsProvider {
       } else {
         this.cppCompiler = undefined;
       }
+
+      if (foundLLDB && pathLLDB) {
+        this.setLLDB(pathLLDB);
+      } else if (foundGDB && pathGDB) {
+        this.setGDB(pathGDB);
+      } else {
+        this.debugger = undefined;
+      }
     } else if (
-      OperatingSystems.linux === this.plattformCategory ||
-      OperatingSystems.windows === this.plattformCategory
+      OperatingSystems.linux === this.operatingSystem ||
+      OperatingSystems.windows === this.operatingSystem
     ) {
       if (foundGcc && pathGcc) {
         this.setGcc(pathGcc);
@@ -87,6 +101,14 @@ export class SettingsProvider {
         this.setClangpp(pathClangpp);
       } else {
         this.cppCompiler = undefined;
+      }
+
+      if (foundGDB && pathGDB) {
+        this.setGDB(pathGDB);
+      } else if (foundLLDB && pathLLDB) {
+        this.setLLDB(pathLLDB);
+      } else {
+        this.debugger = undefined;
       }
     } else {
       this.cCompiler = undefined;
@@ -108,6 +130,7 @@ export class SettingsProvider {
     this.warningsAsError = this.config.get("warningsAsError", false);
     this.compilerPathC = this.config.get("compilerPathC", "gcc");
     this.compilerPathCpp = this.config.get("compilerPathCpp", "g++");
+    this.debuggerPath = this.config.get("debuggerPath", "gdb");
     this.makePath = this.config.get("makePath", "make");
     this.standardC = this.config.get("standardC", "c90");
     this.standardCpp = this.config.get("standardCpp", "c++11");
@@ -120,14 +143,18 @@ export class SettingsProvider {
 
     if (cBasename.includes(Compilers.clang)) {
       this.cCompiler = Compilers.clang;
+      this.debugger = Debuggers.lldb;
     } else {
       this.cCompiler = Compilers.gcc;
+      this.debugger = Debuggers.gdb;
     }
 
     if (cppBasename.includes(Compilers.clangpp)) {
       this.cppCompiler = Compilers.clangpp;
+      this.debugger = Debuggers.lldb;
     } else {
       this.cppCompiler = Compilers.gpp;
+      this.debugger = Debuggers.gdb;
     }
 
     this.architecure = getArchitecture(this.cCompiler);
@@ -167,5 +194,23 @@ export class SettingsProvider {
       vscode.ConfigurationTarget.Global
     );
     this.cppCompiler = Compilers.clangpp;
+  }
+
+  private setLLDB(pathLLDB: string) {
+    this.config.update(
+      "debuggerPath",
+      pathLLDB,
+      vscode.ConfigurationTarget.Global
+    );
+    this.debugger = Debuggers.lldb;
+  }
+
+  private setGDB(pathGDB: string) {
+    this.config.update(
+      "debuggerPath",
+      pathGDB,
+      vscode.ConfigurationTarget.Global
+    );
+    this.debugger = Debuggers.gdb;
   }
 }

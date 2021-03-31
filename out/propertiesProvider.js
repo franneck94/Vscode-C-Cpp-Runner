@@ -7,6 +7,7 @@ const vscode = require("vscode");
 const utils_1 = require("./utils");
 class PropertiesProvider {
     constructor(settings, workspacePath) {
+        this.settings = settings;
         this.fileWatcherOnDelete = undefined;
         this.workspacePath = workspacePath;
         const vscodeDirectory = path.join(this.workspacePath, ".vscode");
@@ -19,56 +20,43 @@ class PropertiesProvider {
         }
         this.fileWatcherOnDelete = vscode.workspace.createFileSystemWatcher(this.propertiesPath, true, true, false);
         if (!utils_1.pathExists(this.propertiesPath)) {
-            this.createProperties(settings);
+            this.createProperties();
         }
         this.fileWatcherOnDelete.onDidDelete(() => {
-            this.createProperties(settings);
+            this.createProperties();
         });
     }
-    createProperties(settings) {
-        let configJson = utils_1.readJsonFile(this.templatePath);
-        if (undefined === configJson) {
-            return;
-        }
-        const editor = vscode.window.activeTextEditor;
-        const language = utils_1.getLanguageFromEditor(editor, this.workspacePath);
-        const triplet = `${settings.plattformCategory}-${settings.cCompiler}-${settings.architecure}`;
-        configJson.configurations[0].compilerArgs = settings.warnings.split(" ");
-        configJson.configurations[0].cppStandard = settings.standardCpp;
-        configJson.configurations[0].cStandard =
-            settings.standardC === "c90" ? "c89" : settings.standardC;
-        if (utils_1.Languages.cpp === language) {
-            configJson.configurations[0].compilerPath = settings.compilerPathCpp;
-        }
-        else {
-            configJson.configurations[0].compilerPath = settings.compilerPathC;
-        }
-        configJson.configurations[0].name = triplet;
-        configJson.configurations[0].intelliSenseMode = triplet;
-        const jsonString = JSON.stringify(configJson, null, 2);
+    createProperties() {
         if (!utils_1.pathExists(this.propertiesPath)) {
             fs.mkdirSync(path.dirname(this.propertiesPath), { recursive: true });
         }
-        fs.writeFileSync(this.propertiesPath, jsonString);
+        this.getProperties(this.templatePath, this.propertiesPath);
     }
-    updateProperties(settings) {
-        let configJson = utils_1.readJsonFile(this.propertiesPath);
+    updateProperties() {
+        this.getProperties(this.propertiesPath, this.propertiesPath);
+    }
+    getProperties(inputFilePath, outFilePath) {
+        let configJson = utils_1.readJsonFile(inputFilePath);
         if (undefined === configJson) {
             return;
         }
         const editor = vscode.window.activeTextEditor;
         const language = utils_1.getLanguageFromEditor(editor, this.workspacePath);
-        const triplet = `${settings.plattformCategory}-${settings.cCompiler}-${settings.architecure}`;
+        const triplet = `${this.settings.operatingSystem}-${this.settings.cCompiler}-${this.settings.architecure}`;
+        configJson.configurations[0].compilerArgs = this.settings.warnings.split(" ");
+        configJson.configurations[0].cppStandard = this.settings.standardCpp;
+        configJson.configurations[0].cStandard =
+            this.settings.standardC === "c90" ? "c89" : this.settings.standardC;
         if (utils_1.Languages.cpp === language) {
-            configJson.configurations[0].compilerPath = settings.compilerPathCpp;
+            configJson.configurations[0].compilerPath = this.settings.compilerPathCpp;
         }
         else {
-            configJson.configurations[0].compilerPath = settings.compilerPathC;
+            configJson.configurations[0].compilerPath = this.settings.compilerPathC;
         }
         configJson.configurations[0].name = triplet;
         configJson.configurations[0].intelliSenseMode = triplet;
         const jsonString = JSON.stringify(configJson, null, 2);
-        fs.writeFileSync(this.propertiesPath, jsonString);
+        fs.writeFileSync(outFilePath, jsonString);
     }
 }
 exports.PropertiesProvider = PropertiesProvider;

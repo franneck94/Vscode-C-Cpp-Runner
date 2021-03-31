@@ -2,31 +2,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "C: Debug (Single File)",
+            "name": "",
             "type": "cppdbg",
             "request": "launch",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
-            "program": "${fileDirname}/${fileBasenameNoExtension}Debug",
+            "program": "${fileDirname}/build/Debug/${fileBasenameNoExtension}Debug",
             "internalConsoleOptions": "openOnSessionStart",
-            "preLaunchTask": "C: Debug (Single File)",
-            "linux": {
-                "MIMode": "gdb",
-                "miDebuggerPath": "/usr/bin/gdb",
-                "externalConsole": false
-            },
-            "osx": {
-                "MIMode": "lldb",
-                "miDebuggerPath": "/usr/bin/lldb",
-                "externalConsole": false
-            },
-            "windows": {
-                "MIMode": "gdb",
-                "miDebuggerPath": "C:/cygwin64/bin/gdb.exe",
-                "externalConsole": true
-            }
+            "MIMode": "",
+            "miDebuggerPath": "",
+            "externalConsole": false
         }
     ]
 }

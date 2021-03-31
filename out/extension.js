@@ -6,6 +6,7 @@ const taskProvider_1 = require("./taskProvider");
 const commands_1 = require("./commands");
 const settingsProvider_1 = require("./settingsProvider");
 const propertiesProvider_1 = require("./propertiesProvider");
+const launchProvider_1 = require("./launchProvider");
 const EXTENSION_NAME = "C_Cpp_Runner";
 function activate(context) {
     const workspace = vscode.workspace.workspaceFolders;
@@ -16,12 +17,14 @@ function activate(context) {
     const settingsProvider = new settingsProvider_1.SettingsProvider(workspacePath);
     const propertiesProvider = new propertiesProvider_1.PropertiesProvider(settingsProvider, workspacePath);
     let taskProvider = new taskProvider_1.TaskProvider(settingsProvider, propertiesProvider);
+    let launchProvider = new launchProvider_1.LaunchProvider(settingsProvider, workspacePath);
     context.subscriptions.push(vscode.tasks.registerTaskProvider(EXTENSION_NAME, taskProvider));
     context.subscriptions.push(vscode.commands.registerCommand(`${EXTENSION_NAME}.run`, () => commands_1.commandHandler(taskProvider)));
     vscode.workspace.onDidChangeConfiguration(() => {
         settingsProvider.getSettings();
         taskProvider.getTasks(true);
-        propertiesProvider.updateProperties(settingsProvider);
+        propertiesProvider.updateProperties();
+        launchProvider.updateDebugConfig();
     });
 }
 exports.activate = activate;

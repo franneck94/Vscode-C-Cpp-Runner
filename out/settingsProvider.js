@@ -16,7 +16,7 @@ const utils_1 = require("./utils");
 const EXTENSION_NAME = "C_Cpp_Runner";
 class SettingsProvider {
     constructor(workspacePath) {
-        // Global settings
+        // WorkspaceFolder settings
         this.config = vscode.workspace.getConfiguration(EXTENSION_NAME);
         this.operatingSystem = utils_1.getOperatingSystem();
         this.architecure = undefined;
@@ -83,8 +83,7 @@ class SettingsProvider {
                     this.debugger = undefined;
                 }
             }
-            else if (utils_1.OperatingSystems.linux === this.operatingSystem ||
-                utils_1.OperatingSystems.windows === this.operatingSystem) {
+            else {
                 if (foundGcc && pathGcc) {
                     this.setGcc(pathGcc);
                 }
@@ -112,10 +111,6 @@ class SettingsProvider {
                 else {
                     this.debugger = undefined;
                 }
-            }
-            else {
-                this.cCompiler = undefined;
-                this.cppCompiler = undefined;
             }
             if (undefined !== this.cCompiler) {
                 this.architecure = utils_1.getArchitecture(this.cCompiler);
@@ -160,27 +155,27 @@ class SettingsProvider {
         this.architecure = utils_1.getArchitecture(this.cCompiler);
     }
     setGcc(pathGcc) {
-        this.config.update("compilerPathC", pathGcc, vscode.ConfigurationTarget.Global);
+        this.config.update("compilerPathC", pathGcc, vscode.ConfigurationTarget.WorkspaceFolder);
         this.cCompiler = utils_1.Compilers.gcc;
     }
     setClang(pathClang) {
-        this.config.update("compilerPathC", pathClang, vscode.ConfigurationTarget.Global);
+        this.config.update("compilerPathC", pathClang, vscode.ConfigurationTarget.WorkspaceFolder);
         this.cCompiler = utils_1.Compilers.clang;
     }
     setGpp(pathGpp) {
-        this.config.update("compilerPathCpp", pathGpp, vscode.ConfigurationTarget.Global);
+        this.config.update("compilerPathCpp", pathGpp, vscode.ConfigurationTarget.WorkspaceFolder);
         this.cppCompiler = utils_1.Compilers.gpp;
     }
     setClangpp(pathClangpp) {
-        this.config.update("compilerPathCpp", pathClangpp, vscode.ConfigurationTarget.Global);
+        this.config.update("compilerPathCpp", pathClangpp, vscode.ConfigurationTarget.WorkspaceFolder);
         this.cppCompiler = utils_1.Compilers.clangpp;
     }
     setLLDB(pathLLDB) {
-        this.config.update("debuggerPath", pathLLDB, vscode.ConfigurationTarget.Global);
+        this.config.update("debuggerPath", pathLLDB, vscode.ConfigurationTarget.WorkspaceFolder);
         this.debugger = utils_1.Debuggers.lldb;
     }
     setGDB(pathGDB) {
-        this.config.update("debuggerPath", pathGDB, vscode.ConfigurationTarget.Global);
+        this.config.update("debuggerPath", pathGDB, vscode.ConfigurationTarget.WorkspaceFolder);
         this.debugger = utils_1.Debuggers.gdb;
     }
 }

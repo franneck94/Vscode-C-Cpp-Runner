@@ -1,63 +1,27 @@
-import * as fs from "fs";
-import * as path from "path";
 import * as vscode from "vscode";
 
 import {
   getLanguageFromEditor,
+  JsonInterface,
   Languages,
-  pathExists,
   readJsonFile,
+  writeJsonFile,
 } from "./utils";
 import { SettingsProvider } from "./settingsProvider";
+import { FileProvider } from "./fileProvider";
 
-export class PropertiesProvider {
-  public templatePath: string;
-  public propertiesPath: string;
-  public workspacePath: string;
-  public fileWatcherOnDelete: vscode.FileSystemWatcher | undefined = undefined;
-
-  constructor(public settings: SettingsProvider, workspacePath: string) {
-    this.workspacePath = workspacePath;
-    const vscodeDirectory = path.join(this.workspacePath, ".vscode");
-    this.propertiesPath = path.join(vscodeDirectory, "c_cpp_properties.json");
-
-    const extDirectory = path.dirname(__dirname);
-    const tasksDirectory = path.join(extDirectory, "src", "templates");
-    this.templatePath = path.join(tasksDirectory, "properties_template.json");
-
-    if (!pathExists(this.templatePath)) {
-      return;
-    }
-
-    this.fileWatcherOnDelete = vscode.workspace.createFileSystemWatcher(
-      this.propertiesPath,
-      true,
-      true,
-      false
-    );
-
-    if (!pathExists(this.propertiesPath)) {
-      this.createProperties();
-    }
-
-    this.fileWatcherOnDelete.onDidDelete(() => {
-      this.createProperties();
-    });
+export class PropertiesProvider extends FileProvider {
+  constructor(
+    public settings: SettingsProvider,
+    public workspacePath: string,
+    public templateFileName: string,
+    public outputFileName: string
+  ) {
+    super(settings, workspacePath, templateFileName, outputFileName);
   }
 
-  public createProperties() {
-    if (!pathExists(this.propertiesPath)) {
-      fs.mkdirSync(path.dirname(this.propertiesPath), { recursive: true });
-    }
-    this.getProperties(this.templatePath, this.propertiesPath);
-  }
-
-  public updateProperties() {
-    this.getProperties(this.propertiesPath, this.propertiesPath);
-  }
-
-  private getProperties(inputFilePath: string, outFilePath: string) {
-    let configJson = readJsonFile(inputFilePath);
+  public writeFileData(inputFilePath: string, outFilePath: string) {
+    let configJson: JsonInterface = readJsonFile(inputFilePath);
     if (undefined === configJson) {
       return;
     }
@@ -65,23 +29,39 @@ export class PropertiesProvider {
     const editor = vscode.window.activeTextEditor;
     const language = getLanguageFromEditor(editor, this.workspacePath);
     const triplet = `${this.settings.operatingSystem}-${this.settings.cCompiler}-${this.settings.architecure}`;
+    let config = configJson.configurations[0];
 
-    configJson.configurations[0].compilerArgs = this.settings.warnings.split(
-      " "
-    );
-    configJson.configurations[0].cppStandard = this.settings.standardCpp;
-    configJson.configurations[0].cStandard =
+    config.compilerArgs = this.settings.warnings.split(" ");
+    if (this.settings.compilerArgs) {
+      config.compilerArgs = [
+        ...config.compilerArgs,
+        ...this.settings.compilerArgs.split(" "),
+      ];
+    } else {
+      config.compilerArgs = [...this.settings.warnings.split(" ")];
+    }
+
+    if (this.settings.includePaths) {
+      config.includePath = [
+        ...config.includePath,
+        ...this.settings.includePaths.split(" "),
+      ];
+    } else {
+      config.includePath = [config.includePath[0]];
+    }
+
+    config.cppStandard = this.settings.standardCpp;
+    config.cStandard =
       this.settings.standardC === "c90" ? "c89" : this.settings.standardC;
 
     if (Languages.cpp === language) {
-      configJson.configurations[0].compilerPath = this.settings.compilerPathCpp;
+      config.compilerPath = this.settings.compilerPathCpp;
     } else {
-      configJson.configurations[0].compilerPath = this.settings.compilerPathC;
+      config.compilerPath = this.settings.compilerPathC;
     }
-    configJson.configurations[0].name = triplet;
-    configJson.configurations[0].intelliSenseMode = triplet;
+    config.name = triplet;
+    config.intelliSenseMode = triplet;
 
-    const jsonString = JSON.stringify(configJson, null, 2);
-    fs.writeFileSync(outFilePath, jsonString);
+    writeJsonFile(outFilePath, configJson);
   }
 }

@@ -11,7 +11,7 @@ const EXTENSION_NAME = "C_Cpp_Runner";
 export function activate(context: vscode.ExtensionContext) {
   const workspace = vscode.workspace.workspaceFolders;
 
-  if (!workspace || workspace.length !== 1) {
+  if (!workspace || 1 !== workspace.length) {
     return;
   }
 
@@ -21,12 +21,19 @@ export function activate(context: vscode.ExtensionContext) {
 
   const propertiesProvider = new PropertiesProvider(
     settingsProvider,
-    workspacePath
+    workspacePath,
+    "properties_template.json",
+    "c_cpp_properties.json"
   );
 
   let taskProvider = new TaskProvider(settingsProvider, propertiesProvider);
 
-  let launchProvider = new LaunchProvider(settingsProvider, workspacePath);
+  let launchProvider = new LaunchProvider(
+    settingsProvider,
+    workspacePath,
+    "launch_template.json",
+    "launch.json"
+  );
 
   context.subscriptions.push(
     vscode.tasks.registerTaskProvider(EXTENSION_NAME, taskProvider)
@@ -41,8 +48,8 @@ export function activate(context: vscode.ExtensionContext) {
   vscode.workspace.onDidChangeConfiguration(() => {
     settingsProvider.getSettings();
     taskProvider.getTasks(true);
-    propertiesProvider.updateProperties();
-    launchProvider.updateDebugConfig();
+    propertiesProvider.updateFileData();
+    launchProvider.updateFileData();
   });
 }
 

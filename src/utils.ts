@@ -4,6 +4,14 @@ import { platform } from "os";
 import { lookpath } from "lookpath";
 import { execSync } from "child_process";
 
+export interface JsonInterface {
+  configurations: Array<any>;
+}
+
+export interface TasksInterface {
+  tasks: Array<any>;
+}
+
 export enum Languages {
   c = "C",
   cpp = "Cpp",
@@ -52,6 +60,11 @@ export function readJsonFile(filePath: string): any | undefined {
   }
 
   return configJson;
+}
+
+export function writeJsonFile(outputFilePath: string, jsonContent: any) {
+  const jsonString = JSON.stringify(jsonContent, null, 2);
+  fs.writeFileSync(outputFilePath, jsonString);
 }
 
 export function getOperatingSystem() {

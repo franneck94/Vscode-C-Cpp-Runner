@@ -6,16 +6,17 @@ import { isSourceFile } from "./utils";
 
 export async function commandHandler(taskProvider: TaskProvider) {
   try {
+    let provideSingleTasks = false;
     const editor = vscode.window.activeTextEditor;
 
     if (undefined === editor || undefined === taskProvider.tasks) {
-      throw TypeError("You must open a C/C++ file.");
+      throw TypeError("No tasks provided.");
     }
 
     const fileExt = path.extname(editor.document.fileName);
 
-    if (!fileExt || !isSourceFile(fileExt)) {
-      throw TypeError("You must open a C/C++ file.");
+    if (fileExt && isSourceFile(fileExt)) {
+      provideSingleTasks = true;
     }
 
     let taskNames: Array<string> = [];
@@ -23,11 +24,17 @@ export async function commandHandler(taskProvider: TaskProvider) {
       taskNames.push(task.name);
     });
 
+    if (false === provideSingleTasks) {
+      taskNames = taskNames.filter(
+        (name) => !name.toLowerCase().includes("single")
+      );
+    }
+
     const pickedTaskName = await vscode.window.showQuickPick(taskNames);
     if (pickedTaskName) {
-      taskProvider.tasks.forEach((task) => {
+      taskProvider.tasks.forEach(async (task) => {
         if (pickedTaskName === task.name) {
-          vscode.tasks.executeTask(task).then();
+          await vscode.tasks.executeTask(task);
         }
       });
     }

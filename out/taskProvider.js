@@ -19,9 +19,9 @@ class TaskProvider {
         this.settingsProvider = settingsProvider;
         this.propertiesProvider = propertiesProvider;
         const extDirectory = path.dirname(__dirname);
-        const tasksDirectory = path.join(extDirectory, "src", "templates");
-        this.tasksFile = path.join(tasksDirectory, "tasks_template.json");
-        this.makefileFile = path.join(tasksDirectory, "Makefile");
+        const templateDirectory = path.join(extDirectory, "src", "templates");
+        this.tasksFile = path.join(templateDirectory, "tasks_template.json");
+        this.makefileFile = path.join(templateDirectory, "Makefile");
         this.problemMatcher = "$gcc";
         if (!utils_1.pathExists(this.tasksFile) || !utils_1.pathExists(this.makefileFile)) {
             return;

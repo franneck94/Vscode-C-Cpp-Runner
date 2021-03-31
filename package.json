@@ -65,19 +65,19 @@
         "C_Cpp_Runner.enableWarnings": {
           "type": "boolean",
           "default": true,
-          "description": "Whether to enable warnings (e.g. -Wall -Wextra -Wpedantic) or not.",
+          "description": "Whether to enable checking warnings or not.",
           "scope": "window"
         },
         "C_Cpp_Runner.warnings": {
           "type": "string",
           "default": "-Wall -Wextra -Wpedantic",
-          "description": "List of warnings to use for the selected compiler.",
+          "description": "Warnings to check by the compiler. Seperated by whitespaces.",
           "scope": "window"
         },
         "C_Cpp_Runner.warningsAsError": {
           "type": "boolean",
           "default": false,
-          "description": "Whether the warnings will be treated as compiler errors.",
+          "description": "Whether to treat warnings as compiler errors or not.",
           "scope": "window"
         },
         "C_Cpp_Runner.compilerPathC": {
@@ -141,25 +141,25 @@
             "gnu++20"
           ],
           "default": "c++11",
-          "description": "C++ Standard for the Cpp Compiler.",
+          "description": "C++ Standard for the C++ Compiler.",
           "scope": "window"
         },
         "C_Cpp_Runner.compilerArgs": {
           "type": "string",
           "default": "",
-          "description": "Additional compiler arguments.",
+          "description": "Additional compiler arguments. Seperated by whitespaces.",
           "scope": "window"
         },
         "C_Cpp_Runner.linkerArgs": {
           "type": "string",
           "default": "",
-          "description": "Additional linker arguments.",
+          "description": "Additional linker arguments. Seperated by whitespaces.",
           "scope": "window"
         },
         "C_Cpp_Runner.includePaths": {
           "type": "string",
           "default": "",
-          "description": "Additional compiler arguments.",
+          "description": "Additional include paths. Seperated by whitespaces.",
           "scope": "window"
         }
       }

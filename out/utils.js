@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLanguageFromEditor = exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getOperatingSystem = exports.readJsonFile = exports.pathExists = exports.Architectures = exports.OperatingSystems = exports.Debuggers = exports.Compilers = exports.Languages = void 0;
+exports.getLanguageFromEditor = exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getOperatingSystem = exports.writeJsonFile = exports.readJsonFile = exports.pathExists = exports.Architectures = exports.OperatingSystems = exports.Debuggers = exports.Compilers = exports.Languages = void 0;
 const fs = require("fs");
 const path = require("path");
 const os_1 = require("os");
@@ -65,6 +65,11 @@ function readJsonFile(filePath) {
     return configJson;
 }
 exports.readJsonFile = readJsonFile;
+function writeJsonFile(outputFilePath, jsonContent) {
+    const jsonString = JSON.stringify(jsonContent, null, 2);
+    fs.writeFileSync(outputFilePath, jsonString);
+}
+exports.writeJsonFile = writeJsonFile;
 function getOperatingSystem() {
     const plattformName = os_1.platform();
     let operatingSystem;

@@ -1,13 +1,14 @@
 import * as path from "path";
 import * as vscode from "vscode";
-import { PropertiesProvider } from "./propertiesProvider";
 
+import { PropertiesProvider } from "./propertiesProvider";
 import { SettingsProvider } from "./settingsProvider";
 import {
   pathExists,
   Languages,
   getLanguageFromEditor,
   readJsonFile,
+  TasksInterface,
 } from "./utils";
 
 const EXTENSION_NAME = "C_Cpp_Runner";
@@ -23,9 +24,9 @@ export class TaskProvider implements vscode.TaskProvider {
     public propertiesProvider: PropertiesProvider
   ) {
     const extDirectory = path.dirname(__dirname);
-    const tasksDirectory = path.join(extDirectory, "src", "templates");
-    this.tasksFile = path.join(tasksDirectory, "tasks_template.json");
-    this.makefileFile = path.join(tasksDirectory, "Makefile");
+    const templateDirectory = path.join(extDirectory, "src", "templates");
+    this.tasksFile = path.join(templateDirectory, "tasks_template.json");
+    this.makefileFile = path.join(templateDirectory, "Makefile");
     this.problemMatcher = "$gcc";
 
     if (!pathExists(this.tasksFile) || !pathExists(this.makefileFile)) {
@@ -55,7 +56,7 @@ export class TaskProvider implements vscode.TaskProvider {
       language = Languages.c;
     }
 
-    let configJson = readJsonFile(this.tasksFile);
+    let configJson: TasksInterface = readJsonFile(this.tasksFile);
 
     if (undefined === configJson) {
       return [];

@@ -1,90 +1,40 @@
-import * as fs from "fs";
-import * as path from "path";
-import * as vscode from "vscode";
-
+import { FileProvider } from "./fileProvider";
 import { SettingsProvider } from "./settingsProvider";
 import {
-  pathExists,
-  Languages,
-  getLanguageFromEditor,
   readJsonFile,
-  Architectures,
   OperatingSystems,
-  Debuggers,
+  writeJsonFile,
+  JsonInterface,
 } from "./utils";
 
-interface JSONInterface {
-  configurations: Array<any>;
-}
-
-export class LaunchProvider {
-  public debugConfigs: any | undefined;
-  public templatePath: string;
-  public launchPath: string;
-  public workspacePath: string;
-  public fileWatcherOnDelete: vscode.FileSystemWatcher | undefined = undefined;
-
+export class LaunchProvider extends FileProvider {
   constructor(
-    public settingsProvider: SettingsProvider,
-    workspacePath: string
+    public settings: SettingsProvider,
+    public workspacePath: string,
+    public templateFileName: string,
+    public outputFileName: string
   ) {
-    this.workspacePath = workspacePath;
-    const vscodeDirectory = path.join(this.workspacePath, ".vscode");
-    this.launchPath = path.join(vscodeDirectory, "launch.json");
-
-    const extDirectory = path.dirname(__dirname);
-    const tasksDirectory = path.join(extDirectory, "src", "templates");
-    this.templatePath = path.join(tasksDirectory, "launch_template.json");
-
-    if (!pathExists(this.templatePath)) {
-      return;
-    }
-
-    this.fileWatcherOnDelete = vscode.workspace.createFileSystemWatcher(
-      this.launchPath,
-      true,
-      true,
-      false
-    );
-
-    if (!pathExists(this.launchPath)) {
-      this.createDebugConfig();
-    }
-
-    this.fileWatcherOnDelete.onDidDelete(() => {
-      this.updateDebugConfig();
-    });
+    super(settings, workspacePath, templateFileName, outputFileName);
   }
 
-  public createDebugConfig() {
-    if (!pathExists(this.launchPath)) {
-      fs.mkdirSync(path.dirname(this.launchPath), { recursive: true });
-    }
-    this.getDebugConfig(this.templatePath, this.launchPath);
-  }
-
-  public updateDebugConfig() {
-    this.getDebugConfig(this.launchPath, this.launchPath);
-  }
-
-  private getDebugConfig(inputFilePath: string, outFilePath: string) {
-    let configJson: JSONInterface = readJsonFile(inputFilePath);
+  public writeFileData(inputFilePath: string, outFilePath: string) {
+    let configJson: JsonInterface = readJsonFile(inputFilePath);
 
     if (undefined === configJson) {
       return;
     }
 
     configJson.configurations[0].name = `Launch: Debug Program`;
-    if (undefined !== this.settingsProvider.debugger) {
-      configJson.configurations[0].MIMode = this.settingsProvider.debugger;
-      configJson.configurations[0].miDebuggerPath = this.settingsProvider.debuggerPath;
+    if (undefined !== this.settings.debugger) {
+      configJson.configurations[0].MIMode = this.settings.debugger;
+      configJson.configurations[0].miDebuggerPath = this.settings.debuggerPath;
 
-      if (OperatingSystems.windows === this.settingsProvider.operatingSystem) {
+      if (OperatingSystems.windows === this.settings.operatingSystem) {
+        // XXX: Either gdb or the C/C++ extension has issues on windows with the internal terminal
         configJson.configurations[0].externalConsole = true;
       }
     }
 
-    const jsonString = JSON.stringify(configJson, null, 2);
-    fs.writeFileSync(outFilePath, jsonString);
+    writeJsonFile(outFilePath, configJson);
   }
 }

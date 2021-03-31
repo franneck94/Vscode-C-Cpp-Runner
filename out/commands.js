@@ -16,25 +16,29 @@ const utils_1 = require("./utils");
 function commandHandler(taskProvider) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            let provideSingleTasks = false;
             const editor = vscode.window.activeTextEditor;
             if (undefined === editor || undefined === taskProvider.tasks) {
-                throw TypeError("You must open a C/C++ file.");
+                throw TypeError("No tasks provided.");
             }
             const fileExt = path.extname(editor.document.fileName);
-            if (!fileExt || !utils_1.isSourceFile(fileExt)) {
-                throw TypeError("You must open a C/C++ file.");
+            if (fileExt && utils_1.isSourceFile(fileExt)) {
+                provideSingleTasks = true;
             }
             let taskNames = [];
             taskProvider.tasks.forEach((task) => {
                 taskNames.push(task.name);
             });
+            if (false === provideSingleTasks) {
+                taskNames = taskNames.filter((name) => !name.toLowerCase().includes("single"));
+            }
             const pickedTaskName = yield vscode.window.showQuickPick(taskNames);
             if (pickedTaskName) {
-                taskProvider.tasks.forEach((task) => {
+                taskProvider.tasks.forEach((task) => __awaiter(this, void 0, void 0, function* () {
                     if (pickedTaskName === task.name) {
-                        vscode.tasks.executeTask(task).then();
+                        yield vscode.tasks.executeTask(task);
                     }
-                });
+                }));
             }
         }
         catch (err) {

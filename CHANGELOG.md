@@ -5,6 +5,8 @@ All notable changes to the "c-cpp-runner" extension will be documented in this f
 ## [Upcomming Features]
 
 - 0.4.0 In a multi workspace use-case, add a prompt for the user to select which workspace should be used
+  - When deleting whole .vscode folder, no *.json files are created
+  - Strange settings behaviour in multi-root mode
 
 ## [Releases]
 

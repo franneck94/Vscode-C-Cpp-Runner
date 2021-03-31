@@ -49,6 +49,10 @@
       {
         "command": "C_Cpp_Runner.run",
         "title": "Run Command"
+      },
+      {
+        "command": "C_Cpp_Runner.init",
+        "title": "Init Command"
       }
     ],
     "keybindings": [
@@ -56,6 +60,11 @@
         "command": "C_Cpp_Runner.run",
         "key": "ctrl+shift+r",
         "mac": "ctrl+shift+r"
+      },
+      {
+        "command": "C_Cpp_Runner.init",
+        "key": "ctrl+alt+r",
+        "mac": "ctrl+alt+r"
       }
     ],
     "configuration": {

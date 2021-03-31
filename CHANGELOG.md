@@ -15,4 +15,4 @@ All notable changes to the "c-cpp-runner" extension will be documented in this f
   - Added options for include path, additional compiler and linker args
   - Updated Build/Run/Clean tasks
   - Now bundling with webpack for improved performance
-- 0.3.0 Command to generate launch.json configurations
+- 0.3.0 Now generating launch.json configuration for debug build

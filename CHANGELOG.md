@@ -4,9 +4,15 @@ All notable changes to the "c-cpp-runner" extension will be documented in this f
 
 ## [Upcomming Features]
 
-- 0.4.0 In a multi workspace use-case, add a prompt for the user to select which workspace should be used
-  - When deleting whole .vscode folder, no *.json files are created
+- 0.4.0
+  - In a multi workspace use-case, add a quick pick in the bleu menu bar to select which workspace should be used
   - Strange settings behaviour in multi-root mode
+- 0.4.1
+  - When deleting whole .vscode folder, no *.json files are created
+  - Exe output with unified name?
+- 0.5.0
+  - Instead launch.json file add task for debugging?
+  - Architecture and mode in blue bar as quick pick?
 
 ## [Releases]
 

@@ -22,13 +22,9 @@ class TaskProvider {
         const templateDirectory = path.join(extDirectory, "src", "templates");
         this.tasksFile = path.join(templateDirectory, "tasks_template.json");
         this.makefileFile = path.join(templateDirectory, "Makefile");
-        this.problemMatcher = "$gcc";
-        if (!utils_1.pathExists(this.tasksFile) || !utils_1.pathExists(this.makefileFile)) {
-            return;
-        }
         this.getTasks();
     }
-    resolveTask(task, token) {
+    resolveTask(task) {
         return __awaiter(this, void 0, void 0, function* () {
             return task;
         });
@@ -65,8 +61,9 @@ class TaskProvider {
                 type: "shell",
                 task: taskJson.label,
             };
+            const problemMatcher = "$gcc";
             const scope = vscode.TaskScope.Workspace;
-            const task = new vscode.Task(definition, scope, taskJson.label, EXTENSION_NAME, new vscode.ShellExecution(shellCommand), this.problemMatcher);
+            const task = new vscode.Task(definition, scope, taskJson.label, EXTENSION_NAME, new vscode.ShellExecution(shellCommand), problemMatcher);
             this.tasks.push(task);
         }
         return this.tasks;

@@ -1,15 +1,15 @@
-import * as fs from "fs";
-import * as path from "path";
-import { platform } from "os";
-import { lookpath } from "lookpath";
-import { execSync } from "child_process";
+import { execSync } from 'child_process';
+import * as fs from 'fs';
+import { lookpath } from 'lookpath';
+import { platform } from 'os';
+import * as path from 'path';
 
 export interface JsonInterface {
-  configurations: Array<any>;
+  configurations: any[];
 }
 
 export interface TasksInterface {
-  tasks: Array<any>;
+  tasks: any[];
 }
 
 export enum Languages {
@@ -71,9 +71,9 @@ export function getOperatingSystem() {
   const plattformName = platform();
   let operatingSystem: OperatingSystems;
 
-  if ("win32" === plattformName || "cygwin" === plattformName) {
+  if (plattformName === "win32" || plattformName === "cygwin") {
     operatingSystem = OperatingSystems.windows;
-  } else if ("darwin" === plattformName) {
+  } else if (plattformName === "darwin") {
     operatingSystem = OperatingSystems.mac;
   } else {
     operatingSystem = OperatingSystems.linux;
@@ -97,11 +97,11 @@ export async function commandExists(command: string) {
 }
 
 export function getArchitecture(compiler: Compilers) {
-  let command = `${compiler} -dumpmachine`;
+  const command = `${compiler} -dumpmachine`;
 
   try {
-    let byteArray = execSync(command);
-    let str = String.fromCharCode(...byteArray);
+    const byteArray = execSync(command);
+    const str = String.fromCharCode(...byteArray);
 
     if (str.includes("64")) {
       return Architectures.x64;
@@ -136,12 +136,12 @@ export function isCppSourceFile(fileExtLower: string) {
 }
 
 export function isCSourceFile(fileExtLower: string) {
-  return ".c" === fileExtLower;
+  return fileExtLower === ".c";
 }
 
 export function getLanguage(fileDirName: string) {
-  let files = fs.readdirSync(fileDirName);
-  let anyCppFile = files.some((file) => isCppSourceFile(path.extname(file)));
+  const files = fs.readdirSync(fileDirName);
+  const anyCppFile = files.some((file) => isCppSourceFile(path.extname(file)));
 
   if (anyCppFile) {
     return Languages.cpp;
@@ -159,7 +159,7 @@ export function getLanguageFromEditor(
   if (!editor) {
     language = getLanguage(filePath);
   } else {
-    if (".vscode" !== path.dirname(editor.document.fileName)) {
+    if (path.dirname(editor.document.fileName) !== ".vscode") {
       const fileDirName = path.dirname(editor.document.fileName);
       language = getLanguage(fileDirName);
     }

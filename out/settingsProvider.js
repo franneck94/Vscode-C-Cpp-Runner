@@ -19,10 +19,6 @@ class SettingsProvider {
         // WorkspaceFolder settings
         this.config = vscode.workspace.getConfiguration(EXTENSION_NAME);
         this.operatingSystem = utils_1.getOperatingSystem();
-        this.architecure = undefined;
-        this.cCompiler = undefined;
-        this.cppCompiler = undefined;
-        this.debugger = undefined;
         // Settings
         this.enableWarnings = true;
         this.warnings = "";

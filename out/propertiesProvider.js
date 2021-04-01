@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PropertiesProvider = void 0;
 const vscode = require("vscode");
-const utils_1 = require("./utils");
 const fileProvider_1 = require("./fileProvider");
+const utils_1 = require("./utils");
 class PropertiesProvider extends fileProvider_1.FileProvider {
     constructor(settings, workspacePath, templateFileName, outputFileName) {
         super(settings, workspacePath, templateFileName, outputFileName);
@@ -19,7 +19,9 @@ class PropertiesProvider extends fileProvider_1.FileProvider {
         }
         const editor = vscode.window.activeTextEditor;
         const language = utils_1.getLanguageFromEditor(editor, this.workspacePath);
-        const triplet = `${this.settings.operatingSystem}-${this.settings.cCompiler}-${this.settings.architecure}`;
+        const triplet = `${this.settings.operatingSystem}-` +
+            `${this.settings.cCompiler}-` +
+            `${this.settings.architecure}`;
         let config = configJson.configurations[0];
         config.compilerArgs = this.settings.warnings.split(" ");
         if (this.settings.compilerArgs) {

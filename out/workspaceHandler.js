@@ -9,8 +9,55 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.workspaceHandler = void 0;
+exports.workspaceHandler = exports.getEditorInfo = exports.updateStatus = void 0;
+const path_1 = require("path");
 const vscode = require("vscode");
+function updateStatus(status) {
+    const info = getEditorInfo();
+    status.text = info ? info.text || "" : "";
+    status.tooltip = info ? info.tooltip : undefined;
+    if (info) {
+        status.show();
+    }
+    else {
+        status.hide();
+    }
+    return info ? info.workspacePath : "";
+}
+exports.updateStatus = updateStatus;
+function getEditorInfo() {
+    const editor = vscode.window.activeTextEditor;
+    const workspace = vscode.workspace.workspaceFolders;
+    if (!editor || !workspace) {
+        return null;
+    }
+    let text;
+    let tooltip;
+    let workspacePath;
+    const resource = editor.document.uri;
+    if (resource.scheme === "file") {
+        const folder = vscode.workspace.getWorkspaceFolder(resource);
+        if (!folder) {
+            text = `$(alert) <outside workspace>`;
+        }
+        else {
+            if (workspace.length > 1) {
+                text = `$(file-submodule) ${path_1.basename(folder.uri.fsPath)} (${folder.index + 1} of ${workspace.length})`;
+            }
+            else {
+                text = `$(file-submodule) ${path_1.basename(folder.uri.fsPath)}`;
+            }
+            tooltip = resource.fsPath;
+            workspace.forEach((f) => {
+                if (folder.name === f.name) {
+                    workspacePath = folder.uri.fsPath;
+                }
+            });
+        }
+    }
+    return { text, tooltip, workspacePath };
+}
+exports.getEditorInfo = getEditorInfo;
 function workspaceHandler() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -25,9 +72,8 @@ function workspaceHandler() {
             workspace.forEach((folder) => {
                 workspaceNames.push(folder.name);
             });
-            workspaceNames.push("None");
             const pickedWorkspaceName = yield vscode.window.showQuickPick(workspaceNames, {
-                placeHolder: "Select the workspace folder for the C/C++ Runner extension.",
+                placeHolder: "Select workspace folder to init the C/C++ Runner extension.",
             });
             let pickedFolder = undefined;
             if (pickedWorkspaceName) {

@@ -4,11 +4,10 @@ import * as vscode from "vscode";
 import { PropertiesProvider } from "./propertiesProvider";
 import { SettingsProvider } from "./settingsProvider";
 import {
-  pathExists,
-  Languages,
   getLanguageFromEditor,
+  Languages,
   readJsonFile,
-  TasksInterface,
+  TasksInterface
 } from "./utils";
 
 const EXTENSION_NAME = "C_Cpp_Runner";
@@ -17,7 +16,6 @@ export class TaskProvider implements vscode.TaskProvider {
   public tasks: vscode.Task[] | undefined;
   public tasksFile: string;
   public makefileFile: string;
-  public problemMatcher: string;
 
   constructor(
     public settingsProvider: SettingsProvider,
@@ -27,16 +25,11 @@ export class TaskProvider implements vscode.TaskProvider {
     const templateDirectory = path.join(extDirectory, "src", "templates");
     this.tasksFile = path.join(templateDirectory, "tasks_template.json");
     this.makefileFile = path.join(templateDirectory, "Makefile");
-    this.problemMatcher = "$gcc";
-
-    if (!pathExists(this.tasksFile) || !pathExists(this.makefileFile)) {
-      return;
-    }
 
     this.getTasks();
   }
 
-  public async resolveTask(task: vscode.Task, token: vscode.CancellationToken) {
+  public async resolveTask(task: vscode.Task) {
     return task;
   }
 
@@ -47,7 +40,7 @@ export class TaskProvider implements vscode.TaskProvider {
   public getTasks(ignoreLanguage: boolean = false): vscode.Task[] {
     const editor = vscode.window.activeTextEditor;
     let language;
-    if (false === ignoreLanguage) {
+    if (!ignoreLanguage) {
       language = getLanguageFromEditor(
         editor,
         this.propertiesProvider.workspacePath
@@ -56,7 +49,7 @@ export class TaskProvider implements vscode.TaskProvider {
       language = Languages.c;
     }
 
-    let configJson: TasksInterface = readJsonFile(this.tasksFile);
+    const configJson: TasksInterface = readJsonFile(this.tasksFile);
 
     if (undefined === configJson) {
       return [];
@@ -64,12 +57,12 @@ export class TaskProvider implements vscode.TaskProvider {
 
     this.tasks = [];
 
-    for (let taskJson of configJson.tasks) {
-      if ("shell" !== taskJson.type) {
+    for (const taskJson of configJson.tasks) {
+      if (taskJson.type !== "shell") {
         continue;
       }
       if (undefined !== taskJson.options) {
-        if (true === taskJson.options.hide) {
+        if (taskJson.options.hide === true) {
           continue;
         }
       }
@@ -80,8 +73,9 @@ export class TaskProvider implements vscode.TaskProvider {
 
       const definition = {
         type: "shell",
-        task: taskJson.label,
+        task: taskJson.label
       };
+      const problemMatcher = "$gcc";
       const scope = vscode.TaskScope.Workspace;
       const task = new vscode.Task(
         definition,
@@ -89,7 +83,7 @@ export class TaskProvider implements vscode.TaskProvider {
         taskJson.label,
         EXTENSION_NAME,
         new vscode.ShellExecution(shellCommand),
-        this.problemMatcher
+        problemMatcher
       );
       this.tasks.push(task);
     }

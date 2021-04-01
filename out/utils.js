@@ -10,11 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getLanguageFromEditor = exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getOperatingSystem = exports.writeJsonFile = exports.readJsonFile = exports.pathExists = exports.Architectures = exports.OperatingSystems = exports.Debuggers = exports.Compilers = exports.Languages = void 0;
-const fs = require("fs");
-const path = require("path");
-const os_1 = require("os");
-const lookpath_1 = require("lookpath");
 const child_process_1 = require("child_process");
+const fs = require("fs");
+const lookpath_1 = require("lookpath");
+const os_1 = require("os");
+const path = require("path");
 var Languages;
 (function (Languages) {
     Languages["c"] = "C";

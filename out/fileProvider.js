@@ -11,18 +11,15 @@ class FileProvider {
         this.workspacePath = workspacePath;
         this.templateFileName = templateFileName;
         this.outputFileName = outputFileName;
-        this.fileWatcherOnDelete = undefined;
         this.settings = settings;
         this.workspacePath = workspacePath;
-        const vscodeDirectory = path.join(this.workspacePath, ".vscode");
-        this.outputPath = path.join(vscodeDirectory, outputFileName);
+        this.vscodeDirectory = path.join(this.workspacePath, ".vscode");
+        this.outputPath = path.join(this.vscodeDirectory, outputFileName);
+        const deletePattern = `${this.vscodeDirectory}/**`;
         const extDirectory = path.dirname(__dirname);
         const templateDirectory = path.join(extDirectory, "src", "templates");
         this.templatePath = path.join(templateDirectory, templateFileName);
-        if (!utils_1.pathExists(this.templatePath)) {
-            return;
-        }
-        this.fileWatcherOnDelete = vscode.workspace.createFileSystemWatcher(this.outputPath, true, true, false);
+        this.fileWatcherOnDelete = vscode.workspace.createFileSystemWatcher(deletePattern, true, true, false);
         if (!utils_1.pathExists(this.outputPath)) {
             this.createFileData();
         }
@@ -31,8 +28,11 @@ class FileProvider {
         });
     }
     createFileData() {
-        if (!utils_1.pathExists(this.outputPath)) {
-            fs.mkdirSync(path.dirname(this.outputPath), { recursive: true });
+        if (utils_1.pathExists(this.outputPath)) {
+            return;
+        }
+        if (!utils_1.pathExists(this.vscodeDirectory)) {
+            fs.mkdirSync(this.vscodeDirectory, { recursive: true });
         }
         this.writeFileData(this.templatePath, this.outputPath);
     }

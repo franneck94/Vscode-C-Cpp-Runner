@@ -1,11 +1,6 @@
-import { FileProvider } from "./fileProvider";
-import { SettingsProvider } from "./settingsProvider";
-import {
-  readJsonFile,
-  OperatingSystems,
-  writeJsonFile,
-  JsonInterface,
-} from "./utils";
+import { FileProvider } from './fileProvider';
+import { SettingsProvider } from './settingsProvider';
+import { JsonInterface, OperatingSystems, readJsonFile, writeJsonFile } from './utils';
 
 export class LaunchProvider extends FileProvider {
   constructor(
@@ -18,7 +13,7 @@ export class LaunchProvider extends FileProvider {
   }
 
   public writeFileData(inputFilePath: string, outFilePath: string) {
-    let configJson: JsonInterface = readJsonFile(inputFilePath);
+    const configJson: JsonInterface = readJsonFile(inputFilePath);
 
     if (undefined === configJson) {
       return;

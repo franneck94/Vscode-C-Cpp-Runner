@@ -33,7 +33,8 @@ let settingsProvider;
 let launchProvider;
 let propertiesProvider;
 let taskProvider;
-let workspacePath;
+let workspaceFolder;
+let pickedFolder;
 let folderStatusBar;
 let modeStatusBar;
 let buildMode = utils_1.Builds.debug;
@@ -44,22 +45,22 @@ function activate(context) {
     const folderStatusBarPriority = 2;
     folderStatusBar = vscode.window.createStatusBarItem(folderStatusBarAlign, folderStatusBarPriority);
     context.subscriptions.push(folderStatusBar);
-    workspacePath = statusBarItems_1.updateFolderStatus(folderStatusBar);
+    workspaceFolder = statusBarItems_1.updateFolderStatus(folderStatusBar, taskProvider);
     // Mode status bar item
     const modeStatusBarAlign = vscode.StatusBarAlignment.Left;
     const modeStatusBarPriority = 1;
     modeStatusBar = vscode.window.createStatusBarItem(modeStatusBarAlign, modeStatusBarPriority);
     context.subscriptions.push(modeStatusBar);
     statusBarItems_1.updateModeStatus(modeStatusBar, buildMode, architectureMode);
-    // Update folder status bar item based on events
-    context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders((e) => updateStatusCallback()));
-    context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor((e) => updateStatusCallback()));
-    context.subscriptions.push(vscode.window.onDidChangeTextEditorViewColumn((e) => updateStatusCallback()));
-    context.subscriptions.push(vscode.workspace.onDidOpenTextDocument((e) => updateStatusCallback()));
-    context.subscriptions.push(vscode.workspace.onDidCloseTextDocument((e) => updateStatusCallback()));
     commandInitDisposable = vscode.commands.registerCommand(`${EXTENSION_NAME}.init`, () => __awaiter(this, void 0, void 0, function* () {
-        workspacePath = yield workspaceHandler_1.workspaceHandler();
+        const ret = yield workspaceHandler_1.workspaceHandler();
+        if (ret) {
+            pickedFolder = ret.pickedFolder;
+            workspaceFolder = ret.workspaceFolder;
+            taskProvider.pickedFolder = pickedFolder;
+        }
         initWorkspaceInstance();
+        updateStatusCallback();
     }));
     folderStatusBar.command = `${EXTENSION_NAME}.init`;
     context.subscriptions.push(commandInitDisposable);
@@ -79,23 +80,23 @@ function activate(context) {
 }
 exports.activate = activate;
 function updateStatusCallback() {
-    const newWorkspacePath = statusBarItems_1.updateFolderStatus(folderStatusBar);
-    if (newWorkspacePath !== workspacePath) {
-        workspacePath = newWorkspacePath;
+    const newWorkspacePath = statusBarItems_1.updateFolderStatus(folderStatusBar, taskProvider);
+    if (newWorkspacePath !== workspaceFolder) {
+        workspaceFolder = newWorkspacePath;
         initWorkspaceInstance();
     }
 }
 function initWorkspaceInstance() {
-    if (undefined === workspacePath) {
+    if (undefined === workspaceFolder) {
         return;
     }
-    settingsProvider = new settingsProvider_1.SettingsProvider(workspacePath);
-    propertiesProvider = new propertiesProvider_1.PropertiesProvider(settingsProvider, workspacePath, PROPERTIES_TEMPLATE, PROPERTIES_FILE);
-    launchProvider = new launchProvider_1.LaunchProvider(settingsProvider, workspacePath, LAUNCH_TEMPLATE, LAUNCH_FILE);
-    taskProvider = new taskProvider_1.TaskProvider(settingsProvider, propertiesProvider, buildMode, architectureMode);
+    settingsProvider = new settingsProvider_1.SettingsProvider(workspaceFolder);
+    propertiesProvider = new propertiesProvider_1.PropertiesProvider(settingsProvider, workspaceFolder, PROPERTIES_TEMPLATE, PROPERTIES_FILE);
+    launchProvider = new launchProvider_1.LaunchProvider(settingsProvider, workspaceFolder, LAUNCH_TEMPLATE, LAUNCH_FILE);
+    taskProvider = new taskProvider_1.TaskProvider(settingsProvider, propertiesProvider, pickedFolder, buildMode, architectureMode);
 }
 function workspaceInstance(context) {
-    if (undefined === workspacePath) {
+    if (undefined === workspaceFolder) {
         return;
     }
     initWorkspaceInstance();

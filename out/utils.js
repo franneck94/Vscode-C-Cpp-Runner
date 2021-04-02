@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLanguageFromEditor = exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getOperatingSystem = exports.writeJsonFile = exports.readJsonFile = exports.pathExists = exports.Tasks = exports.Builds = exports.Architectures = exports.OperatingSystems = exports.Debuggers = exports.Compilers = exports.Languages = void 0;
+exports.getDirectories = exports.getLanguageFromEditor = exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getOperatingSystem = exports.writeJsonFile = exports.readJsonFile = exports.pathExists = exports.Tasks = exports.Builds = exports.Architectures = exports.OperatingSystems = exports.Debuggers = exports.Compilers = exports.Languages = void 0;
 const child_process_1 = require("child_process");
 const fs = require("fs");
 const lookpath_1 = require("lookpath");
@@ -179,4 +179,15 @@ function getLanguageFromEditor(editor, filePath) {
     return language;
 }
 exports.getLanguageFromEditor = getLanguageFromEditor;
+function getDirectories(folder) {
+    const fileDirents = fs.readdirSync(folder.uri.fsPath, {
+        withFileTypes: true,
+    });
+    let directories = fileDirents
+        .filter((entry) => entry.isDirectory())
+        .map((entry) => entry.name);
+    directories = directories.filter(dir => !dir.includes(".vscode"));
+    return directories;
+}
+exports.getDirectories = getDirectories;
 //# sourceMappingURL=utils.js.map

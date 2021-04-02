@@ -1,19 +1,38 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getEditorInfo = exports.updateModeStatus = exports.updateFolderStatus = void 0;
-const path_1 = require("path");
+exports.updateModeStatus = exports.updateFolderStatus = void 0;
+const path = require("path");
 const vscode = require("vscode");
-function updateFolderStatus(status) {
-    const info = getEditorInfo();
-    status.text = info ? info.text || "" : "";
-    status.tooltip = info ? info.tooltip : undefined;
-    if (info) {
-        status.show();
+function updateFolderStatus(status, taskProvider) {
+    var _a;
+    const editor = vscode.window.activeTextEditor;
+    const workspace = vscode.workspace.workspaceFolders;
+    if (!workspace) {
+        return undefined;
+    }
+    if (taskProvider && taskProvider.pickedFolder) {
+        const workspacePath = taskProvider.propertiesProvider.workspacePath;
+        if (taskProvider.pickedFolder !== workspacePath) {
+            const workspaceName = path.basename(workspacePath);
+            status.text = taskProvider.pickedFolder.replace(workspacePath, workspaceName);
+        }
+        else {
+            status.text = taskProvider.pickedFolder;
+        }
     }
     else {
-        status.hide();
+        status.text = "Select folder.";
     }
-    return info ? info.workspacePath : "";
+    status.show();
+    if (!editor) {
+        return "";
+    }
+    const resource = editor.document.uri;
+    let folder = "";
+    if (resource.scheme === "file") {
+        folder = (_a = vscode.workspace.getWorkspaceFolder(resource)) === null || _a === void 0 ? void 0 : _a.name;
+    }
+    return folder ? folder : "";
 }
 exports.updateFolderStatus = updateFolderStatus;
 function updateModeStatus(status, buildMode, architectureMode) {
@@ -31,37 +50,4 @@ function updateModeStatus(status, buildMode, architectureMode) {
     }
 }
 exports.updateModeStatus = updateModeStatus;
-function getEditorInfo() {
-    const editor = vscode.window.activeTextEditor;
-    const workspace = vscode.workspace.workspaceFolders;
-    if (!editor || !workspace) {
-        return null;
-    }
-    let text;
-    let tooltip;
-    let workspacePath;
-    const resource = editor.document.uri;
-    if (resource.scheme === "file") {
-        const folder = vscode.workspace.getWorkspaceFolder(resource);
-        if (!folder) {
-            text = `$(alert) <outside workspace>`;
-        }
-        else {
-            if (workspace.length > 1) {
-                text = `$(file-submodule) ${path_1.basename(folder.uri.fsPath)} (${folder.index + 1} of ${workspace.length})`;
-            }
-            else {
-                text = `$(file-submodule) ${path_1.basename(folder.uri.fsPath)}`;
-            }
-            tooltip = resource.fsPath;
-            workspace.forEach((f) => {
-                if (folder.name === f.name) {
-                    workspacePath = folder.uri.fsPath;
-                }
-            });
-        }
-    }
-    return { text, tooltip, workspacePath };
-}
-exports.getEditorInfo = getEditorInfo;
 //# sourceMappingURL=statusBarItems.js.map

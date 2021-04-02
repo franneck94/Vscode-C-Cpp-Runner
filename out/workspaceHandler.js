@@ -10,33 +10,51 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.workspaceHandler = void 0;
+const path = require("path");
 const vscode = require("vscode");
+const utils_1 = require("./utils");
 function workspaceHandler() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const workspace = vscode.workspace.workspaceFolders;
             if (!workspace) {
-                return undefined;
+                return;
             }
-            if (workspace.length === 1) {
-                return workspace[0].uri.fsPath;
-            }
-            const workspaceNames = [];
+            const foldersList = [];
             workspace.forEach((folder) => {
-                workspaceNames.push(folder.name);
+                const directories = utils_1.getDirectories(folder);
+                directories.forEach(dir => {
+                    let text;
+                    if (directories.length) {
+                        text = `${folder.name}/${dir}`;
+                    }
+                    else {
+                        text = `${folder.name}}`;
+                    }
+                    foldersList.push(text);
+                });
             });
-            const pickedWorkspaceName = yield vscode.window.showQuickPick(workspaceNames, {
+            const pickedFolderStr = yield vscode.window.showQuickPick(foldersList, {
                 placeHolder: "Select workspace folder to init the C/C++ Runner extension.",
             });
             let pickedFolder;
-            if (pickedWorkspaceName) {
+            let workspaceFolder;
+            if (pickedFolderStr) {
                 workspace.forEach((folder) => {
-                    if (pickedWorkspaceName === folder.name) {
+                    const directories = utils_1.getDirectories(folder);
+                    if (pickedFolderStr === folder.name) {
                         pickedFolder = folder.uri.fsPath;
+                        workspaceFolder = folder.uri.fsPath;
                     }
+                    directories.forEach(dir => {
+                        if (pickedFolderStr === `${folder.name}/${dir}`) {
+                            pickedFolder = path.join(folder.uri.fsPath, dir);
+                            workspaceFolder = folder.uri.fsPath;
+                        }
+                    });
                 });
             }
-            return pickedFolder;
+            return { pickedFolder, workspaceFolder };
         }
         catch (err) {
             vscode.window.showInformationMessage(err);

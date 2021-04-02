@@ -24,6 +24,7 @@ export class TaskProvider implements vscode.TaskProvider {
   constructor(
     public settingsProvider: SettingsProvider,
     public propertiesProvider: PropertiesProvider,
+    public pickedFolder: string | undefined,
     public buildMode: Builds,
     public architectureMode: Architectures
   ) {
@@ -31,6 +32,9 @@ export class TaskProvider implements vscode.TaskProvider {
     const templateDirectory = path.join(extDirectory, "src", "templates");
     this.tasksFile = path.join(templateDirectory, "tasks_template.json");
     this.makefileFile = path.join(templateDirectory, "Makefile");
+    if (this.pickedFolder === undefined) {
+      this.pickedFolder = this.propertiesProvider.workspacePath;
+    }
 
     this.getTasks();
   }

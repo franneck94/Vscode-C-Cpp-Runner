@@ -3,6 +3,7 @@ import * as fs from "fs";
 import { lookpath } from "lookpath";
 import { platform } from "os";
 import * as path from "path";
+import * as vscode from "vscode";
 
 export interface JsonInterface {
   configurations: any[];
@@ -189,4 +190,15 @@ export function getLanguageFromEditor(
   }
 
   return language;
+}
+
+export function getDirectories(folder: vscode.WorkspaceFolder) {
+  const fileDirents = fs.readdirSync(folder.uri.fsPath, {
+    withFileTypes: true,
+  });
+  let directories = fileDirents
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name);
+  directories = directories.filter(dir => !dir.includes(".vscode"));
+  return directories;
 }

@@ -26,7 +26,8 @@ let launchProvider: LaunchProvider;
 let propertiesProvider: PropertiesProvider;
 let taskProvider: TaskProvider;
 
-let workspacePath: string | undefined;
+let workspaceFolder: string | undefined;
+let pickedFolder: string | undefined;
 let folderStatusBar: vscode.StatusBarItem;
 let modeStatusBar: vscode.StatusBarItem;
 let buildMode: Builds = Builds.debug;
@@ -41,7 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
     folderStatusBarPriority
   );
   context.subscriptions.push(folderStatusBar);
-  workspacePath = updateFolderStatus(folderStatusBar);
+  workspaceFolder = updateFolderStatus(folderStatusBar, taskProvider);
 
   // Mode status bar item
   const modeStatusBarAlign = vscode.StatusBarAlignment.Left;
@@ -53,28 +54,17 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(modeStatusBar);
   updateModeStatus(modeStatusBar, buildMode, architectureMode);
 
-  // Update folder status bar item based on events
-  context.subscriptions.push(
-    vscode.workspace.onDidChangeWorkspaceFolders((e) => updateStatusCallback())
-  );
-  context.subscriptions.push(
-    vscode.window.onDidChangeActiveTextEditor((e) => updateStatusCallback())
-  );
-  context.subscriptions.push(
-    vscode.window.onDidChangeTextEditorViewColumn((e) => updateStatusCallback())
-  );
-  context.subscriptions.push(
-    vscode.workspace.onDidOpenTextDocument((e) => updateStatusCallback())
-  );
-  context.subscriptions.push(
-    vscode.workspace.onDidCloseTextDocument((e) => updateStatusCallback())
-  );
-
   commandInitDisposable = vscode.commands.registerCommand(
     `${EXTENSION_NAME}.init`,
     async () => {
-      workspacePath = await workspaceHandler();
+      const ret = await workspaceHandler();
+      if (ret) {
+        pickedFolder = ret.pickedFolder;
+        workspaceFolder = ret.workspaceFolder;
+        taskProvider.pickedFolder = pickedFolder;
+      }
       initWorkspaceInstance();
+      updateStatusCallback();
     }
   );
   folderStatusBar.command = `${EXTENSION_NAME}.init`;
@@ -100,30 +90,30 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 function updateStatusCallback() {
-  const newWorkspacePath = updateFolderStatus(folderStatusBar);
-  if (newWorkspacePath !== workspacePath) {
-    workspacePath = newWorkspacePath;
+  const newWorkspacePath = updateFolderStatus(folderStatusBar, taskProvider);
+  if (newWorkspacePath !== workspaceFolder) {
+    workspaceFolder = newWorkspacePath;
     initWorkspaceInstance();
   }
 }
 
 function initWorkspaceInstance() {
-  if (undefined === workspacePath) {
+  if (undefined === workspaceFolder) {
     return;
   }
 
-  settingsProvider = new SettingsProvider(workspacePath);
+  settingsProvider = new SettingsProvider(workspaceFolder);
 
   propertiesProvider = new PropertiesProvider(
     settingsProvider,
-    workspacePath,
+    workspaceFolder,
     PROPERTIES_TEMPLATE,
     PROPERTIES_FILE
   );
 
   launchProvider = new LaunchProvider(
     settingsProvider,
-    workspacePath,
+    workspaceFolder,
     LAUNCH_TEMPLATE,
     LAUNCH_FILE
   );
@@ -131,13 +121,14 @@ function initWorkspaceInstance() {
   taskProvider = new TaskProvider(
     settingsProvider,
     propertiesProvider,
+    pickedFolder,
     buildMode,
     architectureMode
   );
 }
 
 function workspaceInstance(context: vscode.ExtensionContext) {
-  if (undefined === workspacePath) {
+  if (undefined === workspaceFolder) {
     return;
   }
 

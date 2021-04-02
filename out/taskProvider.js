@@ -15,15 +15,19 @@ const vscode = require("vscode");
 const utils_1 = require("./utils");
 const EXTENSION_NAME = "C_Cpp_Runner";
 class TaskProvider {
-    constructor(settingsProvider, propertiesProvider, buildMode, architectureMode) {
+    constructor(settingsProvider, propertiesProvider, pickedFolder, buildMode, architectureMode) {
         this.settingsProvider = settingsProvider;
         this.propertiesProvider = propertiesProvider;
+        this.pickedFolder = pickedFolder;
         this.buildMode = buildMode;
         this.architectureMode = architectureMode;
         const extDirectory = path.dirname(__dirname);
         const templateDirectory = path.join(extDirectory, "src", "templates");
         this.tasksFile = path.join(templateDirectory, "tasks_template.json");
         this.makefileFile = path.join(templateDirectory, "Makefile");
+        if (this.pickedFolder === undefined) {
+            this.pickedFolder = this.propertiesProvider.workspacePath;
+        }
         this.getTasks();
     }
     resolveTask(task) {

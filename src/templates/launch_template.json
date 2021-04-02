@@ -9,7 +9,7 @@
       "stopAtEntry": false,
       "cwd": "${fileDirname}",
       "environment": [],
-      "program": "${fileDirname}/build/Debug/${fileBasenameNoExtension}Debug",
+      "program": "${fileDirname}/build/Debug/outDebug",
       "internalConsoleOptions": "openOnSessionStart",
       "MIMode": "",
       "miDebuggerPath": "",

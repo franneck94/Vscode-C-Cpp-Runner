@@ -20,9 +20,13 @@ export async function taskHandler(taskProvider: TaskProvider) {
       provideSingleTasks = true;
     }
 
-    // TODO
-    const workspaceFolder = taskProvider.propertiesProvider.workspacePath;
-    const buildFolder = path.join(workspaceFolder, "build");
+    let projectFolder;
+    if (taskProvider.pickedFolder !== undefined) {
+      projectFolder = taskProvider.pickedFolder;
+    } else {
+      projectFolder = taskProvider.propertiesProvider.workspacePath;
+    }
+    const buildFolder = path.join(projectFolder, "build");
     if (pathExists(buildFolder)) {
       provideBuildFolderTasks = true;
     }

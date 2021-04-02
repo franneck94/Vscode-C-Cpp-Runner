@@ -26,9 +26,14 @@ function taskHandler(taskProvider) {
             if (fileExt && utils_1.isSourceFile(fileExt)) {
                 provideSingleTasks = true;
             }
-            // TODO
-            const workspaceFolder = taskProvider.propertiesProvider.workspacePath;
-            const buildFolder = path.join(workspaceFolder, "build");
+            let projectFolder;
+            if (taskProvider.pickedFolder !== undefined) {
+                projectFolder = taskProvider.pickedFolder;
+            }
+            else {
+                projectFolder = taskProvider.propertiesProvider.workspacePath;
+            }
+            const buildFolder = path.join(projectFolder, "build");
             if (utils_1.pathExists(buildFolder)) {
                 provideBuildFolderTasks = true;
             }

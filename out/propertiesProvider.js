@@ -13,7 +13,7 @@ class PropertiesProvider extends fileProvider_1.FileProvider {
         this.outputFileName = outputFileName;
     }
     writeFileData(inputFilePath, outFilePath) {
-        let configJson = utils_1.readJsonFile(inputFilePath);
+        const configJson = utils_1.readJsonFile(inputFilePath);
         if (undefined === configJson) {
             return;
         }
@@ -22,7 +22,7 @@ class PropertiesProvider extends fileProvider_1.FileProvider {
         const triplet = `${this.settings.operatingSystem}-` +
             `${this.settings.cCompiler}-` +
             `${this.settings.architecure}`;
-        let config = configJson.configurations[0];
+        const config = configJson.configurations[0];
         config.compilerArgs = this.settings.warnings.split(" ");
         if (this.settings.compilerArgs) {
             config.compilerArgs = [

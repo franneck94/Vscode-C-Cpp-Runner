@@ -53,6 +53,10 @@
       {
         "command": "C_Cpp_Runner.init",
         "title": "Init Command"
+      },
+      {
+        "command": "C_Cpp_Runner.mode",
+        "title": "Select Mode Command"
       }
     ],
     "keybindings": [

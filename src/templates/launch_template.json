@@ -1,19 +1,19 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "",
-            "type": "cppdbg",
-            "request": "launch",
-            "args": [],
-            "stopAtEntry": false,
-            "cwd": "${fileDirname}",
-            "environment": [],
-            "program": "${fileDirname}/build/Debug/${fileBasenameNoExtension}Debug",
-            "internalConsoleOptions": "openOnSessionStart",
-            "MIMode": "",
-            "miDebuggerPath": "",
-            "externalConsole": false
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "program": "${fileDirname}/build/Debug/${fileBasenameNoExtension}Debug",
+      "internalConsoleOptions": "openOnSessionStart",
+      "MIMode": "",
+      "miDebuggerPath": "",
+      "externalConsole": false
+    }
+  ]
 }

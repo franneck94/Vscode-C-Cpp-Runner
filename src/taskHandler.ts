@@ -1,10 +1,10 @@
-import * as path from 'path';
-import * as vscode from 'vscode';
+import * as path from "path";
+import * as vscode from "vscode";
 
-import { TaskProvider } from './taskProvider';
-import { isSourceFile, pathExists } from './utils';
+import { TaskProvider } from "./taskProvider";
+import { isSourceFile, pathExists, Tasks } from "./utils";
 
-export async function commandHandler(taskProvider: TaskProvider) {
+export async function taskHandler(taskProvider: TaskProvider) {
   try {
     let provideSingleTasks = false;
     let provideBuildFolderTasks = false;
@@ -20,6 +20,7 @@ export async function commandHandler(taskProvider: TaskProvider) {
       provideSingleTasks = true;
     }
 
+    // TODO
     const workspaceFolder = taskProvider.propertiesProvider.workspacePath;
     const buildFolder = path.join(workspaceFolder, "build");
     if (pathExists(buildFolder)) {
@@ -32,18 +33,12 @@ export async function commandHandler(taskProvider: TaskProvider) {
     });
 
     if (!provideSingleTasks) {
-      taskNames = taskNames.filter(
-        (name) => !name.toLowerCase().includes("single")
-      );
+      taskNames = taskNames.filter((name) => !name.includes(Tasks.buildSingle));
     }
 
     if (!provideBuildFolderTasks) {
       taskNames = taskNames.filter(
-        (name) =>
-          !(
-            name.toLowerCase().includes("run") ||
-            name.toLowerCase().includes("clean")
-          )
+        (name) => !(name.includes(Tasks.run) || name.includes(Tasks.clean))
       );
     }
 

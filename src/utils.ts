@@ -1,15 +1,23 @@
-import { execSync } from 'child_process';
-import * as fs from 'fs';
-import { lookpath } from 'lookpath';
-import { platform } from 'os';
-import * as path from 'path';
+import { execSync } from "child_process";
+import * as fs from "fs";
+import { lookpath } from "lookpath";
+import { platform } from "os";
+import * as path from "path";
 
 export interface JsonInterface {
   configurations: any[];
 }
 
+export interface InnerTasksInterface {
+  args: string[];
+  command: string;
+  type: any;
+  options: any;
+  label: any;
+}
+
 export interface TasksInterface {
-  tasks: any[];
+  tasks: InnerTasksInterface[];
 }
 
 export enum Languages {
@@ -38,6 +46,18 @@ export enum OperatingSystems {
 export enum Architectures {
   x86 = "x86",
   x64 = "x64",
+}
+
+export enum Builds {
+  debug = "Debug",
+  release = "Release",
+}
+
+export enum Tasks {
+  buildSingle = "Build: Single File",
+  buildFolder = "Build: Folder",
+  run = "Run: Program",
+  clean = "Clean: Objects",
 }
 
 export function pathExists(filePath: string): boolean {
@@ -140,7 +160,8 @@ export function isCSourceFile(fileExtLower: string) {
 }
 
 export function getLanguage(fileDirName: string) {
-  const files = fs.readdirSync(fileDirName);
+  const fileDirents = fs.readdirSync(fileDirName, { withFileTypes: true });
+  const files = fileDirents.filter((file) => file.isFile()).map((file) => file.name);
   const anyCppFile = files.some((file) => isCppSourceFile(path.extname(file)));
 
   if (anyCppFile) {
@@ -162,8 +183,9 @@ export function getLanguageFromEditor(
     if (path.dirname(editor.document.fileName) !== ".vscode") {
       const fileDirName = path.dirname(editor.document.fileName);
       language = getLanguage(fileDirName);
+    } else {
+      language = Languages.c;
     }
-    language = getLanguage(filePath);
   }
 
   return language;

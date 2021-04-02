@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLanguageFromEditor = exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getOperatingSystem = exports.writeJsonFile = exports.readJsonFile = exports.pathExists = exports.Architectures = exports.OperatingSystems = exports.Debuggers = exports.Compilers = exports.Languages = void 0;
+exports.getLanguageFromEditor = exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getOperatingSystem = exports.writeJsonFile = exports.readJsonFile = exports.pathExists = exports.Tasks = exports.Builds = exports.Architectures = exports.OperatingSystems = exports.Debuggers = exports.Compilers = exports.Languages = void 0;
 const child_process_1 = require("child_process");
 const fs = require("fs");
 const lookpath_1 = require("lookpath");
@@ -43,6 +43,18 @@ var Architectures;
     Architectures["x86"] = "x86";
     Architectures["x64"] = "x64";
 })(Architectures = exports.Architectures || (exports.Architectures = {}));
+var Builds;
+(function (Builds) {
+    Builds["debug"] = "Debug";
+    Builds["release"] = "Release";
+})(Builds = exports.Builds || (exports.Builds = {}));
+var Tasks;
+(function (Tasks) {
+    Tasks["buildSingle"] = "Build: Single File";
+    Tasks["buildFolder"] = "Build: Folder";
+    Tasks["run"] = "Run: Program";
+    Tasks["clean"] = "Clean: Objects";
+})(Tasks = exports.Tasks || (exports.Tasks = {}));
 function pathExists(filePath) {
     try {
         fs.accessSync(filePath);
@@ -73,10 +85,10 @@ exports.writeJsonFile = writeJsonFile;
 function getOperatingSystem() {
     const plattformName = os_1.platform();
     let operatingSystem;
-    if ("win32" === plattformName || "cygwin" === plattformName) {
+    if (plattformName === "win32" || plattformName === "cygwin") {
         operatingSystem = OperatingSystems.windows;
     }
-    else if ("darwin" === plattformName) {
+    else if (plattformName === "darwin") {
         operatingSystem = OperatingSystems.mac;
     }
     else {
@@ -99,10 +111,10 @@ function commandExists(command) {
 }
 exports.commandExists = commandExists;
 function getArchitecture(compiler) {
-    let command = `${compiler} -dumpmachine`;
+    const command = `${compiler} -dumpmachine`;
     try {
-        let byteArray = child_process_1.execSync(command);
-        let str = String.fromCharCode(...byteArray);
+        const byteArray = child_process_1.execSync(command);
+        const str = String.fromCharCode(...byteArray);
         if (str.includes("64")) {
             return Architectures.x64;
         }
@@ -135,12 +147,13 @@ function isCppSourceFile(fileExtLower) {
 }
 exports.isCppSourceFile = isCppSourceFile;
 function isCSourceFile(fileExtLower) {
-    return ".c" === fileExtLower;
+    return fileExtLower === ".c";
 }
 exports.isCSourceFile = isCSourceFile;
 function getLanguage(fileDirName) {
-    let files = fs.readdirSync(fileDirName);
-    let anyCppFile = files.some((file) => isCppSourceFile(path.extname(file)));
+    const fileDirents = fs.readdirSync(fileDirName, { withFileTypes: true });
+    const files = fileDirents.filter((file) => file.isFile()).map((file) => file.name);
+    const anyCppFile = files.some((file) => isCppSourceFile(path.extname(file)));
     if (anyCppFile) {
         return Languages.cpp;
     }
@@ -155,11 +168,13 @@ function getLanguageFromEditor(editor, filePath) {
         language = getLanguage(filePath);
     }
     else {
-        if (".vscode" !== path.dirname(editor.document.fileName)) {
+        if (path.dirname(editor.document.fileName) !== ".vscode") {
             const fileDirName = path.dirname(editor.document.fileName);
             language = getLanguage(fileDirName);
         }
-        language = getLanguage(filePath);
+        else {
+            language = Languages.c;
+        }
     }
     return language;
 }

@@ -7,7 +7,7 @@ import {
   JsonInterface,
   Languages,
   readJsonFile,
-  writeJsonFile
+  writeJsonFile,
 } from "./utils";
 
 export class PropertiesProvider extends FileProvider {
@@ -38,7 +38,7 @@ export class PropertiesProvider extends FileProvider {
     if (this.settings.compilerArgs) {
       config.compilerArgs = [
         ...config.compilerArgs,
-        ...this.settings.compilerArgs.split(" ")
+        ...this.settings.compilerArgs.split(" "),
       ];
     } else {
       config.compilerArgs = [...this.settings.warnings.split(" ")];
@@ -47,7 +47,7 @@ export class PropertiesProvider extends FileProvider {
     if (this.settings.includePaths) {
       config.includePath = [
         ...config.includePath,
-        ...this.settings.includePaths.split(" ")
+        ...this.settings.includePaths.split(" "),
       ];
     } else {
       config.includePath = [config.includePath[0]];

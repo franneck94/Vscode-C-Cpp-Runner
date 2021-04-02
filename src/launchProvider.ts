@@ -1,6 +1,11 @@
-import { FileProvider } from './fileProvider';
-import { SettingsProvider } from './settingsProvider';
-import { JsonInterface, OperatingSystems, readJsonFile, writeJsonFile } from './utils';
+import { FileProvider } from "./fileProvider";
+import { SettingsProvider } from "./settingsProvider";
+import {
+  JsonInterface,
+  OperatingSystems,
+  readJsonFile,
+  writeJsonFile,
+} from "./utils";
 
 export class LaunchProvider extends FileProvider {
   constructor(

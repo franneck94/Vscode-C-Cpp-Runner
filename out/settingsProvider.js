@@ -44,12 +44,12 @@ class SettingsProvider {
      */
     checkCompilers() {
         return __awaiter(this, void 0, void 0, function* () {
-            let { found: foundGcc, path: pathGcc } = yield utils_1.commandExists("gcc");
-            let { found: foundGpp, path: pathGpp } = yield utils_1.commandExists("g++");
-            let { found: foundClang, path: pathClang } = yield utils_1.commandExists("clang");
-            let { found: foundClangpp, path: pathClangpp } = yield utils_1.commandExists("clang++");
-            let { found: foundGDB, path: pathGDB } = yield utils_1.commandExists("gdb");
-            let { found: foundLLDB, path: pathLLDB } = yield utils_1.commandExists("lldb");
+            const { found: foundGcc, path: pathGcc } = yield utils_1.commandExists("gcc");
+            const { found: foundGpp, path: pathGpp } = yield utils_1.commandExists("g++");
+            const { found: foundClang, path: pathClang } = yield utils_1.commandExists("clang");
+            const { found: foundClangpp, path: pathClangpp } = yield utils_1.commandExists("clang++");
+            const { found: foundGDB, path: pathGDB } = yield utils_1.commandExists("gdb");
+            const { found: foundLLDB, path: pathLLDB } = yield utils_1.commandExists("lldb");
             if (utils_1.OperatingSystems.mac === this.operatingSystem) {
                 if (foundClang && pathClang) {
                     this.setClang(pathClang);

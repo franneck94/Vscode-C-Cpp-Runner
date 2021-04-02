@@ -4,10 +4,14 @@ import * as vscode from "vscode";
 import { PropertiesProvider } from "./propertiesProvider";
 import { SettingsProvider } from "./settingsProvider";
 import {
+  Architectures,
+  Builds,
   getLanguageFromEditor,
+  InnerTasksInterface,
   Languages,
   readJsonFile,
-  TasksInterface
+  Tasks,
+  TasksInterface,
 } from "./utils";
 
 const EXTENSION_NAME = "C_Cpp_Runner";
@@ -19,7 +23,9 @@ export class TaskProvider implements vscode.TaskProvider {
 
   constructor(
     public settingsProvider: SettingsProvider,
-    public propertiesProvider: PropertiesProvider
+    public propertiesProvider: PropertiesProvider,
+    public buildMode: Builds,
+    public architectureMode: Architectures
   ) {
     const extDirectory = path.dirname(__dirname);
     const templateDirectory = path.join(extDirectory, "src", "templates");
@@ -37,18 +43,23 @@ export class TaskProvider implements vscode.TaskProvider {
     return this.getTasks();
   }
 
-  public getTasks(ignoreLanguage: boolean = false): vscode.Task[] {
+  public getTasks(): vscode.Task[] {
     const editor = vscode.window.activeTextEditor;
-    let language;
-    if (!ignoreLanguage) {
-      language = getLanguageFromEditor(
-        editor,
-        this.propertiesProvider.workspacePath
-      );
-    } else {
-      language = Languages.c;
+    const language = getLanguageFromEditor(
+      editor,
+      this.propertiesProvider.workspacePath
+    );
+
+    this.setTasksDefinition(language);
+
+    if (this.tasks === undefined) {
+      return [];
     }
 
+    return this.tasks;
+  }
+
+  private setTasksDefinition(language: Languages) {
     const configJson: TasksInterface = readJsonFile(this.tasksFile);
 
     if (undefined === configJson) {
@@ -73,7 +84,7 @@ export class TaskProvider implements vscode.TaskProvider {
 
       const definition = {
         type: "shell",
-        task: taskJson.label
+        task: taskJson.label,
       };
       const problemMatcher = "$gcc";
       const scope = vscode.TaskScope.Workspace;
@@ -91,29 +102,41 @@ export class TaskProvider implements vscode.TaskProvider {
     return this.tasks;
   }
 
-  private updateTaskBasedOnSettings(taskJson: any, language: Languages) {
+  private updateTaskBasedOnSettings(
+    taskJson: InnerTasksInterface,
+    language: Languages
+  ) {
+    const settings = this.settingsProvider;
     taskJson.args[1] = `--file=${this.makefileFile}`;
-    taskJson.args.push(
-      `ENABLE_WARNINGS=${+this.settingsProvider.enableWarnings}`
-    );
-    taskJson.args.push(`WARNINGS="${this.settingsProvider.warnings}"`);
-    taskJson.args.push(
-      `WARNINGS_AS_ERRORS=${+this.settingsProvider.warningsAsError}`
-    );
-    taskJson.args.push(`C_COMPILER=${this.settingsProvider.compilerPathC}`);
-    taskJson.args.push(`CPP_COMPILER=${this.settingsProvider.compilerPathCpp}`);
+    taskJson.args.push(`COMPILATION_MODE=${this.buildMode}`);
+    taskJson.args.push(`EXECUTABLE_NAME=out${this.buildMode}`);
     taskJson.args.push(`LANGUAGE_MODE=${language}`);
-    taskJson.args.push(`C_STANDARD=${this.settingsProvider.standardC}`);
-    taskJson.args.push(`CPP_STANDARD=${this.settingsProvider.standardCpp}`);
-    if (this.settingsProvider.compilerArgs) {
-      taskJson.args.push(`COMPILER_ARGS=${this.settingsProvider.compilerArgs}`);
+    const includesClean = taskJson.label.includes(Tasks.clean);
+    const includesRun = taskJson.label.includes(Tasks.run);
+    if (!includesClean && !includesRun) {
+      taskJson.args.push(`ENABLE_WARNINGS=${+settings.enableWarnings}`);
+      taskJson.args.push(`WARNINGS="${settings.warnings}"`);
+      taskJson.args.push(`WARNINGS_AS_ERRORS=${+settings.warningsAsError}`);
+      if (language === Languages.c) {
+        taskJson.args.push(`C_COMPILER=${settings.compilerPathC}`);
+        taskJson.args.push(`C_STANDARD=${settings.standardC}`);
+      } else {
+        taskJson.args.push(`CPP_COMPILER=${settings.compilerPathCpp}`);
+        taskJson.args.push(`CPP_STANDARD=${settings.standardCpp}`);
+      }
+      if (settings.compilerArgs) {
+        taskJson.args.push(`COMPILER_ARGS=${settings.compilerArgs}`);
+      }
+      if (settings.linkerArgs) {
+        taskJson.args.push(`LINKER_ARGS=${settings.linkerArgs}`);
+      }
+      if (settings.includePaths) {
+        taskJson.args.push(`INCLUDE_PATHS=${settings.includePaths}`);
+      }
+      const architectureStr =
+        this.architectureMode === Architectures.x64 ? "64" : "32";
+      taskJson.args.push(`ARCHITECTURE=${architectureStr}`);
     }
-    if (this.settingsProvider.linkerArgs) {
-      taskJson.args.push(`LINKER_ARGS=${this.settingsProvider.linkerArgs}`);
-    }
-    if (this.settingsProvider.includePaths) {
-      taskJson.args.push(`INCLUDE_PATHS=${this.settingsProvider.includePaths}`);
-    }
-    taskJson.command = this.settingsProvider.makePath;
+    taskJson.command = settings.makePath;
   }
 }

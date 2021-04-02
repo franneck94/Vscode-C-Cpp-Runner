@@ -1,18 +1,14 @@
 {
-    "configurations": [
-        {
-            "name": "",
-            "includePath": [
-                "${workspaceFolder}/**"
-            ],
-            "compilerPath": "",
-            "cStandard": "",
-            "cppStandard": "",
-            "intelliSenseMode": "",
-            "compilerArgs": [
-                ""
-            ]
-        }
-    ],
-    "version": 4
+  "configurations": [
+    {
+      "name": "",
+      "includePath": ["${workspaceFolder}/**"],
+      "compilerPath": "",
+      "cStandard": "",
+      "cppStandard": "",
+      "intelliSenseMode": "",
+      "compilerArgs": [""]
+    }
+  ],
+  "version": 4
 }

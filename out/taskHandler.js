@@ -26,6 +26,7 @@ function taskHandler(taskProvider) {
             if (fileExt && utils_1.isSourceFile(fileExt)) {
                 provideSingleTasks = true;
             }
+            // TODO
             const workspaceFolder = taskProvider.propertiesProvider.workspacePath;
             const buildFolder = path.join(workspaceFolder, "build");
             if (utils_1.pathExists(buildFolder)) {
@@ -36,11 +37,10 @@ function taskHandler(taskProvider) {
                 taskNames.push(task.name);
             });
             if (!provideSingleTasks) {
-                taskNames = taskNames.filter((name) => !name.toLowerCase().includes("single"));
+                taskNames = taskNames.filter((name) => !name.includes(utils_1.Tasks.buildSingle));
             }
             if (!provideBuildFolderTasks) {
-                taskNames = taskNames.filter((name) => !(name.toLowerCase().includes("run") ||
-                    name.toLowerCase().includes("clean")));
+                taskNames = taskNames.filter((name) => !(name.includes(utils_1.Tasks.run) || name.includes(utils_1.Tasks.clean)));
             }
             const pickedTaskName = yield vscode.window.showQuickPick(taskNames);
             if (pickedTaskName) {
@@ -57,4 +57,4 @@ function taskHandler(taskProvider) {
     });
 }
 exports.taskHandler = taskHandler;
-//# sourceMappingURL=commandHandler.js.map
+//# sourceMappingURL=taskHandler.js.map

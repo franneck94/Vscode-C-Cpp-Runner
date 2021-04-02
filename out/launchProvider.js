@@ -12,7 +12,7 @@ class LaunchProvider extends fileProvider_1.FileProvider {
         this.outputFileName = outputFileName;
     }
     writeFileData(inputFilePath, outFilePath) {
-        let configJson = utils_1.readJsonFile(inputFilePath);
+        const configJson = utils_1.readJsonFile(inputFilePath);
         if (undefined === configJson) {
             return;
         }

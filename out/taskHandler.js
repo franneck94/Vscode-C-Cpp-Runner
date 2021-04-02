@@ -16,17 +16,13 @@ const utils_1 = require("./utils");
 function taskHandler(taskProvider) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let provideSingleTasks = false;
             let provideBuildFolderTasks = false;
             const editor = vscode.window.activeTextEditor;
             if (undefined === editor || undefined === taskProvider.tasks) {
                 throw TypeError("No tasks provided.");
             }
-            const fileExt = path.extname(editor.document.fileName);
-            if (fileExt && utils_1.isSourceFile(fileExt)) {
-                provideSingleTasks = true;
-            }
-            let projectFolder;
+            const tasks = taskProvider.tasks;
+            let projectFolder = "";
             if (taskProvider.pickedFolder !== undefined) {
                 projectFolder = taskProvider.pickedFolder;
             }
@@ -38,19 +34,30 @@ function taskHandler(taskProvider) {
                 provideBuildFolderTasks = true;
             }
             let taskNames = [];
-            taskProvider.tasks.forEach((task) => {
+            tasks.forEach((task) => {
                 taskNames.push(task.name);
             });
-            if (!provideSingleTasks) {
-                taskNames = taskNames.filter((name) => !name.includes(utils_1.Tasks.buildSingle));
-            }
             if (!provideBuildFolderTasks) {
                 taskNames = taskNames.filter((name) => !(name.includes(utils_1.Tasks.run) || name.includes(utils_1.Tasks.clean)));
             }
             const pickedTaskName = yield vscode.window.showQuickPick(taskNames);
             if (pickedTaskName) {
-                taskProvider.tasks.forEach((task) => __awaiter(this, void 0, void 0, function* () {
+                tasks.forEach((task) => __awaiter(this, void 0, void 0, function* () {
                     if (pickedTaskName === task.name) {
+                        if (projectFolder !== "") {
+                            if (task.execution &&
+                                task.execution instanceof vscode.ShellExecution &&
+                                task.execution.commandLine) {
+                                task.execution.commandLine = task.execution.commandLine.replace("FILE_DIR", projectFolder);
+                            }
+                        }
+                        else {
+                            if (task.execution &&
+                                task.execution instanceof vscode.ShellExecution &&
+                                task.execution.commandLine) {
+                                task.execution.commandLine = task.execution.commandLine.replace("FILE_DIR", "${fileDirname}/");
+                            }
+                        }
                         yield vscode.tasks.executeTask(task);
                     }
                 }));

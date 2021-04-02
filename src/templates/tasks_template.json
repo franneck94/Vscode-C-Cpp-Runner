@@ -2,41 +2,16 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Build: Single File",
-      "type": "shell",
-      "command": ["make"],
-      "args": [
-        "build_single",
-        "--file=Makefile",
-        "--directory=${fileDirname}/",
-        "FILE_NAME=${file}"
-      ],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": ["$gcc"]
-    },
-    {
       "label": "Build: Folder",
       "type": "shell",
       "command": ["make"],
-      "args": [
-        "build",
-        "--file=Makefile",
-        "--directory=${fileDirname}/"
-      ]
+      "args": ["build", "--file=Makefile", "--directory=FILE_DIR"]
     },
     {
       "label": "Run: Program",
       "type": "shell",
       "command": ["make"],
-      "args": [
-        "execute",
-        "--file=Makefile",
-        "--directory=${fileDirname}/",
-        "--quiet"
-      ],
+      "args": ["execute", "--file=Makefile", "--directory=FILE_DIR", "--quiet"],
       "group": {
         "kind": "build",
         "isDefault": true
@@ -47,12 +22,7 @@
       "label": "Clean: Objects",
       "type": "shell",
       "command": ["make"],
-      "args": [
-        "clean",
-        "--file=Makefile",
-        "--directory=${fileDirname}/",
-        "--quiet"
-      ],
+      "args": ["clean", "--file=Makefile", "--directory=FILE_DIR", "--quiet"],
       "group": {
         "kind": "build",
         "isDefault": true

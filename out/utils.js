@@ -50,7 +50,6 @@ var Builds;
 })(Builds = exports.Builds || (exports.Builds = {}));
 var Tasks;
 (function (Tasks) {
-    Tasks["buildSingle"] = "Build: Single File";
     Tasks["buildFolder"] = "Build: Folder";
     Tasks["run"] = "Run: Program";
     Tasks["clean"] = "Clean: Objects";
@@ -152,7 +151,9 @@ function isCSourceFile(fileExtLower) {
 exports.isCSourceFile = isCSourceFile;
 function getLanguage(fileDirName) {
     const fileDirents = fs.readdirSync(fileDirName, { withFileTypes: true });
-    const files = fileDirents.filter((file) => file.isFile()).map((file) => file.name);
+    const files = fileDirents
+        .filter((file) => file.isFile())
+        .map((file) => file.name);
     const anyCppFile = files.some((file) => isCppSourceFile(path.extname(file)));
     if (anyCppFile) {
         return Languages.cpp;
@@ -180,13 +181,18 @@ function getLanguageFromEditor(editor, filePath) {
 }
 exports.getLanguageFromEditor = getLanguageFromEditor;
 function getDirectories(folder) {
-    const fileDirents = fs.readdirSync(folder.uri.fsPath, {
+    const fileDirents = fs.readdirSync(folder, {
         withFileTypes: true,
     });
     let directories = fileDirents
-        .filter((entry) => entry.isDirectory())
-        .map((entry) => entry.name);
-    directories = directories.filter(dir => !dir.includes(".vscode"));
+        .filter((dir) => dir.isDirectory())
+        .map((dir) => path.join(folder.toString(), dir.name));
+    directories = directories.filter((dir) => !dir.includes(".vscode"));
+    directories = directories.filter((dir) => !dir.includes("build"));
+    if (directories.length === 0) {
+        return;
+    }
+    directories.forEach((dir) => { var _a; return (_a = getDirectories(dir)) === null || _a === void 0 ? void 0 : _a.forEach((newDir) => directories.push(newDir)); });
     return directories;
 }
 exports.getDirectories = getDirectories;

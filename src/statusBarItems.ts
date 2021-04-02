@@ -12,33 +12,30 @@ export function updateFolderStatus(
   const workspace = vscode.workspace.workspaceFolders;
 
   if (!workspace) {
-    return undefined;
+    return;
   }
 
   if (taskProvider && taskProvider.pickedFolder) {
     const workspacePath = taskProvider.propertiesProvider.workspacePath;
     if (taskProvider.pickedFolder !== workspacePath) {
       const workspaceName = path.basename(workspacePath);
-      status.text = taskProvider.pickedFolder.replace(workspacePath, workspaceName);
+      status.text = taskProvider.pickedFolder.replace(
+        workspacePath,
+        workspaceName
+      );
     } else {
       status.text = taskProvider.pickedFolder;
     }
+    status.text = status.text.replace("\\", "/");
   } else {
-    status.text = "Select folder.";
+    status.color = "#ffff00";
+    status.text = "$(alert) Select folder.";
   }
   status.show();
 
   if (!editor) {
-    return "";
+    return;
   }
-
-  const resource = editor.document.uri;
-  let folder: string | undefined = "";
-  if (resource.scheme === "file") {
-    folder = vscode.workspace.getWorkspaceFolder(resource)?.name;
-  }
-
-  return folder ? folder : "";
 }
 
 export function updateModeStatus(

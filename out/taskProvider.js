@@ -76,7 +76,12 @@ class TaskProvider {
         return this.tasks;
     }
     updateTaskBasedOnSettings(taskJson, language) {
+        var _a;
         const settings = this.settingsProvider;
+        const workspace = this.propertiesProvider.workspacePath;
+        const folder = (_a = this.pickedFolder) === null || _a === void 0 ? void 0 : _a.replace(workspace, path.basename(workspace));
+        taskJson.label = taskJson.label.replace(taskJson.label.split(": ")[1], folder);
+        taskJson.label = taskJson.label.replace("\\", "/");
         taskJson.args[1] = `--file=${this.makefileFile}`;
         taskJson.args.push(`COMPILATION_MODE=${this.buildMode}`);
         taskJson.args.push(`EXECUTABLE_NAME=out${this.buildMode}`);

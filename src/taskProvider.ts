@@ -111,6 +111,16 @@ export class TaskProvider implements vscode.TaskProvider {
     language: Languages
   ) {
     const settings = this.settingsProvider;
+    const workspace = this.propertiesProvider.workspacePath;
+    const folder = this.pickedFolder?.replace(
+      workspace,
+      path.basename(workspace)
+    );
+    taskJson.label = taskJson.label.replace(
+      taskJson.label.split(": ")[1],
+      folder
+    );
+    taskJson.label = taskJson.label.replace("\\", "/");
     taskJson.args[1] = `--file=${this.makefileFile}`;
     taskJson.args.push(`COMPILATION_MODE=${this.buildMode}`);
     taskJson.args.push(`EXECUTABLE_NAME=out${this.buildMode}`);

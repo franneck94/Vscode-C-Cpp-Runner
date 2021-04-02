@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.workspaceHandler = void 0;
-const path = require("path");
 const vscode = require("vscode");
 const utils_1 = require("./utils");
 function workspaceHandler() {
@@ -22,15 +21,13 @@ function workspaceHandler() {
             }
             const foldersList = [];
             workspace.forEach((folder) => {
-                const directories = utils_1.getDirectories(folder);
-                directories.forEach(dir => {
-                    let text;
-                    if (directories.length) {
-                        text = `${folder.name}/${dir}`;
-                    }
-                    else {
-                        text = `${folder.name}}`;
-                    }
+                const directories = utils_1.getDirectories(folder.uri.fsPath);
+                if (!directories) {
+                    return;
+                }
+                directories.forEach((dir) => {
+                    let text = dir.replace(folder.uri.fsPath, folder.name);
+                    text = text.replace(/\\/g, "/");
                     foldersList.push(text);
                 });
             });
@@ -40,19 +37,24 @@ function workspaceHandler() {
             let pickedFolder;
             let workspaceFolder;
             if (pickedFolderStr) {
-                workspace.forEach((folder) => {
-                    const directories = utils_1.getDirectories(folder);
-                    if (pickedFolderStr === folder.name) {
-                        pickedFolder = folder.uri.fsPath;
-                        workspaceFolder = folder.uri.fsPath;
-                    }
-                    directories.forEach(dir => {
-                        if (pickedFolderStr === `${folder.name}/${dir}`) {
-                            pickedFolder = path.join(folder.uri.fsPath, dir);
-                            workspaceFolder = folder.uri.fsPath;
-                        }
-                    });
-                });
+                // TODO: Get workspace folder by first folder name in foldersList
+                // TODO:  also pickedFolder is join of workspace and folder name i nfolderList
+                // foldersList.forEach((folder) => {
+                //   const directories = getDirectories(folder.uri.fsPath);
+                //   if (!directories) {
+                //     return;
+                //   }
+                //   if (pickedFolderStr === folder.name) {
+                //     pickedFolder = folder.uri.fsPath;
+                //     workspaceFolder = folder.uri.fsPath;
+                //   }
+                //   directories.forEach((dir) => {
+                //     if (pickedFolderStr === `${folder.name}/${dir}`) {
+                //       pickedFolder = path.join(folder.uri.fsPath, dir);
+                //       workspaceFolder = folder.uri.fsPath;
+                //     }
+                //   });
+                // });
             }
             return { pickedFolder, workspaceFolder };
         }

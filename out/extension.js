@@ -33,34 +33,39 @@ let settingsProvider;
 let launchProvider;
 let propertiesProvider;
 let taskProvider;
-let workspaceFolder;
-let pickedFolder;
 let folderStatusBar;
 let modeStatusBar;
+let workspaceFolder;
+let pickedFolder;
 let buildMode = utils_1.Builds.debug;
 let architectureMode = utils_1.Architectures.x64;
 function activate(context) {
     // Folder status bar item
     const folderStatusBarAlign = vscode.StatusBarAlignment.Left;
-    const folderStatusBarPriority = 2;
+    const folderStatusBarPriority = 1;
     folderStatusBar = vscode.window.createStatusBarItem(folderStatusBarAlign, folderStatusBarPriority);
     context.subscriptions.push(folderStatusBar);
-    workspaceFolder = statusBarItems_1.updateFolderStatus(folderStatusBar, taskProvider);
+    statusBarItems_1.updateFolderStatus(folderStatusBar, taskProvider);
+    if (!vscode.workspace.workspaceFolders ||
+        vscode.workspace.workspaceFolders.length === 0) {
+        return;
+    }
+    workspaceFolder = undefined; // vscode.workspace.workspaceFolders[0].name;
     // Mode status bar item
     const modeStatusBarAlign = vscode.StatusBarAlignment.Left;
-    const modeStatusBarPriority = 1;
+    const modeStatusBarPriority = 2;
     modeStatusBar = vscode.window.createStatusBarItem(modeStatusBarAlign, modeStatusBarPriority);
     context.subscriptions.push(modeStatusBar);
     statusBarItems_1.updateModeStatus(modeStatusBar, buildMode, architectureMode);
     commandInitDisposable = vscode.commands.registerCommand(`${EXTENSION_NAME}.init`, () => __awaiter(this, void 0, void 0, function* () {
         const ret = yield workspaceHandler_1.workspaceHandler();
-        if (ret) {
+        if (ret && pickedFolder && workspaceFolder) {
             pickedFolder = ret.pickedFolder;
             workspaceFolder = ret.workspaceFolder;
             taskProvider.pickedFolder = pickedFolder;
+            initWorkspaceInstance();
+            statusBarItems_1.updateFolderStatus(folderStatusBar, taskProvider);
         }
-        initWorkspaceInstance();
-        updateStatusCallback();
     }));
     folderStatusBar.command = `${EXTENSION_NAME}.init`;
     context.subscriptions.push(commandInitDisposable);
@@ -79,13 +84,6 @@ function activate(context) {
     workspaceInstance(context);
 }
 exports.activate = activate;
-function updateStatusCallback() {
-    const newWorkspacePath = statusBarItems_1.updateFolderStatus(folderStatusBar, taskProvider);
-    if (newWorkspacePath !== workspaceFolder) {
-        workspaceFolder = newWorkspacePath;
-        initWorkspaceInstance();
-    }
-}
 function initWorkspaceInstance() {
     if (undefined === workspaceFolder) {
         return;
@@ -96,15 +94,17 @@ function initWorkspaceInstance() {
     taskProvider = new taskProvider_1.TaskProvider(settingsProvider, propertiesProvider, pickedFolder, buildMode, architectureMode);
 }
 function workspaceInstance(context) {
-    if (undefined === workspaceFolder) {
-        return;
-    }
     initWorkspaceInstance();
     deactivateProviderDisposables();
     taskProviderDisposable = vscode.tasks.registerTaskProvider(EXTENSION_NAME, taskProvider);
     commandHandlerDisposable = vscode.commands.registerCommand(`${EXTENSION_NAME}.run`, () => {
-        taskProvider.getTasks();
-        taskHandler_1.taskHandler(taskProvider);
+        if (workspaceFolder === undefined) {
+            vscode.window.showErrorMessage("You have to select a folder first.");
+        }
+        else {
+            taskProvider.getTasks();
+            taskHandler_1.taskHandler(taskProvider);
+        }
     });
     context.subscriptions.push(taskProviderDisposable);
     context.subscriptions.push(commandHandlerDisposable);

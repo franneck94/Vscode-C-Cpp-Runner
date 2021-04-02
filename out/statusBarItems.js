@@ -4,11 +4,10 @@ exports.updateModeStatus = exports.updateFolderStatus = void 0;
 const path = require("path");
 const vscode = require("vscode");
 function updateFolderStatus(status, taskProvider) {
-    var _a;
     const editor = vscode.window.activeTextEditor;
     const workspace = vscode.workspace.workspaceFolders;
     if (!workspace) {
-        return undefined;
+        return;
     }
     if (taskProvider && taskProvider.pickedFolder) {
         const workspacePath = taskProvider.propertiesProvider.workspacePath;
@@ -19,20 +18,16 @@ function updateFolderStatus(status, taskProvider) {
         else {
             status.text = taskProvider.pickedFolder;
         }
+        status.text = status.text.replace("\\", "/");
     }
     else {
-        status.text = "Select folder.";
+        status.color = "#ffff00";
+        status.text = "$(alert) Select folder.";
     }
     status.show();
     if (!editor) {
-        return "";
+        return;
     }
-    const resource = editor.document.uri;
-    let folder = "";
-    if (resource.scheme === "file") {
-        folder = (_a = vscode.workspace.getWorkspaceFolder(resource)) === null || _a === void 0 ? void 0 : _a.name;
-    }
-    return folder ? folder : "";
 }
 exports.updateFolderStatus = updateFolderStatus;
 function updateModeStatus(status, buildMode, architectureMode) {

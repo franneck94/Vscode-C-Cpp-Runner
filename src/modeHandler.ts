@@ -14,9 +14,13 @@ export async function modeHandler(settingsProvider: SettingsProvider) {
 
     if (settingsProvider) {
       if (settingsProvider.architecure === Architectures.x86) {
-        combinations = combinations.filter(comb => !comb.includes(Architectures.x64));
+        combinations = combinations.filter(
+          (comb) => !comb.includes(Architectures.x64)
+        );
       } else {
-        combinations = combinations.filter(comb => !comb.includes(Architectures.x86));
+        combinations = combinations.filter(
+          (comb) => !comb.includes(Architectures.x86)
+        );
       }
     }
 

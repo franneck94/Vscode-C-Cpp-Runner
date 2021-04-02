@@ -23,10 +23,10 @@ function modeHandler(settingsProvider) {
             ];
             if (settingsProvider) {
                 if (settingsProvider.architecure === utils_1.Architectures.x86) {
-                    combinations = combinations.filter(comb => !comb.includes(utils_1.Architectures.x64));
+                    combinations = combinations.filter((comb) => !comb.includes(utils_1.Architectures.x64));
                 }
                 else {
-                    combinations = combinations.filter(comb => !comb.includes(utils_1.Architectures.x86));
+                    combinations = combinations.filter((comb) => !comb.includes(utils_1.Architectures.x86));
                 }
             }
             const pickedCombination = yield vscode.window.showQuickPick(combinations, {

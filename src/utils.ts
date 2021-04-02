@@ -21,6 +21,10 @@ export interface TasksInterface {
   tasks: InnerTasksInterface[];
 }
 
+export interface TaskDefinitionInterface extends vscode.TaskDefinition {
+  [id: string]: string;
+}
+
 export enum Languages {
   c = "C",
   cpp = "Cpp",
@@ -55,7 +59,6 @@ export enum Builds {
 }
 
 export enum Tasks {
-  buildSingle = "Build: Single File",
   buildFolder = "Build: Folder",
   run = "Run: Program",
   clean = "Clean: Objects",
@@ -162,7 +165,9 @@ export function isCSourceFile(fileExtLower: string) {
 
 export function getLanguage(fileDirName: string) {
   const fileDirents = fs.readdirSync(fileDirName, { withFileTypes: true });
-  const files = fileDirents.filter((file) => file.isFile()).map((file) => file.name);
+  const files = fileDirents
+    .filter((file) => file.isFile())
+    .map((file) => file.name);
   const anyCppFile = files.some((file) => isCppSourceFile(path.extname(file)));
 
   if (anyCppFile) {
@@ -192,13 +197,20 @@ export function getLanguageFromEditor(
   return language;
 }
 
-export function getDirectories(folder: vscode.WorkspaceFolder) {
-  const fileDirents = fs.readdirSync(folder.uri.fsPath, {
+export function getDirectories(folder: fs.PathLike) {
+  const fileDirents = fs.readdirSync(folder, {
     withFileTypes: true,
   });
   let directories = fileDirents
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => entry.name);
-  directories = directories.filter(dir => !dir.includes(".vscode"));
+    .filter((dir) => dir.isDirectory())
+    .map((dir) => path.join(folder.toString(), dir.name));
+  directories = directories.filter((dir) => !dir.includes(".vscode"));
+  directories = directories.filter((dir) => !dir.includes("build"));
+  if (directories.length === 0) {
+    return;
+  }
+  directories.forEach((dir) =>
+    getDirectories(dir)?.forEach((newDir) => directories.push(newDir))
+  );
   return directories;
 }

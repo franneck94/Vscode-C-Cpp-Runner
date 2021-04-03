@@ -17,7 +17,7 @@ function taskHandler(taskProvider) {
     return __awaiter(this, void 0, void 0, function* () {
         let provideBuildFolderTasks = false;
         const editor = vscode.window.activeTextEditor;
-        if (undefined === editor || undefined === taskProvider.tasks) {
+        if (!editor || !taskProvider.tasks) {
             throw TypeError("No tasks provided.");
         }
         const tasks = taskProvider.tasks;

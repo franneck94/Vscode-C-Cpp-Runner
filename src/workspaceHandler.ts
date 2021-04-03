@@ -24,8 +24,7 @@ export async function workspaceHandler() {
   });
 
   const pickedFolderStr = await vscode.window.showQuickPick(foldersList, {
-    placeHolder:
-      "Select workspace folder to init the C/C++ Runner extension.",
+    placeHolder: "Select workspace folder to init the C/C++ Runner extension.",
   });
   let pickedFolder;
   let workspaceFolder;

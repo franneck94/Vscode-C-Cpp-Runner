@@ -8,7 +8,7 @@ export async function taskHandler(taskProvider: TaskProvider) {
   let provideBuildFolderTasks = false;
   const editor = vscode.window.activeTextEditor;
 
-  if (undefined === editor || undefined === taskProvider.tasks) {
+  if (!editor || !taskProvider.tasks) {
     throw TypeError("No tasks provided.");
   }
 

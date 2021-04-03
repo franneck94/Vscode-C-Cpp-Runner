@@ -14,7 +14,7 @@ class PropertiesProvider extends fileProvider_1.FileProvider {
     }
     writeFileData(inputFilePath, outFilePath) {
         const configJson = utils_1.readJsonFile(inputFilePath);
-        if (undefined === configJson) {
+        if (!configJson) {
             return;
         }
         const editor = vscode.window.activeTextEditor;

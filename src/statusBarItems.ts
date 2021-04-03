@@ -26,7 +26,8 @@ export function updateFolderStatus(
     } else {
       status.text = taskProvider.pickedFolder;
     }
-    status.text = status.text.replace("\\", "/");
+    status.color = "";
+    status.text = status.text.replace(/\\/g, "/");
   } else {
     status.color = "#ffff00";
     status.text = "$(alert) Select folder.";
@@ -43,14 +44,10 @@ export function updateModeStatus(
   buildMode: Builds,
   architectureMode: Architectures
 ) {
-  const info = {
-    text: `${buildMode} - ${architectureMode}`,
-    tooltip: "tooltip",
-  };
-  status.text = info.text;
-  status.tooltip = info.tooltip;
+  const text = `${buildMode} - ${architectureMode}`;
+  status.text = text;
 
-  if (info) {
+  if (text) {
     status.show();
   } else {
     status.hide();

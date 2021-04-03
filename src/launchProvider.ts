@@ -20,7 +20,7 @@ export class LaunchProvider extends FileProvider {
   public writeFileData(inputFilePath: string, outFilePath: string) {
     const configJson: JsonInterface = readJsonFile(inputFilePath);
 
-    if (undefined === configJson) {
+    if (!configJson) {
       return;
     }
 

@@ -109,7 +109,7 @@ export function getOperatingSystem() {
 export async function commandExists(command: string) {
   let commandPath = await lookpath(command);
 
-  if (undefined === commandPath) {
+  if (!commandPath) {
     return { found: false, path: commandPath };
   }
 

@@ -99,7 +99,7 @@ exports.getOperatingSystem = getOperatingSystem;
 function commandExists(command) {
     return __awaiter(this, void 0, void 0, function* () {
         let commandPath = yield lookpath_1.lookpath(command);
-        if (undefined === commandPath) {
+        if (!commandPath) {
             return { found: false, path: commandPath };
         }
         if (commandPath.includes(".EXE")) {

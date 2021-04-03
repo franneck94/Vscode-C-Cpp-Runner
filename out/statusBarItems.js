@@ -18,7 +18,8 @@ function updateFolderStatus(status, taskProvider) {
         else {
             status.text = taskProvider.pickedFolder;
         }
-        status.text = status.text.replace("\\", "/");
+        status.color = "";
+        status.text = status.text.replace(/\\/g, "/");
     }
     else {
         status.color = "#ffff00";
@@ -31,13 +32,9 @@ function updateFolderStatus(status, taskProvider) {
 }
 exports.updateFolderStatus = updateFolderStatus;
 function updateModeStatus(status, buildMode, architectureMode) {
-    const info = {
-        text: `${buildMode} - ${architectureMode}`,
-        tooltip: "tooltip",
-    };
-    status.text = info.text;
-    status.tooltip = info.tooltip;
-    if (info) {
+    const text = `${buildMode} - ${architectureMode}`;
+    status.text = text;
+    if (text) {
         status.show();
     }
     else {

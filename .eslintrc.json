@@ -98,7 +98,6 @@
           "no-boolean-literal-compare": true,
           "no-mergeable-namespace": true,
           "no-reference-import": true,
-          "no-unnecessary-callback-wrapper": true,
           "number-literal-format": true,
           "one-line": [
             true,

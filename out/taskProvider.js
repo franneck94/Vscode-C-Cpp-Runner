@@ -25,7 +25,7 @@ class TaskProvider {
         const templateDirectory = path.join(extDirectory, "src", "templates");
         this.tasksFile = path.join(templateDirectory, "tasks_template.json");
         this.makefileFile = path.join(templateDirectory, "Makefile");
-        if (this.pickedFolder === undefined) {
+        if (!this.pickedFolder) {
             this.pickedFolder = this.propertiesProvider.workspacePath;
         }
         this.getTasks();
@@ -42,14 +42,14 @@ class TaskProvider {
         const editor = vscode.window.activeTextEditor;
         const language = utils_1.getLanguageFromEditor(editor, this.propertiesProvider.workspacePath);
         this.setTasksDefinition(language);
-        if (this.tasks === undefined) {
+        if (!this.tasks) {
             return [];
         }
         return this.tasks;
     }
     setTasksDefinition(language) {
         const configJson = utils_1.readJsonFile(this.tasksFile);
-        if (undefined === configJson) {
+        if (!configJson) {
             return [];
         }
         this.tasks = [];
@@ -58,7 +58,7 @@ class TaskProvider {
                 continue;
             }
             if (undefined !== taskJson.options) {
-                if (taskJson.options.hide === true) {
+                if (taskJson.options.hide) {
                     continue;
                 }
             }
@@ -81,7 +81,7 @@ class TaskProvider {
         const workspace = this.propertiesProvider.workspacePath;
         const folder = (_a = this.pickedFolder) === null || _a === void 0 ? void 0 : _a.replace(workspace, path.basename(workspace));
         taskJson.label = taskJson.label.replace(taskJson.label.split(": ")[1], folder);
-        taskJson.label = taskJson.label.replace("\\", "/");
+        taskJson.label = taskJson.label.replace(/\\/g, "/");
         taskJson.args[1] = `--file=${this.makefileFile}`;
         taskJson.args.push(`COMPILATION_MODE=${this.buildMode}`);
         taskJson.args.push(`EXECUTABLE_NAME=out${this.buildMode}`);

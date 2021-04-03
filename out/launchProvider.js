@@ -13,7 +13,7 @@ class LaunchProvider extends fileProvider_1.FileProvider {
     }
     writeFileData(inputFilePath, outFilePath) {
         const configJson = utils_1.readJsonFile(inputFilePath);
-        if (undefined === configJson) {
+        if (!configJson) {
             return;
         }
         configJson.configurations[0].name = `Launch: Debug Program`;

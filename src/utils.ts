@@ -1,15 +1,28 @@
-import * as fs from "fs";
-import * as path from "path";
-import { platform } from "os";
-import { lookpath } from "lookpath";
 import { execSync } from "child_process";
+import * as fs from "fs";
+import { lookpath } from "lookpath";
+import { platform } from "os";
+import * as path from "path";
+import * as vscode from "vscode";
 
 export interface JsonInterface {
-  configurations: Array<any>;
+  configurations: any[];
+}
+
+export interface InnerTasksInterface {
+  args: string[];
+  command: string;
+  type: any;
+  options: any;
+  label: any;
 }
 
 export interface TasksInterface {
-  tasks: Array<any>;
+  tasks: InnerTasksInterface[];
+}
+
+export interface TaskDefinitionInterface extends vscode.TaskDefinition {
+  [id: string]: string;
 }
 
 export enum Languages {
@@ -38,6 +51,17 @@ export enum OperatingSystems {
 export enum Architectures {
   x86 = "x86",
   x64 = "x64",
+}
+
+export enum Builds {
+  debug = "Debug",
+  release = "Release",
+}
+
+export enum Tasks {
+  buildFolder = "Build: Folder",
+  run = "Run: Program",
+  clean = "Clean: Objects",
 }
 
 export function pathExists(filePath: string): boolean {
@@ -71,9 +95,9 @@ export function getOperatingSystem() {
   const plattformName = platform();
   let operatingSystem: OperatingSystems;
 
-  if ("win32" === plattformName || "cygwin" === plattformName) {
+  if (plattformName === "win32" || plattformName === "cygwin") {
     operatingSystem = OperatingSystems.windows;
-  } else if ("darwin" === plattformName) {
+  } else if (plattformName === "darwin") {
     operatingSystem = OperatingSystems.mac;
   } else {
     operatingSystem = OperatingSystems.linux;
@@ -85,7 +109,7 @@ export function getOperatingSystem() {
 export async function commandExists(command: string) {
   let commandPath = await lookpath(command);
 
-  if (undefined === commandPath) {
+  if (!commandPath) {
     return { found: false, path: commandPath };
   }
 
@@ -97,11 +121,11 @@ export async function commandExists(command: string) {
 }
 
 export function getArchitecture(compiler: Compilers) {
-  let command = `${compiler} -dumpmachine`;
+  const command = `${compiler} -dumpmachine`;
 
   try {
-    let byteArray = execSync(command);
-    let str = String.fromCharCode(...byteArray);
+    const byteArray = execSync(command);
+    const str = String.fromCharCode(...byteArray);
 
     if (str.includes("64")) {
       return Architectures.x64;
@@ -136,12 +160,15 @@ export function isCppSourceFile(fileExtLower: string) {
 }
 
 export function isCSourceFile(fileExtLower: string) {
-  return ".c" === fileExtLower;
+  return fileExtLower === ".c";
 }
 
 export function getLanguage(fileDirName: string) {
-  let files = fs.readdirSync(fileDirName);
-  let anyCppFile = files.some((file) => isCppSourceFile(path.extname(file)));
+  const fileDirents = fs.readdirSync(fileDirName, { withFileTypes: true });
+  const files = fileDirents
+    .filter((file) => file.isFile())
+    .map((file) => file.name);
+  const anyCppFile = files.some((file) => isCppSourceFile(path.extname(file)));
 
   if (anyCppFile) {
     return Languages.cpp;
@@ -150,21 +177,20 @@ export function getLanguage(fileDirName: string) {
   }
 }
 
-export function getLanguageFromEditor(
-  editor: any | undefined,
-  filePath: string
-) {
-  let language: Languages;
-
-  if (!editor) {
-    language = getLanguage(filePath);
-  } else {
-    if (".vscode" !== path.dirname(editor.document.fileName)) {
-      const fileDirName = path.dirname(editor.document.fileName);
-      language = getLanguage(fileDirName);
-    }
-    language = getLanguage(filePath);
+export function getDirectories(folder: fs.PathLike) {
+  const fileDirents = fs.readdirSync(folder, {
+    withFileTypes: true,
+  });
+  let directories = fileDirents
+    .filter((dir) => dir.isDirectory())
+    .map((dir) => path.join(folder.toString(), dir.name));
+  directories = directories.filter((dir) => !dir.includes(".vscode"));
+  directories = directories.filter((dir) => !dir.includes("build"));
+  if (directories.length === 0) {
+    return;
   }
-
-  return language;
+  directories.forEach((dir) =>
+    getDirectories(dir)?.forEach((newDir) => directories.push(newDir))
+  );
+  return directories;
 }

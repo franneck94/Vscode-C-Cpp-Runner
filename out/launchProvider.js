@@ -4,16 +4,16 @@ exports.LaunchProvider = void 0;
 const fileProvider_1 = require("./fileProvider");
 const utils_1 = require("./utils");
 class LaunchProvider extends fileProvider_1.FileProvider {
-    constructor(settings, workspacePath, templateFileName, outputFileName) {
-        super(settings, workspacePath, templateFileName, outputFileName);
+    constructor(settings, workspaceFolder, templateFileName, outputFileName) {
+        super(settings, workspaceFolder, templateFileName, outputFileName);
         this.settings = settings;
-        this.workspacePath = workspacePath;
+        this.workspaceFolder = workspaceFolder;
         this.templateFileName = templateFileName;
         this.outputFileName = outputFileName;
     }
     writeFileData(inputFilePath, outFilePath) {
-        let configJson = utils_1.readJsonFile(inputFilePath);
-        if (undefined === configJson) {
+        const configJson = utils_1.readJsonFile(inputFilePath);
+        if (!configJson) {
             return;
         }
         configJson.configurations[0].name = `Launch: Debug Program`;

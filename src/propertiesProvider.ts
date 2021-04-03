@@ -1,35 +1,37 @@
 import * as vscode from "vscode";
 
+import { FileProvider } from "./fileProvider";
+import { SettingsProvider } from "./settingsProvider";
 import {
-  getLanguageFromEditor,
+  getLanguage,
   JsonInterface,
   Languages,
   readJsonFile,
   writeJsonFile,
 } from "./utils";
-import { SettingsProvider } from "./settingsProvider";
-import { FileProvider } from "./fileProvider";
 
 export class PropertiesProvider extends FileProvider {
   constructor(
     public settings: SettingsProvider,
-    public workspacePath: string,
+    public workspaceFolder: string,
     public templateFileName: string,
     public outputFileName: string
   ) {
-    super(settings, workspacePath, templateFileName, outputFileName);
+    super(settings, workspaceFolder, templateFileName, outputFileName);
   }
 
   public writeFileData(inputFilePath: string, outFilePath: string) {
-    let configJson: JsonInterface = readJsonFile(inputFilePath);
-    if (undefined === configJson) {
+    const configJson: JsonInterface = readJsonFile(inputFilePath);
+    if (!configJson) {
       return;
     }
 
-    const editor = vscode.window.activeTextEditor;
-    const language = getLanguageFromEditor(editor, this.workspacePath);
-    const triplet = `${this.settings.operatingSystem}-${this.settings.cCompiler}-${this.settings.architecure}`;
-    let config = configJson.configurations[0];
+    const language = getLanguage(this.workspaceFolder);
+    const triplet =
+      `${this.settings.operatingSystem}-` +
+      `${this.settings.cCompiler}-` +
+      `${this.settings.architecure}`;
+    const config = configJson.configurations[0];
 
     config.compilerArgs = this.settings.warnings.split(" ");
     if (this.settings.compilerArgs) {

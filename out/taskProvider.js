@@ -15,20 +15,22 @@ const vscode = require("vscode");
 const utils_1 = require("./utils");
 const EXTENSION_NAME = "C_Cpp_Runner";
 class TaskProvider {
-    constructor(settingsProvider, propertiesProvider) {
+    constructor(settingsProvider, propertiesProvider, pickedFolder, buildMode, architectureMode) {
         this.settingsProvider = settingsProvider;
         this.propertiesProvider = propertiesProvider;
+        this.pickedFolder = pickedFolder;
+        this.buildMode = buildMode;
+        this.architectureMode = architectureMode;
         const extDirectory = path.dirname(__dirname);
         const templateDirectory = path.join(extDirectory, "src", "templates");
         this.tasksFile = path.join(templateDirectory, "tasks_template.json");
         this.makefileFile = path.join(templateDirectory, "Makefile");
-        this.problemMatcher = "$gcc";
-        if (!utils_1.pathExists(this.tasksFile) || !utils_1.pathExists(this.makefileFile)) {
-            return;
+        if (!this.pickedFolder) {
+            this.pickedFolder = this.propertiesProvider.workspaceFolder;
         }
         this.getTasks();
     }
-    resolveTask(task, token) {
+    resolveTask(task) {
         return __awaiter(this, void 0, void 0, function* () {
             return task;
         });
@@ -36,26 +38,26 @@ class TaskProvider {
     provideTasks() {
         return this.getTasks();
     }
-    getTasks(ignoreLanguage = false) {
-        const editor = vscode.window.activeTextEditor;
-        let language;
-        if (false === ignoreLanguage) {
-            language = utils_1.getLanguageFromEditor(editor, this.propertiesProvider.workspacePath);
+    getTasks() {
+        const language = utils_1.getLanguage(this.pickedFolder);
+        this.setTasksDefinition(language);
+        if (!this.tasks) {
+            return [];
         }
-        else {
-            language = utils_1.Languages.c;
-        }
-        let configJson = utils_1.readJsonFile(this.tasksFile);
-        if (undefined === configJson) {
+        return this.tasks;
+    }
+    setTasksDefinition(language) {
+        const configJson = utils_1.readJsonFile(this.tasksFile);
+        if (!configJson) {
             return [];
         }
         this.tasks = [];
-        for (let taskJson of configJson.tasks) {
-            if ("shell" !== taskJson.type) {
+        for (const taskJson of configJson.tasks) {
+            if (taskJson.type !== "shell") {
                 continue;
             }
             if (undefined !== taskJson.options) {
-                if (true === taskJson.options.hide) {
+                if (taskJson.options.hide) {
                     continue;
                 }
             }
@@ -65,32 +67,51 @@ class TaskProvider {
                 type: "shell",
                 task: taskJson.label,
             };
+            const problemMatcher = "$gcc";
             const scope = vscode.TaskScope.Workspace;
-            const task = new vscode.Task(definition, scope, taskJson.label, EXTENSION_NAME, new vscode.ShellExecution(shellCommand), this.problemMatcher);
+            const task = new vscode.Task(definition, scope, taskJson.label, EXTENSION_NAME, new vscode.ShellExecution(shellCommand), problemMatcher);
             this.tasks.push(task);
         }
         return this.tasks;
     }
     updateTaskBasedOnSettings(taskJson, language) {
+        const settings = this.settingsProvider;
+        const pickedFolder = this.pickedFolder;
+        const workspaceFolder = this.propertiesProvider.workspaceFolder;
+        const folder = pickedFolder.replace(workspaceFolder, path.basename(workspaceFolder));
+        taskJson.label = taskJson.label.replace(taskJson.label.split(": ")[1], folder);
+        taskJson.label = taskJson.label.replace(/\\/g, "/");
         taskJson.args[1] = `--file=${this.makefileFile}`;
-        taskJson.args.push(`ENABLE_WARNINGS=${+this.settingsProvider.enableWarnings}`);
-        taskJson.args.push(`WARNINGS="${this.settingsProvider.warnings}"`);
-        taskJson.args.push(`WARNINGS_AS_ERRORS=${+this.settingsProvider.warningsAsError}`);
-        taskJson.args.push(`C_COMPILER=${this.settingsProvider.compilerPathC}`);
-        taskJson.args.push(`CPP_COMPILER=${this.settingsProvider.compilerPathCpp}`);
+        taskJson.args.push(`COMPILATION_MODE=${this.buildMode}`);
+        taskJson.args.push(`EXECUTABLE_NAME=out${this.buildMode}`);
         taskJson.args.push(`LANGUAGE_MODE=${language}`);
-        taskJson.args.push(`C_STANDARD=${this.settingsProvider.standardC}`);
-        taskJson.args.push(`CPP_STANDARD=${this.settingsProvider.standardCpp}`);
-        if (this.settingsProvider.compilerArgs) {
-            taskJson.args.push(`COMPILER_ARGS=${this.settingsProvider.compilerArgs}`);
+        const includesClean = taskJson.label.includes(utils_1.Tasks.clean);
+        const includesRun = taskJson.label.includes(utils_1.Tasks.run);
+        if (!includesClean && !includesRun) {
+            taskJson.args.push(`ENABLE_WARNINGS=${+settings.enableWarnings}`);
+            taskJson.args.push(`WARNINGS="${settings.warnings}"`);
+            taskJson.args.push(`WARNINGS_AS_ERRORS=${+settings.warningsAsError}`);
+            if (language === utils_1.Languages.c) {
+                taskJson.args.push(`C_COMPILER=${settings.compilerPathC}`);
+                taskJson.args.push(`C_STANDARD=${settings.standardC}`);
+            }
+            else {
+                taskJson.args.push(`CPP_COMPILER=${settings.compilerPathCpp}`);
+                taskJson.args.push(`CPP_STANDARD=${settings.standardCpp}`);
+            }
+            if (settings.compilerArgs) {
+                taskJson.args.push(`COMPILER_ARGS=${settings.compilerArgs}`);
+            }
+            if (settings.linkerArgs) {
+                taskJson.args.push(`LINKER_ARGS=${settings.linkerArgs}`);
+            }
+            if (settings.includePaths) {
+                taskJson.args.push(`INCLUDE_PATHS=${settings.includePaths}`);
+            }
+            const architectureStr = this.architectureMode === utils_1.Architectures.x64 ? "64" : "32";
+            taskJson.args.push(`ARCHITECTURE=${architectureStr}`);
         }
-        if (this.settingsProvider.linkerArgs) {
-            taskJson.args.push(`LINKER_ARGS=${this.settingsProvider.linkerArgs}`);
-        }
-        if (this.settingsProvider.includePaths) {
-            taskJson.args.push(`INCLUDE_PATHS=${this.settingsProvider.includePaths}`);
-        }
-        taskJson.command = this.settingsProvider.makePath;
+        taskJson.command = settings.makePath;
     }
 }
 exports.TaskProvider = TaskProvider;

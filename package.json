@@ -2,7 +2,7 @@
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
   "description": "Compile and run your C/C++ code.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "publisher": "franneck94",
   "icon": "icon.png",
   "galleryBanner": {
@@ -33,10 +33,11 @@
   "activationEvents": [
     "onLanguage:c",
     "onLanguage:cpp",
-    "workspaceContains:*.c",
-    "workspaceContains:*.cc",
-    "workspaceContains:*.cxx",
-    "workspaceContains:*.cpp"
+    "onDebugResolve:c",
+    "onDebugResolve:cpp",
+    "onCommand:C_Cpp_Runner.init",
+    "onCommand:C_Cpp_Runner.mode",
+    "onCommand:C_Cpp_Runner.run"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -49,6 +50,14 @@
       {
         "command": "C_Cpp_Runner.run",
         "title": "Run Command"
+      },
+      {
+        "command": "C_Cpp_Runner.init",
+        "title": "Init Command"
+      },
+      {
+        "command": "C_Cpp_Runner.mode",
+        "title": "Select Mode Command"
       }
     ],
     "keybindings": [
@@ -66,43 +75,43 @@
           "type": "boolean",
           "default": true,
           "description": "Whether to enable checking warnings or not.",
-          "scope": "window"
+          "scope": "resource"
         },
         "C_Cpp_Runner.warnings": {
           "type": "string",
           "default": "-Wall -Wextra -Wpedantic",
           "description": "Warnings to check by the compiler. Seperated by whitespaces.",
-          "scope": "window"
+          "scope": "resource"
         },
         "C_Cpp_Runner.warningsAsError": {
           "type": "boolean",
           "default": false,
           "description": "Whether to treat warnings as compiler errors or not.",
-          "scope": "window"
+          "scope": "machine-overridable"
         },
         "C_Cpp_Runner.compilerPathC": {
           "type": "string",
           "default": "gcc",
           "description": "The path to the C Compiler (either gcc or clang).",
-          "scope": "window"
+          "scope": "resource"
         },
         "C_Cpp_Runner.compilerPathCpp": {
           "type": "string",
           "default": "g++",
           "description": "The path to the C++ Compiler (either g++ or clang++).",
-          "scope": "window"
+          "scope": "resource"
         },
         "C_Cpp_Runner.debuggerPath": {
           "type": "string",
           "default": "gdb",
           "description": "The path to the debugger (either gdb or lldb).",
-          "scope": "window"
+          "scope": "resource"
         },
         "C_Cpp_Runner.makePath": {
           "type": "string",
           "default": "make",
           "description": "The path to the make installation.",
-          "scope": "window"
+          "scope": "resource"
         },
         "C_Cpp_Runner.standardC": {
           "type": "string",
@@ -121,7 +130,7 @@
           ],
           "default": "c90",
           "description": "C-Standard for the C Compiler.",
-          "scope": "window"
+          "scope": "resource"
         },
         "C_Cpp_Runner.standardCpp": {
           "type": "string",
@@ -142,25 +151,25 @@
           ],
           "default": "c++11",
           "description": "C++ Standard for the C++ Compiler.",
-          "scope": "window"
+          "scope": "resource"
         },
         "C_Cpp_Runner.compilerArgs": {
           "type": "string",
           "default": "",
           "description": "Additional compiler arguments. Seperated by whitespaces.",
-          "scope": "window"
+          "scope": "resource"
         },
         "C_Cpp_Runner.linkerArgs": {
           "type": "string",
           "default": "",
           "description": "Additional linker arguments. Seperated by whitespaces.",
-          "scope": "window"
+          "scope": "resource"
         },
         "C_Cpp_Runner.includePaths": {
           "type": "string",
           "default": "",
           "description": "Additional include paths. Seperated by whitespaces.",
-          "scope": "window"
+          "scope": "resource"
         }
       }
     }
@@ -179,8 +188,11 @@
     "@types/node": "^14.0.27",
     "@types/vscode": "^1.53.0",
     "@typescript-eslint/eslint-plugin": "^4.1.1",
+    "@typescript-eslint/eslint-plugin-tslint": "^4.20.0",
     "@typescript-eslint/parser": "^4.1.1",
     "eslint": "^7.9.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsdoc": "^32.3.0",
     "glob": "^7.1.6",
     "mocha": "^8.1.3",
     "typescript": "^4.0.2",
@@ -190,6 +202,6 @@
   "dependencies": {
     "lookpath": "^1.2.0",
     "ts-loader": "^8.1.0",
-    "vsce": "^1.87.0"
+    "vsce": "^1.87.1"
   }
 }

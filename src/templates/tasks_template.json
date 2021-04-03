@@ -2,41 +2,16 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Build: Debug (Folder)",
+      "label": "Build: Folder",
       "type": "shell",
       "command": ["make"],
-      "args": [
-        "build",
-        "--file=Makefile",
-        "--directory=${fileDirname}/",
-        "COMPILATION_MODE=Debug",
-        "EXECUTABLE_NAME=${fileBasenameNoExtension}Debug"
-      ]
+      "args": ["build", "--file=Makefile", "--directory=FILE_DIR"]
     },
     {
-      "label": "Build: Release (Folder)",
+      "label": "Run: Program",
       "type": "shell",
       "command": ["make"],
-      "args": [
-        "build",
-        "--file=Makefile",
-        "--directory=${fileDirname}/",
-        "COMPILATION_MODE=Release",
-        "EXECUTABLE_NAME=${fileBasenameNoExtension}Release"
-      ]
-    },
-    {
-      "label": "Build: Debug (Single File)",
-      "type": "shell",
-      "command": ["make"],
-      "args": [
-        "build_single",
-        "--file=Makefile",
-        "--directory=${fileDirname}/",
-        "FILE_NAME=${file}",
-        "COMPILATION_MODE=Debug",
-        "EXECUTABLE_NAME=${fileBasenameNoExtension}Debug"
-      ],
+      "args": ["execute", "--file=Makefile", "--directory=FILE_DIR", "--quiet"],
       "group": {
         "kind": "build",
         "isDefault": true
@@ -44,87 +19,10 @@
       "problemMatcher": ["$gcc"]
     },
     {
-      "label": "Build: Release (Single File)",
+      "label": "Clean: Objects",
       "type": "shell",
       "command": ["make"],
-      "args": [
-        "build_single",
-        "--file=Makefile",
-        "--directory=${fileDirname}/",
-        "FILE_NAME=${file}",
-        "COMPILATION_MODE=Release",
-        "EXECUTABLE_NAME=${fileBasenameNoExtension}Release"
-      ],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": ["$gcc"]
-    },
-    {
-      "label": "Run: Debug Program",
-      "type": "shell",
-      "command": ["make"],
-      "args": [
-        "execute",
-        "--file=Makefile",
-        "--directory=${fileDirname}/",
-        "--quiet",
-        "COMPILATION_MODE=Debug",
-        "EXECUTABLE_NAME=${fileBasenameNoExtension}Debug"
-      ],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": ["$gcc"]
-    },
-    {
-      "label": "Run: Release Program",
-      "type": "shell",
-      "command": ["make"],
-      "args": [
-        "execute",
-        "--file=Makefile",
-        "--directory=${fileDirname}/",
-        "--quiet",
-        "COMPILATION_MODE=Release",
-        "EXECUTABLE_NAME=${fileBasenameNoExtension}Release"
-      ],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": ["$gcc"]
-    },
-    {
-      "label": "Clean: Debug Objects",
-      "type": "shell",
-      "command": ["make"],
-      "args": [
-        "clean",
-        "--file=Makefile",
-        "--directory=${fileDirname}/",
-        "--quiet",
-        "COMPILATION_MODE=Debug"
-      ],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": ["$gcc"]
-    },
-    {
-      "label": "Clean: Release Objects",
-      "type": "shell",
-      "command": ["make"],
-      "args": [
-        "clean",
-        "--file=Makefile",
-        "--directory=${fileDirname}/",
-        "--quiet",
-        "COMPILATION_MODE=Release"
-      ],
+      "args": ["clean", "--file=Makefile", "--directory=FILE_DIR", "--quiet"],
       "group": {
         "kind": "build",
         "isDefault": true

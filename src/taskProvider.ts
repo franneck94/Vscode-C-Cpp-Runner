@@ -6,7 +6,7 @@ import { SettingsProvider } from "./settingsProvider";
 import {
   Architectures,
   Builds,
-  getLanguageFromEditor,
+  getLanguage,
   InnerTasksInterface,
   Languages,
   readJsonFile,
@@ -33,7 +33,7 @@ export class TaskProvider implements vscode.TaskProvider {
     this.tasksFile = path.join(templateDirectory, "tasks_template.json");
     this.makefileFile = path.join(templateDirectory, "Makefile");
     if (!this.pickedFolder) {
-      this.pickedFolder = this.propertiesProvider.workspacePath;
+      this.pickedFolder = this.propertiesProvider.workspaceFolder;
     }
 
     this.getTasks();
@@ -48,11 +48,7 @@ export class TaskProvider implements vscode.TaskProvider {
   }
 
   public getTasks(): vscode.Task[] {
-    const editor = vscode.window.activeTextEditor;
-    const language = getLanguageFromEditor(
-      editor,
-      this.propertiesProvider.workspacePath
-    );
+    const language = getLanguage(this.propertiesProvider.pickedFolder);
 
     this.setTasksDefinition(language);
 
@@ -111,10 +107,11 @@ export class TaskProvider implements vscode.TaskProvider {
     language: Languages
   ) {
     const settings = this.settingsProvider;
-    const workspace = this.propertiesProvider.workspacePath;
-    const folder = this.pickedFolder?.replace(
-      workspace,
-      path.basename(workspace)
+    const pickedFolder = this.propertiesProvider.pickedFolder;
+    const workspaceFolder = this.propertiesProvider.workspaceFolder;
+    const folder = pickedFolder.replace(
+      workspaceFolder,
+      path.basename(workspaceFolder)
     );
     taskJson.label = taskJson.label.replace(
       taskJson.label.split(": ")[1],

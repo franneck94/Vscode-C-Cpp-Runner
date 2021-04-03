@@ -36,8 +36,8 @@ export class SettingsProvider {
   public linkerArgs: string = "";
   public includePaths: String = "";
 
-  constructor(workspacePath: string) {
-    const vscodeDirectory = path.join(workspacePath, ".vscode");
+  constructor(workspaceFolder: string) {
+    const vscodeDirectory = path.join(workspaceFolder, ".vscode");
     const propertiesPath = path.join(vscodeDirectory, "c_cpp_properties.json");
 
     if (!pathExists(propertiesPath)) {

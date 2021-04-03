@@ -91,8 +91,6 @@ build: $(BUILD_DIR) | $(BUILD_DIR)/$(EXECUTABLE_NAME)
 #############
 ## TARGETS ##
 #############
-build_single: $(BUILD_DIR)
-	$(COMPILER_CALL) -o $(BUILD_DIR)/$(EXECUTABLE_NAME) $(FILE_NAME)
 
 $(BUILD_DIR)/$(EXECUTABLE_NAME): $(OBJECTS)
 	$(COMPILER_CALL) $^ -o $@

@@ -177,26 +177,6 @@ export function getLanguage(fileDirName: string) {
   }
 }
 
-export function getLanguageFromEditor(
-  editor: any | undefined,
-  filePath: string
-) {
-  let language: Languages;
-
-  if (!editor) {
-    language = getLanguage(filePath);
-  } else {
-    if (path.dirname(editor.document.fileName) !== ".vscode") {
-      const fileDirName = path.dirname(editor.document.fileName);
-      language = getLanguage(fileDirName);
-    } else {
-      language = Languages.c;
-    }
-  }
-
-  return language;
-}
-
 export function getDirectories(folder: fs.PathLike) {
   const fileDirents = fs.readdirSync(folder, {
     withFileTypes: true,

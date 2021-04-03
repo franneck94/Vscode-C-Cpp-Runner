@@ -5,15 +5,15 @@ const path = require("path");
 const vscode = require("vscode");
 function updateFolderStatus(status, taskProvider) {
     const editor = vscode.window.activeTextEditor;
-    const workspace = vscode.workspace.workspaceFolders;
-    if (!workspace) {
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (!workspaceFolders) {
         return;
     }
     if (taskProvider && taskProvider.pickedFolder) {
-        const workspacePath = taskProvider.propertiesProvider.workspacePath;
-        if (taskProvider.pickedFolder !== workspacePath) {
-            const workspaceName = path.basename(workspacePath);
-            status.text = taskProvider.pickedFolder.replace(workspacePath, workspaceName);
+        const workspaceFolder = taskProvider.propertiesProvider.workspaceFolder;
+        if (taskProvider.pickedFolder !== workspaceFolder) {
+            const workspaceName = path.basename(workspaceFolder);
+            status.text = taskProvider.pickedFolder.replace(workspaceFolder, workspaceName);
         }
         else {
             status.text = taskProvider.pickedFolder;

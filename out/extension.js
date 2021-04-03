@@ -50,7 +50,7 @@ function activate(context) {
     }
     workspaceFolder = undefined;
     initModeStatusBar(context);
-    commandInitDisposable = vscode.commands.registerCommand(`${EXTENSION_NAME}.init`, () => initCallback);
+    commandInitDisposable = vscode.commands.registerCommand(`${EXTENSION_NAME}.init`, () => initCallback());
     folderStatusBar.command = `${EXTENSION_NAME}.init`;
     context.subscriptions.push(commandInitDisposable);
     commandModeDisposable = vscode.commands.registerCommand(`${EXTENSION_NAME}.mode`, () => modeCallback());
@@ -76,6 +76,10 @@ function initCallback() {
             pickedFolder = ret.pickedFolder;
             workspaceFolder = ret.workspaceFolder;
             initWorkspaceInstance();
+            if (propertiesProvider && workspaceFolder && pickedFolder) {
+                propertiesProvider.workspaceFolder = workspaceFolder;
+                propertiesProvider.pickedFolder = pickedFolder;
+            }
             taskProvider.pickedFolder = pickedFolder;
             if (buildMode && architectureMode) {
                 taskProvider.buildMode = buildMode;
@@ -99,12 +103,24 @@ function modeCallback() {
         }
     });
 }
-function initWorkspaceInstance() {
+function runCallback() {
     if (!workspaceFolder) {
+        if (!promiseMessage) {
+            promiseMessage = vscode.window.showErrorMessage("You have to select a folder first.");
+        }
+    }
+    else {
+        promiseMessage = undefined;
+        taskProvider.getTasks();
+        taskHandler_1.taskHandler(taskProvider);
+    }
+}
+function initWorkspaceInstance() {
+    if (!workspaceFolder || !pickedFolder) {
         return;
     }
     settingsProvider = new settingsProvider_1.SettingsProvider(workspaceFolder);
-    propertiesProvider = new propertiesProvider_1.PropertiesProvider(settingsProvider, workspaceFolder, PROPERTIES_TEMPLATE, PROPERTIES_FILE);
+    propertiesProvider = new propertiesProvider_1.PropertiesProvider(settingsProvider, workspaceFolder, pickedFolder, PROPERTIES_TEMPLATE, PROPERTIES_FILE);
     launchProvider = new launchProvider_1.LaunchProvider(settingsProvider, workspaceFolder, LAUNCH_TEMPLATE, LAUNCH_FILE);
     taskProvider = new taskProvider_1.TaskProvider(settingsProvider, propertiesProvider, pickedFolder, buildMode, architectureMode);
 }
@@ -112,18 +128,7 @@ function workspaceInstance(context) {
     initWorkspaceInstance();
     deactivateProviderDisposables();
     taskProviderDisposable = vscode.tasks.registerTaskProvider(EXTENSION_NAME, taskProvider);
-    commandHandlerDisposable = vscode.commands.registerCommand(`${EXTENSION_NAME}.run`, () => {
-        if (!workspaceFolder) {
-            if (!promiseMessage) {
-                promiseMessage = vscode.window.showErrorMessage("You have to select a folder first.");
-            }
-        }
-        else {
-            promiseMessage = undefined;
-            taskProvider.getTasks();
-            taskHandler_1.taskHandler(taskProvider);
-        }
-    });
+    commandHandlerDisposable = vscode.commands.registerCommand(`${EXTENSION_NAME}.run`, () => runCallback());
     context.subscriptions.push(taskProviderDisposable);
     context.subscriptions.push(commandHandlerDisposable);
     vscode.workspace.onDidChangeConfiguration(() => {

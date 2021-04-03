@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import { FileProvider } from "./fileProvider";
 import { SettingsProvider } from "./settingsProvider";
 import {
-  getLanguageFromEditor,
+  getLanguage,
   JsonInterface,
   Languages,
   readJsonFile,
@@ -13,11 +13,12 @@ import {
 export class PropertiesProvider extends FileProvider {
   constructor(
     public settings: SettingsProvider,
-    public workspacePath: string,
+    public workspaceFolder: string,
+    public pickedFolder: string,
     public templateFileName: string,
     public outputFileName: string
   ) {
-    super(settings, workspacePath, templateFileName, outputFileName);
+    super(settings, workspaceFolder, templateFileName, outputFileName);
   }
 
   public writeFileData(inputFilePath: string, outFilePath: string) {
@@ -27,7 +28,7 @@ export class PropertiesProvider extends FileProvider {
     }
 
     const editor = vscode.window.activeTextEditor;
-    const language = getLanguageFromEditor(editor, this.workspacePath);
+    const language = getLanguage(this.workspaceFolder);
     const triplet =
       `${this.settings.operatingSystem}-` +
       `${this.settings.cCompiler}-` +

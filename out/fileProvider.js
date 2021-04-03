@@ -6,14 +6,14 @@ const path = require("path");
 const vscode = require("vscode");
 const utils_1 = require("./utils");
 class FileProvider {
-    constructor(settings, workspacePath, templateFileName, outputFileName) {
+    constructor(settings, workspaceFolder, templateFileName, outputFileName) {
         this.settings = settings;
-        this.workspacePath = workspacePath;
+        this.workspaceFolder = workspaceFolder;
         this.templateFileName = templateFileName;
         this.outputFileName = outputFileName;
         this.settings = settings;
-        this.workspacePath = workspacePath;
-        this.vscodeDirectory = path.join(this.workspacePath, ".vscode");
+        this.workspaceFolder = workspaceFolder;
+        this.vscodeDirectory = path.join(this.workspaceFolder, ".vscode");
         this.outputPath = path.join(this.vscodeDirectory, outputFileName);
         const deletePattern = `${this.vscodeDirectory}/**`;
         const extDirectory = path.dirname(__dirname);

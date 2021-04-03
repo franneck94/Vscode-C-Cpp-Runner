@@ -15,12 +15,12 @@ const vscode = require("vscode");
 const utils_1 = require("./utils");
 function workspaceHandler() {
     return __awaiter(this, void 0, void 0, function* () {
-        const workspaces = vscode.workspace.workspaceFolders;
-        if (!workspaces) {
+        const workspacesFolders = vscode.workspace.workspaceFolders;
+        if (!workspacesFolders) {
             return;
         }
         const foldersList = [];
-        workspaces.forEach((folder) => {
+        workspacesFolders.forEach((folder) => {
             const directories = utils_1.getDirectories(folder.uri.fsPath);
             if (!directories) {
                 return;
@@ -39,9 +39,9 @@ function workspaceHandler() {
         if (pickedFolderStr) {
             const folderSplit = pickedFolderStr.split("/");
             const workspaceName = folderSplit[0];
-            workspaces.forEach((workspace) => {
-                if (workspace.name === workspaceName) {
-                    workspaceFolder = workspace.uri.fsPath;
+            workspacesFolders.forEach((folder) => {
+                if (folder.name === workspaceName) {
+                    workspaceFolder = folder.uri.fsPath;
                 }
             });
             if (workspaceFolder) {

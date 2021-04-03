@@ -6,10 +6,9 @@ import { pathExists, Tasks } from "./utils";
 
 export async function taskHandler(taskProvider: TaskProvider) {
   let provideBuildFolderTasks = false;
-  const editor = vscode.window.activeTextEditor;
 
-  if (!editor || !taskProvider.tasks) {
-    throw TypeError("No tasks provided.");
+  if (!taskProvider.tasks) {
+    return;
   }
 
   const tasks: vscode.Task[] = taskProvider.tasks;
@@ -18,7 +17,7 @@ export async function taskHandler(taskProvider: TaskProvider) {
   if (taskProvider.pickedFolder !== undefined) {
     projectFolder = taskProvider.pickedFolder;
   } else {
-    projectFolder = taskProvider.propertiesProvider.workspacePath;
+    projectFolder = taskProvider.propertiesProvider.workspaceFolder;
   }
   const buildFolder = path.join(projectFolder, "build");
   if (pathExists(buildFolder)) {

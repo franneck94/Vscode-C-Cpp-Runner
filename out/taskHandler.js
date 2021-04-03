@@ -16,9 +16,8 @@ const utils_1 = require("./utils");
 function taskHandler(taskProvider) {
     return __awaiter(this, void 0, void 0, function* () {
         let provideBuildFolderTasks = false;
-        const editor = vscode.window.activeTextEditor;
-        if (!editor || !taskProvider.tasks) {
-            throw TypeError("No tasks provided.");
+        if (!taskProvider.tasks) {
+            return;
         }
         const tasks = taskProvider.tasks;
         let projectFolder = "";
@@ -26,7 +25,7 @@ function taskHandler(taskProvider) {
             projectFolder = taskProvider.pickedFolder;
         }
         else {
-            projectFolder = taskProvider.propertiesProvider.workspacePath;
+            projectFolder = taskProvider.propertiesProvider.workspaceFolder;
         }
         const buildFolder = path.join(projectFolder, "build");
         if (utils_1.pathExists(buildFolder)) {

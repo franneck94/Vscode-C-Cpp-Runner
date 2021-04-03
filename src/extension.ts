@@ -52,7 +52,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   commandInitDisposable = vscode.commands.registerCommand(
     `${EXTENSION_NAME}.init`,
-    () => initCallback
+    () => initCallback()
   );
   folderStatusBar.command = `${EXTENSION_NAME}.init`;
   context.subscriptions.push(commandInitDisposable);
@@ -92,6 +92,10 @@ async function initCallback() {
     workspaceFolder = ret.workspaceFolder;
 
     initWorkspaceInstance();
+    if (propertiesProvider && workspaceFolder && pickedFolder) {
+      propertiesProvider.workspaceFolder = workspaceFolder;
+      propertiesProvider.pickedFolder = pickedFolder;
+    }
     taskProvider.pickedFolder = pickedFolder;
     if (buildMode && architectureMode) {
       taskProvider.buildMode = buildMode;
@@ -114,8 +118,22 @@ async function modeCallback() {
   }
 }
 
-function initWorkspaceInstance() {
+function runCallback() {
   if (!workspaceFolder) {
+    if (!promiseMessage) {
+      promiseMessage = vscode.window.showErrorMessage(
+        "You have to select a folder first."
+      );
+    }
+  } else {
+    promiseMessage = undefined;
+    taskProvider.getTasks();
+    taskHandler(taskProvider);
+  }
+}
+
+function initWorkspaceInstance() {
+  if (!workspaceFolder || !pickedFolder) {
     return;
   }
 
@@ -124,6 +142,7 @@ function initWorkspaceInstance() {
   propertiesProvider = new PropertiesProvider(
     settingsProvider,
     workspaceFolder,
+    pickedFolder,
     PROPERTIES_TEMPLATE,
     PROPERTIES_FILE
   );
@@ -154,19 +173,7 @@ function workspaceInstance(context: vscode.ExtensionContext) {
   );
   commandHandlerDisposable = vscode.commands.registerCommand(
     `${EXTENSION_NAME}.run`,
-    () => {
-      if (!workspaceFolder) {
-        if (!promiseMessage) {
-          promiseMessage = vscode.window.showErrorMessage(
-            "You have to select a folder first."
-          );
-        }
-      } else {
-        promiseMessage = undefined;
-        taskProvider.getTasks();
-        taskHandler(taskProvider);
-      }
-    }
+    () => runCallback()
   );
 
   context.subscriptions.push(taskProviderDisposable);

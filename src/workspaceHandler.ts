@@ -3,14 +3,14 @@ import * as vscode from "vscode";
 import { getDirectories } from "./utils";
 
 export async function workspaceHandler() {
-  const workspaces = vscode.workspace.workspaceFolders;
+  const workspacesFolders = vscode.workspace.workspaceFolders;
 
-  if (!workspaces) {
+  if (!workspacesFolders) {
     return;
   }
 
   const foldersList: string[] = [];
-  workspaces.forEach((folder) => {
+  workspacesFolders.forEach((folder) => {
     const directories = getDirectories(folder.uri.fsPath);
     if (!directories) {
       return;
@@ -32,9 +32,9 @@ export async function workspaceHandler() {
   if (pickedFolderStr) {
     const folderSplit = pickedFolderStr.split("/");
     const workspaceName = folderSplit[0];
-    workspaces.forEach((workspace) => {
-      if (workspace.name === workspaceName) {
-        workspaceFolder = workspace.uri.fsPath;
+    workspacesFolders.forEach((folder) => {
+      if (folder.name === workspaceName) {
+        workspaceFolder = folder.uri.fsPath;
       }
     });
 

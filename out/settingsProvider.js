@@ -15,7 +15,7 @@ const vscode = require("vscode");
 const utils_1 = require("./utils");
 const EXTENSION_NAME = "C_Cpp_Runner";
 class SettingsProvider {
-    constructor(workspacePath) {
+    constructor(workspaceFolder) {
         // WorkspaceFolder settings
         this.config = vscode.workspace.getConfiguration(EXTENSION_NAME);
         this.operatingSystem = utils_1.getOperatingSystem();
@@ -32,7 +32,7 @@ class SettingsProvider {
         this.compilerArgs = "";
         this.linkerArgs = "";
         this.includePaths = "";
-        const vscodeDirectory = path.join(workspacePath, ".vscode");
+        const vscodeDirectory = path.join(workspaceFolder, ".vscode");
         const propertiesPath = path.join(vscodeDirectory, "c_cpp_properties.json");
         if (!utils_1.pathExists(propertiesPath)) {
             this.checkCompilers();

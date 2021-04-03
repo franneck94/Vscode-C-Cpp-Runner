@@ -13,13 +13,13 @@ export class FileProvider {
 
   constructor(
     public settings: SettingsProvider,
-    public workspacePath: string,
+    public workspaceFolder: string,
     public templateFileName: string,
     public outputFileName: string
   ) {
     this.settings = settings;
-    this.workspacePath = workspacePath;
-    this.vscodeDirectory = path.join(this.workspacePath, ".vscode");
+    this.workspaceFolder = workspaceFolder;
+    this.vscodeDirectory = path.join(this.workspaceFolder, ".vscode");
     this.outputPath = path.join(this.vscodeDirectory, outputFileName);
     const deletePattern = `${this.vscodeDirectory}/**`;
 

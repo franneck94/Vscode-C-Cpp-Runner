@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDirectories = exports.getLanguageFromEditor = exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getOperatingSystem = exports.writeJsonFile = exports.readJsonFile = exports.pathExists = exports.Tasks = exports.Builds = exports.Architectures = exports.OperatingSystems = exports.Debuggers = exports.Compilers = exports.Languages = void 0;
+exports.getDirectories = exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getOperatingSystem = exports.writeJsonFile = exports.readJsonFile = exports.pathExists = exports.Tasks = exports.Builds = exports.Architectures = exports.OperatingSystems = exports.Debuggers = exports.Compilers = exports.Languages = void 0;
 const child_process_1 = require("child_process");
 const fs = require("fs");
 const lookpath_1 = require("lookpath");
@@ -163,23 +163,6 @@ function getLanguage(fileDirName) {
     }
 }
 exports.getLanguage = getLanguage;
-function getLanguageFromEditor(editor, filePath) {
-    let language;
-    if (!editor) {
-        language = getLanguage(filePath);
-    }
-    else {
-        if (path.dirname(editor.document.fileName) !== ".vscode") {
-            const fileDirName = path.dirname(editor.document.fileName);
-            language = getLanguage(fileDirName);
-        }
-        else {
-            language = Languages.c;
-        }
-    }
-    return language;
-}
-exports.getLanguageFromEditor = getLanguageFromEditor;
 function getDirectories(folder) {
     const fileDirents = fs.readdirSync(folder, {
         withFileTypes: true,

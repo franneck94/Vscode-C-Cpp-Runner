@@ -26,7 +26,7 @@ class TaskProvider {
         this.tasksFile = path.join(templateDirectory, "tasks_template.json");
         this.makefileFile = path.join(templateDirectory, "Makefile");
         if (!this.pickedFolder) {
-            this.pickedFolder = this.propertiesProvider.workspacePath;
+            this.pickedFolder = this.propertiesProvider.workspaceFolder;
         }
         this.getTasks();
     }
@@ -39,8 +39,7 @@ class TaskProvider {
         return this.getTasks();
     }
     getTasks() {
-        const editor = vscode.window.activeTextEditor;
-        const language = utils_1.getLanguageFromEditor(editor, this.propertiesProvider.workspacePath);
+        const language = utils_1.getLanguage(this.propertiesProvider.pickedFolder);
         this.setTasksDefinition(language);
         if (!this.tasks) {
             return [];
@@ -76,10 +75,10 @@ class TaskProvider {
         return this.tasks;
     }
     updateTaskBasedOnSettings(taskJson, language) {
-        var _a;
         const settings = this.settingsProvider;
-        const workspace = this.propertiesProvider.workspacePath;
-        const folder = (_a = this.pickedFolder) === null || _a === void 0 ? void 0 : _a.replace(workspace, path.basename(workspace));
+        const pickedFolder = this.propertiesProvider.pickedFolder;
+        const workspaceFolder = this.propertiesProvider.workspaceFolder;
+        const folder = pickedFolder.replace(workspaceFolder, path.basename(workspaceFolder));
         taskJson.label = taskJson.label.replace(taskJson.label.split(": ")[1], folder);
         taskJson.label = taskJson.label.replace(/\\/g, "/");
         taskJson.args[1] = `--file=${this.makefileFile}`;

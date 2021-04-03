@@ -68,12 +68,12 @@ export function activate(context: vscode.ExtensionContext) {
     `${EXTENSION_NAME}.init`,
     async () => {
       const ret = await workspaceHandler();
-      if (ret && pickedFolder && workspaceFolder) {
+      if (ret && ret.pickedFolder && ret.workspaceFolder) {
         pickedFolder = ret.pickedFolder;
         workspaceFolder = ret.workspaceFolder;
-        taskProvider.pickedFolder = pickedFolder;
 
         initWorkspaceInstance();
+        taskProvider.pickedFolder = pickedFolder;
         updateFolderStatus(folderStatusBar, taskProvider);
       }
     }

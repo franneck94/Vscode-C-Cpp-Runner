@@ -59,11 +59,11 @@ function activate(context) {
     statusBarItems_1.updateModeStatus(modeStatusBar, buildMode, architectureMode);
     commandInitDisposable = vscode.commands.registerCommand(`${EXTENSION_NAME}.init`, () => __awaiter(this, void 0, void 0, function* () {
         const ret = yield workspaceHandler_1.workspaceHandler();
-        if (ret && pickedFolder && workspaceFolder) {
+        if (ret && ret.pickedFolder && ret.workspaceFolder) {
             pickedFolder = ret.pickedFolder;
             workspaceFolder = ret.workspaceFolder;
-            taskProvider.pickedFolder = pickedFolder;
             initWorkspaceInstance();
+            taskProvider.pickedFolder = pickedFolder;
             statusBarItems_1.updateFolderStatus(folderStatusBar, taskProvider);
         }
     }));

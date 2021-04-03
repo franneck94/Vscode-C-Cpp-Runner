@@ -29,7 +29,7 @@ let taskProvider: TaskProvider;
 let folderStatusBar: vscode.StatusBarItem;
 let modeStatusBar: vscode.StatusBarItem;
 const statusBarAlign = vscode.StatusBarAlignment.Left;
-const statusBarPriority = 1_000_000;
+const statusBarPriority = 50;
 
 let workspaceFolder: string | undefined;
 let pickedFolder: string | undefined;

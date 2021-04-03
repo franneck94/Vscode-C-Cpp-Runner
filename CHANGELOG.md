@@ -4,6 +4,8 @@ All notable changes to the "c-cpp-runner" extension will be documented in this f
 
 ## [Upcomming Features]
 
+- 0.4.1
+  - Reset c_cpp_properties when compiler path is outdated
 - 0.5.0
   - Instead launch.json file add task for debugging
 

@@ -32,11 +32,7 @@
   },
   "activationEvents": [
     "onLanguage:c",
-    "onLanguage:cpp",
-    "workspaceContains:**/*.c",
-    "workspaceContains:**/*.cc",
-    "workspaceContains:**/*.cxx",
-    "workspaceContains:**/*.cpp"
+    "onLanguage:cpp"
   ],
   "main": "./out/extension.js",
   "contributes": {

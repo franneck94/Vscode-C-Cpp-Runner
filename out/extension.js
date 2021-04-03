@@ -36,7 +36,7 @@ let taskProvider;
 let folderStatusBar;
 let modeStatusBar;
 const statusBarAlign = vscode.StatusBarAlignment.Left;
-const statusBarPriority = 1000000;
+const statusBarPriority = 50;
 let workspaceFolder;
 let pickedFolder;
 let buildMode = utils_1.Builds.debug;

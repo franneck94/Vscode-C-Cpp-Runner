@@ -7,7 +7,12 @@ All notable changes to the "c-cpp-runner" extension will be documented in this f
 - 0.5.0
   - Instead launch.json file add task for debugging
   - Bugfix: Now check implemented to see if a compiler supports 32 *and* 64 bit.
-  - Add build, run and debug button to status bar
+  - Add buttons to the status bar:
+    - Build button: this.icon = 'bug';
+    - Run button: this.icon = 'play';
+    - Debug button: this.icon = 'gear'
+    - Config?: this.icon = 'tools'
+    - folder?: this.icon = 'folder-active';
 
 ## [Releases]
 

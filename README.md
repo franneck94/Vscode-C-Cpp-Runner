@@ -2,13 +2,13 @@
 
 Compile and run your C/C++ code with an ease.
 
-This extension provides tasks to compile and run your C/C++ code with gcc or clang.  
-There are tasks for debug (-g3 -O0) and release (-O3 -DNDEBUG) builds.
+This extension provides tasks to compile and run your C/C++ code with gcc/clang.  
+There are tasks for debug and release builds.
 
 ## Software Dependencies
 
-- For C code: gcc or clang and make
-- For C++ code: g++ or clang++ and make
+- For C code: gcc/clang and make
+- For C++ code: g++/clang++ and make
 - Allowed file extensions for headers: \*.h, \*.hpp, \*.hh, \*.hxx
 - Allowed file extensions for sources: \*.c, \*.cpp, \*.cc, \*.cxx
 
@@ -38,7 +38,7 @@ If you want to keep the build folder clean you can run the *clean* task, to remo
 ## Extension Options
 
 - C Compiler path (default's to gcc/clang depending on the system)
-- C Standard (default's to c89/c90)
+- C Standard (default's to c89)
 - C++ Compiler path (default's to g++/clang++ depending on the system)
 - C++ Standard (default's to c++11)
 - Make path (default's to make)

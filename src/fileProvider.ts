@@ -3,7 +3,7 @@ import * as path from "path";
 import * as vscode from "vscode";
 
 import { SettingsProvider } from "./settingsProvider";
-import { pathExists } from "./utils";
+import { JsonInterface, pathExists, readJsonFile } from "./utils";
 
 export class FileProvider {
   public templatePath: string;
@@ -34,7 +34,22 @@ export class FileProvider {
       false
     );
 
+    let doUpdate = false;
     if (!pathExists(this.outputPath)) {
+      doUpdate = true;
+    } else {
+      const configJson: JsonInterface = readJsonFile(this.outputPath);
+      if (configJson) {
+        const triplet: string = configJson.configurations[0].name;
+
+        if (!triplet.includes(this.settings.operatingSystem)) {
+          doUpdate = true;
+        }
+      }
+    }
+
+    if (doUpdate) {
+      this.settings.checkCompilers();
       this.createFileData();
     }
 

@@ -13,9 +13,10 @@ import {
 } from "./utils";
 
 const EXTENSION_NAME = "C_Cpp_Runner";
+const CONFIGURATION_TARGET = vscode.ConfigurationTarget.Workspace;
 
 export class SettingsProvider {
-  // WorkspaceFolder settings
+  // Global settings
   public config = vscode.workspace.getConfiguration(EXTENSION_NAME);
   public operatingSystem = getOperatingSystem();
   public architecure: Architectures | undefined;
@@ -36,8 +37,8 @@ export class SettingsProvider {
   public linkerArgs: string = "";
   public includePaths: String = "";
 
-  constructor(workspaceFolder: string) {
-    const vscodeDirectory = path.join(workspaceFolder, ".vscode");
+  constructor(Global: string) {
+    const vscodeDirectory = path.join(Global, ".vscode");
     const propertiesPath = path.join(vscodeDirectory, "c_cpp_properties.json");
 
     if (!pathExists(propertiesPath)) {
@@ -58,6 +59,7 @@ export class SettingsProvider {
     );
     const { found: foundGDB, path: pathGDB } = await commandExists("gdb");
     const { found: foundLLDB, path: pathLLDB } = await commandExists("lldb");
+    const { found: foundMake, path: pathMake } = await commandExists("make");
 
     if (OperatingSystems.mac === this.operatingSystem) {
       if (foundClang && pathClang) {
@@ -106,6 +108,10 @@ export class SettingsProvider {
         this.setLLDB(pathLLDB);
       } else {
         this.debugger = undefined;
+      }
+
+      if (foundMake && pathMake) {
+        this.setMake(pathMake);
       }
     }
 
@@ -158,7 +164,7 @@ export class SettingsProvider {
     this.config.update(
       "compilerPathC",
       pathGcc,
-      vscode.ConfigurationTarget.WorkspaceFolder
+      CONFIGURATION_TARGET
     );
     this.cCompiler = Compilers.gcc;
   }
@@ -167,7 +173,7 @@ export class SettingsProvider {
     this.config.update(
       "compilerPathC",
       pathClang,
-      vscode.ConfigurationTarget.WorkspaceFolder
+      CONFIGURATION_TARGET
     );
     this.cCompiler = Compilers.clang;
   }
@@ -176,7 +182,7 @@ export class SettingsProvider {
     this.config.update(
       "compilerPathCpp",
       pathGpp,
-      vscode.ConfigurationTarget.WorkspaceFolder
+      CONFIGURATION_TARGET
     );
     this.cppCompiler = Compilers.gpp;
   }
@@ -185,7 +191,7 @@ export class SettingsProvider {
     this.config.update(
       "compilerPathCpp",
       pathClangpp,
-      vscode.ConfigurationTarget.WorkspaceFolder
+      CONFIGURATION_TARGET
     );
     this.cppCompiler = Compilers.clangpp;
   }
@@ -194,7 +200,7 @@ export class SettingsProvider {
     this.config.update(
       "debuggerPath",
       pathLLDB,
-      vscode.ConfigurationTarget.WorkspaceFolder
+      CONFIGURATION_TARGET
     );
     this.debugger = Debuggers.lldb;
   }
@@ -203,8 +209,16 @@ export class SettingsProvider {
     this.config.update(
       "debuggerPath",
       pathGDB,
-      vscode.ConfigurationTarget.WorkspaceFolder
+      CONFIGURATION_TARGET
     );
     this.debugger = Debuggers.gdb;
+  }
+
+  private setMake(pathMake: string) {
+    this.config.update(
+      "makePath",
+      pathMake,
+      CONFIGURATION_TARGET
+    );
   }
 }

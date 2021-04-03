@@ -1,15 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PropertiesProvider = void 0;
-const vscode = require("vscode");
 const fileProvider_1 = require("./fileProvider");
 const utils_1 = require("./utils");
 class PropertiesProvider extends fileProvider_1.FileProvider {
-    constructor(settings, workspaceFolder, pickedFolder, templateFileName, outputFileName) {
+    constructor(settings, workspaceFolder, templateFileName, outputFileName) {
         super(settings, workspaceFolder, templateFileName, outputFileName);
         this.settings = settings;
         this.workspaceFolder = workspaceFolder;
-        this.pickedFolder = pickedFolder;
         this.templateFileName = templateFileName;
         this.outputFileName = outputFileName;
     }
@@ -18,7 +16,6 @@ class PropertiesProvider extends fileProvider_1.FileProvider {
         if (!configJson) {
             return;
         }
-        const editor = vscode.window.activeTextEditor;
         const language = utils_1.getLanguage(this.workspaceFolder);
         const triplet = `${this.settings.operatingSystem}-` +
             `${this.settings.cCompiler}-` +

@@ -20,7 +20,21 @@ class FileProvider {
         const templateDirectory = path.join(extDirectory, "src", "templates");
         this.templatePath = path.join(templateDirectory, templateFileName);
         this.fileWatcherOnDelete = vscode.workspace.createFileSystemWatcher(deletePattern, true, true, false);
+        let doUpdate = false;
         if (!utils_1.pathExists(this.outputPath)) {
+            doUpdate = true;
+        }
+        else {
+            const configJson = utils_1.readJsonFile(this.outputPath);
+            if (configJson) {
+                const triplet = configJson.configurations[0].name;
+                if (!triplet.includes(this.settings.operatingSystem)) {
+                    doUpdate = true;
+                }
+            }
+        }
+        if (doUpdate) {
+            this.settings.checkCompilers();
             this.createFileData();
         }
         this.fileWatcherOnDelete.onDidDelete(() => {

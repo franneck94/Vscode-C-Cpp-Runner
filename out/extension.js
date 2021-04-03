@@ -78,7 +78,6 @@ function initCallback() {
             initWorkspaceInstance();
             if (propertiesProvider && workspaceFolder && pickedFolder) {
                 propertiesProvider.workspaceFolder = workspaceFolder;
-                propertiesProvider.pickedFolder = pickedFolder;
             }
             taskProvider.pickedFolder = pickedFolder;
             if (buildMode && architectureMode) {
@@ -116,12 +115,15 @@ function runCallback() {
     }
 }
 function initWorkspaceInstance() {
-    if (!workspaceFolder || !pickedFolder) {
+    if (!workspaceFolder) {
         return;
     }
     settingsProvider = new settingsProvider_1.SettingsProvider(workspaceFolder);
-    propertiesProvider = new propertiesProvider_1.PropertiesProvider(settingsProvider, workspaceFolder, pickedFolder, PROPERTIES_TEMPLATE, PROPERTIES_FILE);
+    propertiesProvider = new propertiesProvider_1.PropertiesProvider(settingsProvider, workspaceFolder, PROPERTIES_TEMPLATE, PROPERTIES_FILE);
     launchProvider = new launchProvider_1.LaunchProvider(settingsProvider, workspaceFolder, LAUNCH_TEMPLATE, LAUNCH_FILE);
+    if (!pickedFolder) {
+        return;
+    }
     taskProvider = new taskProvider_1.TaskProvider(settingsProvider, propertiesProvider, pickedFolder, buildMode, architectureMode);
 }
 function workspaceInstance(context) {

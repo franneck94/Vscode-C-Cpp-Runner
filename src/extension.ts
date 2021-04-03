@@ -94,7 +94,6 @@ async function initCallback() {
     initWorkspaceInstance();
     if (propertiesProvider && workspaceFolder && pickedFolder) {
       propertiesProvider.workspaceFolder = workspaceFolder;
-      propertiesProvider.pickedFolder = pickedFolder;
     }
     taskProvider.pickedFolder = pickedFolder;
     if (buildMode && architectureMode) {
@@ -133,7 +132,7 @@ function runCallback() {
 }
 
 function initWorkspaceInstance() {
-  if (!workspaceFolder || !pickedFolder) {
+  if (!workspaceFolder) {
     return;
   }
 
@@ -142,7 +141,6 @@ function initWorkspaceInstance() {
   propertiesProvider = new PropertiesProvider(
     settingsProvider,
     workspaceFolder,
-    pickedFolder,
     PROPERTIES_TEMPLATE,
     PROPERTIES_FILE
   );
@@ -153,6 +151,10 @@ function initWorkspaceInstance() {
     LAUNCH_TEMPLATE,
     LAUNCH_FILE
   );
+
+  if (!pickedFolder) {
+    return;
+  }
 
   taskProvider = new TaskProvider(
     settingsProvider,

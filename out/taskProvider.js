@@ -39,7 +39,7 @@ class TaskProvider {
         return this.getTasks();
     }
     getTasks() {
-        const language = utils_1.getLanguage(this.propertiesProvider.pickedFolder);
+        const language = utils_1.getLanguage(this.pickedFolder);
         this.setTasksDefinition(language);
         if (!this.tasks) {
             return [];
@@ -76,7 +76,7 @@ class TaskProvider {
     }
     updateTaskBasedOnSettings(taskJson, language) {
         const settings = this.settingsProvider;
-        const pickedFolder = this.propertiesProvider.pickedFolder;
+        const pickedFolder = this.pickedFolder;
         const workspaceFolder = this.propertiesProvider.workspaceFolder;
         const folder = pickedFolder.replace(workspaceFolder, path.basename(workspaceFolder));
         taskJson.label = taskJson.label.replace(taskJson.label.split(": ")[1], folder);

@@ -14,7 +14,6 @@ export class PropertiesProvider extends FileProvider {
   constructor(
     public settings: SettingsProvider,
     public workspaceFolder: string,
-    public pickedFolder: string,
     public templateFileName: string,
     public outputFileName: string
   ) {
@@ -27,7 +26,6 @@ export class PropertiesProvider extends FileProvider {
       return;
     }
 
-    const editor = vscode.window.activeTextEditor;
     const language = getLanguage(this.workspaceFolder);
     const triplet =
       `${this.settings.operatingSystem}-` +

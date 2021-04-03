@@ -14,9 +14,10 @@ const path = require("path");
 const vscode = require("vscode");
 const utils_1 = require("./utils");
 const EXTENSION_NAME = "C_Cpp_Runner";
+const CONFIGURATION_TARGET = vscode.ConfigurationTarget.Workspace;
 class SettingsProvider {
-    constructor(workspaceFolder) {
-        // WorkspaceFolder settings
+    constructor(Global) {
+        // Global settings
         this.config = vscode.workspace.getConfiguration(EXTENSION_NAME);
         this.operatingSystem = utils_1.getOperatingSystem();
         // Settings
@@ -32,7 +33,7 @@ class SettingsProvider {
         this.compilerArgs = "";
         this.linkerArgs = "";
         this.includePaths = "";
-        const vscodeDirectory = path.join(workspaceFolder, ".vscode");
+        const vscodeDirectory = path.join(Global, ".vscode");
         const propertiesPath = path.join(vscodeDirectory, "c_cpp_properties.json");
         if (!utils_1.pathExists(propertiesPath)) {
             this.checkCompilers();
@@ -50,6 +51,7 @@ class SettingsProvider {
             const { found: foundClangpp, path: pathClangpp } = yield utils_1.commandExists("clang++");
             const { found: foundGDB, path: pathGDB } = yield utils_1.commandExists("gdb");
             const { found: foundLLDB, path: pathLLDB } = yield utils_1.commandExists("lldb");
+            const { found: foundMake, path: pathMake } = yield utils_1.commandExists("make");
             if (utils_1.OperatingSystems.mac === this.operatingSystem) {
                 if (foundClang && pathClang) {
                     this.setClang(pathClang);
@@ -107,6 +109,9 @@ class SettingsProvider {
                 else {
                     this.debugger = undefined;
                 }
+                if (foundMake && pathMake) {
+                    this.setMake(pathMake);
+                }
             }
             if (undefined !== this.cCompiler) {
                 this.architecure = utils_1.getArchitecture(this.cCompiler);
@@ -151,28 +156,31 @@ class SettingsProvider {
         this.architecure = utils_1.getArchitecture(this.cCompiler);
     }
     setGcc(pathGcc) {
-        this.config.update("compilerPathC", pathGcc, vscode.ConfigurationTarget.WorkspaceFolder);
+        this.config.update("compilerPathC", pathGcc, CONFIGURATION_TARGET);
         this.cCompiler = utils_1.Compilers.gcc;
     }
     setClang(pathClang) {
-        this.config.update("compilerPathC", pathClang, vscode.ConfigurationTarget.WorkspaceFolder);
+        this.config.update("compilerPathC", pathClang, CONFIGURATION_TARGET);
         this.cCompiler = utils_1.Compilers.clang;
     }
     setGpp(pathGpp) {
-        this.config.update("compilerPathCpp", pathGpp, vscode.ConfigurationTarget.WorkspaceFolder);
+        this.config.update("compilerPathCpp", pathGpp, CONFIGURATION_TARGET);
         this.cppCompiler = utils_1.Compilers.gpp;
     }
     setClangpp(pathClangpp) {
-        this.config.update("compilerPathCpp", pathClangpp, vscode.ConfigurationTarget.WorkspaceFolder);
+        this.config.update("compilerPathCpp", pathClangpp, CONFIGURATION_TARGET);
         this.cppCompiler = utils_1.Compilers.clangpp;
     }
     setLLDB(pathLLDB) {
-        this.config.update("debuggerPath", pathLLDB, vscode.ConfigurationTarget.WorkspaceFolder);
+        this.config.update("debuggerPath", pathLLDB, CONFIGURATION_TARGET);
         this.debugger = utils_1.Debuggers.lldb;
     }
     setGDB(pathGDB) {
-        this.config.update("debuggerPath", pathGDB, vscode.ConfigurationTarget.WorkspaceFolder);
+        this.config.update("debuggerPath", pathGDB, CONFIGURATION_TARGET);
         this.debugger = utils_1.Debuggers.gdb;
+    }
+    setMake(pathMake) {
+        this.config.update("makePath", pathMake, CONFIGURATION_TARGET);
     }
 }
 exports.SettingsProvider = SettingsProvider;

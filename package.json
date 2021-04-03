@@ -32,7 +32,12 @@
   },
   "activationEvents": [
     "onLanguage:c",
-    "onLanguage:cpp"
+    "onLanguage:cpp",
+    "onDebugResolve:c",
+    "onDebugResolve:cpp",
+    "onCommand:C_Cpp_Runner.init",
+    "onCommand:C_Cpp_Runner.mode",
+    "onCommand:C_Cpp_Runner.run"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -70,43 +75,43 @@
           "type": "boolean",
           "default": true,
           "description": "Whether to enable checking warnings or not.",
-          "scope": "window"
+          "scope": "resource"
         },
         "C_Cpp_Runner.warnings": {
           "type": "string",
           "default": "-Wall -Wextra -Wpedantic",
           "description": "Warnings to check by the compiler. Seperated by whitespaces.",
-          "scope": "window"
+          "scope": "resource"
         },
         "C_Cpp_Runner.warningsAsError": {
           "type": "boolean",
           "default": false,
           "description": "Whether to treat warnings as compiler errors or not.",
-          "scope": "window"
+          "scope": "machine-overridable"
         },
         "C_Cpp_Runner.compilerPathC": {
           "type": "string",
           "default": "gcc",
           "description": "The path to the C Compiler (either gcc or clang).",
-          "scope": "window"
+          "scope": "resource"
         },
         "C_Cpp_Runner.compilerPathCpp": {
           "type": "string",
           "default": "g++",
           "description": "The path to the C++ Compiler (either g++ or clang++).",
-          "scope": "window"
+          "scope": "resource"
         },
         "C_Cpp_Runner.debuggerPath": {
           "type": "string",
           "default": "gdb",
           "description": "The path to the debugger (either gdb or lldb).",
-          "scope": "window"
+          "scope": "resource"
         },
         "C_Cpp_Runner.makePath": {
           "type": "string",
           "default": "make",
           "description": "The path to the make installation.",
-          "scope": "window"
+          "scope": "resource"
         },
         "C_Cpp_Runner.standardC": {
           "type": "string",
@@ -125,7 +130,7 @@
           ],
           "default": "c90",
           "description": "C-Standard for the C Compiler.",
-          "scope": "window"
+          "scope": "resource"
         },
         "C_Cpp_Runner.standardCpp": {
           "type": "string",
@@ -146,25 +151,25 @@
           ],
           "default": "c++11",
           "description": "C++ Standard for the C++ Compiler.",
-          "scope": "window"
+          "scope": "resource"
         },
         "C_Cpp_Runner.compilerArgs": {
           "type": "string",
           "default": "",
           "description": "Additional compiler arguments. Seperated by whitespaces.",
-          "scope": "window"
+          "scope": "resource"
         },
         "C_Cpp_Runner.linkerArgs": {
           "type": "string",
           "default": "",
           "description": "Additional linker arguments. Seperated by whitespaces.",
-          "scope": "window"
+          "scope": "resource"
         },
         "C_Cpp_Runner.includePaths": {
           "type": "string",
           "default": "",
           "description": "Additional include paths. Seperated by whitespaces.",
-          "scope": "window"
+          "scope": "resource"
         }
       }
     }

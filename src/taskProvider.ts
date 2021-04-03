@@ -24,7 +24,7 @@ export class TaskProvider implements vscode.TaskProvider {
   constructor(
     public settingsProvider: SettingsProvider,
     public propertiesProvider: PropertiesProvider,
-    public pickedFolder: string | undefined,
+    public pickedFolder: string,
     public buildMode: Builds,
     public architectureMode: Architectures
   ) {
@@ -48,7 +48,7 @@ export class TaskProvider implements vscode.TaskProvider {
   }
 
   public getTasks(): vscode.Task[] {
-    const language = getLanguage(this.propertiesProvider.pickedFolder);
+    const language = getLanguage(this.pickedFolder);
 
     this.setTasksDefinition(language);
 
@@ -107,7 +107,7 @@ export class TaskProvider implements vscode.TaskProvider {
     language: Languages
   ) {
     const settings = this.settingsProvider;
-    const pickedFolder = this.propertiesProvider.pickedFolder;
+    const pickedFolder = this.pickedFolder;
     const workspaceFolder = this.propertiesProvider.workspaceFolder;
     const folder = pickedFolder.replace(
       workspaceFolder,

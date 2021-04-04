@@ -151,4 +151,16 @@ export class TaskProvider implements vscode.TaskProvider {
     }
     taskJson.command = settings.makePath;
   }
+
+  public getProjectFolder() {
+    let projectFolder = "";
+
+    if (this.pickedFolder !== undefined) {
+      projectFolder = this.pickedFolder;
+    } else {
+      projectFolder = this.propertiesProvider.workspaceFolder;
+    }
+
+    return projectFolder;
+  }
 }

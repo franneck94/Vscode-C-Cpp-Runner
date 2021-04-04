@@ -59,13 +59,14 @@ export enum Builds {
 }
 
 export enum Tasks {
-  buildFolder = "Build: Folder",
-  run = "Run: Program",
-  clean = "Clean: Objects",
+  build = "Build",
+  run = "Run",
+  clean = "Clean",
+  debug = "Debug",
 }
 
 export function replaceBackslashes(text: string) {
-  return text.replace(/\\/g, "/")
+  return text.replace(/\\/g, "/");
 }
 
 export function pathExists(filePath: string): boolean {

@@ -161,64 +161,36 @@ export class SettingsProvider {
   }
 
   private setGcc(pathGcc: string) {
-    this.config.update(
-      "compilerPathC",
-      pathGcc,
-      CONFIGURATION_TARGET
-    );
+    this.config.update("compilerPathC", pathGcc, CONFIGURATION_TARGET);
     this.cCompiler = Compilers.gcc;
   }
 
   private setClang(pathClang: string) {
-    this.config.update(
-      "compilerPathC",
-      pathClang,
-      CONFIGURATION_TARGET
-    );
+    this.config.update("compilerPathC", pathClang, CONFIGURATION_TARGET);
     this.cCompiler = Compilers.clang;
   }
 
   private setGpp(pathGpp: string) {
-    this.config.update(
-      "compilerPathCpp",
-      pathGpp,
-      CONFIGURATION_TARGET
-    );
+    this.config.update("compilerPathCpp", pathGpp, CONFIGURATION_TARGET);
     this.cppCompiler = Compilers.gpp;
   }
 
   private setClangpp(pathClangpp: string) {
-    this.config.update(
-      "compilerPathCpp",
-      pathClangpp,
-      CONFIGURATION_TARGET
-    );
+    this.config.update("compilerPathCpp", pathClangpp, CONFIGURATION_TARGET);
     this.cppCompiler = Compilers.clangpp;
   }
 
   private setLLDB(pathLLDB: string) {
-    this.config.update(
-      "debuggerPath",
-      pathLLDB,
-      CONFIGURATION_TARGET
-    );
+    this.config.update("debuggerPath", pathLLDB, CONFIGURATION_TARGET);
     this.debugger = Debuggers.lldb;
   }
 
   private setGDB(pathGDB: string) {
-    this.config.update(
-      "debuggerPath",
-      pathGDB,
-      CONFIGURATION_TARGET
-    );
+    this.config.update("debuggerPath", pathGDB, CONFIGURATION_TARGET);
     this.debugger = Debuggers.gdb;
   }
 
   private setMake(pathMake: string) {
-    this.config.update(
-      "makePath",
-      pathMake,
-      CONFIGURATION_TARGET
-    );
+    this.config.update("makePath", pathMake, CONFIGURATION_TARGET);
   }
 }

@@ -113,6 +113,16 @@ class TaskProvider {
         }
         taskJson.command = settings.makePath;
     }
+    getProjectFolder() {
+        let projectFolder = "";
+        if (this.pickedFolder !== undefined) {
+            projectFolder = this.pickedFolder;
+        }
+        else {
+            projectFolder = this.propertiesProvider.workspaceFolder;
+        }
+        return projectFolder;
+    }
 }
 exports.TaskProvider = TaskProvider;
 //# sourceMappingURL=taskProvider.js.map

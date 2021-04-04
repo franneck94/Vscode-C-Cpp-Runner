@@ -5,10 +5,11 @@ All notable changes to the "c-cpp-runner" extension will be documented in this f
 ## [Upcomming Features]
 
 - 0.5.0
-  - Instead launch.json file add task for debugging
-  - Bugfix: Now check implemented to see if a compiler supports 32 *and* 64 bit.
   - Bugfix: If the root directory has code and there is no sub-dir, no dir can be selected
   - Add new buttons to the status bar: Build, Run, Debug button
+- 0.6.0
+  - Instead launch.json file add task for debugging
+  - Bugfix: Now check implemented to see if a compiler supports 32 *and* 64 bit.
 
 ## [Releases]
 

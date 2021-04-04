@@ -4,6 +4,33 @@ import * as vscode from "vscode";
 import { Architectures, Builds, replaceBackslashes } from "./utils";
 import { TaskProvider } from "./taskProvider";
 
+const EXTENSION_NAME = "C_Cpp_Runner";
+const statusBarAlign = vscode.StatusBarAlignment.Left;
+
+export function initStatusBarItem(
+  context: vscode.ExtensionContext,
+  statusBarItem: vscode.StatusBarItem,
+  priority: number,
+  commandName: string,
+  commandDisposable: vscode.Disposable,
+  updateCallback: CallableFunction,
+  commandCallback: CallableFunction,
+  ...args: any
+) {
+  statusBarItem = vscode.window.createStatusBarItem(statusBarAlign, priority);
+  context.subscriptions.push(statusBarItem);
+  updateCallback(statusBarItem, ...args);
+
+  commandDisposable = vscode.commands.registerCommand(
+    `${EXTENSION_NAME}.${commandName}`,
+    () => commandCallback(...args)
+  );
+  statusBarItem.command = `${EXTENSION_NAME}.${commandName}`;
+  context.subscriptions.push(commandDisposable);
+
+  return { statusBarItem, commandDisposable };
+}
+
 export function updateFolderStatus(
   status: vscode.StatusBarItem,
   taskProvider: TaskProvider
@@ -19,10 +46,7 @@ export function updateFolderStatus(
     const workspaceFolder = taskProvider.propertiesProvider.workspaceFolder;
     if (taskProvider.pickedFolder !== workspaceFolder) {
       const workspaceName = path.basename(workspaceFolder);
-      text = taskProvider.pickedFolder.replace(
-        workspaceFolder,
-        workspaceName
-      );
+      text = taskProvider.pickedFolder.replace(workspaceFolder, workspaceName);
     } else {
       text = taskProvider.pickedFolder;
     }
@@ -41,64 +65,26 @@ export function updateModeStatus(
   buildMode: Builds,
   architectureMode: Architectures
 ) {
-  const text = `$(tools) ${buildMode} - ${architectureMode}`;
-  status.text = text;
-
-  if (text) {
-    status.show();
-  } else {
-    status.hide();
-  }
+  status.text = `$(tools) ${buildMode} - ${architectureMode}`;
+  status.show();
 }
 
-export function updateBuildStatus(
-  status: vscode.StatusBarItem
-) {
-  const text = `$(gear)`;
-  status.text = text;
-
-  if (text) {
-    status.show();
-  } else {
-    status.hide();
-  }
+export function updateBuildStatus(status: vscode.StatusBarItem) {
+  status.text = `$(gear)`;
+  status.show();
 }
 
-export function updateRunStatus(
-  status: vscode.StatusBarItem
-) {
-  const text = `$(play)`;
-  status.text = text;
-
-  if (text) {
-    status.show();
-  } else {
-    status.hide();
-  }
+export function updateRunStatus(status: vscode.StatusBarItem) {
+  status.text = `$(play)`;
+  status.show();
 }
 
-export function updateDebugStatus(
-  status: vscode.StatusBarItem
-) {
-  const text = `$(bug)`;
-  status.text = text;
-
-  if (text) {
-    status.show();
-  } else {
-    status.hide();
-  }
+export function updateDebugStatus(status: vscode.StatusBarItem) {
+  status.text = `$(bug)`;
+  status.show();
 }
 
-export function updateCleanStatus(
-  status: vscode.StatusBarItem
-) {
-  const text = `$(trash)`;
-  status.text = text;
-
-  if (text) {
-    status.show();
-  } else {
-    status.hide();
-  }
+export function updateCleanStatus(status: vscode.StatusBarItem) {
+  status.text = `$(trash)`;
+  status.show();
 }

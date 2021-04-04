@@ -50,9 +50,10 @@ var Builds;
 })(Builds = exports.Builds || (exports.Builds = {}));
 var Tasks;
 (function (Tasks) {
-    Tasks["buildFolder"] = "Build: Folder";
-    Tasks["run"] = "Run: Program";
-    Tasks["clean"] = "Clean: Objects";
+    Tasks["build"] = "Build";
+    Tasks["run"] = "Run";
+    Tasks["clean"] = "Clean";
+    Tasks["debug"] = "Debug";
 })(Tasks = exports.Tasks || (exports.Tasks = {}));
 function replaceBackslashes(text) {
     return text.replace(/\\/g, "/");

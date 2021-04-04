@@ -13,12 +13,7 @@ export async function taskHandler(taskProvider: TaskProvider) {
 
   const tasks: vscode.Task[] = taskProvider.tasks;
 
-  let projectFolder = "";
-  if (taskProvider.pickedFolder !== undefined) {
-    projectFolder = taskProvider.pickedFolder;
-  } else {
-    projectFolder = taskProvider.propertiesProvider.workspaceFolder;
-  }
+  const projectFolder = taskProvider.getProjectFolder();
   const buildFolder = path.join(projectFolder, "build");
   if (pathExists(buildFolder)) {
     provideBuildFolderTasks = true;
@@ -39,28 +34,15 @@ export async function taskHandler(taskProvider: TaskProvider) {
   if (pickedTaskName) {
     tasks.forEach(async (task) => {
       if (pickedTaskName === task.name) {
-        if (projectFolder !== "") {
-          if (
-            task.execution &&
-            task.execution instanceof vscode.ShellExecution &&
-            task.execution.commandLine
-          ) {
-            task.execution.commandLine = task.execution.commandLine.replace(
-              "FILE_DIR",
-              projectFolder
-            );
-          }
-        } else {
-          if (
-            task.execution &&
-            task.execution instanceof vscode.ShellExecution &&
-            task.execution.commandLine
-          ) {
-            task.execution.commandLine = task.execution.commandLine.replace(
-              "FILE_DIR",
-              "${fileDirname}/"
-            );
-          }
+        if (
+          task.execution &&
+          task.execution instanceof vscode.ShellExecution &&
+          task.execution.commandLine
+        ) {
+          task.execution.commandLine = task.execution.commandLine.replace(
+            "FILE_DIR",
+            projectFolder
+          );
         }
         await vscode.tasks.executeTask(task);
       }

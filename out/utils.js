@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDirectories = exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getOperatingSystem = exports.writeJsonFile = exports.readJsonFile = exports.pathExists = exports.replaceBackslashes = exports.Tasks = exports.Builds = exports.Architectures = exports.OperatingSystems = exports.Debuggers = exports.Compilers = exports.Languages = void 0;
+exports.disposeItem = exports.getDirectories = exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getOperatingSystem = exports.writeJsonFile = exports.readJsonFile = exports.pathExists = exports.replaceBackslashes = exports.Tasks = exports.Builds = exports.Architectures = exports.OperatingSystems = exports.Debuggers = exports.Compilers = exports.Languages = void 0;
 const child_process_1 = require("child_process");
 const fs = require("fs");
 const lookpath_1 = require("lookpath");
@@ -184,4 +184,10 @@ function getDirectories(folder) {
     return directories;
 }
 exports.getDirectories = getDirectories;
+function disposeItem(disposableItem) {
+    if (disposableItem) {
+        disposableItem.dispose();
+    }
+}
+exports.disposeItem = disposeItem;
 //# sourceMappingURL=utils.js.map

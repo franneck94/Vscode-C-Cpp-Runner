@@ -14,7 +14,7 @@ import {
   updateRunStatus,
 } from "./statusBarItems";
 import { TaskProvider } from "./taskProvider";
-import { Architectures, Builds, Tasks } from "./utils";
+import { Architectures, Builds, disposeItem, Tasks } from "./utils";
 import { workspaceHandler } from "./workspaceHandler";
 
 const EXTENSION_NAME = "C_Cpp_Runner";
@@ -69,6 +69,97 @@ export function activate(context: vscode.ExtensionContext) {
 
   workspaceInstance(context);
 }
+
+export function deactivate() {
+  disposeProviderDisposables();
+  disposeStatusBarItems();
+  disposeCommands();
+}
+
+function initWorkspaceInstance() {
+  if (!workspaceFolder) {
+    return;
+  }
+
+  settingsProvider = new SettingsProvider(workspaceFolder);
+
+  propertiesProvider = new PropertiesProvider(
+    settingsProvider,
+    workspaceFolder,
+    PROPERTIES_TEMPLATE,
+    PROPERTIES_FILE
+  );
+
+  launchProvider = new LaunchProvider(
+    settingsProvider,
+    workspaceFolder,
+    LAUNCH_TEMPLATE,
+    LAUNCH_FILE
+  );
+
+  if (!pickedFolder) {
+    return;
+  }
+
+  taskProvider = new TaskProvider(
+    settingsProvider,
+    propertiesProvider,
+    pickedFolder,
+    buildMode,
+    architectureMode
+  );
+}
+
+function workspaceInstance(context: vscode.ExtensionContext) {
+  initWorkspaceInstance();
+  disposeProviderDisposables();
+
+  taskProviderDisposable = vscode.tasks.registerTaskProvider(
+    EXTENSION_NAME,
+    taskProvider
+  );
+  commandHandlerDisposable = vscode.commands.registerCommand(
+    `${EXTENSION_NAME}.tasks`,
+    () => tasksCallback()
+  );
+
+  context.subscriptions.push(taskProviderDisposable);
+  context.subscriptions.push(commandHandlerDisposable);
+
+  vscode.workspace.onDidChangeConfiguration(() => {
+    settingsProvider.getSettings();
+    taskProvider.getTasks();
+    propertiesProvider.updateFileData();
+    launchProvider.updateFileData();
+  });
+}
+
+function disposeProviderDisposables() {
+  disposeItem(taskProviderDisposable);
+  disposeItem(commandHandlerDisposable);
+}
+
+function disposeStatusBarItems() {
+  disposeItem(folderStatusBar);
+  disposeItem(modeStatusBar);
+  disposeItem(buildStatusBar);
+  disposeItem(runStatusBar);
+  disposeItem(debugStatusBar);
+  disposeItem(cleanStatusBar);
+}
+
+function disposeCommands() {
+  disposeItem(commandFolderDisposable);
+  disposeItem(commandModeDisposable);
+  disposeItem(commandBuildDisposable);
+  disposeItem(commandRunDisposable);
+  disposeItem(commandDebugDisposable);
+  disposeItem(commandCleanDisposable);
+}
+
+/**
+INIT STATUS BAR
+*/
 
 function initFolderStatusBar(context: vscode.ExtensionContext) {
   folderStatusBar = vscode.window.createStatusBarItem(
@@ -165,6 +256,10 @@ function initCleanStatusBar(context: vscode.ExtensionContext) {
   cleanStatusBar.command = `${EXTENSION_NAME}.clean`;
   context.subscriptions.push(commandCleanDisposable);
 }
+
+/**
+STATUS BAR CALLBACKS
+*/
 
 async function folderCallback() {
   const ret = await workspaceHandler();
@@ -292,104 +387,4 @@ function tasksCallback() {
       taskHandler(taskProvider);
     }
   }
-}
-
-function initWorkspaceInstance() {
-  if (!workspaceFolder) {
-    return;
-  }
-
-  settingsProvider = new SettingsProvider(workspaceFolder);
-
-  propertiesProvider = new PropertiesProvider(
-    settingsProvider,
-    workspaceFolder,
-    PROPERTIES_TEMPLATE,
-    PROPERTIES_FILE
-  );
-
-  launchProvider = new LaunchProvider(
-    settingsProvider,
-    workspaceFolder,
-    LAUNCH_TEMPLATE,
-    LAUNCH_FILE
-  );
-
-  if (!pickedFolder) {
-    return;
-  }
-
-  taskProvider = new TaskProvider(
-    settingsProvider,
-    propertiesProvider,
-    pickedFolder,
-    buildMode,
-    architectureMode
-  );
-}
-
-function workspaceInstance(context: vscode.ExtensionContext) {
-  initWorkspaceInstance();
-  disposeProviderDisposables();
-
-  taskProviderDisposable = vscode.tasks.registerTaskProvider(
-    EXTENSION_NAME,
-    taskProvider
-  );
-  commandHandlerDisposable = vscode.commands.registerCommand(
-    `${EXTENSION_NAME}.tasks`,
-    () => tasksCallback()
-  );
-
-  context.subscriptions.push(taskProviderDisposable);
-  context.subscriptions.push(commandHandlerDisposable);
-
-  vscode.workspace.onDidChangeConfiguration(() => {
-    settingsProvider.getSettings();
-    taskProvider.getTasks();
-    propertiesProvider.updateFileData();
-    launchProvider.updateFileData();
-  });
-}
-
-function disposeProviderDisposables() {
-  if (taskProviderDisposable) {
-    taskProviderDisposable.dispose();
-  }
-  if (commandHandlerDisposable) {
-    commandHandlerDisposable.dispose();
-  }
-}
-
-function disposeStatusBarItems() {
-  if (folderStatusBar) {
-    folderStatusBar.dispose();
-  }
-  if (modeStatusBar) {
-    modeStatusBar.dispose();
-  }
-  if (buildStatusBar) {
-    buildStatusBar.dispose();
-  }
-  if (runStatusBar) {
-    runStatusBar.dispose();
-  }
-  if (debugStatusBar) {
-    debugStatusBar.dispose();
-  }
-  if (cleanStatusBar) {
-    cleanStatusBar.dispose();
-  }
-}
-
-function disposeCommands() {
-  if (commandFolderDisposable) {
-    commandFolderDisposable.dispose();
-  }
-}
-
-export function deactivate() {
-  disposeProviderDisposables();
-  disposeStatusBarItems();
-  disposeCommands();
 }

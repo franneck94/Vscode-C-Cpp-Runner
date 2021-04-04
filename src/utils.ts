@@ -199,3 +199,9 @@ export function getDirectories(folder: fs.PathLike) {
   );
   return directories;
 }
+
+export function disposeItem(disposableItem: vscode.Disposable) {
+  if (disposableItem) {
+    disposableItem.dispose();
+  }
+}

@@ -64,6 +64,61 @@ function activate(context) {
     workspaceInstance(context);
 }
 exports.activate = activate;
+function deactivate() {
+    disposeProviderDisposables();
+    disposeStatusBarItems();
+    disposeCommands();
+}
+exports.deactivate = deactivate;
+function initWorkspaceInstance() {
+    if (!workspaceFolder) {
+        return;
+    }
+    settingsProvider = new settingsProvider_1.SettingsProvider(workspaceFolder);
+    propertiesProvider = new propertiesProvider_1.PropertiesProvider(settingsProvider, workspaceFolder, PROPERTIES_TEMPLATE, PROPERTIES_FILE);
+    launchProvider = new launchProvider_1.LaunchProvider(settingsProvider, workspaceFolder, LAUNCH_TEMPLATE, LAUNCH_FILE);
+    if (!pickedFolder) {
+        return;
+    }
+    taskProvider = new taskProvider_1.TaskProvider(settingsProvider, propertiesProvider, pickedFolder, buildMode, architectureMode);
+}
+function workspaceInstance(context) {
+    initWorkspaceInstance();
+    disposeProviderDisposables();
+    taskProviderDisposable = vscode.tasks.registerTaskProvider(EXTENSION_NAME, taskProvider);
+    commandHandlerDisposable = vscode.commands.registerCommand(`${EXTENSION_NAME}.tasks`, () => tasksCallback());
+    context.subscriptions.push(taskProviderDisposable);
+    context.subscriptions.push(commandHandlerDisposable);
+    vscode.workspace.onDidChangeConfiguration(() => {
+        settingsProvider.getSettings();
+        taskProvider.getTasks();
+        propertiesProvider.updateFileData();
+        launchProvider.updateFileData();
+    });
+}
+function disposeProviderDisposables() {
+    utils_1.disposeItem(taskProviderDisposable);
+    utils_1.disposeItem(commandHandlerDisposable);
+}
+function disposeStatusBarItems() {
+    utils_1.disposeItem(folderStatusBar);
+    utils_1.disposeItem(modeStatusBar);
+    utils_1.disposeItem(buildStatusBar);
+    utils_1.disposeItem(runStatusBar);
+    utils_1.disposeItem(debugStatusBar);
+    utils_1.disposeItem(cleanStatusBar);
+}
+function disposeCommands() {
+    utils_1.disposeItem(commandFolderDisposable);
+    utils_1.disposeItem(commandModeDisposable);
+    utils_1.disposeItem(commandBuildDisposable);
+    utils_1.disposeItem(commandRunDisposable);
+    utils_1.disposeItem(commandDebugDisposable);
+    utils_1.disposeItem(commandCleanDisposable);
+}
+/**
+INIT STATUS BAR
+*/
 function initFolderStatusBar(context) {
     folderStatusBar = vscode.window.createStatusBarItem(STATUS_BAR_ALIGN, STATUS_BAR_PRIORITY);
     context.subscriptions.push(folderStatusBar);
@@ -112,6 +167,9 @@ function initCleanStatusBar(context) {
     cleanStatusBar.command = `${EXTENSION_NAME}.clean`;
     context.subscriptions.push(commandCleanDisposable);
 }
+/**
+STATUS BAR CALLBACKS
+*/
 function folderCallback() {
     return __awaiter(this, void 0, void 0, function* () {
         const ret = yield workspaceHandler_1.workspaceHandler();
@@ -213,69 +271,4 @@ function tasksCallback() {
         }
     }
 }
-function initWorkspaceInstance() {
-    if (!workspaceFolder) {
-        return;
-    }
-    settingsProvider = new settingsProvider_1.SettingsProvider(workspaceFolder);
-    propertiesProvider = new propertiesProvider_1.PropertiesProvider(settingsProvider, workspaceFolder, PROPERTIES_TEMPLATE, PROPERTIES_FILE);
-    launchProvider = new launchProvider_1.LaunchProvider(settingsProvider, workspaceFolder, LAUNCH_TEMPLATE, LAUNCH_FILE);
-    if (!pickedFolder) {
-        return;
-    }
-    taskProvider = new taskProvider_1.TaskProvider(settingsProvider, propertiesProvider, pickedFolder, buildMode, architectureMode);
-}
-function workspaceInstance(context) {
-    initWorkspaceInstance();
-    disposeProviderDisposables();
-    taskProviderDisposable = vscode.tasks.registerTaskProvider(EXTENSION_NAME, taskProvider);
-    commandHandlerDisposable = vscode.commands.registerCommand(`${EXTENSION_NAME}.tasks`, () => tasksCallback());
-    context.subscriptions.push(taskProviderDisposable);
-    context.subscriptions.push(commandHandlerDisposable);
-    vscode.workspace.onDidChangeConfiguration(() => {
-        settingsProvider.getSettings();
-        taskProvider.getTasks();
-        propertiesProvider.updateFileData();
-        launchProvider.updateFileData();
-    });
-}
-function disposeProviderDisposables() {
-    if (taskProviderDisposable) {
-        taskProviderDisposable.dispose();
-    }
-    if (commandHandlerDisposable) {
-        commandHandlerDisposable.dispose();
-    }
-}
-function disposeStatusBarItems() {
-    if (folderStatusBar) {
-        folderStatusBar.dispose();
-    }
-    if (modeStatusBar) {
-        modeStatusBar.dispose();
-    }
-    if (buildStatusBar) {
-        buildStatusBar.dispose();
-    }
-    if (runStatusBar) {
-        runStatusBar.dispose();
-    }
-    if (debugStatusBar) {
-        debugStatusBar.dispose();
-    }
-    if (cleanStatusBar) {
-        cleanStatusBar.dispose();
-    }
-}
-function disposeCommands() {
-    if (commandFolderDisposable) {
-        commandFolderDisposable.dispose();
-    }
-}
-function deactivate() {
-    disposeProviderDisposables();
-    disposeStatusBarItems();
-    disposeCommands();
-}
-exports.deactivate = deactivate;
 //# sourceMappingURL=extension.js.map

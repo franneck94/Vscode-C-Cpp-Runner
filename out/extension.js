@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deactivate = exports.activate = void 0;
 const vscode = require("vscode");
+const path = require("path");
 const taskHandler_1 = require("./taskHandler");
 const launchProvider_1 = require("./launchProvider");
 const modeHandler_1 = require("./modeHandler");
@@ -238,7 +239,15 @@ function runCallback() {
     }));
 }
 function debugCallback() {
-    vscode.window.showInformationMessage("You pressed debug!");
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!pickedFolder || !workspaceFolder) {
+            return;
+        }
+        const uriWorkspaceFolder = vscode.Uri.file(workspaceFolder);
+        const folder = vscode.workspace.getWorkspaceFolder(uriWorkspaceFolder);
+        const config = utils_1.readJsonFile(path.join(workspaceFolder, ".vscode", "launch.json"));
+        yield vscode.debug.startDebugging(folder, config.configurations[0]);
+    });
 }
 function cleanCallback() {
     if (!taskProvider || !taskProvider.tasks) {

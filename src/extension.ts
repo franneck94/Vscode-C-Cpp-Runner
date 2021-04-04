@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import * as path from "path";
 
 import { taskHandler } from "./taskHandler";
 import { LaunchProvider } from "./launchProvider";
@@ -14,7 +15,14 @@ import {
   updateRunStatus,
 } from "./statusBarItems";
 import { TaskProvider } from "./taskProvider";
-import { Architectures, Builds, disposeItem, Tasks } from "./utils";
+import {
+  Architectures,
+  Builds,
+  disposeItem,
+  JsonInterface,
+  readJsonFile,
+  Tasks,
+} from "./utils";
 import { workspaceHandler } from "./workspaceHandler";
 
 const EXTENSION_NAME = "C_Cpp_Runner";
@@ -343,8 +351,17 @@ function runCallback() {
   });
 }
 
-function debugCallback() {
-  vscode.window.showInformationMessage("You pressed debug!");
+async function debugCallback() {
+  if (!pickedFolder || !workspaceFolder) {
+    return;
+  }
+
+  const uriWorkspaceFolder = vscode.Uri.file(workspaceFolder);
+  const folder = vscode.workspace.getWorkspaceFolder(uriWorkspaceFolder);
+  const config: JsonInterface = readJsonFile(
+    path.join(workspaceFolder, ".vscode", "launch.json")
+  );
+  await vscode.debug.startDebugging(folder, config.configurations[0]);
 }
 
 function cleanCallback() {

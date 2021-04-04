@@ -80,7 +80,7 @@ class TaskProvider {
         const workspaceFolder = this.propertiesProvider.workspaceFolder;
         const folder = pickedFolder.replace(workspaceFolder, path.basename(workspaceFolder));
         taskJson.label = taskJson.label.replace(taskJson.label.split(": ")[1], folder);
-        taskJson.label = taskJson.label.replace(/\\/g, "/");
+        taskJson.label = utils_1.replaceBackslashes(taskJson.label);
         taskJson.args[1] = `--file=${this.makefileFile}`;
         taskJson.args.push(`COMPILATION_MODE=${this.buildMode}`);
         taskJson.args.push(`EXECUTABLE_NAME=out${this.buildMode}`);

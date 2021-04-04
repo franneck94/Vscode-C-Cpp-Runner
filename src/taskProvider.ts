@@ -10,6 +10,7 @@ import {
   InnerTasksInterface,
   Languages,
   readJsonFile,
+  replaceBackslashes,
   Tasks,
   TasksInterface,
 } from "./utils";
@@ -117,7 +118,7 @@ export class TaskProvider implements vscode.TaskProvider {
       taskJson.label.split(": ")[1],
       folder
     );
-    taskJson.label = taskJson.label.replace(/\\/g, "/");
+    taskJson.label = replaceBackslashes(taskJson.label);
     taskJson.args[1] = `--file=${this.makefileFile}`;
     taskJson.args.push(`COMPILATION_MODE=${this.buildMode}`);
     taskJson.args.push(`EXECUTABLE_NAME=out${this.buildMode}`);

@@ -27,7 +27,7 @@ function workspaceHandler() {
             }
             directories.forEach((dir) => {
                 let text = dir.replace(folder.uri.fsPath, folder.name);
-                text = text.replace(/\\/g, "/");
+                text = utils_1.replaceBackslashes(text);
                 foldersList.push(text);
             });
         });

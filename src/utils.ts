@@ -64,6 +64,10 @@ export enum Tasks {
   clean = "Clean: Objects",
 }
 
+export function replaceBackslashes(text: string) {
+  return text.replace(/\\/g, "/")
+}
+
 export function pathExists(filePath: string): boolean {
   try {
     fs.accessSync(filePath);

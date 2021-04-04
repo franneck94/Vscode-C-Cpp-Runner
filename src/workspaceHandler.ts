@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as vscode from "vscode";
-import { getDirectories } from "./utils";
+import { getDirectories, replaceBackslashes } from "./utils";
 
 export async function workspaceHandler() {
   const workspacesFolders = vscode.workspace.workspaceFolders;
@@ -18,7 +18,7 @@ export async function workspaceHandler() {
 
     directories.forEach((dir) => {
       let text = dir.replace(folder.uri.fsPath, folder.name);
-      text = text.replace(/\\/g, "/");
+      text = replaceBackslashes(text);
       foldersList.push(text);
     });
   });

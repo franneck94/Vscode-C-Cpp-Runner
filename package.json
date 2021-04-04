@@ -35,9 +35,13 @@
     "onLanguage:cpp",
     "onDebugResolve:c",
     "onDebugResolve:cpp",
-    "onCommand:C_Cpp_Runner.init",
+    "onCommand:C_Cpp_Runner.tasks",
+    "onCommand:C_Cpp_Runner.folder",
     "onCommand:C_Cpp_Runner.mode",
-    "onCommand:C_Cpp_Runner.run"
+    "onCommand:C_Cpp_Runner.build",
+    "onCommand:C_Cpp_Runner.run",
+    "onCommand:C_Cpp_Runner.debug",
+    "onCommand:C_Cpp_Runner.clean"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -48,21 +52,37 @@
     ],
     "commands": [
       {
-        "command": "C_Cpp_Runner.run",
+        "command": "C_Cpp_Runner.tasks",
         "title": "Run Command"
       },
       {
-        "command": "C_Cpp_Runner.init",
-        "title": "Init Command"
+        "command": "C_Cpp_Runner.folder",
+        "title": "Select Folder Command"
       },
       {
         "command": "C_Cpp_Runner.mode",
         "title": "Select Mode Command"
+      },
+      {
+        "command": "C_Cpp_Runner.build",
+        "title": "Build Command"
+      },
+      {
+        "command": "C_Cpp_Runner.run",
+        "title": "Run Command"
+      },
+      {
+        "command": "C_Cpp_Runner.debug",
+        "title": "Debug Command"
+      },
+      {
+        "command": "C_Cpp_Runner.clean",
+        "title": "Clean Command"
       }
     ],
     "keybindings": [
       {
-        "command": "C_Cpp_Runner.run",
+        "command": "C_Cpp_Runner.tasks",
         "key": "ctrl+shift+r",
         "mac": "ctrl+shift+r"
       }

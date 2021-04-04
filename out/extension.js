@@ -33,10 +33,14 @@ let settingsProvider;
 let launchProvider;
 let propertiesProvider;
 let taskProvider;
-let folderStatusBar;
-let modeStatusBar;
 const statusBarAlign = vscode.StatusBarAlignment.Left;
 const statusBarPriority = 50;
+let folderStatusBar;
+let modeStatusBar;
+let buildStatusBar;
+let runStatusBar;
+let debugStatusBar;
+let cleanStatusBar;
 let workspaceFolder;
 let pickedFolder;
 let buildMode = utils_1.Builds.debug;
@@ -50,8 +54,12 @@ function activate(context) {
     }
     workspaceFolder = undefined;
     initModeStatusBar(context);
-    commandInitDisposable = vscode.commands.registerCommand(`${EXTENSION_NAME}.init`, () => initCallback());
-    folderStatusBar.command = `${EXTENSION_NAME}.init`;
+    initBuildStatusBar(context);
+    initRunStatusBar(context);
+    initDebugStatusBar(context);
+    cleanDebugStatusBar(context);
+    commandInitDisposable = vscode.commands.registerCommand(`${EXTENSION_NAME}.folder`, () => initCallback());
+    folderStatusBar.command = `${EXTENSION_NAME}.folder`;
     context.subscriptions.push(commandInitDisposable);
     commandModeDisposable = vscode.commands.registerCommand(`${EXTENSION_NAME}.mode`, () => modeCallback());
     modeStatusBar.command = `${EXTENSION_NAME}.mode`;
@@ -68,6 +76,26 @@ function initModeStatusBar(context) {
     modeStatusBar = vscode.window.createStatusBarItem(statusBarAlign, statusBarPriority - 1);
     context.subscriptions.push(modeStatusBar);
     statusBarItems_1.updateModeStatus(modeStatusBar, buildMode, architectureMode);
+}
+function initBuildStatusBar(context) {
+    buildStatusBar = vscode.window.createStatusBarItem(statusBarAlign, statusBarPriority - 2);
+    context.subscriptions.push(buildStatusBar);
+    statusBarItems_1.updateBuildStatus(buildStatusBar);
+}
+function initRunStatusBar(context) {
+    runStatusBar = vscode.window.createStatusBarItem(statusBarAlign, statusBarPriority - 3);
+    context.subscriptions.push(runStatusBar);
+    statusBarItems_1.updateRunStatus(runStatusBar);
+}
+function initDebugStatusBar(context) {
+    debugStatusBar = vscode.window.createStatusBarItem(statusBarAlign, statusBarPriority - 4);
+    context.subscriptions.push(debugStatusBar);
+    statusBarItems_1.updateDebugStatus(debugStatusBar);
+}
+function cleanDebugStatusBar(context) {
+    cleanStatusBar = vscode.window.createStatusBarItem(statusBarAlign, statusBarPriority - 5);
+    context.subscriptions.push(debugStatusBar);
+    statusBarItems_1.updateCleanStatus(debugStatusBar);
 }
 function initCallback() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -130,7 +158,7 @@ function workspaceInstance(context) {
     initWorkspaceInstance();
     deactivateProviderDisposables();
     taskProviderDisposable = vscode.tasks.registerTaskProvider(EXTENSION_NAME, taskProvider);
-    commandHandlerDisposable = vscode.commands.registerCommand(`${EXTENSION_NAME}.run`, () => runCallback());
+    commandHandlerDisposable = vscode.commands.registerCommand(`${EXTENSION_NAME}.tasks`, () => runCallback());
     context.subscriptions.push(taskProviderDisposable);
     context.subscriptions.push(commandHandlerDisposable);
     vscode.workspace.onDidChangeConfiguration(() => {

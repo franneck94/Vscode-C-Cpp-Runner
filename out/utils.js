@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.disposeItem = exports.getDirectories = exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getOperatingSystem = exports.writeJsonFile = exports.readJsonFile = exports.pathExists = exports.replaceBackslashes = exports.Tasks = exports.Builds = exports.Architectures = exports.OperatingSystems = exports.Debuggers = exports.Compilers = exports.Languages = void 0;
+exports.filterOnString = exports.disposeItem = exports.getDirectories = exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getOperatingSystem = exports.writeJsonFile = exports.readJsonFile = exports.pathExists = exports.replaceBackslashes = exports.Tasks = exports.Builds = exports.Architectures = exports.OperatingSystems = exports.Debuggers = exports.Compilers = exports.Languages = void 0;
 const child_process_1 = require("child_process");
 const fs = require("fs");
 const lookpath_1 = require("lookpath");
@@ -190,4 +190,8 @@ function disposeItem(disposableItem) {
     }
 }
 exports.disposeItem = disposeItem;
+function filterOnString(names, filterName) {
+    return names.filter((name) => !name.includes(filterName));
+}
+exports.filterOnString = filterOnString;
 //# sourceMappingURL=utils.js.map

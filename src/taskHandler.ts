@@ -2,10 +2,12 @@ import * as path from "path";
 import * as vscode from "vscode";
 
 import { TaskProvider } from "./taskProvider";
-import { pathExists, Tasks } from "./utils";
+import { Builds, filterOnString, pathExists, Tasks } from "./utils";
 
 export async function taskHandler(taskProvider: TaskProvider) {
-  let provideBuildFolderTasks = false;
+  let provideRunTask = false;
+  let provideCleanTask = false;
+  let provideDebugTask = false;
 
   if (!taskProvider.tasks) {
     return;
@@ -15,8 +17,20 @@ export async function taskHandler(taskProvider: TaskProvider) {
 
   const projectFolder = taskProvider.getProjectFolder();
   const buildFolder = path.join(projectFolder, "build");
-  if (pathExists(buildFolder)) {
-    provideBuildFolderTasks = true;
+  const debugFolder = path.join(buildFolder, Builds.debug);
+  const releaseFolder = path.join(buildFolder, Builds.release);
+  const currentMode = taskProvider.buildMode;
+
+  if (currentMode === Builds.debug && pathExists(debugFolder)) {
+    provideRunTask = true;
+    provideCleanTask = true;
+  } else if (currentMode === Builds.release && pathExists(releaseFolder)) {
+    provideRunTask = true;
+    provideCleanTask = true;
+  }
+
+  if (pathExists(debugFolder)) {
+    provideDebugTask = true;
   }
 
   let taskNames: string[] = [];
@@ -24,17 +38,23 @@ export async function taskHandler(taskProvider: TaskProvider) {
     taskNames.push(task.name);
   });
 
-  if (!provideBuildFolderTasks) {
-    taskNames = taskNames.filter(
-      (name) => !(name.includes(Tasks.run) || name.includes(Tasks.clean))
-    );
+  if (!provideRunTask) {
+    taskNames = filterOnString(taskNames, Tasks.run);
+  }
+  if (!provideCleanTask) {
+    taskNames = filterOnString(taskNames, Tasks.clean);
+  }
+  if (!provideDebugTask) {
+    taskNames = filterOnString(taskNames, Tasks.debug);
   }
 
   const pickedTaskName = await vscode.window.showQuickPick(taskNames);
   if (pickedTaskName) {
     tasks.forEach(async (task) => {
       if (pickedTaskName === task.name) {
-        if (
+        if (task.name.includes("Debug")) {
+          taskProvider.runDebugTask();
+        } else if (
           task.execution &&
           task.execution instanceof vscode.ShellExecution &&
           task.execution.commandLine

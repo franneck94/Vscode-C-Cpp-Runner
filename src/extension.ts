@@ -23,7 +23,7 @@ import {
   readJsonFile,
   Tasks,
 } from "./utils";
-import { workspaceHandler } from "./workspaceHandler";
+import { folderHandler } from "./folderHandler";
 
 const EXTENSION_NAME = "C_Cpp_Runner";
 const PROPERTIES_TEMPLATE = "properties_template.json";
@@ -188,7 +188,7 @@ function initFolderStatusBar(context: vscode.ExtensionContext) {
 function initModeStatusBar(context: vscode.ExtensionContext) {
   modeStatusBar = vscode.window.createStatusBarItem(
     STATUS_BAR_ALIGN,
-    STATUS_BAR_PRIORITY - 1
+    STATUS_BAR_PRIORITY
   );
   context.subscriptions.push(modeStatusBar);
   updateModeStatus(modeStatusBar, buildMode, architectureMode);
@@ -204,7 +204,7 @@ function initModeStatusBar(context: vscode.ExtensionContext) {
 function initBuildStatusBar(context: vscode.ExtensionContext) {
   buildStatusBar = vscode.window.createStatusBarItem(
     STATUS_BAR_ALIGN,
-    STATUS_BAR_PRIORITY - 2
+    STATUS_BAR_PRIORITY
   );
   context.subscriptions.push(buildStatusBar);
   updateBuildStatus(buildStatusBar);
@@ -220,7 +220,7 @@ function initBuildStatusBar(context: vscode.ExtensionContext) {
 function initRunStatusBar(context: vscode.ExtensionContext) {
   runStatusBar = vscode.window.createStatusBarItem(
     STATUS_BAR_ALIGN,
-    STATUS_BAR_PRIORITY - 3
+    STATUS_BAR_PRIORITY
   );
   context.subscriptions.push(runStatusBar);
   updateRunStatus(runStatusBar);
@@ -236,7 +236,7 @@ function initRunStatusBar(context: vscode.ExtensionContext) {
 function initDebugStatusBar(context: vscode.ExtensionContext) {
   debugStatusBar = vscode.window.createStatusBarItem(
     STATUS_BAR_ALIGN,
-    STATUS_BAR_PRIORITY - 4
+    STATUS_BAR_PRIORITY
   );
   context.subscriptions.push(debugStatusBar);
   updateDebugStatus(debugStatusBar);
@@ -252,7 +252,7 @@ function initDebugStatusBar(context: vscode.ExtensionContext) {
 function initCleanStatusBar(context: vscode.ExtensionContext) {
   cleanStatusBar = vscode.window.createStatusBarItem(
     STATUS_BAR_ALIGN,
-    STATUS_BAR_PRIORITY - 5
+    STATUS_BAR_PRIORITY
   );
   context.subscriptions.push(cleanStatusBar);
   updateCleanStatus(cleanStatusBar);
@@ -270,7 +270,7 @@ STATUS BAR CALLBACKS
 */
 
 async function folderCallback() {
-  const ret = await workspaceHandler();
+  const ret = await folderHandler();
   if (ret && ret.pickedFolder && ret.workspaceFolder) {
     pickedFolder = ret.pickedFolder;
     workspaceFolder = ret.workspaceFolder;
@@ -356,12 +356,7 @@ async function debugCallback() {
     return;
   }
 
-  const uriWorkspaceFolder = vscode.Uri.file(workspaceFolder);
-  const folder = vscode.workspace.getWorkspaceFolder(uriWorkspaceFolder);
-  const config: JsonInterface = readJsonFile(
-    path.join(workspaceFolder, ".vscode", "launch.json")
-  );
-  await vscode.debug.startDebugging(folder, config.configurations[0]);
+  taskProvider.runDebugTask();
 }
 
 function cleanCallback() {

@@ -8,6 +8,7 @@ import {
   Builds,
   getLanguage,
   InnerTasksInterface,
+  JsonInterface,
   Languages,
   readJsonFile,
   replaceBackslashes,
@@ -100,6 +101,8 @@ export class TaskProvider implements vscode.TaskProvider {
       this.tasks.push(task);
     }
 
+    this.addDebugTask();
+
     return this.tasks;
   }
 
@@ -162,5 +165,54 @@ export class TaskProvider implements vscode.TaskProvider {
     }
 
     return projectFolder;
+  }
+
+  private addDebugTask() {
+    if (!this.tasks) {
+      return;
+    }
+
+    const folder = this.pickedFolder.replace(
+      this.propertiesProvider.workspaceFolder,
+      path.basename(this.propertiesProvider.workspaceFolder)
+    );
+    let label = `Debug: ${this.pickedFolder}`;
+    label = label.replace(
+      label.split(": ")[1],
+      folder
+    );
+    label = replaceBackslashes(label);
+    const definition = {
+      type: "shell",
+      task: label,
+    };
+    const problemMatcher = "$gcc";
+    const scope = vscode.TaskScope.Workspace;
+
+    const task = new vscode.Task(
+      definition,
+      scope,
+      label,
+      EXTENSION_NAME,
+      undefined,
+      problemMatcher
+    );
+
+    this.tasks.push(task);
+  }
+
+  public async runDebugTask() {
+    const uriWorkspaceFolder = vscode.Uri.file(
+      this.propertiesProvider.workspaceFolder
+    );
+    const folder = vscode.workspace.getWorkspaceFolder(uriWorkspaceFolder);
+    const config: JsonInterface = readJsonFile(
+      path.join(
+        this.propertiesProvider.workspaceFolder,
+        ".vscode",
+        "launch.json"
+      )
+    );
+    await vscode.debug.startDebugging(folder, config.configurations[0]);
   }
 }

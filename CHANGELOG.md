@@ -8,6 +8,8 @@ All notable changes to the "c-cpp-runner" extension will be documented in this f
 
 ## [Releases]
 
+- 0.5.2
+  - Added Microsoft's C/C++ extension as "extensionPack" entry
 - 0.5.1
   - Fixed critical bug of getting the extension's root dir
 - 0.5.0

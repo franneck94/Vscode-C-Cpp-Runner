@@ -2,7 +2,7 @@
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
   "description": "Compile and run your C/C++ code.",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "publisher": "franneck94",
   "icon": "icon.png",
   "galleryBanner": {
@@ -18,9 +18,13 @@
   "tags": [
     "c",
     "cpp",
+    "c++",
     "compile",
     "execute",
-    "tasks"
+    "tasks",
+    "tools",
+    "build",
+    "debug"
   ],
   "repository": {
     "type": "git",
@@ -218,5 +222,8 @@
     "lookpath": "^1.2.0",
     "ts-loader": "^8.1.0",
     "vsce": "^1.87.1"
-  }
+  },
+  "extensionPack": [
+    "ms-vscode.cpptools"
+  ]
 }

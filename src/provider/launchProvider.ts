@@ -1,3 +1,5 @@
+import * as path from "path";
+
 import { FileProvider } from "./fileProvider";
 import { SettingsProvider } from "./settingsProvider";
 import {
@@ -5,16 +7,21 @@ import {
   OperatingSystems,
   readJsonFile,
   writeJsonFile,
-} from "./utils";
+} from "../utils";
 
 export class LaunchProvider extends FileProvider {
   constructor(
     public settings: SettingsProvider,
     public workspaceFolder: string,
+    public pickedFolder: string,
     public templateFileName: string,
     public outputFileName: string
   ) {
     super(settings, workspaceFolder, templateFileName, outputFileName);
+
+    if (!this.pickedFolder) {
+      this.pickedFolder = this.workspaceFolder;
+    }
   }
 
   public writeFileData(inputFilePath: string, outFilePath: string) {
@@ -34,6 +41,10 @@ export class LaunchProvider extends FileProvider {
         configJson.configurations[0].externalConsole = true;
       }
     }
+
+    configJson.configurations[0].cwd = this.pickedFolder;
+    const debugPath = path.join(this.pickedFolder, "build/Debug/outDebug");
+    configJson.configurations[0].program = debugPath;
 
     writeJsonFile(outFilePath, configJson);
   }

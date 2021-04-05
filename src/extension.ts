@@ -1,11 +1,12 @@
 import * as vscode from "vscode";
-import * as path from "path";
 
-import { taskHandler } from "./taskHandler";
-import { LaunchProvider } from "./launchProvider";
-import { modeHandler } from "./modeHandler";
-import { PropertiesProvider } from "./propertiesProvider";
-import { SettingsProvider } from "./settingsProvider";
+import { taskHandler } from "./handler/taskHandler";
+import { folderHandler } from "./handler/folderHandler";
+import { modeHandler } from "./handler/modeHandler";
+import { LaunchProvider } from "./provider/launchProvider";
+import { PropertiesProvider } from "./provider/propertiesProvider";
+import { SettingsProvider } from "./provider/settingsProvider";
+import { TaskProvider } from "./provider/taskProvider";
 import {
   updateBuildStatus,
   updateCleanStatus,
@@ -13,17 +14,8 @@ import {
   updateFolderStatus,
   updateModeStatus,
   updateRunStatus,
-} from "./statusBarItems";
-import { TaskProvider } from "./taskProvider";
-import {
-  Architectures,
-  Builds,
-  disposeItem,
-  JsonInterface,
-  readJsonFile,
-  Tasks,
-} from "./utils";
-import { folderHandler } from "./folderHandler";
+} from "./items/statusBarItems";
+import { Architectures, Builds, disposeItem, Tasks } from "./utils";
 
 const EXTENSION_NAME = "C_Cpp_Runner";
 const PROPERTIES_TEMPLATE = "properties_template.json";
@@ -98,16 +90,17 @@ function initWorkspaceInstance() {
     PROPERTIES_FILE
   );
 
-  launchProvider = new LaunchProvider(
-    settingsProvider,
-    workspaceFolder,
-    LAUNCH_TEMPLATE,
-    LAUNCH_FILE
-  );
-
   if (!pickedFolder) {
     return;
   }
+
+  launchProvider = new LaunchProvider(
+    settingsProvider,
+    workspaceFolder,
+    pickedFolder,
+    LAUNCH_TEMPLATE,
+    LAUNCH_FILE
+  );
 
   taskProvider = new TaskProvider(
     settingsProvider,
@@ -276,13 +269,23 @@ async function folderCallback() {
     workspaceFolder = ret.workspaceFolder;
 
     initWorkspaceInstance();
-    if (propertiesProvider && workspaceFolder && pickedFolder) {
-      propertiesProvider.workspaceFolder = workspaceFolder;
-    }
-    taskProvider.pickedFolder = pickedFolder;
-    if (buildMode && architectureMode) {
-      taskProvider.buildMode = buildMode;
-      taskProvider.architectureMode = architectureMode;
+
+    if (workspaceFolder && pickedFolder) {
+      if (propertiesProvider) {
+        propertiesProvider.workspaceFolder = workspaceFolder;
+      }
+      if (taskProvider) {
+        taskProvider.pickedFolder = pickedFolder;
+        if (buildMode && architectureMode) {
+          taskProvider.buildMode = buildMode;
+          taskProvider.architectureMode = architectureMode;
+        }
+      }
+      if (launchProvider) {
+        launchProvider.pickedFolder = pickedFolder;
+        launchProvider.workspaceFolder = workspaceFolder;
+        launchProvider.updateFileData();
+      }
     }
     updateFolderStatus(folderStatusBar, taskProvider);
   }

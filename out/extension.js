@@ -11,15 +11,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deactivate = exports.activate = void 0;
 const vscode = require("vscode");
-const taskHandler_1 = require("./taskHandler");
-const launchProvider_1 = require("./launchProvider");
-const modeHandler_1 = require("./modeHandler");
-const propertiesProvider_1 = require("./propertiesProvider");
-const settingsProvider_1 = require("./settingsProvider");
-const statusBarItems_1 = require("./statusBarItems");
-const taskProvider_1 = require("./taskProvider");
+const taskHandler_1 = require("./handler/taskHandler");
+const folderHandler_1 = require("./handler/folderHandler");
+const modeHandler_1 = require("./handler/modeHandler");
+const launchProvider_1 = require("./provider/launchProvider");
+const propertiesProvider_1 = require("./provider/propertiesProvider");
+const settingsProvider_1 = require("./provider/settingsProvider");
+const taskProvider_1 = require("./provider/taskProvider");
+const statusBarItems_1 = require("./items/statusBarItems");
 const utils_1 = require("./utils");
-const folderHandler_1 = require("./folderHandler");
 const EXTENSION_NAME = "C_Cpp_Runner";
 const PROPERTIES_TEMPLATE = "properties_template.json";
 const PROPERTIES_FILE = "c_cpp_properties.json";
@@ -76,10 +76,10 @@ function initWorkspaceInstance() {
     }
     settingsProvider = new settingsProvider_1.SettingsProvider(workspaceFolder);
     propertiesProvider = new propertiesProvider_1.PropertiesProvider(settingsProvider, workspaceFolder, PROPERTIES_TEMPLATE, PROPERTIES_FILE);
-    launchProvider = new launchProvider_1.LaunchProvider(settingsProvider, workspaceFolder, LAUNCH_TEMPLATE, LAUNCH_FILE);
     if (!pickedFolder) {
         return;
     }
+    launchProvider = new launchProvider_1.LaunchProvider(settingsProvider, workspaceFolder, pickedFolder, LAUNCH_TEMPLATE, LAUNCH_FILE);
     taskProvider = new taskProvider_1.TaskProvider(settingsProvider, propertiesProvider, pickedFolder, buildMode, architectureMode);
 }
 function workspaceInstance(context) {
@@ -177,13 +177,22 @@ function folderCallback() {
             pickedFolder = ret.pickedFolder;
             workspaceFolder = ret.workspaceFolder;
             initWorkspaceInstance();
-            if (propertiesProvider && workspaceFolder && pickedFolder) {
-                propertiesProvider.workspaceFolder = workspaceFolder;
-            }
-            taskProvider.pickedFolder = pickedFolder;
-            if (buildMode && architectureMode) {
-                taskProvider.buildMode = buildMode;
-                taskProvider.architectureMode = architectureMode;
+            if (workspaceFolder && pickedFolder) {
+                if (propertiesProvider) {
+                    propertiesProvider.workspaceFolder = workspaceFolder;
+                }
+                if (taskProvider) {
+                    taskProvider.pickedFolder = pickedFolder;
+                    if (buildMode && architectureMode) {
+                        taskProvider.buildMode = buildMode;
+                        taskProvider.architectureMode = architectureMode;
+                    }
+                }
+                if (launchProvider) {
+                    launchProvider.pickedFolder = pickedFolder;
+                    launchProvider.workspaceFolder = workspaceFolder;
+                    launchProvider.updateFileData();
+                }
             }
             statusBarItems_1.updateFolderStatus(folderStatusBar, taskProvider);
         }

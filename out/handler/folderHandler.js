@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.folderHandler = void 0;
 const path = require("path");
 const vscode = require("vscode");
-const utils_1 = require("./utils");
+const utils_1 = require("../utils");
 function folderHandler() {
     return __awaiter(this, void 0, void 0, function* () {
         const workspacesFolders = vscode.workspace.workspaceFolders;

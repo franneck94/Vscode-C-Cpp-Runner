@@ -1,6 +1,7 @@
 import * as path from "path";
 import * as vscode from "vscode";
-import { getDirectories, replaceBackslashes } from "./utils";
+
+import { getDirectories, replaceBackslashes } from "../utils";
 
 export async function folderHandler() {
   const workspacesFolders = vscode.workspace.workspaceFolders;
@@ -13,10 +14,9 @@ export async function folderHandler() {
   workspacesFolders.forEach((folder) => {
     const directories = [folder.name];
     const recursiveDirectories = getDirectories(folder.uri.fsPath);
-    if (!recursiveDirectories) {
-      return;
+    if (recursiveDirectories) {
+      directories.push(...recursiveDirectories);
     }
-    directories.push(...recursiveDirectories);
 
     directories.forEach((dir) => {
       let text = dir.replace(folder.uri.fsPath, folder.name);

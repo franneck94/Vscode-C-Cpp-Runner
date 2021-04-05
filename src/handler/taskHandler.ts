@@ -1,8 +1,8 @@
 import * as path from "path";
 import * as vscode from "vscode";
 
-import { TaskProvider } from "./taskProvider";
-import { Builds, filterOnString, pathExists, Tasks } from "./utils";
+import { TaskProvider } from "../provider/taskProvider";
+import { Builds, filterOnString, pathExists, Tasks } from "../utils";
 
 export async function taskHandler(taskProvider: TaskProvider) {
   let provideRunTask = false;

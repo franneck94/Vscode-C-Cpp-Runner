@@ -4,8 +4,7 @@ All notable changes to the "c-cpp-runner" extension will be documented in this f
 
 ## [Upcomming Features]
 
-- 0.5.0
-  - Bugfix: Now check implemented to see if a compiler supports 32 *and* 64 bit.
+- 0.6.0: TBD
 
 ## [Releases]
 
@@ -13,6 +12,8 @@ All notable changes to the "c-cpp-runner" extension will be documented in this f
   - Added new buttons to the status bar for: Build, Run and Debug
   - Added task for debugging to the tasks list (ctrl+shift+r)
   - Bugfix: If the root directory has code and there is no sub-dir, no dir can be selected
+  - Improvement: Corrected path to the binary in the launch.json file
+  - New activation command for extension: .vscode/c_cpp_properties.json is present in workspace
 - 0.4.0
   - Added quick pick to select a folder for compiling/running etc.
     - After picking a folder a c_cpp_properties.json and launch.json config file is created

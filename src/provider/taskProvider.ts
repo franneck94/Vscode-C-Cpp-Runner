@@ -14,7 +14,7 @@ import {
   replaceBackslashes,
   Tasks,
   TasksInterface,
-} from "./utils";
+} from "../utils";
 
 const EXTENSION_NAME = "C_Cpp_Runner";
 
@@ -31,7 +31,7 @@ export class TaskProvider implements vscode.TaskProvider {
     public architectureMode: Architectures
   ) {
     const extDirectory = path.dirname(__dirname);
-    const templateDirectory = path.join(extDirectory, "src", "templates");
+    const templateDirectory = path.join(extDirectory, "src", "_templates");
     this.tasksFile = path.join(templateDirectory, "tasks_template.json");
     this.makefileFile = path.join(templateDirectory, "Makefile");
     if (!this.pickedFolder) {
@@ -177,10 +177,7 @@ export class TaskProvider implements vscode.TaskProvider {
       path.basename(this.propertiesProvider.workspaceFolder)
     );
     let label = `Debug: ${this.pickedFolder}`;
-    label = label.replace(
-      label.split(": ")[1],
-      folder
-    );
+    label = label.replace(label.split(": ")[1], folder);
     label = replaceBackslashes(label);
     const definition = {
       type: "shell",

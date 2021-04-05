@@ -35,13 +35,8 @@
     "onLanguage:cpp",
     "onDebugResolve:c",
     "onDebugResolve:cpp",
-    "onCommand:C_Cpp_Runner.tasks",
-    "onCommand:C_Cpp_Runner.folder",
-    "onCommand:C_Cpp_Runner.mode",
-    "onCommand:C_Cpp_Runner.build",
-    "onCommand:C_Cpp_Runner.run",
-    "onCommand:C_Cpp_Runner.debug",
-    "onCommand:C_Cpp_Runner.clean"
+    "workspaceContains:.vscode/c_cpp_properties.json",
+    "onCommand:C_Cpp_Runner.tasks"
   ],
   "main": "./out/extension.js",
   "contributes": {

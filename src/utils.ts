@@ -207,7 +207,5 @@ export function disposeItem(disposableItem: vscode.Disposable) {
 }
 
 export function filterOnString(names: string[], filterName: string) {
-  return names.filter(
-    (name) => !name.includes(filterName)
-  );
+  return names.filter((name) => !name.includes(filterName));
 }

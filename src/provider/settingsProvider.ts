@@ -10,7 +10,7 @@ import {
   getOperatingSystem,
   OperatingSystems,
   pathExists,
-} from "./utils";
+} from "../utils";
 
 const EXTENSION_NAME = "C_Cpp_Runner";
 const CONFIGURATION_TARGET = vscode.ConfigurationTarget.Workspace;

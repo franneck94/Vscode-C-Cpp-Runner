@@ -1,8 +1,8 @@
 import * as path from "path";
 import * as vscode from "vscode";
 
-import { Architectures, Builds, replaceBackslashes } from "./utils";
-import { TaskProvider } from "./taskProvider";
+import { Architectures, Builds, replaceBackslashes } from "../utils";
+import { TaskProvider } from "../provider/taskProvider";
 
 const EXTENSION_NAME = "C_Cpp_Runner";
 const statusBarAlign = vscode.StatusBarAlignment.Left;

@@ -1,7 +1,7 @@
-import * as path from "path";
-import * as vscode from "vscode";
+import * as path from 'path';
+import * as vscode from 'vscode';
 
-import { getDirectories, replaceBackslashes } from "../utils";
+import { getDirectories, replaceBackslashes } from '../utils';
 
 export async function folderHandler() {
   const workspacesFolders = vscode.workspace.workspaceFolders;
@@ -26,13 +26,13 @@ export async function folderHandler() {
   });
 
   const pickedFolderStr = await vscode.window.showQuickPick(foldersList, {
-    placeHolder: "Select workspace folder to init the C/C++ Runner extension.",
+    placeHolder: 'Select workspace folder to init the C/C++ Runner extension.',
   });
   let pickedFolder;
   let workspaceFolder;
 
   if (pickedFolderStr) {
-    const folderSplit = pickedFolderStr.split("/");
+    const folderSplit = pickedFolderStr.split('/');
     const workspaceName = folderSplit[0];
     workspacesFolders.forEach((folder) => {
       if (folder.name === workspaceName) {

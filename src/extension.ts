@@ -1,12 +1,12 @@
-import * as vscode from "vscode";
+import * as vscode from 'vscode';
 
-import { taskHandler } from "./handler/taskHandler";
-import { folderHandler } from "./handler/folderHandler";
-import { modeHandler } from "./handler/modeHandler";
-import { LaunchProvider } from "./provider/launchProvider";
-import { PropertiesProvider } from "./provider/propertiesProvider";
-import { SettingsProvider } from "./provider/settingsProvider";
-import { TaskProvider } from "./provider/taskProvider";
+import { taskHandler } from './handler/taskHandler';
+import { folderHandler } from './handler/folderHandler';
+import { modeHandler } from './handler/modeHandler';
+import { LaunchProvider } from './provider/launchProvider';
+import { PropertiesProvider } from './provider/propertiesProvider';
+import { SettingsProvider } from './provider/settingsProvider';
+import { TaskProvider } from './provider/taskProvider';
 import {
   updateBuildStatus,
   updateCleanStatus,
@@ -14,14 +14,14 @@ import {
   updateFolderStatus,
   updateModeStatus,
   updateRunStatus,
-} from "./items/statusBarItems";
-import { Architectures, Builds, disposeItem, Tasks } from "./utils";
+} from './items/statusBarItems';
+import { Architectures, Builds, disposeItem, Tasks } from './utils';
 
-const EXTENSION_NAME = "C_Cpp_Runner";
-const PROPERTIES_TEMPLATE = "properties_template.json";
-const PROPERTIES_FILE = "c_cpp_properties.json";
-const LAUNCH_TEMPLATE = "launch_template.json";
-const LAUNCH_FILE = "launch.json";
+const EXTENSION_NAME = 'C_Cpp_Runner';
+const PROPERTIES_TEMPLATE = 'properties_template.json';
+const PROPERTIES_FILE = 'c_cpp_properties.json';
+const LAUNCH_TEMPLATE = 'launch_template.json';
+const LAUNCH_FILE = 'launch.json';
 const STATUS_BAR_ALIGN = vscode.StatusBarAlignment.Left;
 const STATUS_BAR_PRIORITY = 50;
 
@@ -87,7 +87,7 @@ function initWorkspaceInstance() {
     settingsProvider,
     workspaceFolder,
     PROPERTIES_TEMPLATE,
-    PROPERTIES_FILE
+    PROPERTIES_FILE,
   );
 
   if (!pickedFolder) {
@@ -99,7 +99,7 @@ function initWorkspaceInstance() {
     workspaceFolder,
     pickedFolder,
     LAUNCH_TEMPLATE,
-    LAUNCH_FILE
+    LAUNCH_FILE,
   );
 
   taskProvider = new TaskProvider(
@@ -107,7 +107,7 @@ function initWorkspaceInstance() {
     propertiesProvider,
     pickedFolder,
     buildMode,
-    architectureMode
+    architectureMode,
   );
 }
 
@@ -117,11 +117,11 @@ function workspaceInstance(context: vscode.ExtensionContext) {
 
   taskProviderDisposable = vscode.tasks.registerTaskProvider(
     EXTENSION_NAME,
-    taskProvider
+    taskProvider,
   );
   commandHandlerDisposable = vscode.commands.registerCommand(
     `${EXTENSION_NAME}.tasks`,
-    () => tasksCallback()
+    () => tasksCallback(),
   );
 
   context.subscriptions.push(taskProviderDisposable);
@@ -165,14 +165,14 @@ INIT STATUS BAR
 function initFolderStatusBar(context: vscode.ExtensionContext) {
   folderStatusBar = vscode.window.createStatusBarItem(
     STATUS_BAR_ALIGN,
-    STATUS_BAR_PRIORITY
+    STATUS_BAR_PRIORITY,
   );
   context.subscriptions.push(folderStatusBar);
   updateFolderStatus(folderStatusBar, taskProvider);
 
   commandFolderDisposable = vscode.commands.registerCommand(
     `${EXTENSION_NAME}.init`,
-    () => folderCallback()
+    () => folderCallback(),
   );
   folderStatusBar.command = `${EXTENSION_NAME}.init`;
   context.subscriptions.push(commandFolderDisposable);
@@ -181,14 +181,14 @@ function initFolderStatusBar(context: vscode.ExtensionContext) {
 function initModeStatusBar(context: vscode.ExtensionContext) {
   modeStatusBar = vscode.window.createStatusBarItem(
     STATUS_BAR_ALIGN,
-    STATUS_BAR_PRIORITY
+    STATUS_BAR_PRIORITY,
   );
   context.subscriptions.push(modeStatusBar);
   updateModeStatus(modeStatusBar, buildMode, architectureMode);
 
   commandModeDisposable = vscode.commands.registerCommand(
     `${EXTENSION_NAME}.mode`,
-    () => modeCallback()
+    () => modeCallback(),
   );
   modeStatusBar.command = `${EXTENSION_NAME}.mode`;
   context.subscriptions.push(commandModeDisposable);
@@ -197,14 +197,14 @@ function initModeStatusBar(context: vscode.ExtensionContext) {
 function initBuildStatusBar(context: vscode.ExtensionContext) {
   buildStatusBar = vscode.window.createStatusBarItem(
     STATUS_BAR_ALIGN,
-    STATUS_BAR_PRIORITY
+    STATUS_BAR_PRIORITY,
   );
   context.subscriptions.push(buildStatusBar);
   updateBuildStatus(buildStatusBar);
 
   commandBuildDisposable = vscode.commands.registerCommand(
     `${EXTENSION_NAME}.build`,
-    () => buildCallback()
+    () => buildCallback(),
   );
   buildStatusBar.command = `${EXTENSION_NAME}.build`;
   context.subscriptions.push(commandBuildDisposable);
@@ -213,14 +213,14 @@ function initBuildStatusBar(context: vscode.ExtensionContext) {
 function initRunStatusBar(context: vscode.ExtensionContext) {
   runStatusBar = vscode.window.createStatusBarItem(
     STATUS_BAR_ALIGN,
-    STATUS_BAR_PRIORITY
+    STATUS_BAR_PRIORITY,
   );
   context.subscriptions.push(runStatusBar);
   updateRunStatus(runStatusBar);
 
   commandRunDisposable = vscode.commands.registerCommand(
     `${EXTENSION_NAME}.run`,
-    () => runCallback()
+    () => runCallback(),
   );
   runStatusBar.command = `${EXTENSION_NAME}.run`;
   context.subscriptions.push(commandRunDisposable);
@@ -229,14 +229,14 @@ function initRunStatusBar(context: vscode.ExtensionContext) {
 function initDebugStatusBar(context: vscode.ExtensionContext) {
   debugStatusBar = vscode.window.createStatusBarItem(
     STATUS_BAR_ALIGN,
-    STATUS_BAR_PRIORITY
+    STATUS_BAR_PRIORITY,
   );
   context.subscriptions.push(debugStatusBar);
   updateDebugStatus(debugStatusBar);
 
   commandDebugDisposable = vscode.commands.registerCommand(
     `${EXTENSION_NAME}.debug`,
-    () => debugCallback()
+    () => debugCallback(),
   );
   debugStatusBar.command = `${EXTENSION_NAME}.debug`;
   context.subscriptions.push(commandDebugDisposable);
@@ -245,14 +245,14 @@ function initDebugStatusBar(context: vscode.ExtensionContext) {
 function initCleanStatusBar(context: vscode.ExtensionContext) {
   cleanStatusBar = vscode.window.createStatusBarItem(
     STATUS_BAR_ALIGN,
-    STATUS_BAR_PRIORITY
+    STATUS_BAR_PRIORITY,
   );
   context.subscriptions.push(cleanStatusBar);
   updateCleanStatus(cleanStatusBar);
 
   commandCleanDisposable = vscode.commands.registerCommand(
     `${EXTENSION_NAME}.clean`,
-    () => cleanCallback()
+    () => cleanCallback(),
   );
   cleanStatusBar.command = `${EXTENSION_NAME}.clean`;
   context.subscriptions.push(commandCleanDisposable);
@@ -320,8 +320,8 @@ function buildCallback() {
         task.execution.commandLine
       ) {
         task.execution.commandLine = task.execution.commandLine.replace(
-          "FILE_DIR",
-          projectFolder
+          'FILE_DIR',
+          projectFolder,
         );
       }
       await vscode.tasks.executeTask(task);
@@ -345,8 +345,8 @@ function runCallback() {
         task.execution.commandLine
       ) {
         task.execution.commandLine = task.execution.commandLine.replace(
-          "FILE_DIR",
-          projectFolder
+          'FILE_DIR',
+          projectFolder,
         );
       }
       await vscode.tasks.executeTask(task);
@@ -378,8 +378,8 @@ function cleanCallback() {
         task.execution.commandLine
       ) {
         task.execution.commandLine = task.execution.commandLine.replace(
-          "FILE_DIR",
-          projectFolder
+          'FILE_DIR',
+          projectFolder,
         );
       }
       await vscode.tasks.executeTask(task);
@@ -391,7 +391,7 @@ function tasksCallback() {
   if (!workspaceFolder) {
     if (!promiseMessage) {
       promiseMessage = vscode.window.showErrorMessage(
-        "You have to select a folder first."
+        'You have to select a folder first.',
       );
     }
   } else {

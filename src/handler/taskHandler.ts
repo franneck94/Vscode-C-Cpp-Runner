@@ -1,8 +1,8 @@
-import * as path from "path";
-import * as vscode from "vscode";
+import * as path from 'path';
+import * as vscode from 'vscode';
 
-import { TaskProvider } from "../provider/taskProvider";
-import { Builds, filterOnString, pathExists, Tasks } from "../utils";
+import { TaskProvider } from '../provider/taskProvider';
+import { Builds, filterOnString, pathExists, Tasks } from '../utils';
 
 export async function taskHandler(taskProvider: TaskProvider) {
   let provideRunTask = false;
@@ -16,7 +16,7 @@ export async function taskHandler(taskProvider: TaskProvider) {
   const tasks: vscode.Task[] = taskProvider.tasks;
 
   const projectFolder = taskProvider.getProjectFolder();
-  const buildFolder = path.join(projectFolder, "build");
+  const buildFolder = path.join(projectFolder, 'build');
   const debugFolder = path.join(buildFolder, Builds.debug);
   const releaseFolder = path.join(buildFolder, Builds.release);
   const currentMode = taskProvider.buildMode;
@@ -52,7 +52,7 @@ export async function taskHandler(taskProvider: TaskProvider) {
   if (pickedTaskName) {
     tasks.forEach(async (task) => {
       if (pickedTaskName === task.name) {
-        if (task.name.includes("Debug")) {
+        if (task.name.includes('Debug')) {
           taskProvider.runDebugTask();
         } else if (
           task.execution &&
@@ -60,8 +60,8 @@ export async function taskHandler(taskProvider: TaskProvider) {
           task.execution.commandLine
         ) {
           task.execution.commandLine = task.execution.commandLine.replace(
-            "FILE_DIR",
-            projectFolder
+            'FILE_DIR',
+            projectFolder,
           );
         }
         await vscode.tasks.executeTask(task);

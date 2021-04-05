@@ -1,20 +1,21 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es2017",
+    "target": "es2018",
     "outDir": "out",
-    "lib": ["es6", "dom", "dom.iterable"],
+    "lib": ["es6", "es2018", "dom", "dom.iterable", "ES2019", "ES2020"],
     "sourceMap": true,
     "rootDir": "src",
-    "strict": true,
-    /* Additional Checks */
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUnusedParameters": true,
     "experimentalDecorators": true,
-    "noUnusedLocals": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "noImplicitAny": true,
     "noImplicitThis": true,
-    "skipLibCheck": true
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true,
+    "removeComments": true
   },
-  "exclude": ["node_modules", ".vscode-c-cpp-runner"]
+  "exclude": ["node_modules", ".vscode-c-cpp-runner", "out", "dist"]
 }

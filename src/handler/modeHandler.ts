@@ -1,7 +1,7 @@
-import * as vscode from "vscode";
+import * as vscode from 'vscode';
 
-import { SettingsProvider } from "../provider/settingsProvider";
-import { Architectures, Builds } from "../utils";
+import { SettingsProvider } from '../provider/settingsProvider';
+import { Architectures, Builds } from '../utils';
 
 export async function modeHandler(settingsProvider: SettingsProvider) {
   let combinations = [
@@ -14,17 +14,17 @@ export async function modeHandler(settingsProvider: SettingsProvider) {
   if (settingsProvider) {
     if (settingsProvider.architecure === Architectures.x86) {
       combinations = combinations.filter(
-        (comb) => !comb.includes(Architectures.x64)
+        (comb) => !comb.includes(Architectures.x64),
       );
     } else {
       combinations = combinations.filter(
-        (comb) => !comb.includes(Architectures.x86)
+        (comb) => !comb.includes(Architectures.x86),
       );
     }
   }
 
   const pickedCombination = await vscode.window.showQuickPick(combinations, {
-    placeHolder: "Select a build mode",
+    placeHolder: 'Select a build mode',
   });
 
   const pickedMode = pickedCombination?.includes(Builds.debug)

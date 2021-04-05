@@ -1,9 +1,9 @@
-import * as fs from "fs";
-import * as path from "path";
-import * as vscode from "vscode";
+import * as fs from 'fs';
+import * as path from 'path';
+import * as vscode from 'vscode';
 
-import { SettingsProvider } from "./settingsProvider";
-import { JsonInterface, pathExists, readJsonFile } from "../utils";
+import { SettingsProvider } from './settingsProvider';
+import { JsonInterface, pathExists, readJsonFile } from '../utils';
 
 export abstract class FileProvider {
   public templatePath: string;
@@ -15,23 +15,23 @@ export abstract class FileProvider {
     public settings: SettingsProvider,
     public workspaceFolder: string,
     public templateFileName: string,
-    public outputFileName: string
+    public outputFileName: string,
   ) {
     this.settings = settings;
     this.workspaceFolder = workspaceFolder;
-    this.vscodeDirectory = path.join(this.workspaceFolder, ".vscode");
+    this.vscodeDirectory = path.join(this.workspaceFolder, '.vscode');
     this.outputPath = path.join(this.vscodeDirectory, outputFileName);
     const deletePattern = `${this.vscodeDirectory}/**`;
 
     const extDirectory = path.dirname(path.dirname(__dirname));
-    const templateDirectory = path.join(extDirectory, "src", "_templates");
+    const templateDirectory = path.join(extDirectory, 'src', '_templates');
     this.templatePath = path.join(templateDirectory, templateFileName);
 
     this.fileWatcherOnDelete = vscode.workspace.createFileSystemWatcher(
       deletePattern,
       true,
       true,
-      false
+      false,
     );
 
     let doUpdate = false;
@@ -76,6 +76,6 @@ export abstract class FileProvider {
 
   // @ts-ignore
   public writeFileData(inputFilePath: string, outFilePath: string) {
-    throw new Error("You have to implement the method doSomething!");
+    throw new Error('You have to implement the method doSomething!');
   }
 }

@@ -1,9 +1,9 @@
-import { execSync } from "child_process";
-import * as fs from "fs";
-import { lookpath } from "lookpath";
-import { platform } from "os";
-import * as path from "path";
-import * as vscode from "vscode";
+import * as fs from 'fs';
+import * as path from 'path';
+import * as vscode from 'vscode';
+import { execSync } from 'child_process';
+import { lookpath } from 'lookpath';
+import { platform } from 'os';
 
 export interface JsonInterface {
   configurations: any[];
@@ -26,47 +26,47 @@ export interface TaskDefinitionInterface extends vscode.TaskDefinition {
 }
 
 export enum Languages {
-  c = "C",
-  cpp = "Cpp",
+  c = 'C',
+  cpp = 'Cpp',
 }
 
 export enum Compilers {
-  gcc = "gcc",
-  gpp = "g++",
-  clang = "clang",
-  clangpp = "clang++",
+  gcc = 'gcc',
+  gpp = 'g++',
+  clang = 'clang',
+  clangpp = 'clang++',
 }
 
 export enum Debuggers {
-  lldb = "lldb",
-  gdb = "gdb",
+  lldb = 'lldb',
+  gdb = 'gdb',
 }
 
 export enum OperatingSystems {
-  windows = "windows",
-  linux = "linux",
-  mac = "macos",
+  windows = 'windows',
+  linux = 'linux',
+  mac = 'macos',
 }
 
 export enum Architectures {
-  x86 = "x86",
-  x64 = "x64",
+  x86 = 'x86',
+  x64 = 'x64',
 }
 
 export enum Builds {
-  debug = "Debug",
-  release = "Release",
+  debug = 'Debug',
+  release = 'Release',
 }
 
 export enum Tasks {
-  build = "Build",
-  run = "Run",
-  clean = "Clean",
-  debug = "Debug",
+  build = 'Build',
+  run = 'Run',
+  clean = 'Clean',
+  debug = 'Debug',
 }
 
 export function replaceBackslashes(text: string) {
-  return text.replace(/\\/g, "/");
+  return text.replace(/\\/g, '/');
 }
 
 export function pathExists(filePath: string): boolean {
@@ -82,7 +82,7 @@ export function pathExists(filePath: string): boolean {
 export function readJsonFile(filePath: string): any | undefined {
   let configJson;
   try {
-    const fileContent = fs.readFileSync(filePath, "utf-8");
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
     configJson = JSON.parse(fileContent);
   } catch (err) {
     return undefined;
@@ -100,9 +100,9 @@ export function getOperatingSystem() {
   const plattformName = platform();
   let operatingSystem: OperatingSystems;
 
-  if (plattformName === "win32" || plattformName === "cygwin") {
+  if (plattformName === 'win32' || plattformName === 'cygwin') {
     operatingSystem = OperatingSystems.windows;
-  } else if (plattformName === "darwin") {
+  } else if (plattformName === 'darwin') {
     operatingSystem = OperatingSystems.mac;
   } else {
     operatingSystem = OperatingSystems.linux;
@@ -118,8 +118,8 @@ export async function commandExists(command: string) {
     return { found: false, path: commandPath };
   }
 
-  if (commandPath.includes(".EXE")) {
-    commandPath = commandPath.replace(".EXE", ".exe");
+  if (commandPath.includes('.EXE')) {
+    commandPath = commandPath.replace('.EXE', '.exe');
   }
 
   return { found: true, path: commandPath };
@@ -132,7 +132,7 @@ export function getArchitecture(compiler: Compilers) {
     const byteArray = execSync(command);
     const str = String.fromCharCode(...byteArray);
 
-    if (str.includes("64")) {
+    if (str.includes('64')) {
       return Architectures.x64;
     } else {
       return Architectures.x86;
@@ -157,15 +157,15 @@ export function isSourceFile(fileExt: string) {
 }
 
 export function isHeaderFile(fileExtLower: string) {
-  return [".hpp", ".hh", ".hxx", ".h"].some((ext) => fileExtLower === ext);
+  return ['.hpp', '.hh', '.hxx', '.h'].some((ext) => fileExtLower === ext);
 }
 
 export function isCppSourceFile(fileExtLower: string) {
-  return [".cpp", ".cc", ".cxx"].some((ext) => fileExtLower === ext);
+  return ['.cpp', '.cc', '.cxx'].some((ext) => fileExtLower === ext);
 }
 
 export function isCSourceFile(fileExtLower: string) {
-  return fileExtLower === ".c";
+  return fileExtLower === '.c';
 }
 
 export function getLanguage(fileDirName: string) {
@@ -189,13 +189,13 @@ export function getDirectories(folder: fs.PathLike) {
   let directories = fileDirents
     .filter((dir) => dir.isDirectory())
     .map((dir) => path.join(folder.toString(), dir.name));
-  directories = directories.filter((dir) => !dir.includes(".vscode"));
-  directories = directories.filter((dir) => !dir.includes("build"));
+  directories = directories.filter((dir) => !dir.includes('.vscode'));
+  directories = directories.filter((dir) => !dir.includes('build'));
   if (directories.length === 0) {
     return;
   }
   directories.forEach((dir) =>
-    getDirectories(dir)?.forEach((newDir) => directories.push(newDir))
+    getDirectories(dir)?.forEach((newDir) => directories.push(newDir)),
   );
   return directories;
 }

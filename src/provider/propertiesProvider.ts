@@ -1,19 +1,19 @@
-import { FileProvider } from "./fileProvider";
-import { SettingsProvider } from "./settingsProvider";
+import { FileProvider } from './fileProvider';
+import { SettingsProvider } from './settingsProvider';
 import {
   getLanguage,
   JsonInterface,
   Languages,
   readJsonFile,
   writeJsonFile,
-} from "../utils";
+} from '../utils';
 
 export class PropertiesProvider extends FileProvider {
   constructor(
     public settings: SettingsProvider,
     public workspaceFolder: string,
     public templateFileName: string,
-    public outputFileName: string
+    public outputFileName: string,
   ) {
     super(settings, workspaceFolder, templateFileName, outputFileName);
   }
@@ -31,20 +31,20 @@ export class PropertiesProvider extends FileProvider {
       `${this.settings.architecure}`;
     const config = configJson.configurations[0];
 
-    config.compilerArgs = this.settings.warnings.split(" ");
+    config.compilerArgs = this.settings.warnings.split(' ');
     if (this.settings.compilerArgs) {
       config.compilerArgs = [
         ...config.compilerArgs,
-        ...this.settings.compilerArgs.split(" "),
+        ...this.settings.compilerArgs.split(' '),
       ];
     } else {
-      config.compilerArgs = [...this.settings.warnings.split(" ")];
+      config.compilerArgs = [...this.settings.warnings.split(' ')];
     }
 
     if (this.settings.includePaths) {
       config.includePath = [
         ...config.includePath,
-        ...this.settings.includePaths.split(" "),
+        ...this.settings.includePaths.split(' '),
       ];
     } else {
       config.includePath = [config.includePath[0]];
@@ -52,7 +52,7 @@ export class PropertiesProvider extends FileProvider {
 
     config.cppStandard = this.settings.standardCpp;
     config.cStandard =
-      this.settings.standardC === "c90" ? "c89" : this.settings.standardC;
+      this.settings.standardC === 'c90' ? 'c89' : this.settings.standardC;
 
     if (Languages.cpp === language) {
       config.compilerPath = this.settings.compilerPathCpp;

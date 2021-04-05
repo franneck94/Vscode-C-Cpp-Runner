@@ -1,13 +1,13 @@
-import * as path from "path";
+import * as path from 'path';
 
-import { FileProvider } from "./fileProvider";
-import { SettingsProvider } from "./settingsProvider";
+import { FileProvider } from './fileProvider';
+import { SettingsProvider } from './settingsProvider';
 import {
   JsonInterface,
   OperatingSystems,
   readJsonFile,
   writeJsonFile,
-} from "../utils";
+} from '../utils';
 
 export class LaunchProvider extends FileProvider {
   constructor(
@@ -15,7 +15,7 @@ export class LaunchProvider extends FileProvider {
     public workspaceFolder: string,
     public pickedFolder: string,
     public templateFileName: string,
-    public outputFileName: string
+    public outputFileName: string,
   ) {
     super(settings, workspaceFolder, templateFileName, outputFileName);
 
@@ -47,7 +47,7 @@ export class LaunchProvider extends FileProvider {
     }
 
     configJson.configurations[0].cwd = this.pickedFolder;
-    const debugPath = path.join(this.pickedFolder, "build/Debug/outDebug");
+    const debugPath = path.join(this.pickedFolder, 'build/Debug/outDebug');
     configJson.configurations[0].program = debugPath;
 
     writeJsonFile(outFilePath, configJson);

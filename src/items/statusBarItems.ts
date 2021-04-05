@@ -1,39 +1,12 @@
-import * as path from "path";
-import * as vscode from "vscode";
+import * as path from 'path';
+import * as vscode from 'vscode';
 
-import { Architectures, Builds, replaceBackslashes } from "../utils";
-import { TaskProvider } from "../provider/taskProvider";
-
-const EXTENSION_NAME = "C_Cpp_Runner";
-const statusBarAlign = vscode.StatusBarAlignment.Left;
-
-export function initStatusBarItem(
-  context: vscode.ExtensionContext,
-  statusBarItem: vscode.StatusBarItem,
-  priority: number,
-  commandName: string,
-  commandDisposable: vscode.Disposable,
-  updateCallback: CallableFunction,
-  commandCallback: CallableFunction,
-  ...args: any
-) {
-  statusBarItem = vscode.window.createStatusBarItem(statusBarAlign, priority);
-  context.subscriptions.push(statusBarItem);
-  updateCallback(statusBarItem, ...args);
-
-  commandDisposable = vscode.commands.registerCommand(
-    `${EXTENSION_NAME}.${commandName}`,
-    () => commandCallback(...args)
-  );
-  statusBarItem.command = `${EXTENSION_NAME}.${commandName}`;
-  context.subscriptions.push(commandDisposable);
-
-  return { statusBarItem, commandDisposable };
-}
+import { Architectures, Builds, replaceBackslashes } from '../utils';
+import { TaskProvider } from '../provider/taskProvider';
 
 export function updateFolderStatus(
   status: vscode.StatusBarItem,
-  taskProvider: TaskProvider
+  taskProvider: TaskProvider,
 ) {
   const workspaceFolders = vscode.workspace.workspaceFolders;
 
@@ -47,11 +20,11 @@ export function updateFolderStatus(
     const workspaceName = path.basename(workspaceFolder);
     text = taskProvider.pickedFolder.replace(workspaceFolder, workspaceName);
     text = replaceBackslashes(text);
-    status.color = "";
+    status.color = '';
     status.text = `$(folder-active) ${text}`;
   } else {
-    status.color = "#ffff00";
-    status.text = "$(alert) Select folder.";
+    status.color = '#ffff00';
+    status.text = '$(alert) Select folder.';
   }
   status.show();
 }
@@ -59,7 +32,7 @@ export function updateFolderStatus(
 export function updateModeStatus(
   status: vscode.StatusBarItem,
   buildMode: Builds,
-  architectureMode: Architectures
+  architectureMode: Architectures,
 ) {
   status.text = `$(tools) ${buildMode} - ${architectureMode}`;
   status.show();

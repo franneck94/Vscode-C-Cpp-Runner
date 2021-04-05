@@ -5,7 +5,7 @@ import * as vscode from "vscode";
 import { SettingsProvider } from "./settingsProvider";
 import { JsonInterface, pathExists, readJsonFile } from "./utils";
 
-export class FileProvider {
+export abstract class FileProvider {
   public templatePath: string;
   public outputPath: string;
   public vscodeDirectory: string;

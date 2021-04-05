@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.folderHandler = void 0;
 const path = require("path");
 const vscode = require("vscode");
-const utils_1 = require("./utils");
+const utils_1 = require("../utils");
 function folderHandler() {
     return __awaiter(this, void 0, void 0, function* () {
         const workspacesFolders = vscode.workspace.workspaceFolders;
@@ -21,9 +21,10 @@ function folderHandler() {
         }
         const foldersList = [];
         workspacesFolders.forEach((folder) => {
-            const directories = utils_1.getDirectories(folder.uri.fsPath);
-            if (!directories) {
-                return;
+            const directories = [folder.name];
+            const recursiveDirectories = utils_1.getDirectories(folder.uri.fsPath);
+            if (recursiveDirectories) {
+                directories.push(...recursiveDirectories);
             }
             directories.forEach((dir) => {
                 let text = dir.replace(folder.uri.fsPath, folder.name);
@@ -52,4 +53,4 @@ function folderHandler() {
     });
 }
 exports.folderHandler = folderHandler;
-//# sourceMappingURL=workspaceHandler.js.map
+//# sourceMappingURL=folderHandler.js.map

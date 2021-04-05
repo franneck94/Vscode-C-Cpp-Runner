@@ -1,5 +1,3 @@
-import * as vscode from "vscode";
-
 import { FileProvider } from "./fileProvider";
 import { SettingsProvider } from "./settingsProvider";
 import {
@@ -8,7 +6,7 @@ import {
   Languages,
   readJsonFile,
   writeJsonFile,
-} from "./utils";
+} from "../utils";
 
 export class PropertiesProvider extends FileProvider {
   constructor(

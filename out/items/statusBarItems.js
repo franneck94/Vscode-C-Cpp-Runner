@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateCleanStatus = exports.updateDebugStatus = exports.updateRunStatus = exports.updateBuildStatus = exports.updateModeStatus = exports.updateFolderStatus = exports.initStatusBarItem = void 0;
 const path = require("path");
 const vscode = require("vscode");
-const utils_1 = require("./utils");
+const utils_1 = require("../utils");
 const EXTENSION_NAME = "C_Cpp_Runner";
 const statusBarAlign = vscode.StatusBarAlignment.Left;
 function initStatusBarItem(context, statusBarItem, priority, commandName, commandDisposable, updateCallback, commandCallback, ...args) {

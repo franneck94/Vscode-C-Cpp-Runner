@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LaunchProvider = void 0;
 const path = require("path");
 const fileProvider_1 = require("./fileProvider");
-const utils_1 = require("./utils");
+const utils_1 = require("../utils");
 class LaunchProvider extends fileProvider_1.FileProvider {
     constructor(settings, workspaceFolder, pickedFolder, templateFileName, outputFileName) {
         super(settings, workspaceFolder, templateFileName, outputFileName);

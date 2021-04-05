@@ -4,7 +4,7 @@ exports.FileProvider = void 0;
 const fs = require("fs");
 const path = require("path");
 const vscode = require("vscode");
-const utils_1 = require("./utils");
+const utils_1 = require("../utils");
 class FileProvider {
     constructor(settings, workspaceFolder, templateFileName, outputFileName) {
         this.settings = settings;
@@ -17,7 +17,7 @@ class FileProvider {
         this.outputPath = path.join(this.vscodeDirectory, outputFileName);
         const deletePattern = `${this.vscodeDirectory}/**`;
         const extDirectory = path.dirname(__dirname);
-        const templateDirectory = path.join(extDirectory, "src", "templates");
+        const templateDirectory = path.join(extDirectory, "src", "_templates");
         this.templatePath = path.join(templateDirectory, templateFileName);
         this.fileWatcherOnDelete = vscode.workspace.createFileSystemWatcher(deletePattern, true, true, false);
         let doUpdate = false;

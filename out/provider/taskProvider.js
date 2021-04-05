@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TaskProvider = void 0;
 const path = require("path");
 const vscode = require("vscode");
-const utils_1 = require("./utils");
+const utils_1 = require("../utils");
 const EXTENSION_NAME = "C_Cpp_Runner";
 class TaskProvider {
     constructor(settingsProvider, propertiesProvider, pickedFolder, buildMode, architectureMode) {
@@ -22,7 +22,7 @@ class TaskProvider {
         this.buildMode = buildMode;
         this.architectureMode = architectureMode;
         const extDirectory = path.dirname(__dirname);
-        const templateDirectory = path.join(extDirectory, "src", "templates");
+        const templateDirectory = path.join(extDirectory, "src", "_templates");
         this.tasksFile = path.join(templateDirectory, "tasks_template.json");
         this.makefileFile = path.join(templateDirectory, "Makefile");
         if (!this.pickedFolder) {

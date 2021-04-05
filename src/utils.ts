@@ -59,9 +59,14 @@ export enum Builds {
 }
 
 export enum Tasks {
-  buildFolder = "Build: Folder",
-  run = "Run: Program",
-  clean = "Clean: Objects",
+  build = "Build",
+  run = "Run",
+  clean = "Clean",
+  debug = "Debug",
+}
+
+export function replaceBackslashes(text: string) {
+  return text.replace(/\\/g, "/");
 }
 
 export function pathExists(filePath: string): boolean {
@@ -193,4 +198,14 @@ export function getDirectories(folder: fs.PathLike) {
     getDirectories(dir)?.forEach((newDir) => directories.push(newDir))
   );
   return directories;
+}
+
+export function disposeItem(disposableItem: vscode.Disposable) {
+  if (disposableItem) {
+    disposableItem.dispose();
+  }
+}
+
+export function filterOnString(names: string[], filterName: string) {
+  return names.filter((name) => !name.includes(filterName));
 }

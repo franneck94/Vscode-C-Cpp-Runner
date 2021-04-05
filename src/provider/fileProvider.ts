@@ -3,9 +3,9 @@ import * as path from "path";
 import * as vscode from "vscode";
 
 import { SettingsProvider } from "./settingsProvider";
-import { JsonInterface, pathExists, readJsonFile } from "./utils";
+import { JsonInterface, pathExists, readJsonFile } from "../utils";
 
-export class FileProvider {
+export abstract class FileProvider {
   public templatePath: string;
   public outputPath: string;
   public vscodeDirectory: string;
@@ -24,7 +24,7 @@ export class FileProvider {
     const deletePattern = `${this.vscodeDirectory}/**`;
 
     const extDirectory = path.dirname(__dirname);
-    const templateDirectory = path.join(extDirectory, "src", "templates");
+    const templateDirectory = path.join(extDirectory, "src", "_templates");
     this.templatePath = path.join(templateDirectory, templateFileName);
 
     this.fileWatcherOnDelete = vscode.workspace.createFileSystemWatcher(
@@ -74,6 +74,7 @@ export class FileProvider {
     this.writeFileData(this.outputPath, this.outputPath);
   }
 
+  // @ts-ignore
   public writeFileData(inputFilePath: string, outFilePath: string) {
     throw new Error("You have to implement the method doSomething!");
   }

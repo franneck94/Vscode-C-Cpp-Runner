@@ -53,6 +53,7 @@ class FileProvider {
     updateFileData() {
         this.writeFileData(this.outputPath, this.outputPath);
     }
+    // @ts-ignore
     writeFileData(inputFilePath, outFilePath) {
         throw new Error("You have to implement the method doSomething!");
     }

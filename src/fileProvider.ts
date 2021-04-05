@@ -74,6 +74,7 @@ export class FileProvider {
     this.writeFileData(this.outputPath, this.outputPath);
   }
 
+   // @ts-ignore
   public writeFileData(inputFilePath: string, outFilePath: string) {
     throw new Error("You have to implement the method doSomething!");
   }

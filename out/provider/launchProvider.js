@@ -21,6 +21,9 @@ class LaunchProvider extends fileProvider_1.FileProvider {
         if (!configJson) {
             return;
         }
+        if (!this.pickedFolder) {
+            this.pickedFolder = this.workspaceFolder;
+        }
         configJson.configurations[0].name = `Launch: Debug Program`;
         if (undefined !== this.settings.debugger) {
             configJson.configurations[0].MIMode = this.settings.debugger;

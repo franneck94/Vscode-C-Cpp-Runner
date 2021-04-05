@@ -8,6 +8,8 @@ All notable changes to the "c-cpp-runner" extension will be documented in this f
 
 ## [Releases]
 
+- 0.5.1
+  - Fixed critical bug of getting the extension's root dir
 - 0.5.0
   - Added new buttons to the status bar for: Build, Run and Debug
   - Added task for debugging to the tasks list (ctrl+shift+r)

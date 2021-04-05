@@ -30,10 +30,11 @@ export class TaskProvider implements vscode.TaskProvider {
     public buildMode: Builds,
     public architectureMode: Architectures
   ) {
-    const extDirectory = path.dirname(__dirname);
+    const extDirectory = path.dirname(path.dirname(__dirname));
     const templateDirectory = path.join(extDirectory, "src", "_templates");
     this.tasksFile = path.join(templateDirectory, "tasks_template.json");
     this.makefileFile = path.join(templateDirectory, "Makefile");
+
     if (!this.pickedFolder) {
       this.pickedFolder = this.propertiesProvider.workspaceFolder;
     }
@@ -50,6 +51,10 @@ export class TaskProvider implements vscode.TaskProvider {
   }
 
   public getTasks(): vscode.Task[] {
+    if (!this.pickedFolder) {
+      this.pickedFolder = this.propertiesProvider.workspaceFolder;
+    }
+
     const language = getLanguage(this.pickedFolder);
 
     this.setTasksDefinition(language);

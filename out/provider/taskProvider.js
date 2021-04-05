@@ -21,7 +21,7 @@ class TaskProvider {
         this.pickedFolder = pickedFolder;
         this.buildMode = buildMode;
         this.architectureMode = architectureMode;
-        const extDirectory = path.dirname(__dirname);
+        const extDirectory = path.dirname(path.dirname(__dirname));
         const templateDirectory = path.join(extDirectory, "src", "_templates");
         this.tasksFile = path.join(templateDirectory, "tasks_template.json");
         this.makefileFile = path.join(templateDirectory, "Makefile");
@@ -39,6 +39,9 @@ class TaskProvider {
         return this.getTasks();
     }
     getTasks() {
+        if (!this.pickedFolder) {
+            this.pickedFolder = this.propertiesProvider.workspaceFolder;
+        }
         const language = utils_1.getLanguage(this.pickedFolder);
         this.setTasksDefinition(language);
         if (!this.tasks) {

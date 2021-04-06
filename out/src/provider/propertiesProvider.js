@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PropertiesProvider = void 0;
 const fileProvider_1 = require("./fileProvider");
 const utils_1 = require("../utils");
-const types_1 = require("../types");
 class PropertiesProvider extends fileProvider_1.FileProvider {
     constructor(settings, workspaceFolder, templateFileName, outputFileName) {
         super(settings, workspaceFolder, templateFileName, outputFileName);
@@ -44,7 +43,7 @@ class PropertiesProvider extends fileProvider_1.FileProvider {
         config.cppStandard = this.settings.standardCpp;
         config.cStandard =
             this.settings.standardC === 'c90' ? 'c89' : this.settings.standardC;
-        if (types_1.Languages.cpp === language) {
+        if (utils_1.Languages.cpp === language) {
             config.compilerPath = this.settings.compilerPathCpp;
         }
         else {

@@ -4,7 +4,6 @@ exports.LaunchProvider = void 0;
 const path = require("path");
 const fileProvider_1 = require("./fileProvider");
 const utils_1 = require("../utils");
-const types_1 = require("../types");
 class LaunchProvider extends fileProvider_1.FileProvider {
     constructor(settings, workspaceFolder, pickedFolder, templateFileName, outputFileName) {
         super(settings, workspaceFolder, templateFileName, outputFileName);
@@ -26,10 +25,10 @@ class LaunchProvider extends fileProvider_1.FileProvider {
             this.pickedFolder = this.workspaceFolder;
         }
         configJson.configurations[0].name = `Launch: Debug Program`;
-        if (this.settings.debugger) {
+        if (undefined !== this.settings.debugger) {
             configJson.configurations[0].MIMode = this.settings.debugger;
             configJson.configurations[0].miDebuggerPath = this.settings.debuggerPath;
-            if (types_1.OperatingSystems.windows === this.settings.operatingSystem) {
+            if (utils_1.OperatingSystems.windows === this.settings.operatingSystem) {
                 configJson.configurations[0].externalConsole = true;
             }
         }

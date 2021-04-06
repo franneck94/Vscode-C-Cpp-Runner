@@ -15,7 +15,7 @@ class FileProvider {
         this._vscodeDirectory = path.join(this.workspaceFolder, '.vscode');
         this._outputPath = path.join(this._vscodeDirectory, outputFileName);
         const deletePattern = `${this._vscodeDirectory}/**`;
-        const extDirectory = path.dirname(__dirname);
+        const extDirectory = path.dirname(path.dirname(__dirname));
         const templateDirectory = path.join(extDirectory, 'src', '_templates');
         this._templatePath = path.join(templateDirectory, templateFileName);
         this._fileWatcherOnDelete = vscode.workspace.createFileSystemWatcher(deletePattern, true, true, false);

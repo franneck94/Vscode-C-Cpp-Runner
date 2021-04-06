@@ -2,7 +2,8 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import { TaskProvider } from '../provider/taskProvider';
-import { Builds, filterOnString, pathExists, Tasks } from '../utils';
+import { Builds, Task, Tasks } from '../types';
+import { filterOnString, pathExists } from '../utils';
 
 export async function taskHandler(taskProvider: TaskProvider) {
   let provideRunTask = false;
@@ -13,7 +14,7 @@ export async function taskHandler(taskProvider: TaskProvider) {
     return;
   }
 
-  const tasks: vscode.Task[] = taskProvider.tasks;
+  const tasks: Task[] = taskProvider.tasks;
 
   const projectFolder = taskProvider.getProjectFolder();
   const buildFolder = path.join(projectFolder, 'build');

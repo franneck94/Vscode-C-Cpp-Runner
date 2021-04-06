@@ -15,14 +15,13 @@ import {
   updateModeStatus,
   updateRunStatus,
 } from './items/statusBarItems';
-import { Architectures, Builds, disposeItem, Tasks } from './utils';
+import { createStatusBarItem, disposeItem } from './utils';
+import { Architectures, Builds, Tasks } from './types';
 
 const PROPERTIES_TEMPLATE = 'properties_template.json';
 const PROPERTIES_FILE = 'c_cpp_properties.json';
 const LAUNCH_TEMPLATE = 'launch_template.json';
 const LAUNCH_FILE = 'launch.json';
-const STATUS_BAR_ALIGN = vscode.StatusBarAlignment.Left;
-const STATUS_BAR_PRIORITY = 50;
 
 let taskProviderDisposable: vscode.Disposable;
 let commandHandlerDisposable: vscode.Disposable;
@@ -49,7 +48,7 @@ let workspaceFolder: string | undefined;
 let pickedFolder: string | undefined;
 let buildMode: Builds = Builds.debug;
 let architectureMode: Architectures = Architectures.x64;
-let promiseMessage: Thenable<string | undefined> | undefined;
+let errorMessage: Thenable<string | undefined> | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
   if (
@@ -157,15 +156,10 @@ function disposeCommands() {
   disposeItem(commandCleanDisposable);
 }
 
-/**
-INIT STATUS BAR
-*/
+// INIT STATUS BAR
 
 function initFolderStatusBar(context: vscode.ExtensionContext) {
-  folderStatusBar = vscode.window.createStatusBarItem(
-    STATUS_BAR_ALIGN,
-    STATUS_BAR_PRIORITY,
-  );
+  folderStatusBar = createStatusBarItem();
   context.subscriptions.push(folderStatusBar);
   updateFolderStatus(folderStatusBar, taskProvider);
 
@@ -178,10 +172,7 @@ function initFolderStatusBar(context: vscode.ExtensionContext) {
 }
 
 function initModeStatusBar(context: vscode.ExtensionContext) {
-  modeStatusBar = vscode.window.createStatusBarItem(
-    STATUS_BAR_ALIGN,
-    STATUS_BAR_PRIORITY,
-  );
+  modeStatusBar = createStatusBarItem();
   context.subscriptions.push(modeStatusBar);
   updateModeStatus(modeStatusBar, buildMode, architectureMode);
 
@@ -194,10 +185,7 @@ function initModeStatusBar(context: vscode.ExtensionContext) {
 }
 
 function initBuildStatusBar(context: vscode.ExtensionContext) {
-  buildStatusBar = vscode.window.createStatusBarItem(
-    STATUS_BAR_ALIGN,
-    STATUS_BAR_PRIORITY,
-  );
+  buildStatusBar = createStatusBarItem();
   context.subscriptions.push(buildStatusBar);
   updateBuildStatus(buildStatusBar);
 
@@ -210,10 +198,7 @@ function initBuildStatusBar(context: vscode.ExtensionContext) {
 }
 
 function initRunStatusBar(context: vscode.ExtensionContext) {
-  runStatusBar = vscode.window.createStatusBarItem(
-    STATUS_BAR_ALIGN,
-    STATUS_BAR_PRIORITY,
-  );
+  runStatusBar = createStatusBarItem();
   context.subscriptions.push(runStatusBar);
   updateRunStatus(runStatusBar);
 
@@ -226,10 +211,7 @@ function initRunStatusBar(context: vscode.ExtensionContext) {
 }
 
 function initDebugStatusBar(context: vscode.ExtensionContext) {
-  debugStatusBar = vscode.window.createStatusBarItem(
-    STATUS_BAR_ALIGN,
-    STATUS_BAR_PRIORITY,
-  );
+  debugStatusBar = createStatusBarItem();
   context.subscriptions.push(debugStatusBar);
   updateDebugStatus(debugStatusBar);
 
@@ -242,10 +224,7 @@ function initDebugStatusBar(context: vscode.ExtensionContext) {
 }
 
 function initCleanStatusBar(context: vscode.ExtensionContext) {
-  cleanStatusBar = vscode.window.createStatusBarItem(
-    STATUS_BAR_ALIGN,
-    STATUS_BAR_PRIORITY,
-  );
+  cleanStatusBar = createStatusBarItem();
   context.subscriptions.push(cleanStatusBar);
   updateCleanStatus(cleanStatusBar);
 
@@ -257,9 +236,7 @@ function initCleanStatusBar(context: vscode.ExtensionContext) {
   context.subscriptions.push(commandCleanDisposable);
 }
 
-/**
-STATUS BAR CALLBACKS
-*/
+// STATUS BAR CALLBACKS
 
 async function folderCallback() {
   const ret = await folderHandler();
@@ -388,13 +365,13 @@ function cleanCallback() {
 
 function tasksCallback() {
   if (!workspaceFolder) {
-    if (!promiseMessage) {
-      promiseMessage = vscode.window.showErrorMessage(
+    if (!errorMessage) {
+      errorMessage = vscode.window.showErrorMessage(
         'You have to select a folder first.',
       );
     }
   } else {
-    promiseMessage = undefined;
+    errorMessage = undefined;
 
     if (taskProvider) {
       taskProvider.getTasks();

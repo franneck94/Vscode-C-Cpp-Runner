@@ -1,4 +1,6 @@
 .vscode
+node_modules
+
 tsconfig.json
 webpack.config.js
 .prettierrc.js

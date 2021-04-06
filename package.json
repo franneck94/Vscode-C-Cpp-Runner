@@ -2,7 +2,7 @@
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
   "description": "Compile and run your C/C++ code.",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "publisher": "franneck94",
   "icon": "icon.png",
   "galleryBanner": {
@@ -14,7 +14,8 @@
   },
   "categories": [
     "Programming Languages",
-    "Debuggers"
+    "Debuggers",
+    "Snippets"
   ],
   "tags": [
     "c",
@@ -22,10 +23,11 @@
     "c++",
     "compile",
     "execute",
-    "tasks",
-    "tools",
     "build",
-    "debug"
+    "debug",
+    "run",
+    "make",
+    "makefile"
   ],
   "repository": {
     "type": "git",
@@ -43,7 +45,7 @@
     "workspaceContains:.vscode/c_cpp_properties.json",
     "onCommand:C_Cpp_Runner.tasks"
   ],
-  "main": "./out/extension.js",
+  "main": "./dist/main",
   "contributes": {
     "taskDefinitions": [
       {
@@ -107,7 +109,7 @@
           "type": "boolean",
           "default": false,
           "description": "Whether to treat warnings as compiler errors or not.",
-          "scope": "machine-overridable"
+          "scope": "resource"
         },
         "C_Cpp_Runner.compilerPathC": {
           "type": "string",
@@ -148,7 +150,7 @@
             "gnu11",
             "gnu17"
           ],
-          "default": "c90",
+          "default": "c89",
           "description": "C-Standard for the C Compiler.",
           "scope": "resource"
         },
@@ -201,8 +203,8 @@
     "compile": "tsc -p ./",
     "lint": "eslint src --ext ts",
     "lint-fix": "eslint src --fix --ext ts",
-    "format-check": "prettier --check 'src/**/*.ts'",
-    "format-fix": "prettier --write 'src/**/*.ts'",
+    "format-check": "prettier --check src/**/*.ts",
+    "format-fix": "prettier --write src/**/*.ts",
     "watch": "tsc -watch -p ./"
   },
   "devDependencies": {

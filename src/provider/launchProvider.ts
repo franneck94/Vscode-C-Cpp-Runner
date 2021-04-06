@@ -2,20 +2,16 @@ import * as path from 'path';
 
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
-import {
-  JsonInterface,
-  OperatingSystems,
-  readJsonFile,
-  writeJsonFile,
-} from '../utils';
+import { readJsonFile, writeJsonFile } from '../utils';
+import { JsonConfiguration, OperatingSystems } from '../types';
 
 export class LaunchProvider extends FileProvider {
   constructor(
-    public settings: SettingsProvider,
+    protected settings: SettingsProvider,
     public workspaceFolder: string,
     public pickedFolder: string,
-    public templateFileName: string,
-    public outputFileName: string,
+    protected templateFileName: string,
+    protected outputFileName: string,
   ) {
     super(settings, workspaceFolder, templateFileName, outputFileName);
 
@@ -25,7 +21,7 @@ export class LaunchProvider extends FileProvider {
   }
 
   public writeFileData(inputFilePath: string, outFilePath: string) {
-    const configJson: JsonInterface = readJsonFile(inputFilePath);
+    const configJson: JsonConfiguration = readJsonFile(inputFilePath);
 
     if (!configJson) {
       return;
@@ -36,7 +32,7 @@ export class LaunchProvider extends FileProvider {
     }
 
     configJson.configurations[0].name = `Launch: Debug Program`;
-    if (undefined !== this.settings.debugger) {
+    if (this.settings.debugger) {
       configJson.configurations[0].MIMode = this.settings.debugger;
       configJson.configurations[0].miDebuggerPath = this.settings.debuggerPath;
 

@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SettingsProvider = void 0;
 const path = require("path");
 const vscode = require("vscode");
-const types_1 = require("../types");
 const utils_1 = require("../utils");
 const CONFIGURATION_TARGET = vscode.ConfigurationTarget.Workspace;
 class SettingsProvider {
@@ -37,7 +36,7 @@ class SettingsProvider {
         const { found: foundGDB, path: pathGDB } = await utils_1.commandExists('gdb');
         const { found: foundLLDB, path: pathLLDB } = await utils_1.commandExists('lldb');
         const { found: foundMake, path: pathMake } = await utils_1.commandExists('make');
-        if (types_1.OperatingSystems.mac === this.operatingSystem) {
+        if (utils_1.OperatingSystems.mac === this.operatingSystem) {
             if (foundClang && pathClang) {
                 this.setClang(pathClang);
             }
@@ -98,7 +97,7 @@ class SettingsProvider {
                 this.setMake(pathMake);
             }
             else {
-                if (this.operatingSystem === types_1.OperatingSystems.windows) {
+                if (this.operatingSystem === utils_1.OperatingSystems.windows) {
                     const { found: foundMakeMingw, path: pathMakeMingw, } = await utils_1.commandExists('mingw32-make');
                     if (foundMakeMingw && pathMakeMingw) {
                         this.setMake(pathMakeMingw);
@@ -106,7 +105,7 @@ class SettingsProvider {
                 }
             }
         }
-        if (this.cCompiler) {
+        if (undefined !== this.cCompiler) {
             this.architecure = utils_1.getArchitecture(this.cCompiler);
         }
     }
@@ -126,47 +125,47 @@ class SettingsProvider {
         this.includePaths = this._config.get('includePaths', '');
         const cBasename = path.basename(this.compilerPathC, 'exe');
         const cppBasename = path.basename(this.compilerPathCpp, 'exe');
-        if (cBasename.includes(types_1.Compilers.clang)) {
-            this.cCompiler = types_1.Compilers.clang;
-            this.debugger = types_1.Debuggers.lldb;
+        if (cBasename.includes(utils_1.Compilers.clang)) {
+            this.cCompiler = utils_1.Compilers.clang;
+            this.debugger = utils_1.Debuggers.lldb;
         }
         else {
-            this.cCompiler = types_1.Compilers.gcc;
-            this.debugger = types_1.Debuggers.gdb;
+            this.cCompiler = utils_1.Compilers.gcc;
+            this.debugger = utils_1.Debuggers.gdb;
         }
-        if (cppBasename.includes(types_1.Compilers.clangpp)) {
-            this.cppCompiler = types_1.Compilers.clangpp;
-            this.debugger = types_1.Debuggers.lldb;
+        if (cppBasename.includes(utils_1.Compilers.clangpp)) {
+            this.cppCompiler = utils_1.Compilers.clangpp;
+            this.debugger = utils_1.Debuggers.lldb;
         }
         else {
-            this.cppCompiler = types_1.Compilers.gpp;
-            this.debugger = types_1.Debuggers.gdb;
+            this.cppCompiler = utils_1.Compilers.gpp;
+            this.debugger = utils_1.Debuggers.gdb;
         }
         this.architecure = utils_1.getArchitecture(this.cCompiler);
     }
     setGcc(pathGcc) {
         this._config.update('compilerPathC', pathGcc, CONFIGURATION_TARGET);
-        this.cCompiler = types_1.Compilers.gcc;
+        this.cCompiler = utils_1.Compilers.gcc;
     }
     setClang(pathClang) {
         this._config.update('compilerPathC', pathClang, CONFIGURATION_TARGET);
-        this.cCompiler = types_1.Compilers.clang;
+        this.cCompiler = utils_1.Compilers.clang;
     }
     setGpp(pathGpp) {
         this._config.update('compilerPathCpp', pathGpp, CONFIGURATION_TARGET);
-        this.cppCompiler = types_1.Compilers.gpp;
+        this.cppCompiler = utils_1.Compilers.gpp;
     }
     setClangpp(pathClangpp) {
         this._config.update('compilerPathCpp', pathClangpp, CONFIGURATION_TARGET);
-        this.cppCompiler = types_1.Compilers.clangpp;
+        this.cppCompiler = utils_1.Compilers.clangpp;
     }
     setLLDB(pathLLDB) {
         this._config.update('debuggerPath', pathLLDB, CONFIGURATION_TARGET);
-        this.debugger = types_1.Debuggers.lldb;
+        this.debugger = utils_1.Debuggers.lldb;
     }
     setGDB(pathGDB) {
         this._config.update('debuggerPath', pathGDB, CONFIGURATION_TARGET);
-        this.debugger = types_1.Debuggers.gdb;
+        this.debugger = utils_1.Debuggers.gdb;
     }
     setMake(pathMake) {
         this._config.update('makePath', pathMake, CONFIGURATION_TARGET);

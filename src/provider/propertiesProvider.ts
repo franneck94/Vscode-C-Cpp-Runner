@@ -1,25 +1,20 @@
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
-import {
-  getLanguage,
-  JsonInterface,
-  Languages,
-  readJsonFile,
-  writeJsonFile,
-} from '../utils';
+import { getLanguage, readJsonFile, writeJsonFile } from '../utils';
+import { JsonConfiguration, Languages } from '../types';
 
 export class PropertiesProvider extends FileProvider {
   constructor(
-    public settings: SettingsProvider,
+    protected settings: SettingsProvider,
     public workspaceFolder: string,
     public templateFileName: string,
-    public outputFileName: string,
+    protected outputFileName: string,
   ) {
     super(settings, workspaceFolder, templateFileName, outputFileName);
   }
 
   public writeFileData(inputFilePath: string, outFilePath: string) {
-    const configJson: JsonInterface = readJsonFile(inputFilePath);
+    const configJson: JsonConfiguration = readJsonFile(inputFilePath);
     if (!configJson) {
       return;
     }

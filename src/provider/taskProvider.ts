@@ -3,23 +3,22 @@ import * as vscode from 'vscode';
 
 import { PropertiesProvider } from './propertiesProvider';
 import { SettingsProvider } from './settingsProvider';
+import { getLanguage, readJsonFile, replaceBackslashes } from '../utils';
 import {
-  Architectures,
   Builds,
-  getLanguage,
-  InnerTasksInterface,
-  JsonInterface,
+  Architectures,
   Languages,
-  readJsonFile,
-  replaceBackslashes,
+  JsonTask,
+  JsonInnerTask,
   Tasks,
-  TasksInterface,
-} from '../utils';
+  JsonConfiguration,
+  Task,
+} from '../types';
 
 export class TaskProvider implements vscode.TaskProvider {
-  public tasks: vscode.Task[] | undefined;
-  public tasksFile: string;
-  public makefileFile: string;
+  public tasks: Task[] | undefined;
+  private _tasksFile: string;
+  private _makefileFile: string;
 
   constructor(
     public settingsProvider: SettingsProvider,
@@ -28,10 +27,10 @@ export class TaskProvider implements vscode.TaskProvider {
     public buildMode: Builds,
     public architectureMode: Architectures,
   ) {
-    const extDirectory = path.dirname(path.dirname(__dirname));
+    const extDirectory = path.dirname(__dirname);
     const templateDirectory = path.join(extDirectory, 'src', '_templates');
-    this.tasksFile = path.join(templateDirectory, 'tasks_template.json');
-    this.makefileFile = path.join(templateDirectory, 'Makefile');
+    this._tasksFile = path.join(templateDirectory, 'tasks_template.json');
+    this._makefileFile = path.join(templateDirectory, 'Makefile');
 
     if (!this.pickedFolder) {
       this.pickedFolder = this.propertiesProvider.workspaceFolder;
@@ -40,15 +39,15 @@ export class TaskProvider implements vscode.TaskProvider {
     this.getTasks();
   }
 
-  public async resolveTask(task: vscode.Task) {
+  public async resolveTask(task: Task) {
     return task;
   }
 
-  public provideTasks(): vscode.Task[] {
+  public provideTasks(): Task[] {
     return this.getTasks();
   }
 
-  public getTasks(): vscode.Task[] {
+  public getTasks(): Task[] {
     if (!this.pickedFolder) {
       this.pickedFolder = this.propertiesProvider.workspaceFolder;
     }
@@ -65,7 +64,7 @@ export class TaskProvider implements vscode.TaskProvider {
   }
 
   private setTasksDefinition(language: Languages) {
-    const configJson: TasksInterface = readJsonFile(this.tasksFile);
+    const configJson: JsonTask = readJsonFile(this._tasksFile);
 
     if (!configJson) {
       return [];
@@ -77,7 +76,7 @@ export class TaskProvider implements vscode.TaskProvider {
       if (taskJson.type !== 'shell') {
         continue;
       }
-      if (undefined !== taskJson.options) {
+      if (taskJson.options) {
         if (taskJson.options.hide) {
           continue;
         }
@@ -93,7 +92,7 @@ export class TaskProvider implements vscode.TaskProvider {
       };
       const problemMatcher = '$gcc';
       const scope = vscode.TaskScope.Workspace;
-      const task = new vscode.Task(
+      const task = new Task(
         definition,
         scope,
         taskJson.label,
@@ -110,7 +109,7 @@ export class TaskProvider implements vscode.TaskProvider {
   }
 
   private updateTaskBasedOnSettings(
-    taskJson: InnerTasksInterface,
+    taskJson: JsonInnerTask,
     language: Languages,
   ) {
     const settings = this.settingsProvider;
@@ -125,15 +124,15 @@ export class TaskProvider implements vscode.TaskProvider {
       folder,
     );
     taskJson.label = replaceBackslashes(taskJson.label);
-    taskJson.args[1] = `--file=${this.makefileFile}`;
+    taskJson.args[1] = `--file=${this._makefileFile}`;
     taskJson.args.push(`COMPILATION_MODE=${this.buildMode}`);
     taskJson.args.push(`EXECUTABLE_NAME=out${this.buildMode}`);
     taskJson.args.push(`LANGUAGE_MODE=${language}`);
-    const includesClean = taskJson.label.includes(Tasks.clean);
-    const includesRun = taskJson.label.includes(Tasks.run);
-    if (!includesClean && !includesRun) {
+    const cleanTask = taskJson.label.includes(Tasks.clean);
+    const runTask = taskJson.label.includes(Tasks.run);
+    if (!cleanTask && !runTask) {
       taskJson.args.push(`ENABLE_WARNINGS=${+settings.enableWarnings}`);
-      taskJson.args.push(`WARNINGS="${settings.warnings}"`);
+      taskJson.args.push(`WARNINGS='${settings.warnings}'`);
       taskJson.args.push(`WARNINGS_AS_ERRORS=${+settings.warningsAsError}`);
       if (language === Languages.c) {
         taskJson.args.push(`C_COMPILER=${settings.compilerPathC}`);
@@ -161,7 +160,7 @@ export class TaskProvider implements vscode.TaskProvider {
   public getProjectFolder() {
     let projectFolder = '';
 
-    if (this.pickedFolder !== undefined) {
+    if (this.pickedFolder) {
       projectFolder = this.pickedFolder;
     } else {
       projectFolder = this.propertiesProvider.workspaceFolder;
@@ -189,7 +188,7 @@ export class TaskProvider implements vscode.TaskProvider {
     const problemMatcher = '$gcc';
     const scope = vscode.TaskScope.Workspace;
 
-    const task = new vscode.Task(
+    const task = new Task(
       definition,
       scope,
       label,
@@ -206,7 +205,7 @@ export class TaskProvider implements vscode.TaskProvider {
       this.propertiesProvider.workspaceFolder,
     );
     const folder = vscode.workspace.getWorkspaceFolder(uriWorkspaceFolder);
-    const config: JsonInterface = readJsonFile(
+    const config: JsonConfiguration = readJsonFile(
       path.join(
         this.propertiesProvider.workspaceFolder,
         '.vscode',

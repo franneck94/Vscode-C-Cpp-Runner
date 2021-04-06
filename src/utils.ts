@@ -5,65 +5,10 @@ import { execSync } from 'child_process';
 import { lookpath } from 'lookpath';
 import { platform } from 'os';
 
-export interface JsonInterface {
-  configurations: any[];
-}
+import { Architectures, Compilers, Languages, OperatingSystems } from './types';
 
-export interface InnerTasksInterface {
-  args: string[];
-  command: string;
-  type: any;
-  options: any;
-  label: any;
-}
-
-export interface TasksInterface {
-  tasks: InnerTasksInterface[];
-}
-
-export interface TaskDefinitionInterface extends vscode.TaskDefinition {
-  [id: string]: string;
-}
-
-export enum Languages {
-  c = 'C',
-  cpp = 'Cpp',
-}
-
-export enum Compilers {
-  gcc = 'gcc',
-  gpp = 'g++',
-  clang = 'clang',
-  clangpp = 'clang++',
-}
-
-export enum Debuggers {
-  lldb = 'lldb',
-  gdb = 'gdb',
-}
-
-export enum OperatingSystems {
-  windows = 'windows',
-  linux = 'linux',
-  mac = 'macos',
-}
-
-export enum Architectures {
-  x86 = 'x86',
-  x64 = 'x64',
-}
-
-export enum Builds {
-  debug = 'Debug',
-  release = 'Release',
-}
-
-export enum Tasks {
-  build = 'Build',
-  run = 'Run',
-  clean = 'Clean',
-  debug = 'Debug',
-}
+const STATUS_BAR_ALIGN = vscode.StatusBarAlignment.Left;
+const STATUS_BAR_PRIORITY = 50;
 
 export function replaceBackslashes(text: string) {
   return text.replace(/\\/g, '/');
@@ -77,6 +22,10 @@ export function pathExists(filePath: string): boolean {
   }
 
   return true;
+}
+
+export function mkdirRecursive(filePath: string) {
+  fs.mkdirSync(filePath, { recursive: true });
 }
 
 export function readJsonFile(filePath: string): any | undefined {
@@ -208,4 +157,11 @@ export function disposeItem(disposableItem: vscode.Disposable) {
 
 export function filterOnString(names: string[], filterName: string) {
   return names.filter((name) => !name.includes(filterName));
+}
+
+export function createStatusBarItem() {
+  return vscode.window.createStatusBarItem(
+    STATUS_BAR_ALIGN,
+    STATUS_BAR_PRIORITY,
+  );
 }

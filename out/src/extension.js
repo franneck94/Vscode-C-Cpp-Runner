@@ -38,7 +38,7 @@ let workspaceFolder;
 let pickedFolder;
 let buildMode = types_1.Builds.debug;
 let architectureMode = types_1.Architectures.x64;
-let errorMessage;
+let promiseMessage;
 function activate(context) {
     if (!vscode.workspace.workspaceFolders ||
         vscode.workspace.workspaceFolders.length === 0) {
@@ -250,12 +250,12 @@ function cleanCallback() {
 }
 function tasksCallback() {
     if (!workspaceFolder) {
-        if (!errorMessage) {
-            errorMessage = vscode.window.showErrorMessage('You have to select a folder first.');
+        if (!promiseMessage) {
+            promiseMessage = vscode.window.showErrorMessage('You have to select a folder first.');
         }
     }
     else {
-        errorMessage = undefined;
+        promiseMessage = undefined;
         if (taskProvider) {
             taskProvider.getTasks();
             taskHandler_1.taskHandler(taskProvider);

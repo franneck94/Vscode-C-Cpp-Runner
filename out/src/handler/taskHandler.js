@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.taskHandler = void 0;
 const path = require("path");
 const vscode = require("vscode");
-const types_1 = require("../types");
 const utils_1 = require("../utils");
 async function taskHandler(taskProvider) {
     let provideRunTask = false;
@@ -15,14 +14,14 @@ async function taskHandler(taskProvider) {
     const tasks = taskProvider.tasks;
     const projectFolder = taskProvider.getProjectFolder();
     const buildFolder = path.join(projectFolder, 'build');
-    const debugFolder = path.join(buildFolder, types_1.Builds.debug);
-    const releaseFolder = path.join(buildFolder, types_1.Builds.release);
+    const debugFolder = path.join(buildFolder, utils_1.Builds.debug);
+    const releaseFolder = path.join(buildFolder, utils_1.Builds.release);
     const currentMode = taskProvider.buildMode;
-    if (currentMode === types_1.Builds.debug && utils_1.pathExists(debugFolder)) {
+    if (currentMode === utils_1.Builds.debug && utils_1.pathExists(debugFolder)) {
         provideRunTask = true;
         provideCleanTask = true;
     }
-    else if (currentMode === types_1.Builds.release && utils_1.pathExists(releaseFolder)) {
+    else if (currentMode === utils_1.Builds.release && utils_1.pathExists(releaseFolder)) {
         provideRunTask = true;
         provideCleanTask = true;
     }
@@ -34,13 +33,13 @@ async function taskHandler(taskProvider) {
         taskNames.push(task.name);
     });
     if (!provideRunTask) {
-        taskNames = utils_1.filterOnString(taskNames, types_1.Tasks.run);
+        taskNames = utils_1.filterOnString(taskNames, utils_1.Tasks.run);
     }
     if (!provideCleanTask) {
-        taskNames = utils_1.filterOnString(taskNames, types_1.Tasks.clean);
+        taskNames = utils_1.filterOnString(taskNames, utils_1.Tasks.clean);
     }
     if (!provideDebugTask) {
-        taskNames = utils_1.filterOnString(taskNames, types_1.Tasks.debug);
+        taskNames = utils_1.filterOnString(taskNames, utils_1.Tasks.debug);
     }
     const pickedTaskName = await vscode.window.showQuickPick(taskNames);
     if (pickedTaskName) {

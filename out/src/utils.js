@@ -7,7 +7,6 @@ const vscode = require("vscode");
 const child_process_1 = require("child_process");
 const lookpath_1 = require("lookpath");
 const os_1 = require("os");
-const types_1 = require("./types");
 const STATUS_BAR_ALIGN = vscode.StatusBarAlignment.Left;
 const STATUS_BAR_PRIORITY = 50;
 function replaceBackslashes(text) {
@@ -49,13 +48,13 @@ function getOperatingSystem() {
     const plattformName = os_1.platform();
     let operatingSystem;
     if (plattformName === 'win32' || plattformName === 'cygwin') {
-        operatingSystem = types_1.OperatingSystems.windows;
+        operatingSystem = OperatingSystems.windows;
     }
     else if (plattformName === 'darwin') {
-        operatingSystem = types_1.OperatingSystems.mac;
+        operatingSystem = OperatingSystems.mac;
     }
     else {
-        operatingSystem = types_1.OperatingSystems.linux;
+        operatingSystem = OperatingSystems.linux;
     }
     return operatingSystem;
 }
@@ -77,14 +76,14 @@ function getArchitecture(compiler) {
         const byteArray = child_process_1.execSync(command);
         const str = String.fromCharCode(...byteArray);
         if (str.includes('64')) {
-            return types_1.Architectures.x64;
+            return Architectures.x64;
         }
         else {
-            return types_1.Architectures.x86;
+            return Architectures.x86;
         }
     }
     catch (err) {
-        return types_1.Architectures.x86;
+        return Architectures.x86;
     }
 }
 exports.getArchitecture = getArchitecture;
@@ -118,10 +117,10 @@ function getLanguage(fileDirName) {
         .map((file) => file.name);
     const anyCppFile = files.some((file) => isCppSourceFile(path.extname(file)));
     if (anyCppFile) {
-        return types_1.Languages.cpp;
+        return Languages.cpp;
     }
     else {
-        return types_1.Languages.c;
+        return Languages.c;
     }
 }
 exports.getLanguage = getLanguage;

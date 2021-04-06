@@ -4,7 +4,6 @@ exports.TaskProvider = void 0;
 const path = require("path");
 const vscode = require("vscode");
 const utils_1 = require("../utils");
-const types_1 = require("../types");
 class TaskProvider {
     constructor(settingsProvider, propertiesProvider, pickedFolder, buildMode, architectureMode) {
         this.settingsProvider = settingsProvider;
@@ -12,7 +11,7 @@ class TaskProvider {
         this.pickedFolder = pickedFolder;
         this.buildMode = buildMode;
         this.architectureMode = architectureMode;
-        const extDirectory = path.dirname(__dirname);
+        const extDirectory = path.dirname(path.dirname(__dirname));
         const templateDirectory = path.join(extDirectory, 'src', '_templates');
         this._tasksFile = path.join(templateDirectory, 'tasks_template.json');
         this._makefileFile = path.join(templateDirectory, 'Makefile');
@@ -48,7 +47,7 @@ class TaskProvider {
             if (taskJson.type !== 'shell') {
                 continue;
             }
-            if (taskJson.options) {
+            if (undefined !== taskJson.options) {
                 if (taskJson.options.hide) {
                     continue;
                 }
@@ -61,7 +60,7 @@ class TaskProvider {
             };
             const problemMatcher = '$gcc';
             const scope = vscode.TaskScope.Workspace;
-            const task = new types_1.Task(definition, scope, taskJson.label, 'C_Cpp_Runner', new vscode.ShellExecution(shellCommand), problemMatcher);
+            const task = new vscode.Task(definition, scope, taskJson.label, 'C_Cpp_Runner', new vscode.ShellExecution(shellCommand), problemMatcher);
             this.tasks.push(task);
         }
         this.addDebugTask();
@@ -78,13 +77,13 @@ class TaskProvider {
         taskJson.args.push(`COMPILATION_MODE=${this.buildMode}`);
         taskJson.args.push(`EXECUTABLE_NAME=out${this.buildMode}`);
         taskJson.args.push(`LANGUAGE_MODE=${language}`);
-        const cleanTask = taskJson.label.includes(types_1.Tasks.clean);
-        const runTask = taskJson.label.includes(types_1.Tasks.run);
-        if (!cleanTask && !runTask) {
+        const includesClean = taskJson.label.includes(utils_1.Tasks.clean);
+        const includesRun = taskJson.label.includes(utils_1.Tasks.run);
+        if (!includesClean && !includesRun) {
             taskJson.args.push(`ENABLE_WARNINGS=${+settings.enableWarnings}`);
-            taskJson.args.push(`WARNINGS='${settings.warnings}'`);
+            taskJson.args.push(`WARNINGS="${settings.warnings}"`);
             taskJson.args.push(`WARNINGS_AS_ERRORS=${+settings.warningsAsError}`);
-            if (language === types_1.Languages.c) {
+            if (language === utils_1.Languages.c) {
                 taskJson.args.push(`C_COMPILER=${settings.compilerPathC}`);
                 taskJson.args.push(`C_STANDARD=${settings.standardC}`);
             }
@@ -101,14 +100,14 @@ class TaskProvider {
             if (settings.includePaths) {
                 taskJson.args.push(`INCLUDE_PATHS=${settings.includePaths}`);
             }
-            const architectureStr = this.architectureMode === types_1.Architectures.x64 ? '64' : '32';
+            const architectureStr = this.architectureMode === utils_1.Architectures.x64 ? '64' : '32';
             taskJson.args.push(`ARCHITECTURE=${architectureStr}`);
         }
         taskJson.command = settings.makePath;
     }
     getProjectFolder() {
         let projectFolder = '';
-        if (this.pickedFolder) {
+        if (this.pickedFolder !== undefined) {
             projectFolder = this.pickedFolder;
         }
         else {
@@ -130,7 +129,7 @@ class TaskProvider {
         };
         const problemMatcher = '$gcc';
         const scope = vscode.TaskScope.Workspace;
-        const task = new types_1.Task(definition, scope, label, 'C_Cpp_Runner', undefined, problemMatcher);
+        const task = new vscode.Task(definition, scope, label, 'C_Cpp_Runner', undefined, problemMatcher);
         this.tasks.push(task);
     }
     async runDebugTask() {

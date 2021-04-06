@@ -8,6 +8,9 @@ All notable changes to the "c-cpp-runner" extension will be documented in this f
 
 ## [Releases]
 
+- 0.5.4
+  - Major code refactoring
+  - Bugfix: Now correct parsing with webpack
 - 0.5.3
   - Added search for "mingw32-make" for MinGW users
   - Updated makefile for Windows user without Cygwin/MSYS installed

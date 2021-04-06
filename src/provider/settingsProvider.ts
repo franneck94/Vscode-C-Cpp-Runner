@@ -3,12 +3,14 @@ import * as vscode from 'vscode';
 
 import {
   Architectures,
-  commandExists,
   Compilers,
   Debuggers,
+  OperatingSystems,
+} from '../types';
+import {
+  commandExists,
   getArchitecture,
   getOperatingSystem,
-  OperatingSystems,
   pathExists,
 } from '../utils';
 
@@ -16,7 +18,7 @@ const CONFIGURATION_TARGET = vscode.ConfigurationTarget.Workspace;
 
 export class SettingsProvider {
   // Global settings
-  public config = vscode.workspace.getConfiguration('C_Cpp_Runner');
+  private _config = vscode.workspace.getConfiguration('C_Cpp_Runner');
   public operatingSystem = getOperatingSystem();
   public architecure: Architectures | undefined;
   public cCompiler: Compilers | undefined;
@@ -112,17 +114,19 @@ export class SettingsProvider {
       if (foundMake && pathMake) {
         this.setMake(pathMake);
       } else {
-        const {
-          found: foundMakeMingw,
-          path: pathMakeMingw,
-        } = await commandExists('mingw32-make');
-        if (foundMakeMingw && pathMakeMingw) {
-          this.setMake(pathMakeMingw);
+        if (this.operatingSystem === OperatingSystems.windows) {
+          const {
+            found: foundMakeMingw,
+            path: pathMakeMingw,
+          } = await commandExists('mingw32-make');
+          if (foundMakeMingw && pathMakeMingw) {
+            this.setMake(pathMakeMingw);
+          }
         }
       }
     }
 
-    if (undefined !== this.cCompiler) {
+    if (this.cCompiler) {
       this.architecure = getArchitecture(this.cCompiler);
     }
   }
@@ -131,19 +135,19 @@ export class SettingsProvider {
    * Read in the current settings.
    */
   public getSettings() {
-    this.config = vscode.workspace.getConfiguration('C_Cpp_Runner');
-    this.enableWarnings = this.config.get('enableWarnings', true);
-    this.warnings = this.config.get('warnings', '-Wall -Wextra -Wpedantic');
-    this.warningsAsError = this.config.get('warningsAsError', false);
-    this.compilerPathC = this.config.get('compilerPathC', 'gcc');
-    this.compilerPathCpp = this.config.get('compilerPathCpp', 'g++');
-    this.debuggerPath = this.config.get('debuggerPath', 'gdb');
-    this.makePath = this.config.get('makePath', 'make');
-    this.standardC = this.config.get('standardC', 'c90');
-    this.standardCpp = this.config.get('standardCpp', 'c++11');
-    this.compilerArgs = this.config.get('compilerArgs', '');
-    this.linkerArgs = this.config.get('linkerArgs', '');
-    this.includePaths = this.config.get('includePaths', '');
+    this._config = vscode.workspace.getConfiguration('C_Cpp_Runner');
+    this.enableWarnings = this._config.get('enableWarnings', true);
+    this.warnings = this._config.get('warnings', '-Wall -Wextra -Wpedantic');
+    this.warningsAsError = this._config.get('warningsAsError', false);
+    this.compilerPathC = this._config.get('compilerPathC', 'gcc');
+    this.compilerPathCpp = this._config.get('compilerPathCpp', 'g++');
+    this.debuggerPath = this._config.get('debuggerPath', 'gdb');
+    this.makePath = this._config.get('makePath', 'make');
+    this.standardC = this._config.get('standardC', 'c90');
+    this.standardCpp = this._config.get('standardCpp', 'c++11');
+    this.compilerArgs = this._config.get('compilerArgs', '');
+    this.linkerArgs = this._config.get('linkerArgs', '');
+    this.includePaths = this._config.get('includePaths', '');
 
     const cBasename = path.basename(this.compilerPathC, 'exe');
     const cppBasename = path.basename(this.compilerPathCpp, 'exe');
@@ -168,36 +172,36 @@ export class SettingsProvider {
   }
 
   private setGcc(pathGcc: string) {
-    this.config.update('compilerPathC', pathGcc, CONFIGURATION_TARGET);
+    this._config.update('compilerPathC', pathGcc, CONFIGURATION_TARGET);
     this.cCompiler = Compilers.gcc;
   }
 
   private setClang(pathClang: string) {
-    this.config.update('compilerPathC', pathClang, CONFIGURATION_TARGET);
+    this._config.update('compilerPathC', pathClang, CONFIGURATION_TARGET);
     this.cCompiler = Compilers.clang;
   }
 
   private setGpp(pathGpp: string) {
-    this.config.update('compilerPathCpp', pathGpp, CONFIGURATION_TARGET);
+    this._config.update('compilerPathCpp', pathGpp, CONFIGURATION_TARGET);
     this.cppCompiler = Compilers.gpp;
   }
 
   private setClangpp(pathClangpp: string) {
-    this.config.update('compilerPathCpp', pathClangpp, CONFIGURATION_TARGET);
+    this._config.update('compilerPathCpp', pathClangpp, CONFIGURATION_TARGET);
     this.cppCompiler = Compilers.clangpp;
   }
 
   private setLLDB(pathLLDB: string) {
-    this.config.update('debuggerPath', pathLLDB, CONFIGURATION_TARGET);
+    this._config.update('debuggerPath', pathLLDB, CONFIGURATION_TARGET);
     this.debugger = Debuggers.lldb;
   }
 
   private setGDB(pathGDB: string) {
-    this.config.update('debuggerPath', pathGDB, CONFIGURATION_TARGET);
+    this._config.update('debuggerPath', pathGDB, CONFIGURATION_TARGET);
     this.debugger = Debuggers.gdb;
   }
 
   private setMake(pathMake: string) {
-    this.config.update('makePath', pathMake, CONFIGURATION_TARGET);
+    this._config.update('makePath', pathMake, CONFIGURATION_TARGET);
   }
 }

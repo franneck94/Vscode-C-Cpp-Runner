@@ -27,7 +27,7 @@ else
   detected_OS := $(patsubst MSYS%,MSYS,$(detected_OS))
   detected_OS := $(patsubst MINGW%,MSYS,$(detected_OS))
 endif
-$(info Detected OS: $(detected_OS))
+# $(info Detected OS: $(detected_OS)) # Debug Purpose
 
 ifeq ($(detected_OS), Windows)
 RM_FUNC = del /s /q

@@ -21,20 +21,20 @@ class PropertiesProvider extends fileProvider_1.FileProvider {
             `${this.settings.cCompiler}-` +
             `${this.settings.architecure}`;
         const config = configJson.configurations[0];
-        config.compilerArgs = this.settings.warnings.split(" ");
+        config.compilerArgs = this.settings.warnings.split(' ');
         if (this.settings.compilerArgs) {
             config.compilerArgs = [
                 ...config.compilerArgs,
-                ...this.settings.compilerArgs.split(" "),
+                ...this.settings.compilerArgs.split(' '),
             ];
         }
         else {
-            config.compilerArgs = [...this.settings.warnings.split(" ")];
+            config.compilerArgs = [...this.settings.warnings.split(' ')];
         }
         if (this.settings.includePaths) {
             config.includePath = [
                 ...config.includePath,
-                ...this.settings.includePaths.split(" "),
+                ...this.settings.includePaths.split(' '),
             ];
         }
         else {
@@ -42,7 +42,7 @@ class PropertiesProvider extends fileProvider_1.FileProvider {
         }
         config.cppStandard = this.settings.standardCpp;
         config.cStandard =
-            this.settings.standardC === "c90" ? "c89" : this.settings.standardC;
+            this.settings.standardC === 'c90' ? 'c89' : this.settings.standardC;
         if (utils_1.Languages.cpp === language) {
             config.compilerPath = this.settings.compilerPathCpp;
         }

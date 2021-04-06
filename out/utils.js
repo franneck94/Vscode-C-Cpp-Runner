@@ -1,20 +1,11 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.filterOnString = exports.disposeItem = exports.getDirectories = exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getOperatingSystem = exports.writeJsonFile = exports.readJsonFile = exports.pathExists = exports.replaceBackslashes = exports.Tasks = exports.Builds = exports.Architectures = exports.OperatingSystems = exports.Debuggers = exports.Compilers = exports.Languages = void 0;
-const child_process_1 = require("child_process");
 const fs = require("fs");
+const path = require("path");
+const child_process_1 = require("child_process");
 const lookpath_1 = require("lookpath");
 const os_1 = require("os");
-const path = require("path");
 var Languages;
 (function (Languages) {
     Languages["c"] = "C";
@@ -56,7 +47,7 @@ var Tasks;
     Tasks["debug"] = "Debug";
 })(Tasks = exports.Tasks || (exports.Tasks = {}));
 function replaceBackslashes(text) {
-    return text.replace(/\\/g, "/");
+    return text.replace(/\\/g, '/');
 }
 exports.replaceBackslashes = replaceBackslashes;
 function pathExists(filePath) {
@@ -72,7 +63,7 @@ exports.pathExists = pathExists;
 function readJsonFile(filePath) {
     let configJson;
     try {
-        const fileContent = fs.readFileSync(filePath, "utf-8");
+        const fileContent = fs.readFileSync(filePath, 'utf-8');
         configJson = JSON.parse(fileContent);
     }
     catch (err) {
@@ -89,10 +80,10 @@ exports.writeJsonFile = writeJsonFile;
 function getOperatingSystem() {
     const plattformName = os_1.platform();
     let operatingSystem;
-    if (plattformName === "win32" || plattformName === "cygwin") {
+    if (plattformName === 'win32' || plattformName === 'cygwin') {
         operatingSystem = OperatingSystems.windows;
     }
-    else if (plattformName === "darwin") {
+    else if (plattformName === 'darwin') {
         operatingSystem = OperatingSystems.mac;
     }
     else {
@@ -101,17 +92,15 @@ function getOperatingSystem() {
     return operatingSystem;
 }
 exports.getOperatingSystem = getOperatingSystem;
-function commandExists(command) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let commandPath = yield lookpath_1.lookpath(command);
-        if (!commandPath) {
-            return { found: false, path: commandPath };
-        }
-        if (commandPath.includes(".EXE")) {
-            commandPath = commandPath.replace(".EXE", ".exe");
-        }
-        return { found: true, path: commandPath };
-    });
+async function commandExists(command) {
+    let commandPath = await lookpath_1.lookpath(command);
+    if (!commandPath) {
+        return { found: false, path: commandPath };
+    }
+    if (commandPath.includes('.EXE')) {
+        commandPath = commandPath.replace('.EXE', '.exe');
+    }
+    return { found: true, path: commandPath };
 }
 exports.commandExists = commandExists;
 function getArchitecture(compiler) {
@@ -119,7 +108,7 @@ function getArchitecture(compiler) {
     try {
         const byteArray = child_process_1.execSync(command);
         const str = String.fromCharCode(...byteArray);
-        if (str.includes("64")) {
+        if (str.includes('64')) {
             return Architectures.x64;
         }
         else {
@@ -143,15 +132,15 @@ function isSourceFile(fileExt) {
 }
 exports.isSourceFile = isSourceFile;
 function isHeaderFile(fileExtLower) {
-    return [".hpp", ".hh", ".hxx", ".h"].some((ext) => fileExtLower === ext);
+    return ['.hpp', '.hh', '.hxx', '.h'].some((ext) => fileExtLower === ext);
 }
 exports.isHeaderFile = isHeaderFile;
 function isCppSourceFile(fileExtLower) {
-    return [".cpp", ".cc", ".cxx"].some((ext) => fileExtLower === ext);
+    return ['.cpp', '.cc', '.cxx'].some((ext) => fileExtLower === ext);
 }
 exports.isCppSourceFile = isCppSourceFile;
 function isCSourceFile(fileExtLower) {
-    return fileExtLower === ".c";
+    return fileExtLower === '.c';
 }
 exports.isCSourceFile = isCSourceFile;
 function getLanguage(fileDirName) {
@@ -175,8 +164,8 @@ function getDirectories(folder) {
     let directories = fileDirents
         .filter((dir) => dir.isDirectory())
         .map((dir) => path.join(folder.toString(), dir.name));
-    directories = directories.filter((dir) => !dir.includes(".vscode"));
-    directories = directories.filter((dir) => !dir.includes("build"));
+    directories = directories.filter((dir) => !dir.includes('.vscode'));
+    directories = directories.filter((dir) => !dir.includes('build'));
     if (directories.length === 0) {
         return;
     }

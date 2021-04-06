@@ -29,12 +29,11 @@ class LaunchProvider extends fileProvider_1.FileProvider {
             configJson.configurations[0].MIMode = this.settings.debugger;
             configJson.configurations[0].miDebuggerPath = this.settings.debuggerPath;
             if (utils_1.OperatingSystems.windows === this.settings.operatingSystem) {
-                // XXX: Either gdb or the C/C++ extension has issues on windows with the internal terminal
                 configJson.configurations[0].externalConsole = true;
             }
         }
         configJson.configurations[0].cwd = this.pickedFolder;
-        const debugPath = path.join(this.pickedFolder, "build/Debug/outDebug");
+        const debugPath = path.join(this.pickedFolder, 'build/Debug/outDebug');
         configJson.configurations[0].program = debugPath;
         utils_1.writeJsonFile(outFilePath, configJson);
     }

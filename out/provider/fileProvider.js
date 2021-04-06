@@ -13,11 +13,11 @@ class FileProvider {
         this.outputFileName = outputFileName;
         this.settings = settings;
         this.workspaceFolder = workspaceFolder;
-        this.vscodeDirectory = path.join(this.workspaceFolder, ".vscode");
+        this.vscodeDirectory = path.join(this.workspaceFolder, '.vscode');
         this.outputPath = path.join(this.vscodeDirectory, outputFileName);
         const deletePattern = `${this.vscodeDirectory}/**`;
         const extDirectory = path.dirname(path.dirname(__dirname));
-        const templateDirectory = path.join(extDirectory, "src", "_templates");
+        const templateDirectory = path.join(extDirectory, 'src', '_templates');
         this.templatePath = path.join(templateDirectory, templateFileName);
         this.fileWatcherOnDelete = vscode.workspace.createFileSystemWatcher(deletePattern, true, true, false);
         let doUpdate = false;
@@ -53,9 +53,8 @@ class FileProvider {
     updateFileData() {
         this.writeFileData(this.outputPath, this.outputPath);
     }
-    // @ts-ignore
     writeFileData(inputFilePath, outFilePath) {
-        throw new Error("You have to implement the method doSomething!");
+        throw new Error('You have to implement the method doSomething!');
     }
 }
 exports.FileProvider = FileProvider;

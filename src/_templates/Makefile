@@ -17,6 +17,24 @@ LINKER_ARGS ?= ""
 INCLUDE_PATHS ?= ""
 BUILD_DIR ?= build/$(COMPILATION_MODE)
 
+ifeq '$(findstring ;,$(PATH))' ';'
+  detected_OS := Windows
+else
+  detected_OS := $(shell uname 2>/dev/null || echo Unknown)
+  detected_OS := $(patsubst CYGWIN%,Cygwin,$(detected_OS))
+  detected_OS := $(patsubst MSYS%,MSYS,$(detected_OS))
+  detected_OS := $(patsubst MINGW%,MSYS,$(detected_OS))
+endif
+$(info Detected OS: $(detected_OS))
+
+ifeq ($(detected_OS), Windows)
+RM_FUNC = del /s /q
+MKDIR_FUNC = mkdir
+else
+RM_FUNC = RM -f
+MKDIR_FUNC = mkdir -p
+endif
+
 ifeq ($(COMPILATION_MODE), Debug)
 C_COMPILER_FLAGS = -g3 -O0 -m$(ARCHITECTURE) -std=$(C_STANDARD)
 CPP_COMPILER_FLAGS = -g3 -O0 -m$(ARCHITECTURE) -std=$(CPP_STANDARD)
@@ -81,7 +99,7 @@ endif
 ## HELPER TARGETS ##
 ####################
 $(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+	$(MKDIR_FUNC) $(BUILD_DIR)
 
 ####################
 ## PSEUDO TARGETS ##
@@ -99,7 +117,7 @@ execute:
 	./$(BUILD_DIR)/$(EXECUTABLE_NAME)
 
 clean:
-	$(RM) -f $(BUILD_DIR)/*.o
+	$(RM_FUNC) $(BUILD_DIR)/*.o
 
 ##############
 ## PATTERNS ##

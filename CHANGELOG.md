@@ -8,6 +8,9 @@ All notable changes to the "c-cpp-runner" extension will be documented in this f
 
 ## [Releases]
 
+- 0.5.3
+  - Added search for "mingw32-make" for MinGW users
+  - Updated makefile for MinGW users that do not have the command "rm", now using window's command "del" instead
 - 0.5.2
   - Added Microsoft's C/C++ extension as "extensionPack" entry
 - 0.5.1

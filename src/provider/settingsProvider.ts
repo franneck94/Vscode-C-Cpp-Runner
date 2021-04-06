@@ -112,6 +112,14 @@ export class SettingsProvider {
 
       if (foundMake && pathMake) {
         this.setMake(pathMake);
+      } else {
+        const {
+          found: foundMakeMingw,
+          path: pathMakeMingw,
+        } = await commandExists('mingw32-make');
+        if (foundMakeMingw && pathMakeMingw) {
+          this.setMake(pathMakeMingw);
+        }
       }
     }
 

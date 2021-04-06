@@ -7,16 +7,18 @@ ENABLE_WARNINGS ?= 1
 WARNINGS_AS_ERRORS ?= 0
 WARNINGS ?= -Wall -Wextra -Wpedantic
 C_COMPILER ?= gcc
-C_STANDARD ?= c99
+C_STANDARD ?= c89
 CPP_COMPILER ?= g++
-CPP_STANDARD ?= c++2a
+CPP_STANDARD ?= c++11
 EXECUTABLE_NAME ?= main
 ARCHITECTURE ?= 64
 COMPILER_ARGS ?= ""
 LINKER_ARGS ?= ""
 INCLUDE_PATHS ?= ""
-BUILD_DIR ?= build/$(COMPILATION_MODE)
 
+#######################
+## OS DEPENDENT VARS ##
+#######################
 ifeq '$(findstring ;,$(PATH))' ';'
   detected_OS := Windows
 else
@@ -30,11 +32,20 @@ $(info Detected OS: $(detected_OS))
 ifeq ($(detected_OS), Windows)
 RM_FUNC = del /s /q
 MKDIR_FUNC = mkdir
+BUILD_DIR ?= build\$(COMPILATION_MODE)
+MKDIR_PATH = $(subst /,\\,$(BUILD_DIR))
+CLEAN_PATH = $(subst /,\\,$(BUILD_DIR)\*.o)
 else
 RM_FUNC = RM -f
 MKDIR_FUNC = mkdir -p
+BUILD_DIR ?= build/$(COMPILATION_MODE)
+MKDIR_PATH = $(BUILD_DIR)
+CLEAN_PATH = $(BUILD_DIR)/*.o
 endif
 
+########################
+## COMPILER ARGUMENTS ##
+########################
 ifeq ($(COMPILATION_MODE), Debug)
 C_COMPILER_FLAGS = -g3 -O0 -m$(ARCHITECTURE) -std=$(C_STANDARD)
 CPP_COMPILER_FLAGS = -g3 -O0 -m$(ARCHITECTURE) -std=$(CPP_STANDARD)
@@ -71,6 +82,9 @@ endif
 C_COMPILER_CALL = $(C_COMPILER) $(C_COMPILER_FLAGS)
 CPP_COMPILER_CALL = $(CPP_COMPILER) $(CPP_COMPILER_FLAGS)
 
+######################
+## WILDCAR COMMANDS ##
+######################
 C_SRCS = $(wildcard *.c)
 C_OBJECTS = $(patsubst %.c, $(BUILD_DIR)/%.o, $(C_SRCS))
 
@@ -99,7 +113,7 @@ endif
 ## HELPER TARGETS ##
 ####################
 $(BUILD_DIR):
-	$(MKDIR_FUNC) $(BUILD_DIR)
+	$(MKDIR_FUNC) $(MKDIR_PATH)
 
 ####################
 ## PSEUDO TARGETS ##
@@ -117,7 +131,7 @@ execute:
 	./$(BUILD_DIR)/$(EXECUTABLE_NAME)
 
 clean:
-	$(RM_FUNC) $(BUILD_DIR)/*.o
+	$(RM_FUNC) $(CLEAN_PATH)
 
 ##############
 ## PATTERNS ##
@@ -137,4 +151,4 @@ $(BUILD_DIR)/%.o : %.cxx
 ###########
 ## PHONY ##
 ###########
-.PHONY: clean build
+.PHONY: clean build execute

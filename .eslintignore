@@ -1,1 +1,7 @@
+# Ignore artifacts:
+dist
+out
+node_modules
+
+# Ignore files:
 *.js

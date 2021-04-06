@@ -64,14 +64,14 @@ export async function commandExists(command: string) {
   let commandPath = await lookpath(command);
 
   if (!commandPath) {
-    return { found: false, path: commandPath };
+    return { f: false, p: commandPath };
   }
 
   if (commandPath.includes('.EXE')) {
     commandPath = commandPath.replace('.EXE', '.exe');
   }
 
-  return { found: true, path: commandPath };
+  return { f: true, p: commandPath };
 }
 
 export function getArchitecture(compiler: Compilers) {

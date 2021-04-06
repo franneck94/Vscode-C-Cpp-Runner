@@ -9,14 +9,14 @@ export class LaunchProvider extends FileProvider {
   constructor(
     protected settings: SettingsProvider,
     public workspaceFolder: string,
-    public pickedFolder: string,
+    public activeFolder: string,
     protected templateFileName: string,
     protected outputFileName: string,
   ) {
     super(settings, workspaceFolder, templateFileName, outputFileName);
 
-    if (!this.pickedFolder) {
-      this.pickedFolder = this.workspaceFolder;
+    if (!this.activeFolder) {
+      this.activeFolder = this.workspaceFolder;
     }
   }
 
@@ -27,8 +27,8 @@ export class LaunchProvider extends FileProvider {
       return;
     }
 
-    if (!this.pickedFolder) {
-      this.pickedFolder = this.workspaceFolder;
+    if (!this.activeFolder) {
+      this.activeFolder = this.workspaceFolder;
     }
 
     configJson.configurations[0].name = `Launch: Debug Program`;
@@ -42,8 +42,8 @@ export class LaunchProvider extends FileProvider {
       }
     }
 
-    configJson.configurations[0].cwd = this.pickedFolder;
-    const debugPath = path.join(this.pickedFolder, 'build/Debug/outDebug');
+    configJson.configurations[0].cwd = this.activeFolder;
+    const debugPath = path.join(this.activeFolder, 'build/Debug/outDebug');
     configJson.configurations[0].program = debugPath;
 
     writeJsonFile(outFilePath, configJson);

@@ -1,7 +1,6 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import { PropertiesProvider } from './propertiesProvider';
 import { SettingsProvider } from './settingsProvider';
 import { getLanguage, readJsonFile, replaceBackslashes } from '../utils';
 import {
@@ -21,19 +20,19 @@ export class TaskProvider implements vscode.TaskProvider {
   private _makefileFile: string;
 
   constructor(
-    public settingsProvider: SettingsProvider,
-    public propertiesProvider: PropertiesProvider,
-    public pickedFolder: string,
-    public buildMode: Builds,
-    public architectureMode: Architectures,
+    private readonly _settingsProvider: SettingsProvider,
+    private _workspaceFolder: string,
+    private _pickedFolder: string,
+    private _buildMode: Builds,
+    private _architectureMode: Architectures,
   ) {
     const extDirectory = path.dirname(__dirname);
     const templateDirectory = path.join(extDirectory, 'src', '_templates');
     this._tasksFile = path.join(templateDirectory, 'tasks_template.json');
     this._makefileFile = path.join(templateDirectory, 'Makefile');
 
-    if (!this.pickedFolder) {
-      this.pickedFolder = this.propertiesProvider.workspaceFolder;
+    if (!this.activeFolder) {
+      this.activeFolder = this.workspaceFolder;
     }
 
     this.getTasks();
@@ -48,11 +47,11 @@ export class TaskProvider implements vscode.TaskProvider {
   }
 
   public getTasks(): Task[] {
-    if (!this.pickedFolder) {
-      this.pickedFolder = this.propertiesProvider.workspaceFolder;
+    if (!this.activeFolder) {
+      this.activeFolder = this.workspaceFolder;
     }
 
-    const language = getLanguage(this.pickedFolder);
+    const language = getLanguage(this.activeFolder);
 
     this.setTasksDefinition(language);
 
@@ -112,10 +111,10 @@ export class TaskProvider implements vscode.TaskProvider {
     taskJson: JsonInnerTask,
     language: Languages,
   ) {
-    const settings = this.settingsProvider;
-    const pickedFolder = this.pickedFolder;
-    const workspaceFolder = this.propertiesProvider.workspaceFolder;
-    const folder = pickedFolder.replace(
+    const settings = this._settingsProvider;
+    const activeFolder = this.activeFolder;
+    const workspaceFolder = this.workspaceFolder;
+    const folder = activeFolder.replace(
       workspaceFolder,
       path.basename(workspaceFolder),
     );
@@ -160,10 +159,10 @@ export class TaskProvider implements vscode.TaskProvider {
   public getProjectFolder() {
     let projectFolder = '';
 
-    if (this.pickedFolder) {
-      projectFolder = this.pickedFolder;
+    if (this.activeFolder) {
+      projectFolder = this.activeFolder;
     } else {
-      projectFolder = this.propertiesProvider.workspaceFolder;
+      projectFolder = this.workspaceFolder;
     }
 
     return projectFolder;
@@ -174,11 +173,11 @@ export class TaskProvider implements vscode.TaskProvider {
       return;
     }
 
-    const folder = this.pickedFolder.replace(
-      this.propertiesProvider.workspaceFolder,
-      path.basename(this.propertiesProvider.workspaceFolder),
+    const folder = this.activeFolder.replace(
+      this.workspaceFolder,
+      path.basename(this.workspaceFolder),
     );
-    let label = `Debug: ${this.pickedFolder}`;
+    let label = `Debug: ${this.activeFolder}`;
     label = label.replace(label.split(': ')[1], folder);
     label = replaceBackslashes(label);
     const definition = {
@@ -202,16 +201,41 @@ export class TaskProvider implements vscode.TaskProvider {
 
   public async runDebugTask() {
     const uriWorkspaceFolder = vscode.Uri.file(
-      this.propertiesProvider.workspaceFolder,
+      this.workspaceFolder,
     );
     const folder = vscode.workspace.getWorkspaceFolder(uriWorkspaceFolder);
     const config: JsonConfiguration = readJsonFile(
       path.join(
-        this.propertiesProvider.workspaceFolder,
+        this.workspaceFolder,
         '.vscode',
         'launch.json',
       ),
     );
     await vscode.debug.startDebugging(folder, config.configurations[0]);
+  }
+
+  public get architectureMode(): Architectures {
+    return this._architectureMode;
+  }
+  public set architectureMode(value: Architectures) {
+    this._architectureMode = value;
+  }
+  public get buildMode(): Builds {
+    return this._buildMode;
+  }
+  public set buildMode(value: Builds) {
+    this._buildMode = value;
+  }
+  public get activeFolder(): string {
+    return this._pickedFolder;
+  }
+  public set activeFolder(value: string) {
+    this._pickedFolder = value;
+  }
+  public get workspaceFolder(): string {
+    return this._workspaceFolder;
+  }
+  public set workspaceFolder(value: string) {
+    this._workspaceFolder = value;
   }
 }

@@ -45,7 +45,7 @@ let debugStatusBar: vscode.StatusBarItem;
 let cleanStatusBar: vscode.StatusBarItem;
 
 let workspaceFolder: string | undefined;
-let pickedFolder: string | undefined;
+let activeFolder: string | undefined;
 let buildMode: Builds = Builds.debug;
 let architectureMode: Architectures = Architectures.x64;
 let errorMessage: Thenable<string | undefined> | undefined;
@@ -88,22 +88,22 @@ function initWorkspaceInstance() {
     PROPERTIES_FILE,
   );
 
-  if (!pickedFolder) {
+  if (!activeFolder) {
     return;
   }
 
   launchProvider = new LaunchProvider(
     settingsProvider,
     workspaceFolder,
-    pickedFolder,
+    activeFolder,
     LAUNCH_TEMPLATE,
     LAUNCH_FILE,
   );
 
   taskProvider = new TaskProvider(
     settingsProvider,
-    propertiesProvider,
-    pickedFolder,
+    workspaceFolder,
+    activeFolder,
     buildMode,
     architectureMode,
   );
@@ -240,25 +240,26 @@ function initCleanStatusBar(context: vscode.ExtensionContext) {
 
 async function folderCallback() {
   const ret = await folderHandler();
-  if (ret && ret.pickedFolder && ret.workspaceFolder) {
-    pickedFolder = ret.pickedFolder;
+  if (ret && ret.activeFolder && ret.workspaceFolder) {
+    activeFolder = ret.activeFolder;
     workspaceFolder = ret.workspaceFolder;
 
     initWorkspaceInstance();
 
-    if (workspaceFolder && pickedFolder) {
+    if (workspaceFolder && activeFolder) {
       if (propertiesProvider) {
         propertiesProvider.workspaceFolder = workspaceFolder;
       }
       if (taskProvider) {
-        taskProvider.pickedFolder = pickedFolder;
+        taskProvider.workspaceFolder = workspaceFolder;
+        taskProvider.activeFolder = activeFolder;
         if (buildMode && architectureMode) {
           taskProvider.buildMode = buildMode;
           taskProvider.architectureMode = architectureMode;
         }
       }
       if (launchProvider) {
-        launchProvider.pickedFolder = pickedFolder;
+        launchProvider.activeFolder = activeFolder;
         launchProvider.workspaceFolder = workspaceFolder;
         launchProvider.updateFileData();
       }
@@ -331,7 +332,7 @@ function runCallback() {
 }
 
 async function debugCallback() {
-  if (!pickedFolder || !workspaceFolder) {
+  if (!activeFolder || !workspaceFolder) {
     return;
   }
 

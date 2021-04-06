@@ -6,15 +6,15 @@ const fileProvider_1 = require("./fileProvider");
 const utils_1 = require("../utils");
 const types_1 = require("../types");
 class LaunchProvider extends fileProvider_1.FileProvider {
-    constructor(settings, workspaceFolder, pickedFolder, templateFileName, outputFileName) {
+    constructor(settings, workspaceFolder, activeFolder, templateFileName, outputFileName) {
         super(settings, workspaceFolder, templateFileName, outputFileName);
         this.settings = settings;
         this.workspaceFolder = workspaceFolder;
-        this.pickedFolder = pickedFolder;
+        this.activeFolder = activeFolder;
         this.templateFileName = templateFileName;
         this.outputFileName = outputFileName;
-        if (!this.pickedFolder) {
-            this.pickedFolder = this.workspaceFolder;
+        if (!this.activeFolder) {
+            this.activeFolder = this.workspaceFolder;
         }
     }
     writeFileData(inputFilePath, outFilePath) {
@@ -22,8 +22,8 @@ class LaunchProvider extends fileProvider_1.FileProvider {
         if (!configJson) {
             return;
         }
-        if (!this.pickedFolder) {
-            this.pickedFolder = this.workspaceFolder;
+        if (!this.activeFolder) {
+            this.activeFolder = this.workspaceFolder;
         }
         configJson.configurations[0].name = `Launch: Debug Program`;
         if (this.settings.debugger) {
@@ -33,8 +33,8 @@ class LaunchProvider extends fileProvider_1.FileProvider {
                 configJson.configurations[0].externalConsole = true;
             }
         }
-        configJson.configurations[0].cwd = this.pickedFolder;
-        const debugPath = path.join(this.pickedFolder, 'build/Debug/outDebug');
+        configJson.configurations[0].cwd = this.activeFolder;
+        const debugPath = path.join(this.activeFolder, 'build/Debug/outDebug');
         configJson.configurations[0].program = debugPath;
         utils_1.writeJsonFile(outFilePath, configJson);
     }

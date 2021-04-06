@@ -35,7 +35,7 @@ let runStatusBar;
 let debugStatusBar;
 let cleanStatusBar;
 let workspaceFolder;
-let pickedFolder;
+let activeFolder;
 let buildMode = types_1.Builds.debug;
 let architectureMode = types_1.Architectures.x64;
 let errorMessage;
@@ -65,11 +65,11 @@ function initWorkspaceInstance() {
     }
     settingsProvider = new settingsProvider_1.SettingsProvider(workspaceFolder);
     propertiesProvider = new propertiesProvider_1.PropertiesProvider(settingsProvider, workspaceFolder, PROPERTIES_TEMPLATE, PROPERTIES_FILE);
-    if (!pickedFolder) {
+    if (!activeFolder) {
         return;
     }
-    launchProvider = new launchProvider_1.LaunchProvider(settingsProvider, workspaceFolder, pickedFolder, LAUNCH_TEMPLATE, LAUNCH_FILE);
-    taskProvider = new taskProvider_1.TaskProvider(settingsProvider, propertiesProvider, pickedFolder, buildMode, architectureMode);
+    launchProvider = new launchProvider_1.LaunchProvider(settingsProvider, workspaceFolder, activeFolder, LAUNCH_TEMPLATE, LAUNCH_FILE);
+    taskProvider = new taskProvider_1.TaskProvider(settingsProvider, workspaceFolder, activeFolder, buildMode, architectureMode);
 }
 function workspaceInstance(context) {
     initWorkspaceInstance();
@@ -155,23 +155,24 @@ function initCleanStatusBar(context) {
 }
 async function folderCallback() {
     const ret = await folderHandler_1.folderHandler();
-    if (ret && ret.pickedFolder && ret.workspaceFolder) {
-        pickedFolder = ret.pickedFolder;
+    if (ret && ret.activeFolder && ret.workspaceFolder) {
+        activeFolder = ret.activeFolder;
         workspaceFolder = ret.workspaceFolder;
         initWorkspaceInstance();
-        if (workspaceFolder && pickedFolder) {
+        if (workspaceFolder && activeFolder) {
             if (propertiesProvider) {
                 propertiesProvider.workspaceFolder = workspaceFolder;
             }
             if (taskProvider) {
-                taskProvider.pickedFolder = pickedFolder;
+                taskProvider.workspaceFolder = workspaceFolder;
+                taskProvider.activeFolder = activeFolder;
                 if (buildMode && architectureMode) {
                     taskProvider.buildMode = buildMode;
                     taskProvider.architectureMode = architectureMode;
                 }
             }
             if (launchProvider) {
-                launchProvider.pickedFolder = pickedFolder;
+                launchProvider.activeFolder = activeFolder;
                 launchProvider.workspaceFolder = workspaceFolder;
                 launchProvider.updateFileData();
             }
@@ -226,7 +227,7 @@ function runCallback() {
     });
 }
 async function debugCallback() {
-    if (!pickedFolder || !workspaceFolder) {
+    if (!activeFolder || !workspaceFolder) {
         return;
     }
     taskProvider.runDebugTask();

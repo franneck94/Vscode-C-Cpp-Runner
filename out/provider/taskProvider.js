@@ -6,18 +6,18 @@ const vscode = require("vscode");
 const utils_1 = require("../utils");
 const types_1 = require("../types");
 class TaskProvider {
-    constructor(settingsProvider, propertiesProvider, pickedFolder, buildMode, architectureMode) {
-        this.settingsProvider = settingsProvider;
-        this.propertiesProvider = propertiesProvider;
-        this.pickedFolder = pickedFolder;
-        this.buildMode = buildMode;
-        this.architectureMode = architectureMode;
+    constructor(_settingsProvider, _workspaceFolder, _pickedFolder, _buildMode, _architectureMode) {
+        this._settingsProvider = _settingsProvider;
+        this._workspaceFolder = _workspaceFolder;
+        this._pickedFolder = _pickedFolder;
+        this._buildMode = _buildMode;
+        this._architectureMode = _architectureMode;
         const extDirectory = path.dirname(__dirname);
         const templateDirectory = path.join(extDirectory, 'src', '_templates');
         this._tasksFile = path.join(templateDirectory, 'tasks_template.json');
         this._makefileFile = path.join(templateDirectory, 'Makefile');
-        if (!this.pickedFolder) {
-            this.pickedFolder = this.propertiesProvider.workspaceFolder;
+        if (!this.activeFolder) {
+            this.activeFolder = this.workspaceFolder;
         }
         this.getTasks();
     }
@@ -28,10 +28,10 @@ class TaskProvider {
         return this.getTasks();
     }
     getTasks() {
-        if (!this.pickedFolder) {
-            this.pickedFolder = this.propertiesProvider.workspaceFolder;
+        if (!this.activeFolder) {
+            this.activeFolder = this.workspaceFolder;
         }
-        const language = utils_1.getLanguage(this.pickedFolder);
+        const language = utils_1.getLanguage(this.activeFolder);
         this.setTasksDefinition(language);
         if (!this.tasks) {
             return [];
@@ -68,10 +68,10 @@ class TaskProvider {
         return this.tasks;
     }
     updateTaskBasedOnSettings(taskJson, language) {
-        const settings = this.settingsProvider;
-        const pickedFolder = this.pickedFolder;
-        const workspaceFolder = this.propertiesProvider.workspaceFolder;
-        const folder = pickedFolder.replace(workspaceFolder, path.basename(workspaceFolder));
+        const settings = this._settingsProvider;
+        const activeFolder = this.activeFolder;
+        const workspaceFolder = this.workspaceFolder;
+        const folder = activeFolder.replace(workspaceFolder, path.basename(workspaceFolder));
         taskJson.label = taskJson.label.replace(taskJson.label.split(': ')[1], folder);
         taskJson.label = utils_1.replaceBackslashes(taskJson.label);
         taskJson.args[1] = `--file=${this._makefileFile}`;
@@ -108,11 +108,11 @@ class TaskProvider {
     }
     getProjectFolder() {
         let projectFolder = '';
-        if (this.pickedFolder) {
-            projectFolder = this.pickedFolder;
+        if (this.activeFolder) {
+            projectFolder = this.activeFolder;
         }
         else {
-            projectFolder = this.propertiesProvider.workspaceFolder;
+            projectFolder = this.workspaceFolder;
         }
         return projectFolder;
     }
@@ -120,8 +120,8 @@ class TaskProvider {
         if (!this.tasks) {
             return;
         }
-        const folder = this.pickedFolder.replace(this.propertiesProvider.workspaceFolder, path.basename(this.propertiesProvider.workspaceFolder));
-        let label = `Debug: ${this.pickedFolder}`;
+        const folder = this.activeFolder.replace(this.workspaceFolder, path.basename(this.workspaceFolder));
+        let label = `Debug: ${this.activeFolder}`;
         label = label.replace(label.split(': ')[1], folder);
         label = utils_1.replaceBackslashes(label);
         const definition = {
@@ -134,10 +134,34 @@ class TaskProvider {
         this.tasks.push(task);
     }
     async runDebugTask() {
-        const uriWorkspaceFolder = vscode.Uri.file(this.propertiesProvider.workspaceFolder);
+        const uriWorkspaceFolder = vscode.Uri.file(this.workspaceFolder);
         const folder = vscode.workspace.getWorkspaceFolder(uriWorkspaceFolder);
-        const config = utils_1.readJsonFile(path.join(this.propertiesProvider.workspaceFolder, '.vscode', 'launch.json'));
+        const config = utils_1.readJsonFile(path.join(this.workspaceFolder, '.vscode', 'launch.json'));
         await vscode.debug.startDebugging(folder, config.configurations[0]);
+    }
+    get architectureMode() {
+        return this._architectureMode;
+    }
+    set architectureMode(value) {
+        this._architectureMode = value;
+    }
+    get buildMode() {
+        return this._buildMode;
+    }
+    set buildMode(value) {
+        this._buildMode = value;
+    }
+    get activeFolder() {
+        return this._pickedFolder;
+    }
+    set activeFolder(value) {
+        this._pickedFolder = value;
+    }
+    get workspaceFolder() {
+        return this._workspaceFolder;
+    }
+    set workspaceFolder(value) {
+        this._workspaceFolder = value;
     }
 }
 exports.TaskProvider = TaskProvider;

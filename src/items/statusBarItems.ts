@@ -15,11 +15,11 @@ export function updateFolderStatus(
     return;
   }
 
-  if (taskProvider && taskProvider.pickedFolder) {
+  if (taskProvider && taskProvider.activeFolder) {
     let text;
-    const workspaceFolder = taskProvider.propertiesProvider.workspaceFolder;
+    const workspaceFolder = taskProvider.workspaceFolder;
     const workspaceName = path.basename(workspaceFolder);
-    text = taskProvider.pickedFolder.replace(workspaceFolder, workspaceName);
+    text = taskProvider.activeFolder.replace(workspaceFolder, workspaceName);
     text = replaceBackslashes(text);
     status.color = '';
     status.text = `$(folder-active) ${text}`;

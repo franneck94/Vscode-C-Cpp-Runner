@@ -4,7 +4,6 @@ exports.TaskProvider = void 0;
 const path = require("path");
 const vscode = require("vscode");
 const utils_1 = require("../utils");
-const EXTENSION_NAME = 'C_Cpp_Runner';
 class TaskProvider {
     constructor(settingsProvider, propertiesProvider, pickedFolder, buildMode, architectureMode) {
         this.settingsProvider = settingsProvider;
@@ -61,7 +60,7 @@ class TaskProvider {
             };
             const problemMatcher = '$gcc';
             const scope = vscode.TaskScope.Workspace;
-            const task = new vscode.Task(definition, scope, taskJson.label, EXTENSION_NAME, new vscode.ShellExecution(shellCommand), problemMatcher);
+            const task = new vscode.Task(definition, scope, taskJson.label, 'C_Cpp_Runner', new vscode.ShellExecution(shellCommand), problemMatcher);
             this.tasks.push(task);
         }
         this.addDebugTask();
@@ -130,7 +129,7 @@ class TaskProvider {
         };
         const problemMatcher = '$gcc';
         const scope = vscode.TaskScope.Workspace;
-        const task = new vscode.Task(definition, scope, label, EXTENSION_NAME, undefined, problemMatcher);
+        const task = new vscode.Task(definition, scope, label, 'C_Cpp_Runner', undefined, problemMatcher);
         this.tasks.push(task);
     }
     async runDebugTask() {

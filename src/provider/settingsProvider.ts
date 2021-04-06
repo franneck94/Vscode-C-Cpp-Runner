@@ -12,12 +12,11 @@ import {
   pathExists,
 } from '../utils';
 
-const EXTENSION_NAME = 'C_Cpp_Runner';
 const CONFIGURATION_TARGET = vscode.ConfigurationTarget.Workspace;
 
 export class SettingsProvider {
   // Global settings
-  public config = vscode.workspace.getConfiguration(EXTENSION_NAME);
+  public config = vscode.workspace.getConfiguration('C_Cpp_Runner');
   public operatingSystem = getOperatingSystem();
   public architecure: Architectures | undefined;
   public cCompiler: Compilers | undefined;
@@ -132,7 +131,7 @@ export class SettingsProvider {
    * Read in the current settings.
    */
   public getSettings() {
-    this.config = vscode.workspace.getConfiguration(EXTENSION_NAME);
+    this.config = vscode.workspace.getConfiguration('C_Cpp_Runner');
     this.enableWarnings = this.config.get('enableWarnings', true);
     this.warnings = this.config.get('warnings', '-Wall -Wextra -Wpedantic');
     this.warningsAsError = this.config.get('warningsAsError', false);

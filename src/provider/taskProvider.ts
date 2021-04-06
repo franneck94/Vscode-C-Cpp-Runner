@@ -16,8 +16,6 @@ import {
   TasksInterface,
 } from '../utils';
 
-const EXTENSION_NAME = 'C_Cpp_Runner';
-
 export class TaskProvider implements vscode.TaskProvider {
   public tasks: vscode.Task[] | undefined;
   public tasksFile: string;
@@ -99,7 +97,7 @@ export class TaskProvider implements vscode.TaskProvider {
         definition,
         scope,
         taskJson.label,
-        EXTENSION_NAME,
+        'C_Cpp_Runner',
         new vscode.ShellExecution(shellCommand),
         problemMatcher,
       );
@@ -195,7 +193,7 @@ export class TaskProvider implements vscode.TaskProvider {
       definition,
       scope,
       label,
-      EXTENSION_NAME,
+      'C_Cpp_Runner',
       undefined,
       problemMatcher,
     );

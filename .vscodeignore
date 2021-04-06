@@ -1,6 +1,8 @@
 .vscode
-node_modules
-out/
-src/
 tsconfig.json
 webpack.config.js
+.prettierrc.js
+.editorconfig
+.eslintrc.js
+.gitattributes
+.gitignore

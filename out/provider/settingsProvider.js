@@ -4,11 +4,10 @@ exports.SettingsProvider = void 0;
 const path = require("path");
 const vscode = require("vscode");
 const utils_1 = require("../utils");
-const EXTENSION_NAME = 'C_Cpp_Runner';
 const CONFIGURATION_TARGET = vscode.ConfigurationTarget.Workspace;
 class SettingsProvider {
     constructor(Global) {
-        this.config = vscode.workspace.getConfiguration(EXTENSION_NAME);
+        this.config = vscode.workspace.getConfiguration('C_Cpp_Runner');
         this.operatingSystem = utils_1.getOperatingSystem();
         this.enableWarnings = true;
         this.warnings = '';
@@ -109,7 +108,7 @@ class SettingsProvider {
         }
     }
     getSettings() {
-        this.config = vscode.workspace.getConfiguration(EXTENSION_NAME);
+        this.config = vscode.workspace.getConfiguration('C_Cpp_Runner');
         this.enableWarnings = this.config.get('enableWarnings', true);
         this.warnings = this.config.get('warnings', '-Wall -Wextra -Wpedantic');
         this.warningsAsError = this.config.get('warningsAsError', false);

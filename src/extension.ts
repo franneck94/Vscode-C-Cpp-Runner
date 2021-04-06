@@ -17,7 +17,6 @@ import {
 } from './items/statusBarItems';
 import { Architectures, Builds, disposeItem, Tasks } from './utils';
 
-const EXTENSION_NAME = 'C_Cpp_Runner';
 const PROPERTIES_TEMPLATE = 'properties_template.json';
 const PROPERTIES_FILE = 'c_cpp_properties.json';
 const LAUNCH_TEMPLATE = 'launch_template.json';
@@ -116,11 +115,11 @@ function workspaceInstance(context: vscode.ExtensionContext) {
   disposeProviderDisposables();
 
   taskProviderDisposable = vscode.tasks.registerTaskProvider(
-    EXTENSION_NAME,
+    'C_Cpp_Runner',
     taskProvider,
   );
   commandHandlerDisposable = vscode.commands.registerCommand(
-    `${EXTENSION_NAME}.tasks`,
+    'C_Cpp_Runner.tasks',
     () => tasksCallback(),
   );
 
@@ -171,10 +170,10 @@ function initFolderStatusBar(context: vscode.ExtensionContext) {
   updateFolderStatus(folderStatusBar, taskProvider);
 
   commandFolderDisposable = vscode.commands.registerCommand(
-    `${EXTENSION_NAME}.init`,
+    'C_Cpp_Runner.init',
     () => folderCallback(),
   );
-  folderStatusBar.command = `${EXTENSION_NAME}.init`;
+  folderStatusBar.command = 'C_Cpp_Runner.init';
   context.subscriptions.push(commandFolderDisposable);
 }
 
@@ -187,10 +186,10 @@ function initModeStatusBar(context: vscode.ExtensionContext) {
   updateModeStatus(modeStatusBar, buildMode, architectureMode);
 
   commandModeDisposable = vscode.commands.registerCommand(
-    `${EXTENSION_NAME}.mode`,
+    'C_Cpp_Runner.mode',
     () => modeCallback(),
   );
-  modeStatusBar.command = `${EXTENSION_NAME}.mode`;
+  modeStatusBar.command = 'C_Cpp_Runner.mode';
   context.subscriptions.push(commandModeDisposable);
 }
 
@@ -203,10 +202,10 @@ function initBuildStatusBar(context: vscode.ExtensionContext) {
   updateBuildStatus(buildStatusBar);
 
   commandBuildDisposable = vscode.commands.registerCommand(
-    `${EXTENSION_NAME}.build`,
+    'C_Cpp_Runner.build',
     () => buildCallback(),
   );
-  buildStatusBar.command = `${EXTENSION_NAME}.build`;
+  buildStatusBar.command = 'C_Cpp_Runner.build';
   context.subscriptions.push(commandBuildDisposable);
 }
 
@@ -219,10 +218,10 @@ function initRunStatusBar(context: vscode.ExtensionContext) {
   updateRunStatus(runStatusBar);
 
   commandRunDisposable = vscode.commands.registerCommand(
-    `${EXTENSION_NAME}.run`,
+    'C_Cpp_Runner.run',
     () => runCallback(),
   );
-  runStatusBar.command = `${EXTENSION_NAME}.run`;
+  runStatusBar.command = 'C_Cpp_Runner.run';
   context.subscriptions.push(commandRunDisposable);
 }
 
@@ -235,10 +234,10 @@ function initDebugStatusBar(context: vscode.ExtensionContext) {
   updateDebugStatus(debugStatusBar);
 
   commandDebugDisposable = vscode.commands.registerCommand(
-    `${EXTENSION_NAME}.debug`,
+    'C_Cpp_Runner.debug',
     () => debugCallback(),
   );
-  debugStatusBar.command = `${EXTENSION_NAME}.debug`;
+  debugStatusBar.command = 'C_Cpp_Runner.debug';
   context.subscriptions.push(commandDebugDisposable);
 }
 
@@ -251,10 +250,10 @@ function initCleanStatusBar(context: vscode.ExtensionContext) {
   updateCleanStatus(cleanStatusBar);
 
   commandCleanDisposable = vscode.commands.registerCommand(
-    `${EXTENSION_NAME}.clean`,
+    'C_Cpp_Runner.clean',
     () => cleanCallback(),
   );
-  cleanStatusBar.command = `${EXTENSION_NAME}.clean`;
+  cleanStatusBar.command = 'C_Cpp_Runner.clean';
   context.subscriptions.push(commandCleanDisposable);
 }
 

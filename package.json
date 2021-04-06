@@ -227,8 +227,5 @@
     "lookpath": "^1.2.0",
     "ts-loader": "^8.1.0",
     "vsce": "^1.87.1"
-  },
-  "extensionPack": [
-    "ms-vscode.cpptools"
-  ]
+  }
 }

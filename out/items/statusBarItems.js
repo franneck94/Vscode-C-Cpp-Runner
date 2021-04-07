@@ -4,7 +4,7 @@ exports.updateCleanStatus = exports.updateDebugStatus = exports.updateRunStatus 
 const path = require("path");
 const vscode = require("vscode");
 const utils_1 = require("../utils");
-function updateFolderStatus(status, taskProvider) {
+function updateFolderStatus(status, taskProvider, showItem) {
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (!workspaceFolders) {
         return;
@@ -22,32 +22,62 @@ function updateFolderStatus(status, taskProvider) {
         status.color = '#ffff00';
         status.text = '$(alert) Select folder.';
     }
-    status.show();
+    if (showItem) {
+        status.show();
+    }
+    else {
+        status.hide();
+    }
 }
 exports.updateFolderStatus = updateFolderStatus;
-function updateModeStatus(status, buildMode, architectureMode) {
+function updateModeStatus(status, buildMode, architectureMode, showItem) {
     status.text = `$(tools) ${buildMode} - ${architectureMode}`;
-    status.show();
+    if (showItem) {
+        status.show();
+    }
+    else {
+        status.hide();
+    }
 }
 exports.updateModeStatus = updateModeStatus;
-function updateBuildStatus(status) {
+function updateBuildStatus(status, showItem) {
     status.text = `$(gear)`;
-    status.show();
+    if (showItem) {
+        status.show();
+    }
+    else {
+        status.hide();
+    }
 }
 exports.updateBuildStatus = updateBuildStatus;
-function updateRunStatus(status) {
+function updateRunStatus(status, showItem) {
     status.text = `$(play)`;
-    status.show();
+    if (showItem) {
+        status.show();
+    }
+    else {
+        status.hide();
+    }
 }
 exports.updateRunStatus = updateRunStatus;
-function updateDebugStatus(status) {
+function updateDebugStatus(status, showItem) {
     status.text = `$(bug)`;
-    status.show();
+    if (showItem) {
+        status.show();
+    }
+    else {
+        status.hide();
+    }
 }
 exports.updateDebugStatus = updateDebugStatus;
-function updateCleanStatus(status) {
+function updateCleanStatus(status, showItem) {
     status.text = `$(trash)`;
-    status.show();
+    if (showItem) {
+        status.show();
+    }
+    else {
+        status.hide();
+    }
 }
 exports.updateCleanStatus = updateCleanStatus;
 //# sourceMappingURL=statusBarItems.js.map

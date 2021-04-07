@@ -2,12 +2,12 @@
 
 Compile and run your C/C++ code with an ease.
 
-This extension provides tasks to compile and run your C/C++ code.  
-There are tasks for debug and release builds and also for debugging and executing your code.
+This extension provides tasks to compile, run and debug your C/C++ code.  
+You do not need to know about any compiler or makefile commands, thus you can focus on coding.
 
 ## Software Requirements
 
-- Microsoft's C/C++ VSCode Extension (highly recommended)
+- Microsoft's C/C++ VSCode Extension (will be installed automatically)
 - For C code: gcc/clang, gdb/lldb and make
 - For C++ code: g++/clang++, gdb/lldb and make
 - Allowed file extensions for headers: \*.h, \*.hpp, \*.hh, \*.hxx
@@ -41,6 +41,12 @@ For example if you select a working directory with the name *vscode-test/folder1
 ## Example
 
 ![ExampleGif](https://github.com/franneck94/Vscode-C-Cpp-Runner/blob/master/media/ExecuteTasks.gif?raw=true)
+
+## Important Notes
+
+The extension does not activate on start whenever there is a CMakeLists.txt file in the root directory of the workspace.
+Otherwise the status bar would have a lot of buttons from this extension and from *Microsoft's CMake Tools* extension.
+However the user can trigger the start-up of this extension by pressing *ctrl+shift+r* regardless of a present CMake file.
 
 ## Extension Options
 

@@ -14,9 +14,9 @@ export function replaceBackslashes(text: string) {
   return text.replace(/\\/g, '/');
 }
 
-export function pathExists(filePath: string): boolean {
+export function pathExists(filepath: string): boolean {
   try {
-    fs.accessSync(filePath);
+    fs.accessSync(filepath);
   } catch (err) {
     return false;
   }
@@ -24,14 +24,22 @@ export function pathExists(filePath: string): boolean {
   return true;
 }
 
-export function mkdirRecursive(filePath: string) {
-  fs.mkdirSync(filePath, { recursive: true });
+export function mkdirRecursive(dir: string) {
+  fs.mkdirSync(dir, { recursive: true });
 }
 
-export function readJsonFile(filePath: string): any | undefined {
+export function filesInDir(dir: string) {
+  const fileDirents = fs.readdirSync(dir, { withFileTypes: true });
+  const files = fileDirents
+    .filter((file) => file.isFile())
+    .map((file) => file.name);
+  return files;
+}
+
+export function readJsonFile(filepath: string): any | undefined {
   let configJson;
   try {
-    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    const fileContent = fs.readFileSync(filepath, 'utf-8');
     configJson = JSON.parse(fileContent);
   } catch (err) {
     return undefined;
@@ -117,11 +125,8 @@ export function isCSourceFile(fileExtLower: string) {
   return fileExtLower === '.c';
 }
 
-export function getLanguage(fileDirName: string) {
-  const fileDirents = fs.readdirSync(fileDirName, { withFileTypes: true });
-  const files = fileDirents
-    .filter((file) => file.isFile())
-    .map((file) => file.name);
+export function getLanguage(dir: string) {
+  const files = filesInDir(dir);
   const anyCppFile = files.some((file) => isCppSourceFile(path.extname(file)));
 
   if (anyCppFile) {
@@ -131,13 +136,13 @@ export function getLanguage(fileDirName: string) {
   }
 }
 
-export function getDirectories(folder: fs.PathLike) {
-  const fileDirents = fs.readdirSync(folder, {
+export function getDirectories(dir: fs.PathLike) {
+  const fileDirents = fs.readdirSync(dir, {
     withFileTypes: true,
   });
   let directories = fileDirents
     .filter((dir) => dir.isDirectory())
-    .map((dir) => path.join(folder.toString(), dir.name));
+    .map((dir) => path.join(dir.toString(), dir.name));
   directories = directories.filter((dir) => !dir.includes('.vscode'));
   directories = directories.filter((dir) => !dir.includes('build'));
   if (directories.length === 0) {

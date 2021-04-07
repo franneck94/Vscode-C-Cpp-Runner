@@ -15,7 +15,7 @@ import {
   updateModeStatus,
   updateRunStatus,
 } from './items/statusBarItems';
-import { createStatusBarItem, disposeItem } from './utils';
+import { createStatusBarItem, disposeItem, filesInDir } from './utils';
 import { Architectures, Builds, Tasks } from './types';
 
 const PROPERTIES_TEMPLATE = 'properties_template.json';
@@ -49,6 +49,7 @@ let activeFolder: string | undefined;
 let buildMode: Builds = Builds.debug;
 let architectureMode: Architectures = Architectures.x64;
 let errorMessage: Thenable<string | undefined> | undefined;
+let showStatusBarItems: boolean = false;
 
 export function activate(context: vscode.ExtensionContext) {
   if (
@@ -57,6 +58,8 @@ export function activate(context: vscode.ExtensionContext) {
   ) {
     return;
   }
+
+  showStatusBarItems = noCmakeFileFound();
 
   initFolderStatusBar(context);
   initModeStatusBar(context);
@@ -156,12 +159,30 @@ function disposeCommands() {
   disposeItem(commandCleanDisposable);
 }
 
+function noCmakeFileFound() {
+  let foundNoCmakeFile = true;
+  const workspaceFodlers = vscode.workspace.workspaceFolders;
+
+  if (workspaceFodlers) {
+    workspaceFodlers.forEach((folder) => {
+      const files = filesInDir(folder.uri.fsPath);
+      files.forEach((file) => {
+        if (file.toLowerCase() === 'CMakeLists.txt'.toLowerCase()) {
+          foundNoCmakeFile = false;
+        }
+      });
+    });
+  }
+
+  return foundNoCmakeFile;
+}
+
 // INIT STATUS BAR
 
 function initFolderStatusBar(context: vscode.ExtensionContext) {
   folderStatusBar = createStatusBarItem();
   context.subscriptions.push(folderStatusBar);
-  updateFolderStatus(folderStatusBar, taskProvider);
+  updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
 
   commandFolderDisposable = vscode.commands.registerCommand(
     'C_Cpp_Runner.init',
@@ -174,7 +195,12 @@ function initFolderStatusBar(context: vscode.ExtensionContext) {
 function initModeStatusBar(context: vscode.ExtensionContext) {
   modeStatusBar = createStatusBarItem();
   context.subscriptions.push(modeStatusBar);
-  updateModeStatus(modeStatusBar, buildMode, architectureMode);
+  updateModeStatus(
+    modeStatusBar,
+    buildMode,
+    architectureMode,
+    showStatusBarItems,
+  );
 
   commandModeDisposable = vscode.commands.registerCommand(
     'C_Cpp_Runner.mode',
@@ -187,7 +213,7 @@ function initModeStatusBar(context: vscode.ExtensionContext) {
 function initBuildStatusBar(context: vscode.ExtensionContext) {
   buildStatusBar = createStatusBarItem();
   context.subscriptions.push(buildStatusBar);
-  updateBuildStatus(buildStatusBar);
+  updateBuildStatus(buildStatusBar, showStatusBarItems);
 
   commandBuildDisposable = vscode.commands.registerCommand(
     'C_Cpp_Runner.build',
@@ -200,7 +226,7 @@ function initBuildStatusBar(context: vscode.ExtensionContext) {
 function initRunStatusBar(context: vscode.ExtensionContext) {
   runStatusBar = createStatusBarItem();
   context.subscriptions.push(runStatusBar);
-  updateRunStatus(runStatusBar);
+  updateRunStatus(runStatusBar, showStatusBarItems);
 
   commandRunDisposable = vscode.commands.registerCommand(
     'C_Cpp_Runner.run',
@@ -213,7 +239,7 @@ function initRunStatusBar(context: vscode.ExtensionContext) {
 function initDebugStatusBar(context: vscode.ExtensionContext) {
   debugStatusBar = createStatusBarItem();
   context.subscriptions.push(debugStatusBar);
-  updateDebugStatus(debugStatusBar);
+  updateDebugStatus(debugStatusBar, showStatusBarItems);
 
   commandDebugDisposable = vscode.commands.registerCommand(
     'C_Cpp_Runner.debug',
@@ -226,7 +252,7 @@ function initDebugStatusBar(context: vscode.ExtensionContext) {
 function initCleanStatusBar(context: vscode.ExtensionContext) {
   cleanStatusBar = createStatusBarItem();
   context.subscriptions.push(cleanStatusBar);
-  updateCleanStatus(cleanStatusBar);
+  updateCleanStatus(cleanStatusBar, showStatusBarItems);
 
   commandCleanDisposable = vscode.commands.registerCommand(
     'C_Cpp_Runner.clean',
@@ -234,6 +260,24 @@ function initCleanStatusBar(context: vscode.ExtensionContext) {
   );
   cleanStatusBar.command = 'C_Cpp_Runner.clean';
   context.subscriptions.push(commandCleanDisposable);
+}
+
+function toggleStatusBarItems() {
+  if (showStatusBarItems) {
+    folderStatusBar.show();
+    modeStatusBar.show();
+    buildStatusBar.show();
+    runStatusBar.show();
+    debugStatusBar.show();
+    cleanStatusBar.show();
+  } else {
+    folderStatusBar.hide();
+    modeStatusBar.hide();
+    buildStatusBar.hide();
+    runStatusBar.hide();
+    debugStatusBar.hide();
+    cleanStatusBar.hide();
+  }
 }
 
 // STATUS BAR CALLBACKS
@@ -264,7 +308,7 @@ async function folderCallback() {
         launchProvider.updateFileData();
       }
     }
-    updateFolderStatus(folderStatusBar, taskProvider);
+    updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
   }
 }
 
@@ -277,7 +321,12 @@ async function modeCallback() {
       taskProvider.buildMode = buildMode;
       taskProvider.architectureMode = architectureMode;
     }
-    updateModeStatus(modeStatusBar, buildMode, architectureMode);
+    updateModeStatus(
+      modeStatusBar,
+      buildMode,
+      architectureMode,
+      showStatusBarItems,
+    );
   }
 }
 
@@ -365,6 +414,11 @@ function cleanCallback() {
 }
 
 function tasksCallback() {
+  if (!showStatusBarItems) {
+    showStatusBarItems = true;
+    toggleStatusBarItems();
+  }
+
   if (!workspaceFolder) {
     if (!errorMessage) {
       errorMessage = vscode.window.showErrorMessage(

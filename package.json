@@ -1,9 +1,10 @@
 {
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
-  "description": "Compile and run your C/C++ code.",
+  "description": "Compile and run your C/C++ code with an ease.",
   "version": "0.5.4",
   "publisher": "franneck94",
+  "license": "MIT",
   "icon": "icon.png",
   "galleryBanner": {
     "color": "#9c9c9c",
@@ -19,15 +20,12 @@
   ],
   "tags": [
     "c",
-    "cpp",
     "c++",
-    "compile",
-    "execute",
-    "build",
-    "debug",
+    "cpp",
     "run",
-    "make",
-    "makefile"
+    "compile",
+    "build",
+    "debug"
   ],
   "repository": {
     "type": "git",
@@ -42,8 +40,11 @@
     "onLanguage:cpp",
     "onDebugResolve:c",
     "onDebugResolve:cpp",
-    "workspaceContains:.vscode/c_cpp_properties.json",
-    "onCommand:C_Cpp_Runner.tasks"
+    "workspaceContains:*.c",
+    "workspaceContains:*.cc",
+    "workspaceContains:*.cxx",
+    "workspaceContains:*.cpp",
+    "workspaceContains:.vscode/c_cpp_properties.json"
   ],
   "main": "./dist/main",
   "contributes": {
@@ -229,5 +230,8 @@
     "lookpath": "^1.2.0",
     "ts-loader": "^8.1.0",
     "vsce": "^1.87.1"
-  }
+  },
+  "extensionDependencies": [
+    "ms-vscode.cpptools"
+  ]
 }

@@ -8,6 +8,7 @@ import { Builds, Architectures } from '../types';
 export function updateFolderStatus(
   status: vscode.StatusBarItem,
   taskProvider: TaskProvider,
+  showItem: boolean,
 ) {
   const workspaceFolders = vscode.workspace.workspaceFolders;
 
@@ -27,34 +28,72 @@ export function updateFolderStatus(
     status.color = '#ffff00';
     status.text = '$(alert) Select folder.';
   }
-  status.show();
+
+  if (showItem) {
+    status.show();
+  } else {
+    status.hide();
+  }
 }
 
 export function updateModeStatus(
   status: vscode.StatusBarItem,
   buildMode: Builds,
   architectureMode: Architectures,
+  showItem: boolean,
 ) {
   status.text = `$(tools) ${buildMode} - ${architectureMode}`;
-  status.show();
+  if (showItem) {
+    status.show();
+  } else {
+    status.hide();
+  }
 }
 
-export function updateBuildStatus(status: vscode.StatusBarItem) {
+export function updateBuildStatus(
+  status: vscode.StatusBarItem,
+  showItem: boolean,
+) {
   status.text = `$(gear)`;
-  status.show();
+  if (showItem) {
+    status.show();
+  } else {
+    status.hide();
+  }
 }
 
-export function updateRunStatus(status: vscode.StatusBarItem) {
+export function updateRunStatus(
+  status: vscode.StatusBarItem,
+  showItem: boolean,
+) {
   status.text = `$(play)`;
-  status.show();
+  if (showItem) {
+    status.show();
+  } else {
+    status.hide();
+  }
 }
 
-export function updateDebugStatus(status: vscode.StatusBarItem) {
+export function updateDebugStatus(
+  status: vscode.StatusBarItem,
+  showItem: boolean,
+) {
   status.text = `$(bug)`;
-  status.show();
+  if (showItem) {
+    status.show();
+  } else {
+    status.hide();
+  }
 }
 
-export function updateCleanStatus(status: vscode.StatusBarItem) {
+export function updateCleanStatus(
+  status: vscode.StatusBarItem,
+  showItem: boolean,
+) {
   status.text = `$(trash)`;
-  status.show();
+  if (showItem) {
+    status.show();
+  } else {
+    status.hide();
+  }
 }

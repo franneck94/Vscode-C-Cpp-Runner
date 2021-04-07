@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createStatusBarItem = exports.filterOnString = exports.disposeItem = exports.getDirectories = exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getOperatingSystem = exports.writeJsonFile = exports.readJsonFile = exports.mkdirRecursive = exports.pathExists = exports.replaceBackslashes = void 0;
+exports.createStatusBarItem = exports.filterOnString = exports.disposeItem = exports.getDirectories = exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getOperatingSystem = exports.writeJsonFile = exports.readJsonFile = exports.filesInDir = exports.mkdirRecursive = exports.pathExists = exports.replaceBackslashes = void 0;
 const fs = require("fs");
 const path = require("path");
 const vscode = require("vscode");
@@ -14,9 +14,9 @@ function replaceBackslashes(text) {
     return text.replace(/\\/g, '/');
 }
 exports.replaceBackslashes = replaceBackslashes;
-function pathExists(filePath) {
+function pathExists(filepath) {
     try {
-        fs.accessSync(filePath);
+        fs.accessSync(filepath);
     }
     catch (err) {
         return false;
@@ -24,14 +24,22 @@ function pathExists(filePath) {
     return true;
 }
 exports.pathExists = pathExists;
-function mkdirRecursive(filePath) {
-    fs.mkdirSync(filePath, { recursive: true });
+function mkdirRecursive(dir) {
+    fs.mkdirSync(dir, { recursive: true });
 }
 exports.mkdirRecursive = mkdirRecursive;
-function readJsonFile(filePath) {
+function filesInDir(dir) {
+    const fileDirents = fs.readdirSync(dir, { withFileTypes: true });
+    const files = fileDirents
+        .filter((file) => file.isFile())
+        .map((file) => file.name);
+    return files;
+}
+exports.filesInDir = filesInDir;
+function readJsonFile(filepath) {
     let configJson;
     try {
-        const fileContent = fs.readFileSync(filePath, 'utf-8');
+        const fileContent = fs.readFileSync(filepath, 'utf-8');
         configJson = JSON.parse(fileContent);
     }
     catch (err) {
@@ -111,11 +119,8 @@ function isCSourceFile(fileExtLower) {
     return fileExtLower === '.c';
 }
 exports.isCSourceFile = isCSourceFile;
-function getLanguage(fileDirName) {
-    const fileDirents = fs.readdirSync(fileDirName, { withFileTypes: true });
-    const files = fileDirents
-        .filter((file) => file.isFile())
-        .map((file) => file.name);
+function getLanguage(dir) {
+    const files = filesInDir(dir);
     const anyCppFile = files.some((file) => isCppSourceFile(path.extname(file)));
     if (anyCppFile) {
         return types_1.Languages.cpp;
@@ -125,13 +130,13 @@ function getLanguage(fileDirName) {
     }
 }
 exports.getLanguage = getLanguage;
-function getDirectories(folder) {
-    const fileDirents = fs.readdirSync(folder, {
+function getDirectories(dir) {
+    const fileDirents = fs.readdirSync(dir, {
         withFileTypes: true,
     });
     let directories = fileDirents
         .filter((dir) => dir.isDirectory())
-        .map((dir) => path.join(folder.toString(), dir.name));
+        .map((dir) => path.join(dir.toString(), dir.name));
     directories = directories.filter((dir) => !dir.includes('.vscode'));
     directories = directories.filter((dir) => !dir.includes('build'));
     if (directories.length === 0) {

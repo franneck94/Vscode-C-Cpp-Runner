@@ -39,11 +39,13 @@ let activeFolder;
 let buildMode = types_1.Builds.debug;
 let architectureMode = types_1.Architectures.x64;
 let errorMessage;
+let showStatusBarItems = false;
 function activate(context) {
     if (!vscode.workspace.workspaceFolders ||
         vscode.workspace.workspaceFolders.length === 0) {
         return;
     }
+    showStatusBarItems = noCmakeFileFound();
     initFolderStatusBar(context);
     initModeStatusBar(context);
     initBuildStatusBar(context);
@@ -105,10 +107,25 @@ function disposeCommands() {
     utils_1.disposeItem(commandDebugDisposable);
     utils_1.disposeItem(commandCleanDisposable);
 }
+function noCmakeFileFound() {
+    let foundNoCmakeFile = true;
+    const workspaceFodlers = vscode.workspace.workspaceFolders;
+    if (workspaceFodlers) {
+        workspaceFodlers.forEach((folder) => {
+            const files = utils_1.filesInDir(folder.uri.fsPath);
+            files.forEach((file) => {
+                if (file.toLowerCase() === 'CMakeLists.txt'.toLowerCase()) {
+                    foundNoCmakeFile = false;
+                }
+            });
+        });
+    }
+    return foundNoCmakeFile;
+}
 function initFolderStatusBar(context) {
     folderStatusBar = utils_1.createStatusBarItem();
     context.subscriptions.push(folderStatusBar);
-    statusBarItems_1.updateFolderStatus(folderStatusBar, taskProvider);
+    statusBarItems_1.updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
     commandFolderDisposable = vscode.commands.registerCommand('C_Cpp_Runner.init', () => folderCallback());
     folderStatusBar.command = 'C_Cpp_Runner.init';
     context.subscriptions.push(commandFolderDisposable);
@@ -116,7 +133,7 @@ function initFolderStatusBar(context) {
 function initModeStatusBar(context) {
     modeStatusBar = utils_1.createStatusBarItem();
     context.subscriptions.push(modeStatusBar);
-    statusBarItems_1.updateModeStatus(modeStatusBar, buildMode, architectureMode);
+    statusBarItems_1.updateModeStatus(modeStatusBar, buildMode, architectureMode, showStatusBarItems);
     commandModeDisposable = vscode.commands.registerCommand('C_Cpp_Runner.mode', () => modeCallback());
     modeStatusBar.command = 'C_Cpp_Runner.mode';
     context.subscriptions.push(commandModeDisposable);
@@ -124,7 +141,7 @@ function initModeStatusBar(context) {
 function initBuildStatusBar(context) {
     buildStatusBar = utils_1.createStatusBarItem();
     context.subscriptions.push(buildStatusBar);
-    statusBarItems_1.updateBuildStatus(buildStatusBar);
+    statusBarItems_1.updateBuildStatus(buildStatusBar, showStatusBarItems);
     commandBuildDisposable = vscode.commands.registerCommand('C_Cpp_Runner.build', () => buildCallback());
     buildStatusBar.command = 'C_Cpp_Runner.build';
     context.subscriptions.push(commandBuildDisposable);
@@ -132,7 +149,7 @@ function initBuildStatusBar(context) {
 function initRunStatusBar(context) {
     runStatusBar = utils_1.createStatusBarItem();
     context.subscriptions.push(runStatusBar);
-    statusBarItems_1.updateRunStatus(runStatusBar);
+    statusBarItems_1.updateRunStatus(runStatusBar, showStatusBarItems);
     commandRunDisposable = vscode.commands.registerCommand('C_Cpp_Runner.run', () => runCallback());
     runStatusBar.command = 'C_Cpp_Runner.run';
     context.subscriptions.push(commandRunDisposable);
@@ -140,7 +157,7 @@ function initRunStatusBar(context) {
 function initDebugStatusBar(context) {
     debugStatusBar = utils_1.createStatusBarItem();
     context.subscriptions.push(debugStatusBar);
-    statusBarItems_1.updateDebugStatus(debugStatusBar);
+    statusBarItems_1.updateDebugStatus(debugStatusBar, showStatusBarItems);
     commandDebugDisposable = vscode.commands.registerCommand('C_Cpp_Runner.debug', () => debugCallback());
     debugStatusBar.command = 'C_Cpp_Runner.debug';
     context.subscriptions.push(commandDebugDisposable);
@@ -148,10 +165,28 @@ function initDebugStatusBar(context) {
 function initCleanStatusBar(context) {
     cleanStatusBar = utils_1.createStatusBarItem();
     context.subscriptions.push(cleanStatusBar);
-    statusBarItems_1.updateCleanStatus(cleanStatusBar);
+    statusBarItems_1.updateCleanStatus(cleanStatusBar, showStatusBarItems);
     commandCleanDisposable = vscode.commands.registerCommand('C_Cpp_Runner.clean', () => cleanCallback());
     cleanStatusBar.command = 'C_Cpp_Runner.clean';
     context.subscriptions.push(commandCleanDisposable);
+}
+function toggleStatusBarItems() {
+    if (showStatusBarItems) {
+        folderStatusBar.show();
+        modeStatusBar.show();
+        buildStatusBar.show();
+        runStatusBar.show();
+        debugStatusBar.show();
+        cleanStatusBar.show();
+    }
+    else {
+        folderStatusBar.hide();
+        modeStatusBar.hide();
+        buildStatusBar.hide();
+        runStatusBar.hide();
+        debugStatusBar.hide();
+        cleanStatusBar.hide();
+    }
 }
 async function folderCallback() {
     const ret = await folderHandler_1.folderHandler();
@@ -177,7 +212,7 @@ async function folderCallback() {
                 launchProvider.updateFileData();
             }
         }
-        statusBarItems_1.updateFolderStatus(folderStatusBar, taskProvider);
+        statusBarItems_1.updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
     }
 }
 async function modeCallback() {
@@ -189,7 +224,7 @@ async function modeCallback() {
             taskProvider.buildMode = buildMode;
             taskProvider.architectureMode = architectureMode;
         }
-        statusBarItems_1.updateModeStatus(modeStatusBar, buildMode, architectureMode);
+        statusBarItems_1.updateModeStatus(modeStatusBar, buildMode, architectureMode, showStatusBarItems);
     }
 }
 function buildCallback() {
@@ -250,6 +285,10 @@ function cleanCallback() {
     });
 }
 function tasksCallback() {
+    if (!showStatusBarItems) {
+        showStatusBarItems = true;
+        toggleStatusBarItems();
+    }
     if (!workspaceFolder) {
         if (!errorMessage) {
             errorMessage = vscode.window.showErrorMessage('You have to select a folder first.');

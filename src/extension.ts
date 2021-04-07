@@ -15,7 +15,12 @@ import {
   updateModeStatus,
   updateRunStatus,
 } from './items/statusBarItems';
-import { createStatusBarItem, disposeItem, filesInDir } from './utils';
+import {
+  createStatusBarItem,
+  disposeItem,
+  filesInDir,
+  foldersInDir,
+} from './utils';
 import { Architectures, Builds, Tasks } from './types';
 
 const PROPERTIES_TEMPLATE = 'properties_template.json';
@@ -182,7 +187,19 @@ function noCmakeFileFound() {
 function initFolderStatusBar(context: vscode.ExtensionContext) {
   folderStatusBar = createStatusBarItem();
   context.subscriptions.push(folderStatusBar);
-  updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+  if (workspaceFolders) {
+    const workspaceFolderFs = workspaceFolders[0].uri.fsPath;
+    const folders = foldersInDir(workspaceFolderFs);
+    if (folders.length === 0) {
+      workspaceFolder = workspaceFolders[0].name;
+      activeFolder = workspaceFolder;
+      updateFolderStatusData();
+    }
+  } else {
+    updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+  }
 
   commandFolderDisposable = vscode.commands.registerCommand(
     'C_Cpp_Runner.init',
@@ -288,27 +305,7 @@ async function folderCallback() {
     activeFolder = ret.activeFolder;
     workspaceFolder = ret.workspaceFolder;
 
-    initWorkspaceInstance();
-
-    if (workspaceFolder && activeFolder) {
-      if (propertiesProvider) {
-        propertiesProvider.workspaceFolder = workspaceFolder;
-      }
-      if (taskProvider) {
-        taskProvider.workspaceFolder = workspaceFolder;
-        taskProvider.activeFolder = activeFolder;
-        if (buildMode && architectureMode) {
-          taskProvider.buildMode = buildMode;
-          taskProvider.architectureMode = architectureMode;
-        }
-      }
-      if (launchProvider) {
-        launchProvider.activeFolder = activeFolder;
-        launchProvider.workspaceFolder = workspaceFolder;
-        launchProvider.updateFileData();
-      }
-    }
-    updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+    updateFolderStatusData();
   }
 }
 
@@ -433,4 +430,28 @@ function tasksCallback() {
       taskHandler(taskProvider);
     }
   }
+}
+
+function updateFolderStatusData() {
+  initWorkspaceInstance();
+
+  if (workspaceFolder && activeFolder) {
+    if (propertiesProvider) {
+      propertiesProvider.workspaceFolder = workspaceFolder;
+    }
+    if (taskProvider) {
+      taskProvider.workspaceFolder = workspaceFolder;
+      taskProvider.activeFolder = activeFolder;
+      if (buildMode && architectureMode) {
+        taskProvider.buildMode = buildMode;
+        taskProvider.architectureMode = architectureMode;
+      }
+    }
+    if (launchProvider) {
+      launchProvider.activeFolder = activeFolder;
+      launchProvider.workspaceFolder = workspaceFolder;
+      launchProvider.updateFileData();
+    }
+  }
+  updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
 }

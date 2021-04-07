@@ -200,16 +200,10 @@ export class TaskProvider implements vscode.TaskProvider {
   }
 
   public async runDebugTask() {
-    const uriWorkspaceFolder = vscode.Uri.file(
-      this.workspaceFolder,
-    );
+    const uriWorkspaceFolder = vscode.Uri.file(this.workspaceFolder);
     const folder = vscode.workspace.getWorkspaceFolder(uriWorkspaceFolder);
     const config: JsonConfiguration = readJsonFile(
-      path.join(
-        this.workspaceFolder,
-        '.vscode',
-        'launch.json',
-      ),
+      path.join(this.workspaceFolder, '.vscode', 'launch.json'),
     );
     await vscode.debug.startDebugging(folder, config.configurations[0]);
   }

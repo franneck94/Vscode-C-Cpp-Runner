@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createStatusBarItem = exports.filterOnString = exports.disposeItem = exports.getDirectories = exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getOperatingSystem = exports.writeJsonFile = exports.readJsonFile = exports.filesInDir = exports.mkdirRecursive = exports.pathExists = exports.replaceBackslashes = void 0;
+exports.createStatusBarItem = exports.filterOnString = exports.disposeItem = exports.getDirectories = exports.getLanguage = exports.isCSourceFile = exports.isCppSourceFile = exports.isHeaderFile = exports.isSourceFile = exports.getArchitecture = exports.commandExists = exports.getOperatingSystem = exports.writeJsonFile = exports.readJsonFile = exports.foldersInDir = exports.filesInDir = exports.mkdirRecursive = exports.pathExists = exports.replaceBackslashes = void 0;
 const fs = require("fs");
 const path = require("path");
 const vscode = require("vscode");
@@ -36,6 +36,18 @@ function filesInDir(dir) {
     return files;
 }
 exports.filesInDir = filesInDir;
+function foldersInDir(dir) {
+    const fileDirents = fs.readdirSync(dir, {
+        withFileTypes: true,
+    });
+    let folders = fileDirents
+        .filter((folder) => folder.isDirectory())
+        .map((folder) => path.join(folder.toString(), folder.name));
+    folders = folders.filter((folder) => !folder.includes('.vscode'));
+    folders = folders.filter((folder) => !folder.includes('build'));
+    return folders;
+}
+exports.foldersInDir = foldersInDir;
 function readJsonFile(filepath) {
     let configJson;
     try {
@@ -131,14 +143,7 @@ function getLanguage(dir) {
 }
 exports.getLanguage = getLanguage;
 function getDirectories(dir) {
-    const fileDirents = fs.readdirSync(dir, {
-        withFileTypes: true,
-    });
-    let directories = fileDirents
-        .filter((dir) => dir.isDirectory())
-        .map((dir) => path.join(dir.toString(), dir.name));
-    directories = directories.filter((dir) => !dir.includes('.vscode'));
-    directories = directories.filter((dir) => !dir.includes('build'));
+    const directories = foldersInDir(dir.toString());
     if (directories.length === 0) {
         return;
     }

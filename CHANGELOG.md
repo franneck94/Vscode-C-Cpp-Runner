@@ -4,14 +4,15 @@ All notable changes to the "c-cpp-runner" extension will be documented in this f
 
 ## [Upcomming Features]
 
-- 0.5.4:
-  - Select root folder automatically, if this is the only folder in the workspace
+- TBD
 
 ## [Releases]
 
 - 0.5.4
-  - Major code refactoring
   - Bugfix: Corrected packing with webpack
+  - Added Microsoft's C/C++ extension as "entryextensionDependencies"
+  - Removed activation when CMake is present
+  - Select root folder automatically, if this is the only folder in the workspace
 - 0.5.3
   - Added search for "mingw32-make" for MinGW users
   - Updated makefile for Windows user without Cygwin/MSYS installed

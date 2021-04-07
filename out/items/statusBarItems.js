@@ -18,6 +18,22 @@ function updateFolderStatus(status, taskProvider, showItem) {
         status.color = '';
         status.text = `$(folder-active) ${text}`;
     }
+    else if (workspaceFolders.length === 1) {
+        const workspaceFolder = workspaceFolders[0].uri.fsPath;
+        const folders = utils_1.foldersInDir(workspaceFolder);
+        if (folders.length === 0) {
+            const workspaceFolderName = workspaceFolders[0].name;
+            const text = utils_1.replaceBackslashes(workspaceFolderName);
+            status.color = '';
+            status.text = `$(folder-active) ${text}`;
+            taskProvider.activeFolder = workspaceFolderName;
+            taskProvider.workspaceFolder = workspaceFolderName;
+        }
+        else {
+            status.color = '#ffff00';
+            status.text = '$(alert) Select folder.';
+        }
+    }
     else {
         status.color = '#ffff00';
         status.text = '$(alert) Select folder.';

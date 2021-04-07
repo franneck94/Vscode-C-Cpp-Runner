@@ -36,6 +36,20 @@ export function filesInDir(dir: string) {
   return files;
 }
 
+export function foldersInDir(dir: fs.PathLike) {
+  const fileDirents = fs.readdirSync(dir, {
+    withFileTypes: true,
+  });
+  let folders = fileDirents.filter((folder) => folder.isDirectory());
+  folders = folders.filter((folder) => !folder.name.includes('.vscode'));
+  folders = folders.filter((folder) => !folder.name.includes('build'));
+  folders = folders.filter((folder) => !folder.name.match('.*'));
+  const folderNames = folders.map((folder) =>
+    path.join(dir.toString(), folder.name),
+  );
+  return folderNames;
+}
+
 export function readJsonFile(filepath: string): any | undefined {
   let configJson;
   try {
@@ -137,14 +151,7 @@ export function getLanguage(dir: string) {
 }
 
 export function getDirectories(dir: fs.PathLike) {
-  const fileDirents = fs.readdirSync(dir, {
-    withFileTypes: true,
-  });
-  let directories = fileDirents
-    .filter((dir) => dir.isDirectory())
-    .map((dir) => path.join(dir.toString(), dir.name));
-  directories = directories.filter((dir) => !dir.includes('.vscode'));
-  directories = directories.filter((dir) => !dir.includes('build'));
+  const directories = foldersInDir(dir);
   if (directories.length === 0) {
     return;
   }

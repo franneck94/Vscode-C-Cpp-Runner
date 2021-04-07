@@ -4,7 +4,8 @@ All notable changes to the "c-cpp-runner" extension will be documented in this f
 
 ## [Upcomming Features]
 
-- 0.6.0: TBD
+- 0.5.4:
+  - Select root folder automatically, if this is the only folder in the workspace
 
 ## [Releases]
 

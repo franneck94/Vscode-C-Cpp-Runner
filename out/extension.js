@@ -125,7 +125,19 @@ function noCmakeFileFound() {
 function initFolderStatusBar(context) {
     folderStatusBar = utils_1.createStatusBarItem();
     context.subscriptions.push(folderStatusBar);
-    statusBarItems_1.updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (workspaceFolders) {
+        const workspaceFolderFs = workspaceFolders[0].uri.fsPath;
+        const folders = utils_1.foldersInDir(workspaceFolderFs);
+        if (folders.length === 0) {
+            workspaceFolder = workspaceFolders[0].name;
+            activeFolder = workspaceFolder;
+            updateFolderStatusData();
+        }
+    }
+    else {
+        statusBarItems_1.updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+    }
     commandFolderDisposable = vscode.commands.registerCommand('C_Cpp_Runner.init', () => folderCallback());
     folderStatusBar.command = 'C_Cpp_Runner.init';
     context.subscriptions.push(commandFolderDisposable);
@@ -193,26 +205,7 @@ async function folderCallback() {
     if (ret && ret.activeFolder && ret.workspaceFolder) {
         activeFolder = ret.activeFolder;
         workspaceFolder = ret.workspaceFolder;
-        initWorkspaceInstance();
-        if (workspaceFolder && activeFolder) {
-            if (propertiesProvider) {
-                propertiesProvider.workspaceFolder = workspaceFolder;
-            }
-            if (taskProvider) {
-                taskProvider.workspaceFolder = workspaceFolder;
-                taskProvider.activeFolder = activeFolder;
-                if (buildMode && architectureMode) {
-                    taskProvider.buildMode = buildMode;
-                    taskProvider.architectureMode = architectureMode;
-                }
-            }
-            if (launchProvider) {
-                launchProvider.activeFolder = activeFolder;
-                launchProvider.workspaceFolder = workspaceFolder;
-                launchProvider.updateFileData();
-            }
-        }
-        statusBarItems_1.updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+        updateFolderStatusData();
     }
 }
 async function modeCallback() {
@@ -301,5 +294,27 @@ function tasksCallback() {
             taskHandler_1.taskHandler(taskProvider);
         }
     }
+}
+function updateFolderStatusData() {
+    initWorkspaceInstance();
+    if (workspaceFolder && activeFolder) {
+        if (propertiesProvider) {
+            propertiesProvider.workspaceFolder = workspaceFolder;
+        }
+        if (taskProvider) {
+            taskProvider.workspaceFolder = workspaceFolder;
+            taskProvider.activeFolder = activeFolder;
+            if (buildMode && architectureMode) {
+                taskProvider.buildMode = buildMode;
+                taskProvider.architectureMode = architectureMode;
+            }
+        }
+        if (launchProvider) {
+            launchProvider.activeFolder = activeFolder;
+            launchProvider.workspaceFolder = workspaceFolder;
+            launchProvider.updateFileData();
+        }
+    }
+    statusBarItems_1.updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
 }
 //# sourceMappingURL=extension.js.map

@@ -40,12 +40,12 @@ function foldersInDir(dir) {
     const fileDirents = fs.readdirSync(dir, {
         withFileTypes: true,
     });
-    let folders = fileDirents
-        .filter((folder) => folder.isDirectory())
-        .map((folder) => path.join(folder.toString(), folder.name));
-    folders = folders.filter((folder) => !folder.includes('.vscode'));
-    folders = folders.filter((folder) => !folder.includes('build'));
-    return folders;
+    let folders = fileDirents.filter((folder) => folder.isDirectory());
+    folders = folders.filter((folder) => !folder.name.includes('.vscode'));
+    folders = folders.filter((folder) => !folder.name.includes('build'));
+    folders = folders.filter((folder) => !folder.name.match('.*'));
+    const folderNames = folders.map((folder) => path.join(dir.toString(), folder.name));
+    return folderNames;
 }
 exports.foldersInDir = foldersInDir;
 function readJsonFile(filepath) {
@@ -143,7 +143,7 @@ function getLanguage(dir) {
 }
 exports.getLanguage = getLanguage;
 function getDirectories(dir) {
-    const directories = foldersInDir(dir.toString());
+    const directories = foldersInDir(dir);
     if (directories.length === 0) {
         return;
     }

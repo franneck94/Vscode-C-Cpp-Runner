@@ -13,6 +13,7 @@ All notable changes to the "c-cpp-runner" extension will be documented in this f
   - Added Microsoft's C/C++ extension as "entryextensionDependencies"
   - Removed activation when CMake is present
   - Select root folder automatically, if this is the only folder in the workspace
+  - Updated README.md for an easier introduction
 - 0.5.3
   - Added search for "mingw32-make" for MinGW users
   - Updated makefile for Windows user without Cygwin/MSYS installed

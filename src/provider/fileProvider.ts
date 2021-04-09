@@ -9,7 +9,7 @@ export abstract class FileProvider {
   private _templatePath: string;
   private _outputPath: string;
   private _vscodeDirectory: string;
-  private _fileWatcherOnDelete: vscode.FileSystemWatcher;
+  private readonly _fileWatcherOnDelete: vscode.FileSystemWatcher;
 
   constructor(
     protected settings: SettingsProvider,

@@ -19,6 +19,7 @@ const CONFIGURATION_TARGET = vscode.ConfigurationTarget.Workspace;
 export class SettingsProvider {
   // workspaceFolder settings
   private _config = vscode.workspace.getConfiguration('C_Cpp_Runner');
+  private readonly _fileWatcherOnDelete: vscode.FileSystemWatcher;
   private _operatingSystem = getOperatingSystem();
   private _architecure: Architectures | undefined;
   private _cCompiler: Compilers | undefined;
@@ -39,13 +40,28 @@ export class SettingsProvider {
   private _includePaths: String = '';
 
   constructor(workspaceFolder: string) {
+    const propertiesFileName = 'c_cpp_properties.json';
+    const settingsFileName = 'c_cpp_properties.json';
     const vscodeDirectory = path.join(workspaceFolder, '.vscode');
-    const propertiesPath = path.join(vscodeDirectory, 'c_cpp_properties.json');
+    const propertiesPath = path.join(vscodeDirectory, propertiesFileName);
+    const settingsPath = path.join(vscodeDirectory, settingsFileName);
 
-    if (!pathExists(propertiesPath)) {
+    const deletePattern = `${vscodeDirectory}/**`;
+    this._fileWatcherOnDelete = vscode.workspace.createFileSystemWatcher(
+      deletePattern,
+      true,
+      true,
+      false,
+    );
+
+    if (!pathExists(propertiesPath) || !pathExists(settingsPath)) {
       this.checkCompilers();
     }
     this.getSettings();
+
+    this._fileWatcherOnDelete.onDidDelete(() => {
+      this.checkCompilers();
+    });
   }
 
   /**

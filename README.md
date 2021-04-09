@@ -3,7 +3,12 @@
 🚀 Compile and run your C/C++ code with an ease. 🚀
 
 This extension provides tasks to compile, run and debug your C/C++ code.  
-You do not need to know about any compiler commands, and the extension works on Windows, Linux and MacOS 😎.
+You do not need to know about any compiler commands. 😎  
+The extension works on Windows, Linux and MacOS.
+
+## Example
+
+![ExampleGif](https://github.com/franneck94/Vscode-C-Cpp-Runner/blob/master/media/ExecuteTasks.gif?raw=true)
 
 ## Software Requirements
 
@@ -14,17 +19,17 @@ You do not need to know about any compiler commands, and the extension works on 
 ## Install the Software Requirements (optional)
 
 - 🖥️ Windows: Recommended to install gcc/g++, gdb and make via Cygwin: <https://www.cygwin.com/>
-- 🖥️ Linux: Recommended to install gcc/g++, gdb and make via a package manager (e.g. *apt* for Debian derivates)
+- 🖥️ Linux: Recommended to install gcc/g++, gdb and make via a package manager (e.g. `apt` for Debian derivates)
 - 🖥️ MacOS: Recommended to install clang/clang++, lldb and make via xcode-tools: <https://developer.apple.com/xcode/features/>
 
 ## How to use
 
-The first step is to select the folder that contains the C/C++ files you want to compile, run or debug.  
-In addition you can select to build the binary in debug or relase mode.  
-Afterwards, you can press the shortcut *ctrl+shift+r* to get a quick pick menu for the tasks.  
-For every quick pick menu entry, there is also an icon in the bottom blue status bar.
+1️⃣ The first step is to select the folder that contains the C/C++ files you want to compile, run or debug.  
+2️⃣ In addition you can select to either build the binary in debug or relase mode.  
+3️⃣ Afterwards, you can press the shortcut `ctrl+shift+r` to get a quick pick menu for the tasks.  
+❕ For every quick pick menu entry, there is also an icon in the blue status bar.
 
-For example if you select a working directory with the name *vscode-test/folder1* and *debug-x64* mode, you will get the following tasks:
+For example, if you select a folder called *"vscode-test/folder1"* you will see the following tasks:
 
 ![TaskQuickBar](https://github.com/franneck94/Vscode-C-Cpp-Runner/blob/master/media/TaskQuickPick.png?raw=true)
 
@@ -33,13 +38,21 @@ For example if you select a working directory with the name *vscode-test/folder1
 - 🗑️ Clean*: This task will delete all obj files (*.o).
 - 🐞 Debug*: This task will start a debugging session for the binary.
 
-*The task is only present if there is a build folder for the selected debug/release mode.
+*This task is only present if the build task was previously executed.
 
-## Example
+## Extension Features
 
-![ExampleGif](https://github.com/franneck94/Vscode-C-Cpp-Runner/blob/master/media/ExecuteTasks.gif?raw=true)
+The extension will automatically search for an installed conpiler on your computer.
+If any compiler can be found in the PATH variables it will be stored to the local workspace settings (*".vscode/settings.json"*).
+If you wish to use any other installed compiler, just edit the entries in the local settings.  
+![FoundCompiler](./media/FoundCompiler.png)  
 
-## Extension Options
+Based on the operating system and the compiler settings, there will be also a *c_cpp_properties.json* file created in the local *.vscode* folder.
+This properties file will be used by Microsoft's *C/C++* extension for intellisense. If you want to read more about it, please refer to the official [documentation](https://code.visualstudio.com/docs/cpp/c-cpp-properties-schema-reference).  
+**Important:** In general it is not recommended to edit this file. If you want to add for example include paths, you should rather update the extension's include path (see [below](#extension-settings)).  
+![CCppConfig](./media/CCppConfig.png)  
+
+## Extension Settings
 
 - ⚙️ C Compiler path (default's to gcc)
 - ⚙️ C Standard (default's to c89)
@@ -56,13 +69,23 @@ For example if you select a working directory with the name *vscode-test/folder1
 
 ## Important Notes
 
-##### Allowed File Extensions
+### Constraints on Files and Folders
 
-- 📂 Allowed file extensions for headers: \*.h, \*.hpp, \*.hh, \*.hxx
-- 📁 Allowed file extensions for sources: \*.c, \*.cpp, \*.cc, \*.cxx
+- 📝 Allowed file extensions for headers: \*.h, \*.hpp, \*.hh, \*.hxx
+- 📝 Allowed file extensions for sources: \*.c, \*.cpp, \*.cc, \*.cxx
+- 📁 The extension will not list folder names starting with a dot (e.g. *".vscode"*)
 
-##### CMake Projects
+### CMake Projects
 
-The extension does not activate on start whenever there is a CMakeLists.txt file in the root directory of the workspace.
+The extension does not activate on start whenever there is a CMakeLists.txt file in the root folder of the workspace.
 Otherwise the status bar would have a lot of buttons from this extension and from *Microsoft's CMake Tools* extension.
-However the user can trigger the start-up of this extension by pressing *ctrl+shift+r* regardless of a present CMake file.
+However the user can trigger the start-up of this extension by pressing `ctrl+shift+r` regardless of a present CMake file.
+
+## Release Notes
+
+Refer to the [CHANGELOG](CHANGELOG.md).
+
+## License
+
+Copyright (C) 2021 Jan Schaffranek. Licensed under the MIT License.  
+For the dependent extension *C/C++* from Microsoft refer to their license and telemetry reporting.

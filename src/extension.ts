@@ -196,9 +196,9 @@ function initFolderStatusBar(context: vscode.ExtensionContext) {
       workspaceFolder = workspaceFolders[0].name;
       activeFolder = workspaceFolder;
       updateFolderStatusData();
+    } else {
+      updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
     }
-  } else {
-    updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
   }
 
   commandFolderDisposable = vscode.commands.registerCommand(
@@ -411,16 +411,23 @@ function cleanCallback() {
 }
 
 function tasksCallback() {
+  let showErrorMessage = false;
+
   if (!showStatusBarItems) {
     showStatusBarItems = true;
     toggleStatusBarItems();
+  } else {
+    if (!errorMessage) {
+      showErrorMessage = true;
+    }
   }
 
   if (!workspaceFolder) {
-    if (!errorMessage) {
+    if (showErrorMessage) {
       errorMessage = vscode.window.showErrorMessage(
         'You have to select a folder first.',
       );
+      errorMessage.then(() => (errorMessage = undefined));
     }
   } else {
     errorMessage = undefined;

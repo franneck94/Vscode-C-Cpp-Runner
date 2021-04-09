@@ -1,12 +1,8 @@
 import * as vscode from 'vscode';
 
-import { taskHandler } from './handler/taskHandler';
 import { folderHandler } from './handler/folderHandler';
 import { modeHandler } from './handler/modeHandler';
-import { LaunchProvider } from './provider/launchProvider';
-import { PropertiesProvider } from './provider/propertiesProvider';
-import { SettingsProvider } from './provider/settingsProvider';
-import { TaskProvider } from './provider/taskProvider';
+import { taskHandler } from './handler/taskHandler';
 import {
   updateBuildStatus,
   updateCleanStatus,
@@ -15,13 +11,13 @@ import {
   updateModeStatus,
   updateRunStatus,
 } from './items/statusBarItems';
-import {
-  createStatusBarItem,
-  disposeItem,
-  filesInDir,
-  foldersInDir,
-} from './utils';
+import { LaunchProvider } from './provider/launchProvider';
+import { PropertiesProvider } from './provider/propertiesProvider';
+import { SettingsProvider } from './provider/settingsProvider';
+import { TaskProvider } from './provider/taskProvider';
 import { Architectures, Builds, Tasks } from './types';
+import { foldersInDir, noCmakeFileFound } from './utils/fileUtils';
+import { createStatusBarItem, disposeItem } from './utils/vscodeUtils';
 
 const PROPERTIES_TEMPLATE = 'properties_template.json';
 const PROPERTIES_FILE = 'c_cpp_properties.json';
@@ -73,54 +69,71 @@ export function activate(context: vscode.ExtensionContext) {
   initDebugStatusBar(context);
   initCleanStatusBar(context);
 
-  workspaceInstance(context);
+  initWorkspaceProvider();
+  initWorkspaceDisposables(context);
 }
 
 export function deactivate() {
-  disposeProviderDisposables();
-  disposeStatusBarItems();
-  disposeCommands();
+  disposeItem(taskProviderDisposable);
+  disposeItem(commandHandlerDisposable);
+  disposeItem(folderStatusBar);
+  disposeItem(modeStatusBar);
+  disposeItem(buildStatusBar);
+  disposeItem(runStatusBar);
+  disposeItem(debugStatusBar);
+  disposeItem(cleanStatusBar);
+  disposeItem(commandFolderDisposable);
+  disposeItem(commandModeDisposable);
+  disposeItem(commandBuildDisposable);
+  disposeItem(commandRunDisposable);
+  disposeItem(commandDebugDisposable);
+  disposeItem(commandCleanDisposable);
 }
 
-function initWorkspaceInstance() {
+function initWorkspaceProvider() {
   if (!workspaceFolder) {
     return;
   }
 
-  settingsProvider = new SettingsProvider(workspaceFolder);
+  if (!settingsProvider) {
+    settingsProvider = new SettingsProvider(workspaceFolder);
+  }
 
-  propertiesProvider = new PropertiesProvider(
-    settingsProvider,
-    workspaceFolder,
-    PROPERTIES_TEMPLATE,
-    PROPERTIES_FILE,
-  );
+  if (!propertiesProvider) {
+    propertiesProvider = new PropertiesProvider(
+      settingsProvider,
+      workspaceFolder,
+      PROPERTIES_TEMPLATE,
+      PROPERTIES_FILE,
+    );
+  }
 
   if (!activeFolder) {
     return;
   }
 
-  launchProvider = new LaunchProvider(
-    settingsProvider,
-    workspaceFolder,
-    activeFolder,
-    LAUNCH_TEMPLATE,
-    LAUNCH_FILE,
-  );
+  if (!launchProvider) {
+    launchProvider = new LaunchProvider(
+      settingsProvider,
+      workspaceFolder,
+      activeFolder,
+      LAUNCH_TEMPLATE,
+      LAUNCH_FILE,
+    );
+  }
 
-  taskProvider = new TaskProvider(
-    settingsProvider,
-    workspaceFolder,
-    activeFolder,
-    buildMode,
-    architectureMode,
-  );
+  if (!taskProvider) {
+    taskProvider = new TaskProvider(
+      settingsProvider,
+      workspaceFolder,
+      activeFolder,
+      buildMode,
+      architectureMode,
+    );
+  }
 }
 
-function workspaceInstance(context: vscode.ExtensionContext) {
-  initWorkspaceInstance();
-  disposeProviderDisposables();
-
+function initWorkspaceDisposables(context: vscode.ExtensionContext) {
   taskProviderDisposable = vscode.tasks.registerTaskProvider(
     'C_Cpp_Runner',
     taskProvider,
@@ -141,47 +154,6 @@ function workspaceInstance(context: vscode.ExtensionContext) {
   });
 }
 
-function disposeProviderDisposables() {
-  disposeItem(taskProviderDisposable);
-  disposeItem(commandHandlerDisposable);
-}
-
-function disposeStatusBarItems() {
-  disposeItem(folderStatusBar);
-  disposeItem(modeStatusBar);
-  disposeItem(buildStatusBar);
-  disposeItem(runStatusBar);
-  disposeItem(debugStatusBar);
-  disposeItem(cleanStatusBar);
-}
-
-function disposeCommands() {
-  disposeItem(commandFolderDisposable);
-  disposeItem(commandModeDisposable);
-  disposeItem(commandBuildDisposable);
-  disposeItem(commandRunDisposable);
-  disposeItem(commandDebugDisposable);
-  disposeItem(commandCleanDisposable);
-}
-
-function noCmakeFileFound() {
-  let foundNoCmakeFile = true;
-  const workspaceFodlers = vscode.workspace.workspaceFolders;
-
-  if (workspaceFodlers) {
-    workspaceFodlers.forEach((folder) => {
-      const files = filesInDir(folder.uri.fsPath);
-      files.forEach((file) => {
-        if (file.toLowerCase() === 'CMakeLists.txt'.toLowerCase()) {
-          foundNoCmakeFile = false;
-        }
-      });
-    });
-  }
-
-  return foundNoCmakeFile;
-}
-
 // INIT STATUS BAR
 
 function initFolderStatusBar(context: vscode.ExtensionContext) {
@@ -190,12 +162,14 @@ function initFolderStatusBar(context: vscode.ExtensionContext) {
 
   const workspaceFolders = vscode.workspace.workspaceFolders;
   if (workspaceFolders) {
-    const workspaceFolderFs = workspaceFolders[0].uri.fsPath;
-    const folders = foldersInDir(workspaceFolderFs);
-    if (folders.length === 0) {
-      workspaceFolder = workspaceFolders[0].name;
-      activeFolder = workspaceFolder;
-      updateFolderStatusData();
+    if (workspaceFolders.length === 1) {
+      const workspaceFolderFs = workspaceFolders[0].uri.fsPath;
+      const folders = foldersInDir(workspaceFolderFs);
+      if (folders.length === 0) {
+        workspaceFolder = workspaceFolderFs;
+        activeFolder = workspaceFolderFs;
+        updateFolderStatusData();
+      }
     } else {
       updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
     }
@@ -315,8 +289,7 @@ async function modeCallback() {
     buildMode = ret.pickedMode;
     architectureMode = ret.pickedArchitecture;
     if (taskProvider) {
-      taskProvider.buildMode = buildMode;
-      taskProvider.architectureMode = architectureMode;
+      taskProvider.updateModeData(buildMode, architectureMode);
     }
     updateModeStatus(
       modeStatusBar,
@@ -440,23 +413,20 @@ function tasksCallback() {
 }
 
 function updateFolderStatusData() {
-  initWorkspaceInstance();
+  initWorkspaceProvider();
 
   if (workspaceFolder && activeFolder) {
     if (propertiesProvider) {
-      propertiesProvider.workspaceFolder = workspaceFolder;
+      propertiesProvider.updatFolderData(workspaceFolder);
     }
     if (taskProvider) {
-      taskProvider.workspaceFolder = workspaceFolder;
-      taskProvider.activeFolder = activeFolder;
+      taskProvider.updatFolderData(workspaceFolder, activeFolder);
       if (buildMode && architectureMode) {
-        taskProvider.buildMode = buildMode;
-        taskProvider.architectureMode = architectureMode;
+        taskProvider.updateModeData(buildMode, architectureMode);
       }
     }
     if (launchProvider) {
-      launchProvider.activeFolder = activeFolder;
-      launchProvider.workspaceFolder = workspaceFolder;
+      launchProvider.updatFolderData(workspaceFolder, activeFolder);
       launchProvider.updateFileData();
     }
   }

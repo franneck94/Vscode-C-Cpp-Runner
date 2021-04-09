@@ -1,9 +1,9 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import { replaceBackslashes } from '../utils';
 import { TaskProvider } from '../provider/taskProvider';
-import { Builds, Architectures } from '../types';
+import { Architectures, Builds } from '../types';
+import { replaceBackslashes } from '../utils/fileUtils';
 
 export function updateFolderStatus(
   status: vscode.StatusBarItem,
@@ -16,11 +16,13 @@ export function updateFolderStatus(
     return;
   }
 
-  if (taskProvider && taskProvider.activeFolder) {
-    let text;
+  if (taskProvider) {
     const workspaceFolder = taskProvider.workspaceFolder;
     const workspaceName = path.basename(workspaceFolder);
-    text = taskProvider.activeFolder.replace(workspaceFolder, workspaceName);
+    let text = taskProvider.activeFolder.replace(
+      workspaceFolder,
+      workspaceName,
+    );
     text = replaceBackslashes(text);
     status.color = '';
     status.text = `$(folder-active) ${text}`;

@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 0.6.1
+
+- **Bugfix**: Fixed file watcher for single root folder use-case
+
 ## Version 0.6.0: April 9, 2021
 
 - **Feature**: Removed extension activation when CMakeLists.txt is present in the root folder of the workspace

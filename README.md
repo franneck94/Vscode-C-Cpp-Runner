@@ -8,7 +8,7 @@ The extension works on Windows, Linux and MacOS.
 
 ## Example
 
-![ExampleGif](https://github.com/franneck94/Vscode-C-Cpp-Runner/blob/master/media/ExecuteTasks.gif?raw=true)
+![ExampleGif](./media/ExecuteTasks.gif?raw=true)
 
 ## Software Requirements
 
@@ -31,7 +31,7 @@ The extension works on Windows, Linux and MacOS.
 
 For example, if you select a folder called *"vscode-test/folder1"* you will see the following tasks:
 
-![TaskQuickBar](https://github.com/franneck94/Vscode-C-Cpp-Runner/blob/master/media/TaskQuickPick.png?raw=true)
+![TaskQuickBar](.media/TaskQuickPick.png)
 
 - 🛠 Build: This task will compile all C/C++ files in the selected folder and will link them into a binary.
 - ▶️ Run*: This task will execute the binary.

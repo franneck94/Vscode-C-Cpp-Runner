@@ -1,14 +1,19 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import { SettingsProvider } from './settingsProvider';
-import { mkdirRecursive, pathExists, readJsonFile } from '../utils';
 import { JsonConfiguration } from '../types';
+import {
+  mkdirRecursive,
+  pathExists,
+  readJsonFile,
+  replaceBackslashes,
+} from '../utils/fileUtils';
+import { SettingsProvider } from './settingsProvider';
 
 export abstract class FileProvider {
-  private _templatePath: string;
-  private _outputPath: string;
-  private _vscodeDirectory: string;
+  private readonly _templatePath: string;
+  private readonly _outputPath: string;
+  private readonly _vscodeDirectory: string;
   private readonly _fileWatcherOnDelete: vscode.FileSystemWatcher;
 
   constructor(
@@ -21,7 +26,7 @@ export abstract class FileProvider {
     this.workspaceFolder = workspaceFolder;
     this._vscodeDirectory = path.join(this.workspaceFolder, '.vscode');
     this._outputPath = path.join(this._vscodeDirectory, outputFileName);
-    const deletePattern = `${this._vscodeDirectory}/**`;
+    const deletePattern = `${replaceBackslashes(this._vscodeDirectory)}/**`;
 
     const extDirectory = path.dirname(__dirname);
     const templateDirectory = path.join(extDirectory, 'src', '_templates');

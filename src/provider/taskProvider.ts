@@ -1,23 +1,27 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import { SettingsProvider } from './settingsProvider';
-import { getLanguage, readJsonFile, replaceBackslashes } from '../utils';
 import {
-  Builds,
   Architectures,
-  Languages,
-  JsonTask,
-  JsonInnerTask,
-  Tasks,
+  Builds,
   JsonConfiguration,
+  JsonInnerTask,
+  JsonTask,
+  Languages,
   Task,
+  Tasks,
 } from '../types';
+import {
+  getLanguage,
+  readJsonFile,
+  replaceBackslashes,
+} from '../utils/fileUtils';
+import { SettingsProvider } from './settingsProvider';
 
 export class TaskProvider implements vscode.TaskProvider {
+  private readonly _tasksFile: string;
+  private readonly _makefileFile: string;
   public tasks: Task[] | undefined;
-  private _tasksFile: string;
-  private _makefileFile: string;
 
   constructor(
     private readonly _settingsProvider: SettingsProvider,
@@ -31,10 +35,6 @@ export class TaskProvider implements vscode.TaskProvider {
     this._tasksFile = path.join(templateDirectory, 'tasks_template.json');
     this._makefileFile = path.join(templateDirectory, 'Makefile');
 
-    if (!this.activeFolder) {
-      this.activeFolder = this.workspaceFolder;
-    }
-
     this.getTasks();
   }
 
@@ -47,10 +47,6 @@ export class TaskProvider implements vscode.TaskProvider {
   }
 
   public getTasks(): Task[] {
-    if (!this.activeFolder) {
-      this.activeFolder = this.workspaceFolder;
-    }
-
     const language = getLanguage(this.activeFolder);
 
     this.setTasksDefinition(language);
@@ -154,6 +150,16 @@ export class TaskProvider implements vscode.TaskProvider {
       taskJson.args.push(`ARCHITECTURE=${architectureStr}`);
     }
     taskJson.command = settings.makePath;
+  }
+
+  public updateModeData(buildMode: Builds, architectureMode: Architectures) {
+    this.buildMode = buildMode;
+    this.architectureMode = architectureMode;
+  }
+
+  public updatFolderData(workspaceFolder: string, activeFolder: string) {
+    this.workspaceFolder = workspaceFolder;
+    this.activeFolder = activeFolder;
   }
 
   public getProjectFolder() {

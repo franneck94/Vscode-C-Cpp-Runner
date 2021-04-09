@@ -1,9 +1,9 @@
 import * as path from 'path';
 
+import { JsonConfiguration, OperatingSystems } from '../types';
+import { readJsonFile, writeJsonFile } from '../utils/fileUtils';
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
-import { readJsonFile, writeJsonFile } from '../utils';
-import { JsonConfiguration, OperatingSystems } from '../types';
 
 export class LaunchProvider extends FileProvider {
   constructor(
@@ -47,5 +47,10 @@ export class LaunchProvider extends FileProvider {
     configJson.configurations[0].program = debugPath;
 
     writeJsonFile(outFilePath, configJson);
+  }
+
+  public updatFolderData(workspaceFolder: string, activeFolder: string) {
+    this.workspaceFolder = workspaceFolder;
+    this.activeFolder = activeFolder;
   }
 }

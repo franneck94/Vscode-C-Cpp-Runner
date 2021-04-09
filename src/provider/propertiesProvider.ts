@@ -1,7 +1,7 @@
+import { JsonConfiguration, Languages } from '../types';
+import { getLanguage, readJsonFile, writeJsonFile } from '../utils/fileUtils';
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
-import { getLanguage, readJsonFile, writeJsonFile } from '../utils';
-import { JsonConfiguration, Languages } from '../types';
 
 export class PropertiesProvider extends FileProvider {
   constructor(
@@ -58,5 +58,9 @@ export class PropertiesProvider extends FileProvider {
     config.intelliSenseMode = triplet;
 
     writeJsonFile(outFilePath, configJson);
+  }
+
+  public updatFolderData(workspaceFolder: string) {
+    this.workspaceFolder = workspaceFolder;
   }
 }

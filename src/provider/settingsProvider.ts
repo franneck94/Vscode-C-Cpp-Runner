@@ -7,19 +7,24 @@ import {
   Debuggers,
   OperatingSystems,
 } from '../types';
+import { pathExists, replaceBackslashes } from '../utils/fileUtils';
 import {
   commandExists,
   getArchitecture,
   getOperatingSystem,
-  pathExists,
-} from '../utils';
+} from '../utils/systemUtils';
 
 const CONFIGURATION_TARGET = vscode.ConfigurationTarget.Workspace;
 
 export class SettingsProvider {
-  // workspaceFolder settings
-  private _config = vscode.workspace.getConfiguration('C_Cpp_Runner');
+  // Workspace data
   private readonly _fileWatcherOnDelete: vscode.FileSystemWatcher;
+  private readonly _fileWatcherOnChange: vscode.FileSystemWatcher;
+  private readonly _outputPath: string;
+  private readonly _vscodeDirectory: string;
+  private readonly _outputFileName: string;
+  private _config = vscode.workspace.getConfiguration('C_Cpp_Runner');
+  // Machine information
   private _operatingSystem = getOperatingSystem();
   private _architecure: Architectures | undefined;
   private _cCompiler: Compilers | undefined;
@@ -40,13 +45,11 @@ export class SettingsProvider {
   private _includePaths: String = '';
 
   constructor(workspaceFolder: string) {
-    const propertiesFileName = 'c_cpp_properties.json';
-    const settingsFileName = 'c_cpp_properties.json';
-    const vscodeDirectory = path.join(workspaceFolder, '.vscode');
-    const propertiesPath = path.join(vscodeDirectory, propertiesFileName);
-    const settingsPath = path.join(vscodeDirectory, settingsFileName);
+    this._outputFileName = 'settings.json';
+    this._vscodeDirectory = path.join(workspaceFolder, '.vscode');
+    this._outputPath = path.join(this._vscodeDirectory, this._outputFileName);
 
-    const deletePattern = `${vscodeDirectory}/**`;
+    const deletePattern = `${replaceBackslashes(this._vscodeDirectory)}/**`;
     this._fileWatcherOnDelete = vscode.workspace.createFileSystemWatcher(
       deletePattern,
       true,
@@ -54,13 +57,23 @@ export class SettingsProvider {
       false,
     );
 
-    if (!pathExists(propertiesPath) || !pathExists(settingsPath)) {
-      this.checkCompilers();
-    }
+    const changePattern = replaceBackslashes(this._outputPath);
+    this._fileWatcherOnChange = vscode.workspace.createFileSystemWatcher(
+      changePattern,
+      true,
+      false,
+      false,
+    );
+
+    this.checkCompilers();
     this.getSettings();
 
     this._fileWatcherOnDelete.onDidDelete(() => {
       this.checkCompilers();
+    });
+
+    this._fileWatcherOnChange.onDidChange(() => {
+      this.getSettings();
     });
   }
 
@@ -68,6 +81,10 @@ export class SettingsProvider {
    * Check if gcc/g++ or clang/clang++ is in PATH and where it is located.
    */
   public async checkCompilers() {
+    if (pathExists(this._outputPath)) {
+      return;
+    }
+
     const { f: foundGcc, p: pathGcc } = await commandExists('gcc');
     const { f: foundGpp, p: pathGpp } = await commandExists('g++');
     const { f: foundClang, p: pathClang } = await commandExists('clang');

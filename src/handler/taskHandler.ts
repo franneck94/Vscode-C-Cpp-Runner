@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 
 import { TaskProvider } from '../provider/taskProvider';
 import { Builds, Task, Tasks } from '../types';
-import { filterOnString, pathExists } from '../utils';
+import { filterOnString, pathExists } from '../utils/fileUtils';
 
 export async function taskHandler(taskProvider: TaskProvider) {
   let provideRunTask = false;

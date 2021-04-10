@@ -1,6 +1,6 @@
 # C/C++ Runner Change Log
 
-## Version 0.6.1
+## Version 0.6.1: April 10, 2021
 
 - **Bugfix**: Fixed file watcher for single root folder use-case
 

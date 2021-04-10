@@ -130,3 +130,12 @@ export function noCmakeFileFound() {
 
   return foundNoCmakeFile;
 }
+
+export function naturalSort(names: string[]) {
+  return names.sort((a, b) => {
+    return a.localeCompare(b, undefined, {
+      numeric: true,
+      sensitivity: 'base'
+    });
+  });
+}

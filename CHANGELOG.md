@@ -1,5 +1,11 @@
 # C/C++ Runner Change Log
 
+## Version 0.6.1: April 11, 2021
+
+- **Bugfix**: Fixed file watcher for single root folder use-case
+- **Improvement**: Now sorting the folder list by localeCompare ordering
+- **Improvement**: Compilers are searched in the PATH just once on extension start and not re-searched after deleting the local settings.json file
+
 ## Version 0.6.1: April 10, 2021
 
 - **Bugfix**: Fixed file watcher for single root folder use-case

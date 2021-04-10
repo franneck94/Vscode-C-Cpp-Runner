@@ -1,7 +1,11 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import { getDirectories, replaceBackslashes } from '../utils/fileUtils';
+import {
+  getDirectories,
+  naturalSort,
+  replaceBackslashes,
+} from '../utils/fileUtils';
 
 export async function folderHandler() {
   const workspacesFolders = vscode.workspace.workspaceFolders;
@@ -10,7 +14,7 @@ export async function folderHandler() {
     return;
   }
 
-  const foldersList: string[] = [];
+  let foldersList: string[] = [];
   workspacesFolders.forEach((folder) => {
     const directories = [folder.name];
     const recursiveDirectories = getDirectories(folder.uri.fsPath);
@@ -23,6 +27,7 @@ export async function folderHandler() {
       text = replaceBackslashes(text);
       foldersList.push(text);
     });
+    foldersList = naturalSort(foldersList);
   });
 
   const pickedFolderStr = await vscode.window.showQuickPick(foldersList, {

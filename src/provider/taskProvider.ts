@@ -87,12 +87,13 @@ export class TaskProvider implements vscode.TaskProvider {
       };
       const problemMatcher = '$gcc';
       const scope = vscode.TaskScope.Workspace;
+      const execution = new vscode.ShellExecution(shellCommand);
       const task = new Task(
         definition,
         scope,
         taskJson.label,
         'C_Cpp_Runner',
-        new vscode.ShellExecution(shellCommand),
+        execution,
         problemMatcher,
       );
       this.tasks.push(task);

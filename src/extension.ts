@@ -169,6 +169,8 @@ function initFolderStatusBar(context: vscode.ExtensionContext) {
         workspaceFolder = workspaceFolderFs;
         activeFolder = workspaceFolderFs;
         updateFolderStatusData();
+      } else {
+        updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
       }
     } else {
       updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);

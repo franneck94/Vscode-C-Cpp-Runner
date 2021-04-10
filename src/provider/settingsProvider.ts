@@ -30,6 +30,10 @@ export class SettingsProvider {
   private _cCompiler: Compilers | undefined;
   private _cppCompiler: Compilers | undefined;
   private _debugger: Debuggers | undefined;
+  private _foundCCompiler: boolean = false;
+  private _foundCppCompiler: boolean = false;
+  private _foundMake: boolean = false;
+  private _foundDebugger: boolean = false;
   // Settings
   private _enableWarnings: boolean = true;
   private _warnings: string = '';
@@ -85,9 +89,19 @@ export class SettingsProvider {
       return;
     }
 
+    if (
+      pathExists(this._outputPath) &&
+      this._foundCCompiler &&
+      this._foundCppCompiler &&
+      this._foundMake &&
+      this._foundDebugger
+    ) {
+      return;
+    }
+
     const { f: foundGcc, p: pathGcc } = await commandExists('gcc');
-    const { f: foundGpp, p: pathGpp } = await commandExists('g++');
     const { f: foundClang, p: pathClang } = await commandExists('clang');
+    const { f: foundGpp, p: pathGpp } = await commandExists('g++');
     const { f: foundClangpp, p: pathClangpp } = await commandExists('clang++');
     const { f: foundGDB, p: pathGDB } = await commandExists('gdb');
     const { f: foundLLDB, p: pathLLDB } = await commandExists('lldb');
@@ -204,35 +218,42 @@ export class SettingsProvider {
   private setGcc(pathGcc: string) {
     this._config.update('compilerPathC', pathGcc, CONFIGURATION_TARGET);
     this._cCompiler = Compilers.gcc;
+    this._foundCCompiler = true;
   }
 
   private setClang(pathClang: string) {
     this._config.update('compilerPathC', pathClang, CONFIGURATION_TARGET);
     this._cCompiler = Compilers.clang;
+    this._foundCCompiler = true;
   }
 
   private setGpp(pathGpp: string) {
     this._config.update('compilerPathCpp', pathGpp, CONFIGURATION_TARGET);
     this._cppCompiler = Compilers.gpp;
+    this._foundCppCompiler = true;
   }
 
   private setClangpp(pathClangpp: string) {
     this._config.update('compilerPathCpp', pathClangpp, CONFIGURATION_TARGET);
     this._cppCompiler = Compilers.clangpp;
+    this._foundCppCompiler = true;
   }
 
   private setLLDB(pathLLDB: string) {
     this._config.update('debuggerPath', pathLLDB, CONFIGURATION_TARGET);
     this._debugger = Debuggers.lldb;
+    this._foundDebugger = true;
   }
 
   private setGDB(pathGDB: string) {
     this._config.update('debuggerPath', pathGDB, CONFIGURATION_TARGET);
     this._debugger = Debuggers.gdb;
+    this._foundDebugger = true;
   }
 
   private setMake(pathMake: string) {
     this._config.update('makePath', pathMake, CONFIGURATION_TARGET);
+    this._foundMake = true;
   }
 
   public get operatingSystem() {

@@ -1,6 +1,6 @@
 # C/C++ Runner Change Log
 
-## Version 0.6.1: April 11, 2021
+## Version 0.6.2: April 11, 2021
 
 - **Bugfix**: Fixed file watcher for single root folder use-case
 - **Improvement**: Now sorting the folder list by localeCompare ordering

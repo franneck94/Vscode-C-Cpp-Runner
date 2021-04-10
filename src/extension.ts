@@ -15,7 +15,7 @@ import { LaunchProvider } from './provider/launchProvider';
 import { PropertiesProvider } from './provider/propertiesProvider';
 import { SettingsProvider } from './provider/settingsProvider';
 import { TaskProvider } from './provider/taskProvider';
-import { Architectures, Builds, Tasks } from './types';
+import { Architectures, Builds, Tasks } from './utils/types';
 import { foldersInDir, noCmakeFileFound } from './utils/fileUtils';
 import { createStatusBarItem, disposeItem } from './utils/vscodeUtils';
 

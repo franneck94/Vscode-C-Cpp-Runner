@@ -1,4 +1,4 @@
-import { JsonConfiguration, Languages } from '../types';
+import { JsonConfiguration, Languages } from '../utils/types';
 import { getLanguage, readJsonFile, writeJsonFile } from '../utils/fileUtils';
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';

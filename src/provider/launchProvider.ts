@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import { JsonConfiguration, OperatingSystems } from '../types';
+import { JsonConfiguration, OperatingSystems } from '../utils/types';
 import { readJsonFile, writeJsonFile } from '../utils/fileUtils';
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';

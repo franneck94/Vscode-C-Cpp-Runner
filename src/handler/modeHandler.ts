@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
 import { SettingsProvider } from '../provider/settingsProvider';
-import { Architectures, Builds } from '../types';
+import { Architectures, Builds } from '../utils/types';
 
 export async function modeHandler(settingsProvider: SettingsProvider) {
   let combinations = [

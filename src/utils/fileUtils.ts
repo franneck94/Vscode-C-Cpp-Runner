@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import { Languages } from '../types';
+import { Languages } from './types';
 
 export function replaceBackslashes(text: string) {
   return text.replace(/\\/g, '/');

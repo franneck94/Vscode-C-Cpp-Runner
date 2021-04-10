@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import { JsonConfiguration } from '../types';
+import { JsonConfiguration } from '../utils/types';
 import {
   mkdirRecursive,
   pathExists,

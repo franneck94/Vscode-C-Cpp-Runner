@@ -10,7 +10,7 @@ import {
   Languages,
   Task,
   Tasks,
-} from '../types';
+} from '../utils/types';
 import {
   getLanguage,
   readJsonFile,

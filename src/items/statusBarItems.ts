@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import { TaskProvider } from '../provider/taskProvider';
-import { Architectures, Builds } from '../types';
+import { Architectures, Builds } from '../utils/types';
 import { replaceBackslashes } from '../utils/fileUtils';
 
 export function updateFolderStatus(

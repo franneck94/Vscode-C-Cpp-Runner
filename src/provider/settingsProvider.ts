@@ -6,7 +6,7 @@ import {
   Compilers,
   Debuggers,
   OperatingSystems,
-} from '../types';
+} from '../utils/types';
 import { pathExists, replaceBackslashes } from '../utils/fileUtils';
 import {
   commandExists,

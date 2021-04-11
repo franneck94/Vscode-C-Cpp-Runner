@@ -2,8 +2,9 @@
 
 ## Version 0.7.0
 
-- **Ongoing**: Add context menu option to select an active folder
-- **Ongoing**: Dont check if launch/settings/c_cpp_properties.json exists, rather check if the files have the entries that would be stored by this extension
+- **Ongoing**: Add context menu option to select the folder
+- **Ongoing**: Fixed behaviour of settings/launch/c_cpp_propertiers.json files if these were already present without the extension entries
+- **Info**: Updated C Standard default to c99
 
 ## Version 0.6.2: April 11, 2021
 

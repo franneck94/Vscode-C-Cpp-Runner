@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
+import * as JSON5 from 'json5';
 
 import { Languages } from './types';
 
@@ -100,7 +101,7 @@ export function readJsonFile(filepath: string): any | undefined {
   let configJson;
   try {
     const fileContent = fs.readFileSync(filepath, 'utf-8');
-    configJson = JSON.parse(fileContent);
+    configJson = JSON5.parse(fileContent);
   } catch (err) {
     return undefined;
   }
@@ -135,7 +136,7 @@ export function naturalSort(names: string[]) {
   return names.sort((a, b) => {
     return a.localeCompare(b, undefined, {
       numeric: true,
-      sensitivity: 'base'
+      sensitivity: 'base',
     });
   });
 }

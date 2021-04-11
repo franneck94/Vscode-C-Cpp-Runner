@@ -24,6 +24,7 @@ const PROPERTIES_FILE = 'c_cpp_properties.json';
 const LAUNCH_TEMPLATE = 'launch_template.json';
 const LAUNCH_FILE = 'launch.json';
 
+let folderContextMenuDisposable: vscode.Disposable;
 let taskProviderDisposable: vscode.Disposable;
 let commandHandlerDisposable: vscode.Disposable;
 let commandFolderDisposable: vscode.Disposable;
@@ -74,6 +75,7 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
+  disposeItem(folderContextMenuDisposable);
   disposeItem(taskProviderDisposable);
   disposeItem(commandHandlerDisposable);
   disposeItem(folderStatusBar);
@@ -143,8 +145,15 @@ function initWorkspaceDisposables(context: vscode.ExtensionContext) {
     () => tasksCallback(),
   );
 
+  folderContextMenuDisposable = vscode.commands.registerCommand(
+    'C_Cpp_Runner.folderContextMenu',
+    async (clickedUriItem: vscode.Uri, selectedUriItems: vscode.Uri[]) =>
+      contextMenuCallback(clickedUriItem, selectedUriItems),
+  );
+
   context.subscriptions.push(taskProviderDisposable);
   context.subscriptions.push(commandHandlerDisposable);
+  context.subscriptions.push(folderContextMenuDisposable);
 
   vscode.workspace.onDidChangeConfiguration(() => {
     settingsProvider.getSettings();
@@ -168,7 +177,7 @@ function initFolderStatusBar(context: vscode.ExtensionContext) {
       if (folders.length === 0) {
         workspaceFolder = workspaceFolderFs;
         activeFolder = workspaceFolderFs;
-        updateFolderStatusData();
+        updateFolderData();
       } else {
         updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
       }
@@ -281,7 +290,7 @@ async function folderCallback() {
     activeFolder = ret.activeFolder;
     workspaceFolder = ret.workspaceFolder;
 
-    updateFolderStatusData();
+    updateFolderData();
   }
 }
 
@@ -414,10 +423,31 @@ function tasksCallback() {
   }
 }
 
-function updateFolderStatusData() {
+function contextMenuCallback(
+  clickedUriItem: vscode.Uri,
+  selectedUriItems: vscode.Uri[],
+) {
+  if (selectedUriItems.length > 1) {
+    return;
+  }
+
+  const workspaceItem = vscode.workspace.getWorkspaceFolder(clickedUriItem);
+
+  if (!workspaceItem) {
+    return;
+  }
+
+  activeFolder = clickedUriItem.fsPath;
+  workspaceFolder = workspaceItem.uri.fsPath;
+  updateFolderData();
+}
+
+function updateFolderData() {
   initWorkspaceProvider();
 
   if (workspaceFolder && activeFolder) {
+    settingsProvider.checkCompilers();
+
     if (propertiesProvider) {
       propertiesProvider.updatFolderData(workspaceFolder);
     }

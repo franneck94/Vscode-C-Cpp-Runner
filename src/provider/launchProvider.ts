@@ -21,9 +21,14 @@ export class LaunchProvider extends FileProvider {
   }
 
   public writeFileData(inputFilePath: string, outFilePath: string) {
-    const configJson: JsonConfiguration = readJsonFile(inputFilePath);
+    const configJsonTemplate: JsonConfiguration | undefined = readJsonFile(
+      inputFilePath,
+    );
+    const configJsonOutput: JsonConfiguration | undefined = readJsonFile(
+      outFilePath,
+    );
 
-    if (!configJson) {
+    if (!configJsonTemplate) {
       return;
     }
 
@@ -31,22 +36,43 @@ export class LaunchProvider extends FileProvider {
       this.activeFolder = this.workspaceFolder;
     }
 
-    configJson.configurations[0].name = `Launch: Debug Program`;
+    let configIdx = 0;
+    const configName = 'Launch: Debug Program';
+
+    if (configJsonOutput) {
+      configJsonOutput.configurations.forEach((config) => {
+        if (config.name !== configName) {
+          configIdx++;
+        }
+      });
+    }
+
+    configJsonTemplate.configurations[0].name = configName;
     if (this.settings.debugger) {
-      configJson.configurations[0].MIMode = this.settings.debugger;
-      configJson.configurations[0].miDebuggerPath = this.settings.debuggerPath;
+      configJsonTemplate.configurations[0].MIMode = this.settings.debugger;
+      configJsonTemplate.configurations[0].miDebuggerPath = this.settings.debuggerPath;
 
       if (OperatingSystems.windows === this.settings.operatingSystem) {
         // XXX: Either gdb or the C/C++ extension has issues on windows with the internal terminal
-        configJson.configurations[0].externalConsole = true;
+        configJsonTemplate.configurations[0].externalConsole = true;
       }
     }
 
-    configJson.configurations[0].cwd = this.activeFolder;
+    configJsonTemplate.configurations[0].cwd = this.activeFolder;
     const debugPath = path.join(this.activeFolder, 'build/Debug/outDebug');
-    configJson.configurations[0].program = debugPath;
+    configJsonTemplate.configurations[0].program = debugPath;
 
-    writeJsonFile(outFilePath, configJson);
+    if (
+      configJsonOutput &&
+      configJsonOutput.configurations.length === configIdx
+    ) {
+      configJsonOutput.configurations.push(
+        configJsonTemplate.configurations[0],
+      );
+      writeJsonFile(outFilePath, configJsonOutput);
+    } else {
+      writeJsonFile(outFilePath, configJsonTemplate);
+    }
   }
 
   public updatFolderData(workspaceFolder: string, activeFolder: string) {

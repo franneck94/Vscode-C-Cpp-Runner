@@ -55,7 +55,7 @@ This properties file will be used by Microsoft's *C/C++* extension for intellise
 ## Extension Settings
 
 - ⚙️ C Compiler path (default's to gcc)
-- ⚙️ C Standard (default's to c89)
+- ⚙️ C Standard (default's to c99)
 - ⚙️ C++ Compiler path (default's to g++)
 - ⚙️ C++ Standard (default's to c++11)
 - ⚙️ Make path (default's to make)
@@ -88,4 +88,4 @@ Refer to the [CHANGELOG](CHANGELOG.md).
 ## License
 
 Copyright (C) 2021 Jan Schaffranek. Licensed under the MIT License.  
-For the dependent extension *C/C++* from Microsoft refer to their license and telemetry reporting.
+For the *C/C++* extension from Microsoft refer to their license.

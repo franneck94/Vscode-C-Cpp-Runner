@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 0.7.0
+
+- **Ongoing**: Add context menu option to select an active folder
+
 ## Version 0.6.2: April 11, 2021
 
 - **Bugfix**: Fixed file watcher for single root folder use-case

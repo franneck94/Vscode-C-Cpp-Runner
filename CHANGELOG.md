@@ -5,6 +5,7 @@
 - **Ongoing**: Add context menu option to select the folder
 - **Ongoing**: Fixed behaviour of settings/launch/c_cpp_propertiers.json files if these were already present without the extension entries
 - **Info**: Updated C Standard default to c99
+- **TODO**: Create settings/launch/c_cpp_propertiers.json before selecting folder (just with placeholder paths)
 
 ## Version 0.6.2: April 11, 2021
 

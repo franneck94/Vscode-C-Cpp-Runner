@@ -37,7 +37,7 @@ BUILD_DIR ?= build\$(COMPILATION_MODE)
 MKDIR_PATH = $(subst /,\\,$(BUILD_DIR))
 CLEAN_PATH = $(subst /,\\,$(BUILD_DIR)\*.o)
 else
-RM_FUNC = RM -f
+RM_FUNC = rm -f
 MKDIR_FUNC = mkdir -p
 BUILD_DIR ?= build/$(COMPILATION_MODE)
 MKDIR_PATH = $(BUILD_DIR)

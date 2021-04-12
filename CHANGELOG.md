@@ -1,6 +1,10 @@
 # C/C++ Runner Change Log
 
-## Version 0.7.0
+## TODO
+
+- In a multi workspace use-case, the settings.json is not stored
+
+## Version 0.7.0: April 12, 2021
 
 - **Feature**: Added context menu option to select the folder
 - **Improvement**: Deactivate extension, if "cmake.sourceDirectory" is set

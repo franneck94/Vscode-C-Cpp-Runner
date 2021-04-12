@@ -81,6 +81,10 @@
       {
         "command": "C_Cpp_Runner.clean",
         "title": "Clean Command"
+      },
+      {
+        "command": "C_Cpp_Runner.folderContextMenu",
+        "title": "C/C++ Runner: Select Folder"
       }
     ],
     "keybindings": [
@@ -90,6 +94,15 @@
         "mac": "ctrl+shift+r"
       }
     ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "C_Cpp_Runner.folderContextMenu",
+          "when": "explorerResourceIsFolder",
+          "group": "cCppRunnerGroup@1"
+        }
+      ]
+    },
     "configuration": {
       "type": "object",
       "title": "C/C++ Runner",
@@ -151,7 +164,7 @@
             "gnu11",
             "gnu17"
           ],
-          "default": "c89",
+          "default": "c99",
           "description": "C-Standard for the C Compiler.",
           "scope": "resource"
         },
@@ -227,6 +240,7 @@
     "webpack-cli": "^4.6.0"
   },
   "dependencies": {
+    "json5": "^2.2.0",
     "lookpath": "^1.2.0",
     "ts-loader": "^8.1.0",
     "vsce": "^1.87.1"

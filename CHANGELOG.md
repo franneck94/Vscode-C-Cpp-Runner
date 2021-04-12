@@ -1,9 +1,18 @@
 # C/C++ Runner Change Log
 
-## Version 0.7.0
+## TODO
 
-- **Ongoing**: Add context menu option to select an active folder
-- **Ongoing**: Dont check if launch/settings/c_cpp_properties.json exists, rather check if the files have the entries that would be stored by this extension
+- In a multi workspace use-case, the settings.json is not stored
+
+## Version 0.7.0: April 12, 2021
+
+- **Feature**: Added context menu option to select the folder
+- **Improvement**: Deactivate extension, if "cmake.sourceDirectory" is set
+- **Improvement**: Added events for selected folder on name change and delete
+- **Bugfix**: Fixed behaviour of settings/launch/c_cpp_properties.json files if these were already present without the extension entries
+- **Bugifx**: Fixed makefile issue when 'Warnings' is an empty string
+- **Info**: Updated C Standard default to c99
+- **Info**: Update README regarding context menu
 
 ## Version 0.6.2: April 11, 2021
 

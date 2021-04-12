@@ -15,6 +15,8 @@ ARCHITECTURE ?= 64
 COMPILER_ARGS ?= ""
 LINKER_ARGS ?= ""
 INCLUDE_PATHS ?= ""
+DEBUG_FLAGS ?= -g3 -O0
+RELEASE_FLAGS ?= -O3 -DNDEBUG
 
 #######################
 ## OS DEPENDENT VARS ##
@@ -27,7 +29,6 @@ else
   detected_OS := $(patsubst MSYS%,MSYS,$(detected_OS))
   detected_OS := $(patsubst MINGW%,MSYS,$(detected_OS))
 endif
-# $(info Detected OS: $(detected_OS)) # Debug Purpose
 
 ifeq ($(detected_OS), Windows)
 RM_FUNC = del /s /q
@@ -36,7 +37,7 @@ BUILD_DIR ?= build\$(COMPILATION_MODE)
 MKDIR_PATH = $(subst /,\\,$(BUILD_DIR))
 CLEAN_PATH = $(subst /,\\,$(BUILD_DIR)\*.o)
 else
-RM_FUNC = RM -f
+RM_FUNC = rm -f
 MKDIR_FUNC = mkdir -p
 BUILD_DIR ?= build/$(COMPILATION_MODE)
 MKDIR_PATH = $(BUILD_DIR)
@@ -47,11 +48,24 @@ endif
 ## COMPILER ARGUMENTS ##
 ########################
 ifeq ($(COMPILATION_MODE), Debug)
-C_COMPILER_FLAGS = -g3 -O0 -m$(ARCHITECTURE) -std=$(C_STANDARD)
-CPP_COMPILER_FLAGS = -g3 -O0 -m$(ARCHITECTURE) -std=$(CPP_STANDARD)
+C_COMPILER_FLAGS = $(DEBUG_FLAGS)
+CPP_COMPILER_FLAGS = $(DEBUG_FLAGS)
 else ifeq ($(COMPILATION_MODE), Release)
-C_COMPILER_FLAGS = -O3 -DNDEBUG -m$(ARCHITECTURE) -std=$(C_STANDARD)
-CPP_COMPILER_FLAGS = -O3 -DNDEBUG -m$(ARCHITECTURE) -std=$(CPP_STANDARD)
+C_COMPILER_FLAGS = $(RELEASE_FLAGS)
+CPP_COMPILER_FLAGS = $(RELEASE_FLAGS)
+endif
+
+ifeq ($(ARCHITECTURE),)
+C_COMPILER_FLAGS = $(C_COMPILER_FLAGS) -m$(ARCHITECTURE)
+CPP_COMPILER_FLAGS = $(C_COMPILER_FLAGS) -m$(ARCHITECTURE)
+endif
+
+ifeq ($(C_STANDARD),)
+C_COMPILER_FLAGS = $(C_COMPILER_FLAGS) -std=$(C_STANDARD)
+endif
+
+ifeq ($(C_STANDARD),)
+CPP_COMPILER_FLAGS = $(C_COMPILER_FLAGS) -std=$(CPP_STANDARD)
 endif
 
 ifeq ($(COMPILER_ARGS),)
@@ -70,8 +84,10 @@ CPP_COMPILER_FLAGS = $(CPP_COMPILER_FLAGS) $(LINKER_ARGS)
 endif
 
 ifeq ($(ENABLE_WARNINGS), 1)
+ifeq ($(WARNINGS),)
 C_COMPILER_FLAGS += $(WARNINGS)
 CPP_COMPILER_FLAGS += $(WARNINGS)
+endif
 endif
 
 ifeq ($(WARNINGS_AS_ERRORS), 1)

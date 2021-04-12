@@ -25,8 +25,8 @@ export class TaskProvider implements vscode.TaskProvider {
 
   constructor(
     private readonly _settingsProvider: SettingsProvider,
-    private _workspaceFolder: string,
-    private _pickedFolder: string,
+    private _workspaceFolder: string | undefined,
+    private _pickedFolder: string | undefined,
     private _buildMode: Builds,
     private _architectureMode: Architectures,
   ) {
@@ -47,6 +47,10 @@ export class TaskProvider implements vscode.TaskProvider {
   }
 
   public getTasks(): Task[] {
+    if (!this.activeFolder) {
+      return [];
+    }
+
     const language = getLanguage(this.activeFolder);
 
     this.setTasksDefinition(language);
@@ -108,6 +112,10 @@ export class TaskProvider implements vscode.TaskProvider {
     taskJson: JsonInnerTask,
     language: Languages,
   ) {
+    if (!this.workspaceFolder || !this.activeFolder) {
+      return;
+    }
+
     const settings = this._settingsProvider;
     const activeFolder = this.activeFolder;
     const workspaceFolder = this.workspaceFolder;
@@ -158,7 +166,10 @@ export class TaskProvider implements vscode.TaskProvider {
     this.architectureMode = architectureMode;
   }
 
-  public updatFolderData(workspaceFolder: string, activeFolder: string) {
+  public updatFolderData(
+    workspaceFolder: string | undefined,
+    activeFolder: string | undefined,
+  ) {
     this.workspaceFolder = workspaceFolder;
     this.activeFolder = activeFolder;
   }
@@ -168,7 +179,7 @@ export class TaskProvider implements vscode.TaskProvider {
 
     if (this.activeFolder) {
       projectFolder = this.activeFolder;
-    } else {
+    } else if (this.workspaceFolder) {
       projectFolder = this.workspaceFolder;
     }
 
@@ -177,6 +188,9 @@ export class TaskProvider implements vscode.TaskProvider {
 
   private addDebugTask() {
     if (!this.tasks) {
+      return;
+    }
+    if (!this.workspaceFolder || !this.activeFolder) {
       return;
     }
 
@@ -207,6 +221,10 @@ export class TaskProvider implements vscode.TaskProvider {
   }
 
   public async runDebugTask() {
+    if (!this.workspaceFolder) {
+      return;
+    }
+
     const uriWorkspaceFolder = vscode.Uri.file(this.workspaceFolder);
     const folder = vscode.workspace.getWorkspaceFolder(uriWorkspaceFolder);
     const config: JsonConfiguration = readJsonFile(
@@ -227,16 +245,16 @@ export class TaskProvider implements vscode.TaskProvider {
   public set buildMode(value: Builds) {
     this._buildMode = value;
   }
-  public get activeFolder(): string {
+  public get activeFolder(): string | undefined {
     return this._pickedFolder;
   }
-  public set activeFolder(value: string) {
+  public set activeFolder(value: string | undefined) {
     this._pickedFolder = value;
   }
-  public get workspaceFolder(): string {
+  public get workspaceFolder(): string | undefined {
     return this._workspaceFolder;
   }
-  public set workspaceFolder(value: string) {
+  public set workspaceFolder(value: string | undefined) {
     this._workspaceFolder = value;
   }
 }

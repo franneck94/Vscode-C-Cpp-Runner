@@ -75,7 +75,7 @@ export abstract class FileProvider {
     this.writeFileData(this._templatePath, this._outputPath);
   }
 
-  public updateFileData() {
+  public updateFileContent() {
     this.writeFileData(this._outputPath, this._outputPath);
   }
 

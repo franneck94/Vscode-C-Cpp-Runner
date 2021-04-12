@@ -5,9 +5,14 @@ import {
   Architectures,
   Compilers,
   Debuggers,
+  JsonSettings,
   OperatingSystems,
 } from '../utils/types';
-import { pathExists, replaceBackslashes } from '../utils/fileUtils';
+import {
+  pathExists,
+  readJsonFile,
+  replaceBackslashes,
+} from '../utils/fileUtils';
 import {
   commandExists,
   getArchitecture,
@@ -84,19 +89,34 @@ export class SettingsProvider {
   /**
    * Check if gcc/g++ or clang/clang++ is in PATH and where it is located.
    */
+  // @ts-ignore
   public async checkCompilers() {
     if (pathExists(this._outputPath)) {
-      return;
-    }
+      const settingsJson: JsonSettings = readJsonFile(this._outputPath);
+      let skipCheckEntries = false;
+      let skipCheckFound = false;
 
-    if (
-      pathExists(this._outputPath) &&
-      this._foundCCompiler &&
-      this._foundCppCompiler &&
-      this._foundMake &&
-      this._foundDebugger
-    ) {
-      return;
+      if (
+        settingsJson['C_Cpp_Runner.compilerPathC'] &&
+        settingsJson['C_Cpp_Runner.compilerPathCpp'] &&
+        settingsJson['C_Cpp_Runner.debuggerPath'] &&
+        settingsJson['C_Cpp_Runner.makePath']
+      ) {
+        skipCheckEntries = true;
+      }
+
+      if (
+        this._foundCCompiler &&
+        this._foundCppCompiler &&
+        this._foundMake &&
+        this._foundDebugger
+      ) {
+        skipCheckFound = true;
+      }
+
+      if (skipCheckEntries || (skipCheckEntries && skipCheckFound)) {
+        return;
+      }
     }
 
     const { f: foundGcc, p: pathGcc } = await commandExists('gcc');

@@ -1,5 +1,9 @@
 import * as vscode from 'vscode';
 
+export interface JsonSettings {
+  [name: string]: any;
+}
+
 export interface JsonConfiguration {
   configurations: any[];
 }

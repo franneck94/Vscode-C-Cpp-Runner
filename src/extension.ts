@@ -24,6 +24,7 @@ const PROPERTIES_FILE = 'c_cpp_properties.json';
 const LAUNCH_TEMPLATE = 'launch_template.json';
 const LAUNCH_FILE = 'launch.json';
 
+let folderContextMenuDisposable: vscode.Disposable;
 let taskProviderDisposable: vscode.Disposable;
 let commandHandlerDisposable: vscode.Disposable;
 let commandFolderDisposable: vscode.Disposable;
@@ -74,6 +75,7 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
+  disposeItem(folderContextMenuDisposable);
   disposeItem(taskProviderDisposable);
   disposeItem(commandHandlerDisposable);
   disposeItem(folderStatusBar);
@@ -143,14 +145,52 @@ function initWorkspaceDisposables(context: vscode.ExtensionContext) {
     () => tasksCallback(),
   );
 
+  folderContextMenuDisposable = vscode.commands.registerCommand(
+    'C_Cpp_Runner.folderContextMenu',
+    async (clickedUriItem: vscode.Uri, selectedUriItems: vscode.Uri[]) =>
+      contextMenuCallback(clickedUriItem, selectedUriItems),
+  );
+
   context.subscriptions.push(taskProviderDisposable);
   context.subscriptions.push(commandHandlerDisposable);
+  context.subscriptions.push(folderContextMenuDisposable);
 
   vscode.workspace.onDidChangeConfiguration(() => {
     settingsProvider.getSettings();
     taskProvider.getTasks();
-    propertiesProvider.updateFileData();
-    launchProvider.updateFileData();
+    propertiesProvider.updateFileContent();
+    launchProvider.updateFileContent();
+  });
+
+  vscode.workspace.onDidRenameFiles((e: vscode.FileRenameEvent) => {
+    if (e.files.length === 1) {
+      const oldName = e.files[0].oldUri.fsPath;
+      const newName = e.files[0].newUri.fsPath;
+
+      if (oldName === workspaceFolder) {
+        workspaceFolder = newName;
+        updateFolderData();
+      } else if (oldName === activeFolder) {
+        activeFolder = newName;
+        updateFolderData();
+      }
+    }
+  });
+
+  vscode.workspace.onDidDeleteFiles((e: vscode.FileDeleteEvent) => {
+    if (e.files.length >= 0) {
+      const oldName = e.files[0].fsPath;
+
+      if (oldName === workspaceFolder) {
+        workspaceFolder = undefined;
+        updateFolderData();
+        updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+      } else if (oldName === activeFolder) {
+        activeFolder = undefined;
+        updateFolderData();
+        updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+      }
+    }
   });
 }
 
@@ -168,7 +208,7 @@ function initFolderStatusBar(context: vscode.ExtensionContext) {
       if (folders.length === 0) {
         workspaceFolder = workspaceFolderFs;
         activeFolder = workspaceFolderFs;
-        updateFolderStatusData();
+        updateFolderData();
       } else {
         updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
       }
@@ -281,7 +321,7 @@ async function folderCallback() {
     activeFolder = ret.activeFolder;
     workspaceFolder = ret.workspaceFolder;
 
-    updateFolderStatusData();
+    updateFolderData();
   }
 }
 
@@ -303,7 +343,12 @@ async function modeCallback() {
 }
 
 function buildCallback() {
-  if (!taskProvider || !taskProvider.tasks) {
+  if (
+    !taskProvider ||
+    !taskProvider.tasks ||
+    !taskProvider.workspaceFolder ||
+    !taskProvider.activeFolder
+  ) {
     return;
   }
 
@@ -328,7 +373,12 @@ function buildCallback() {
 }
 
 function runCallback() {
-  if (!taskProvider || !taskProvider.tasks) {
+  if (
+    !taskProvider ||
+    !taskProvider.tasks ||
+    !taskProvider.workspaceFolder ||
+    !taskProvider.activeFolder
+  ) {
     return;
   }
 
@@ -361,7 +411,12 @@ async function debugCallback() {
 }
 
 function cleanCallback() {
-  if (!taskProvider || !taskProvider.tasks) {
+  if (
+    !taskProvider ||
+    !taskProvider.tasks ||
+    !taskProvider.workspaceFolder ||
+    !taskProvider.activeFolder
+  ) {
     return;
   }
 
@@ -414,23 +469,46 @@ function tasksCallback() {
   }
 }
 
-function updateFolderStatusData() {
+function contextMenuCallback(
+  clickedUriItem: vscode.Uri,
+  selectedUriItems: vscode.Uri[],
+) {
+  if (selectedUriItems.length > 1) {
+    return;
+  }
+
+  const workspaceItem = vscode.workspace.getWorkspaceFolder(clickedUriItem);
+
+  if (!workspaceItem) {
+    return;
+  }
+
+  activeFolder = clickedUriItem.fsPath;
+  workspaceFolder = workspaceItem.uri.fsPath;
+  updateFolderData();
+}
+
+function updateFolderData() {
   initWorkspaceProvider();
 
+  if (taskProvider) {
+    taskProvider.updatFolderData(workspaceFolder, activeFolder);
+    if (buildMode && architectureMode) {
+      taskProvider.updateModeData(buildMode, architectureMode);
+    }
+  }
+
   if (workspaceFolder && activeFolder) {
+    settingsProvider.checkCompilers();
+
     if (propertiesProvider) {
       propertiesProvider.updatFolderData(workspaceFolder);
     }
-    if (taskProvider) {
-      taskProvider.updatFolderData(workspaceFolder, activeFolder);
-      if (buildMode && architectureMode) {
-        taskProvider.updateModeData(buildMode, architectureMode);
-      }
-    }
     if (launchProvider) {
       launchProvider.updatFolderData(workspaceFolder, activeFolder);
-      launchProvider.updateFileData();
+      launchProvider.updateFileContent();
     }
   }
+
   updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
 }

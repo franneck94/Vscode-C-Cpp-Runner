@@ -16,7 +16,11 @@ export function updateFolderStatus(
     return;
   }
 
-  if (taskProvider) {
+  if (
+    taskProvider &&
+    taskProvider.workspaceFolder &&
+    taskProvider.activeFolder
+  ) {
     const workspaceFolder = taskProvider.workspaceFolder;
     const workspaceName = path.basename(workspaceFolder);
     let text = taskProvider.activeFolder.replace(

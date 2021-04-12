@@ -158,8 +158,39 @@ function initWorkspaceDisposables(context: vscode.ExtensionContext) {
   vscode.workspace.onDidChangeConfiguration(() => {
     settingsProvider.getSettings();
     taskProvider.getTasks();
-    propertiesProvider.updateFileData();
-    launchProvider.updateFileData();
+    propertiesProvider.updateFileContent();
+    launchProvider.updateFileContent();
+  });
+
+  vscode.workspace.onDidRenameFiles((e: vscode.FileRenameEvent) => {
+    if (e.files.length === 1) {
+      const oldName = e.files[0].oldUri.fsPath;
+      const newName = e.files[0].newUri.fsPath;
+
+      if (oldName === workspaceFolder) {
+        workspaceFolder = newName;
+        updateFolderData();
+      } else if (oldName === activeFolder) {
+        activeFolder = newName;
+        updateFolderData();
+      }
+    }
+  });
+
+  vscode.workspace.onDidDeleteFiles((e: vscode.FileDeleteEvent) => {
+    if (e.files.length >= 0) {
+      const oldName = e.files[0].fsPath;
+
+      if (oldName === workspaceFolder) {
+        workspaceFolder = undefined;
+        updateFolderData();
+        updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+      } else if (oldName === activeFolder) {
+        activeFolder = undefined;
+        updateFolderData();
+        updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+      }
+    }
   });
 }
 
@@ -312,7 +343,12 @@ async function modeCallback() {
 }
 
 function buildCallback() {
-  if (!taskProvider || !taskProvider.tasks) {
+  if (
+    !taskProvider ||
+    !taskProvider.tasks ||
+    !taskProvider.workspaceFolder ||
+    !taskProvider.activeFolder
+  ) {
     return;
   }
 
@@ -337,7 +373,12 @@ function buildCallback() {
 }
 
 function runCallback() {
-  if (!taskProvider || !taskProvider.tasks) {
+  if (
+    !taskProvider ||
+    !taskProvider.tasks ||
+    !taskProvider.workspaceFolder ||
+    !taskProvider.activeFolder
+  ) {
     return;
   }
 
@@ -370,7 +411,12 @@ async function debugCallback() {
 }
 
 function cleanCallback() {
-  if (!taskProvider || !taskProvider.tasks) {
+  if (
+    !taskProvider ||
+    !taskProvider.tasks ||
+    !taskProvider.workspaceFolder ||
+    !taskProvider.activeFolder
+  ) {
     return;
   }
 
@@ -445,22 +491,24 @@ function contextMenuCallback(
 function updateFolderData() {
   initWorkspaceProvider();
 
+  if (taskProvider) {
+    taskProvider.updatFolderData(workspaceFolder, activeFolder);
+    if (buildMode && architectureMode) {
+      taskProvider.updateModeData(buildMode, architectureMode);
+    }
+  }
+
   if (workspaceFolder && activeFolder) {
     settingsProvider.checkCompilers();
 
     if (propertiesProvider) {
       propertiesProvider.updatFolderData(workspaceFolder);
     }
-    if (taskProvider) {
-      taskProvider.updatFolderData(workspaceFolder, activeFolder);
-      if (buildMode && architectureMode) {
-        taskProvider.updateModeData(buildMode, architectureMode);
-      }
-    }
     if (launchProvider) {
       launchProvider.updatFolderData(workspaceFolder, activeFolder);
-      launchProvider.updateFileData();
+      launchProvider.updateFileContent();
     }
   }
+
   updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
 }

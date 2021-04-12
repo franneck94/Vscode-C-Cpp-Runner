@@ -3,13 +3,12 @@
 ## Version 0.7.0
 
 - **Feature**: Added context menu option to select the folder
+- **Improvement**: Deactivate extension, if "cmake.sourceDirectory" is set
+- **Improvement**: Added events for selected folder on name change and delete
 - **Bugfix**: Fixed behaviour of settings/launch/c_cpp_properties.json files if these were already present without the extension entries
 - **Bugifx**: Fixed makefile issue when 'Warnings' is an empty string
 - **Info**: Updated C Standard default to c99
-- **TODO**: File watcher for selected (active) folder on name change and delete
-- **TODO**: Deactivate extension, if "cmake.sourceDirectory" is set
-- **TODO**: Deactivate extension, if CMakeLists.txt is in root of *any* workspace folder
-- **TODO**: Update README regarding context menu
+- **Info**: Update README regarding context menu
 
 ## Version 0.6.2: April 11, 2021
 

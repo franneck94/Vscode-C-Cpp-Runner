@@ -129,6 +129,15 @@ export function noCmakeFileFound() {
     });
   }
 
+  if (foundNoCmakeFile) {
+    const config = vscode.workspace.getConfiguration();
+    const cmakeSetting = config.get('cmake.sourceDirectory');
+
+    if (cmakeSetting && cmakeSetting !== '${workspaceFolder}') {
+      foundNoCmakeFile = false;
+    }
+  }
+
   return foundNoCmakeFile;
 }
 

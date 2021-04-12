@@ -19,12 +19,12 @@ export async function commandExists(command: string) {
 }
 
 export function getOperatingSystem() {
-  const plattformName = platform();
+  const platformName = platform();
   let operatingSystem: OperatingSystems;
 
-  if (plattformName === 'win32' || plattformName === 'cygwin') {
+  if (platformName === 'win32' || platformName === 'cygwin') {
     operatingSystem = OperatingSystems.windows;
-  } else if (plattformName === 'darwin') {
+  } else if (platformName === 'darwin') {
     operatingSystem = OperatingSystems.mac;
   } else {
     operatingSystem = OperatingSystems.linux;

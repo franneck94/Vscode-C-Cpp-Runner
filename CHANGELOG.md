@@ -8,9 +8,9 @@
 
 - **Feature**: Added context menu option to select the folder
 - **Improvement**: Deactivate extension, if "cmake.sourceDirectory" is set
-- **Improvement**: Added events for selected folder on name change and delete
-- **Bugfix**: Fixed behaviour of settings/launch/c_cpp_properties.json files if these were already present without the extension entries
-- **Bugifx**: Fixed makefile issue when 'Warnings' is an empty string
+- **Improvement**: Added events for a selected folder on name change and delete
+- **Bugfix**: Fixed behavior of settings/launch/c_cpp_properties.json files if these were already present without the extension entries
+- **Bugfix**: Fixed makefile issue when 'Warnings' is an empty string
 - **Info**: Updated C Standard default to c99
 - **Info**: Update README regarding context menu
 
@@ -38,7 +38,7 @@
 - **Feature**: Added search for "mingw32-make" for MinGW users
 - **Feature**: Updated makefile for Windows user without Cygwin/MSYS installed
 - **Info**: Removed Microsoft's C/C++ extension as "extensionPack" entry, since deactivating/uninstalling this extension would also do so for the Microsoft ones
-- **Bugfix**: Extension couldnt start after installing
+- **Bugfix**: Extension couldn't start after installing
 
 ## Version 0.5.2: April 5, 2021
 
@@ -51,7 +51,7 @@
 ## Version 0.5.0: April 4, 2021
 
 - **Feature**: Added new buttons to the status bar for: Build, Run and Debug
-- **Feature**: Added task for debugging to the tasks list (ctrl+shift+r)
+- **Feature**: Added a task for debugging to the tasks list (ctrl+shift+r)
 - **Bugfix**: If the root directory has code and there is no sub-dir, no dir can be selected
 - **Bugfix**: Corrected path to the binary in the launch.json file
 - **Feature**: New activation command for extension: .vscode/c_cpp_properties.json is present in workspace
@@ -65,10 +65,10 @@
     - For 64bit compiler: -m64 compiler argument
     - For 32bit compiler: -m32 compiler argument
 - **Bugfix**: When deleting the .vscode folder, no \*.json files are created
-- **Feature**: Updated task provider behaviour:
+- **Feature**: Updated task provider behavior:
   - Only provide tasks if the user has selected a working directory
   - Only run and clean tasks are provided if there is a build folder in the selected working directory
-- **Feature**: Output binary with unified name (non dependent on the C/C++ file name), always called outDebug (.exe for windows)
+- **Feature**: Output binary with unified name (non-dependent on the C/C++ file name), always called outDebug (.exe for windows)
 
 ## Version 0.3.0: April 1, 2021
 
@@ -83,7 +83,7 @@
 
 ## Version 0.1.0: March 29, 2021
 
-- **Feature**: Added plattform dependent compiler usage
+- **Feature**: Added platform dependent compiler usage
 
 ## Version 0.0.1: March 23, 2021
 

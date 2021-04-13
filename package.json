@@ -85,6 +85,10 @@
       {
         "command": "C_Cpp_Runner.folderContextMenu",
         "title": "C/C++ Runner: Select Folder"
+      },
+      {
+        "command": "C_Cpp_Runner.toggleStatusBar",
+        "title": "Toggle status bar icons"
       }
     ],
     "keybindings": [
@@ -92,6 +96,11 @@
         "command": "C_Cpp_Runner.tasks",
         "key": "ctrl+shift+r",
         "mac": "ctrl+shift+r"
+      },
+      {
+        "command": "C_Cpp_Runner.toggleStatusBar",
+        "key": "alt+shift+r",
+        "mac": "alt+shift+r"
       }
     ],
     "menus": {

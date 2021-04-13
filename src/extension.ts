@@ -27,6 +27,7 @@ const LAUNCH_FILE = 'launch.json';
 let folderContextMenuDisposable: vscode.Disposable;
 let taskProviderDisposable: vscode.Disposable;
 let commandHandlerDisposable: vscode.Disposable;
+let toggleStatusBarDisposable: vscode.Disposable;
 let commandFolderDisposable: vscode.Disposable;
 let commandModeDisposable: vscode.Disposable;
 let commandBuildDisposable: vscode.Disposable;
@@ -78,6 +79,7 @@ export function deactivate() {
   disposeItem(folderContextMenuDisposable);
   disposeItem(taskProviderDisposable);
   disposeItem(commandHandlerDisposable);
+  disposeItem(toggleStatusBarDisposable);
   disposeItem(folderStatusBar);
   disposeItem(modeStatusBar);
   disposeItem(buildStatusBar);
@@ -144,7 +146,10 @@ function initWorkspaceDisposables(context: vscode.ExtensionContext) {
     'C_Cpp_Runner.tasks',
     () => tasksCallback(),
   );
-
+  toggleStatusBarDisposable = vscode.commands.registerCommand(
+    'C_Cpp_Runner.toggleStatusBar',
+    () => toggleStatusBarCallback(),
+  );
   folderContextMenuDisposable = vscode.commands.registerCommand(
     'C_Cpp_Runner.folderContextMenu',
     async (clickedUriItem: vscode.Uri, selectedUriItems: vscode.Uri[]) =>
@@ -153,6 +158,7 @@ function initWorkspaceDisposables(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(taskProviderDisposable);
   context.subscriptions.push(commandHandlerDisposable);
+  context.subscriptions.push(toggleStatusBarDisposable);
   context.subscriptions.push(folderContextMenuDisposable);
 
   vscode.workspace.onDidChangeConfiguration(() => {
@@ -467,6 +473,11 @@ function tasksCallback() {
       taskHandler(taskProvider);
     }
   }
+}
+
+function toggleStatusBarCallback() {
+  showStatusBarItems = !showStatusBarItems;
+  toggleStatusBarItems();
 }
 
 function contextMenuCallback(

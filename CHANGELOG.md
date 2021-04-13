@@ -3,10 +3,10 @@
 ## TODO
 
 - In a multi workspace use-case, the settings.json is not stored (needs to be investigated)
-- Add command `Shift+Alt+R` to toggle the status bar items
 
 ## Version 0.8.0
 
+- **Feature**: Added command `Shift+Alt+R` to toggle (hide/show) the status bar items
 - **Improvement**: Renamed launch (debug) config to 'C/C++ Runner: Debug Session'
 
 ## Version 0.7.0: April 12, 2021

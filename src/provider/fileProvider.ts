@@ -11,8 +11,8 @@ import {
 import { SettingsProvider } from './settingsProvider';
 
 export abstract class FileProvider {
-  private readonly _templatePath: string;
-  private readonly _outputPath: string;
+  protected readonly templatePath: string;
+  protected readonly outputPath: string;
   private readonly _vscodeDirectory: string;
   private readonly _fileWatcherOnDelete: vscode.FileSystemWatcher;
 
@@ -25,12 +25,12 @@ export abstract class FileProvider {
     this.settings = settings;
     this.workspaceFolder = workspaceFolder;
     this._vscodeDirectory = path.join(this.workspaceFolder, '.vscode');
-    this._outputPath = path.join(this._vscodeDirectory, outputFileName);
+    this.outputPath = path.join(this._vscodeDirectory, outputFileName);
     const deletePattern = `${replaceBackslashes(this._vscodeDirectory)}/**`;
 
     const extDirectory = path.dirname(__dirname);
     const templateDirectory = path.join(extDirectory, 'src', '_templates');
-    this._templatePath = path.join(templateDirectory, templateFileName);
+    this.templatePath = path.join(templateDirectory, templateFileName);
 
     this._fileWatcherOnDelete = vscode.workspace.createFileSystemWatcher(
       deletePattern,
@@ -40,10 +40,10 @@ export abstract class FileProvider {
     );
 
     let doUpdate = false;
-    if (!pathExists(this._outputPath)) {
+    if (!pathExists(this.outputPath)) {
       doUpdate = true;
     } else {
-      const configJson: JsonConfiguration = readJsonFile(this._outputPath);
+      const configJson: JsonConfiguration = readJsonFile(this.outputPath);
       if (configJson) {
         const triplet: string = configJson.configurations[0].name;
 
@@ -64,7 +64,7 @@ export abstract class FileProvider {
   }
 
   public createFileData() {
-    if (pathExists(this._outputPath)) {
+    if (pathExists(this.outputPath)) {
       return;
     }
 
@@ -72,15 +72,14 @@ export abstract class FileProvider {
       mkdirRecursive(this._vscodeDirectory);
     }
 
-    this.writeFileData(this._templatePath, this._outputPath);
+    this.writeFileData();
   }
 
   public updateFileContent() {
-    this.writeFileData(this._outputPath, this._outputPath);
+    this.writeFileData();
   }
 
-  // @ts-ignore
-  public writeFileData(inputFilePath: string, outFilePath: string) {
+  public writeFileData() {
     throw new Error('You have to implement the method doSomething!');
   }
 }

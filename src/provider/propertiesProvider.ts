@@ -13,8 +13,8 @@ export class PropertiesProvider extends FileProvider {
     super(settings, workspaceFolder, templateFileName, outputFileName);
   }
 
-  public writeFileData(inputFilePath: string, outFilePath: string) {
-    const configJson: JsonConfiguration = readJsonFile(inputFilePath);
+  public writeFileData() {
+    const configJson: JsonConfiguration = readJsonFile(this.templatePath);
     if (!configJson) {
       return;
     }
@@ -57,7 +57,7 @@ export class PropertiesProvider extends FileProvider {
     config.name = triplet;
     config.intelliSenseMode = triplet;
 
-    writeJsonFile(outFilePath, configJson);
+    writeJsonFile(this.outputPath, configJson);
   }
 
   public updatFolderData(workspaceFolder: string) {

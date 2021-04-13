@@ -20,31 +20,17 @@ export class LaunchProvider extends FileProvider {
     }
   }
 
-  public writeFileData(inputFilePath: string, outFilePath: string) {
-    const configJsonTemplate: JsonConfiguration | undefined = readJsonFile(
-      inputFilePath,
-    );
-    const configJsonOutput: JsonConfiguration | undefined = readJsonFile(
-      outFilePath,
-    );
-
-    if (!configJsonTemplate) {
-      return;
-    }
-
+  public writeFileData() {
+    const configName = 'C/C++ Runner: Debug Session';
     if (!this.activeFolder) {
       this.activeFolder = this.workspaceFolder;
     }
 
-    let configIdx = 0;
-    const configName = 'C/C++ Runner: Debug Session';
-
-    if (configJsonOutput) {
-      configJsonOutput.configurations.forEach((config) => {
-        if (config.name !== configName) {
-          configIdx++;
-        }
-      });
+    const configJsonTemplate: JsonConfiguration | undefined = readJsonFile(
+      this.templatePath,
+    );
+    if (!configJsonTemplate) {
+      return;
     }
 
     configJsonTemplate.configurations[0].name = configName;
@@ -62,6 +48,19 @@ export class LaunchProvider extends FileProvider {
     const debugPath = path.join(this.activeFolder, 'build/Debug/outDebug');
     configJsonTemplate.configurations[0].program = debugPath;
 
+    let configJsonOutput: JsonConfiguration | undefined = readJsonFile(
+      this.outputPath,
+    );
+
+    let configIdx = 0;
+    if (configJsonOutput) {
+      configJsonOutput.configurations.forEach((config) => {
+        if (config.name !== configName) {
+          configIdx++;
+        }
+      });
+    }
+
     if (
       configJsonOutput &&
       configJsonOutput.configurations.length === configIdx
@@ -69,10 +68,15 @@ export class LaunchProvider extends FileProvider {
       configJsonOutput.configurations.push(
         configJsonTemplate.configurations[0],
       );
-      writeJsonFile(outFilePath, configJsonOutput);
+      writeJsonFile(this.outputPath, configJsonOutput);
+    } else if (configJsonOutput) {
+      configJsonOutput.configurations[configIdx] =
+        configJsonTemplate.configurations[0];
     } else {
-      writeJsonFile(outFilePath, configJsonTemplate);
+      configJsonOutput = configJsonTemplate;
     }
+
+    writeJsonFile(this.outputPath, configJsonOutput);
   }
 
   public updatFolderData(workspaceFolder: string, activeFolder: string) {

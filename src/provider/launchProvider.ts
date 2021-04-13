@@ -37,7 +37,7 @@ export class LaunchProvider extends FileProvider {
     }
 
     let configIdx = 0;
-    const configName = 'Launch: Debug Program';
+    const configName = 'C/C++ Runner: Debug Session';
 
     if (configJsonOutput) {
       configJsonOutput.configurations.forEach((config) => {

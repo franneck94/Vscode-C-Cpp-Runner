@@ -2,13 +2,15 @@
 
 ## TODO
 
-- In a multi workspace use-case, the settings.json is not stored
+- In a multi workspace use-case, the settings.json is not stored (needs to be investigated)
+- If e.g. a python config is in the launch.json, this is overwritten by the c/c++ entry because the config name is the default name: 'Launch: Debug Program'. Rename it to 'C/C++ Runner: Debug Session'.
+- Add command `Shift+Alt+R` to toggle the status bar items
 
 ## Version 0.7.0: April 12, 2021
 
 - **Feature**: Added context menu option to select the folder
 - **Improvement**: Deactivate extension, if "cmake.sourceDirectory" is set
-- **Improvement**: Added events for a selected folder on name change and delete
+- **Improvement**: Added events for a selected folder on a name change and delete
 - **Bugfix**: Fixed behavior of settings/launch/c_cpp_properties.json files if these were already present without the extension entries
 - **Bugfix**: Fixed makefile issue when 'Warnings' is an empty string
 - **Info**: Updated C Standard default to c99
@@ -50,7 +52,7 @@
 
 ## Version 0.5.0: April 4, 2021
 
-- **Feature**: Added new buttons to the status bar for: Build, Run and Debug
+- **Feature**: Added new buttons to the status bar for: Build, Run, and Debug
 - **Feature**: Added a task for debugging to the tasks list (ctrl+shift+r)
 - **Bugfix**: If the root directory has code and there is no sub-dir, no dir can be selected
 - **Bugfix**: Corrected path to the binary in the launch.json file
@@ -77,13 +79,13 @@
 ## Version 0.2.0: March 31, 2021
 
 - **Feature**: If not provided, creating a c_cpp_properties.json file for the C/C++ Microsoft extension
-- **Feature**: Added options for include path, additional compiler and linker args
+- **Feature**: Added options for the include path, additional compiler, and linker args
 - **Feature**: Updated Build/Run/Clean tasks
 - **Info**: Now bundling with webpack for improved performance
 
 ## Version 0.1.0: March 29, 2021
 
-- **Feature**: Added platform dependent compiler usage
+- **Feature**: Added platform-dependent compiler usage
 
 ## Version 0.0.1: March 23, 2021
 

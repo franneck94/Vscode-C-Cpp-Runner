@@ -3,8 +3,7 @@
 🚀 Compile and run your C/C++ code with ease. 🚀
 
 This extension provides tasks to compile, run and debug your C/C++ code.  
-You do not need to know about any compiler commands. 😎  
-The extension works on Windows, Linux and MacOS.
+You do not need to know about any compiler and Makefile commands. 😎
 
 ## Example
 
@@ -18,26 +17,32 @@ The extension works on Windows, Linux and MacOS.
 
 ## Install the Software Requirements (optional)
 
-- 🖥️ Windows: Recommended to install gcc/g++, gdb and make via Cygwin: <https://www.cygwin.com/>
-- 🖥️ Linux: Recommended to install gcc/g++, gdb and make via a package manager (e.g. `apt` for Debian derivates)
-- 🖥️ MacOS: Recommended to install clang/clang++, lldb and make via xcode-tools: <https://developer.apple.com/xcode/features/>
+- 🖥️ Windows: Recommended to install gcc/g++, gdb and make via [Cygwin](https://www.cygwin.com/). Alternative to this are [MinGW](http://mingw-w64.org/doku.php) and [MSYS2](https://www.msys2.org/).
+- 🖥️ Linux: Recommended to install gcc/g++, gdb and make via a package manager (e.g. `apt` for Debian derivates).
+- 🖥️ MacOS: Recommended to install clang/clang++, lldb and make via [xcode-tools](https://developer.apple.com/xcode/features/). An alternative is installing the llvm toolchain with [brew](https://apple.stackexchange.com/a/362837).
 
 ## How to use
 
 1️⃣ The first step is to select the folder that contains the C/C++ files you want to compile, run or debug.  
-You can either select the folder by the quick pick menu from the status bar, or by right-clicking on a folder in the context menu.  
-2️⃣ In addition you can select to either build the binary in debug or release mode.  
-3️⃣ Afterwards, you can press the shortcut `ctrl+shift+r` to get a quick pick menu for the tasks.  
-❕ For every quick pick menu entry, there is also an icon in the blue status bar.
+You can select the folder by the quick pick menu from the status bar.  
+![TaskStatusBar](./media/FolderStatusBar.png)  
+Besides that, you can also select a folder by right-clicking in the context menu.  
+2️⃣ The second step is to select either debug or release mode for building the binary.  
+![TaskStatusBar](./media/ModeStatusBar.png)  
+3️⃣ Afterwards, you can press the shortcut `ctrl+shift+r` to get a quick pick dropdown for the tasks.  
+For every task in the quick pick, there is also an icon in the blue status bar.  
+![TaskStatusBar](./media/TaskStatusBar.png)
+
+### Quick Pick Tasks
 
 For example, if you select a folder called *"vscode-test/folder1"* you will see the following tasks:
 
 ![TaskQuickBar](./media/TaskQuickPick.png)
 
-- 🛠 Build: This task will compile all C/C++ files in the selected folder and will link them into a binary.
-- ▶️ Run*: This task will execute the binary.
-- 🗑️ Clean*: This task will delete all obj files (*.o).
+- ⚙️ Build: This task will compile all C/C++ files in the selected folder and will link them into a binary.
+- ▶️ Run*: This task will execute the built binary.
 - 🐞 Debug*: This task will start a debugging session for the binary.
+- 🗑️ Clean*: This helper task will delete all compiled object files (*.o).
 
 *This task is only present if the build task was previously executed.
 
@@ -52,7 +57,7 @@ Based on the operating system and the compiler, there will be a *c_cpp_propertie
 This file will be used by Microsoft's *C/C++* extension for intellisense. For more information refer to the official [documentation](https://code.visualstudio.com/docs/cpp/c-cpp-properties-schema-reference).  
 ![CCppConfig](./media/CCppConfig.png)  
 **Important:** It is recommended to edit the local *"settings.json"* instead of the *"c_cpp_properties.json"*.  
-The properties will be updated automatically. For more information about the extensions's settings, see [below](#extension-settings).
+The properties will be updated automatically after changing the settings. For more information about the extensions's settings, see [below](#extension-settings).
 
 ## Extension Settings
 
@@ -62,9 +67,9 @@ The properties will be updated automatically. For more information about the ext
 - ⚙️ C++ Standard (defaults to c++11)
 - ⚙️ Make path (defaults to make)
 - ⚙️ Debugger path (defaults to gdb)
-- ⚙️ To enable warnings (defaults to true)
+- ⚙️ To enable warnings (defaults to True)
 - ⚙️ What warnings should be checked by the compiler (defaults to '-Wall -Wextra -Wpedantic')
-- ⚙️ To treat warnings as errors (defaults to false)
+- ⚙️ To treat warnings as errors (defaults to False)
 - ⚙️ Additional compiler arguments (defaults to None)
 - ⚙️ Additional linker arguments (defaults to None)
 - ⚙️ Additional include paths (defaults to None)

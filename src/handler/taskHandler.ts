@@ -53,7 +53,9 @@ export async function taskHandler(taskProvider: TaskProvider) {
   if (pickedTaskName) {
     tasks.forEach(async (task) => {
       if (pickedTaskName === task.name) {
-        if (task.name.includes('Debug')) {
+        const configName = 'C/C++ Runner: Debug Session';
+        const startingSubstr = 'Debug: ';
+        if (task.name === configName || task.name.includes(startingSubstr)) {
           taskProvider.runDebugTask();
         } else if (
           task.execution &&

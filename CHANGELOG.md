@@ -3,9 +3,15 @@
 ## TODO
 
 - In a multi workspace use-case, the settings.json is not stored (needs to be investigated)
-- Deactivate command shortcuts when extension is not activated
-- False launch config is started
-- Filter delete/change events with e.vscode.Uri
+
+## Version 0.8.1: April 14, 2021
+
+- **Bugfix**: Toggle status bar command changes to `Ctrl+Alt+R`
+- **Bugfix**: Commands are now callable if the extension is not activated
+- **Bugfix**: Now the correct debug config is used
+- **Bugfix**: Removed bug that the debug task was always executed when the selected folder has "Debug" in its name
+- **Improvement**: Now filtering only the target files on delete events
+- **Info**: Added toggle command description to README
 
 ## Version 0.8.0: April 14, 2021
 

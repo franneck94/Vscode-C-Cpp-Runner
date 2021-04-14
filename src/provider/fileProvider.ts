@@ -58,8 +58,14 @@ export abstract class FileProvider {
       this.createFileData();
     }
 
-    this._fileWatcherOnDelete.onDidDelete(() => {
-      this.createFileData();
+    this._fileWatcherOnDelete.onDidDelete((e: vscode.Uri) => {
+      const pathName = e.fsPath;
+      if (
+        pathName === this._vscodeDirectory ||
+        path.basename(pathName) === this.outputFileName
+      ) {
+        this.createFileData();
+      }
     });
   }
 

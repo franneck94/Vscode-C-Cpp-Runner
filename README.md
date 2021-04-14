@@ -45,6 +45,8 @@ For example, if you select a folder called *"vscode-test/folder1"* you will see 
 
 ![TaskQuickBar](./media/TaskQuickPick.png)
 
+If you do not want to see the status bar items you can toggle the visibility with the command `crtl+alt+r`.
+
 ## Extension Features
 
 The extension will automatically search for an installed compiler on your computer.  

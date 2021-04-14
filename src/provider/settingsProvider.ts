@@ -77,8 +77,14 @@ export class SettingsProvider {
     this.checkCompilers();
     this.getSettings();
 
-    this._fileWatcherOnDelete.onDidDelete(() => {
-      this.checkCompilers();
+    this._fileWatcherOnDelete.onDidDelete((e: vscode.Uri) => {
+      const pathName = e.fsPath;
+      if (
+        pathName === this._vscodeDirectory ||
+        path.basename(pathName) === this._outputFileName
+      ) {
+        this.checkCompilers();
+      }
     });
 
     this._fileWatcherOnChange.onDidChange(() => {

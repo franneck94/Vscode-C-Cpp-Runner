@@ -55,51 +55,62 @@
     "commands": [
       {
         "command": "C_Cpp_Runner.tasks",
-        "title": "Run Command"
+        "title": "Run Command",
+        "when": "C_Cpp_Runner:activatedExtension"
       },
       {
         "command": "C_Cpp_Runner.folder",
-        "title": "Select Folder Command"
+        "title": "Select Folder Command",
+        "when": "C_Cpp_Runner:activatedExtension"
       },
       {
         "command": "C_Cpp_Runner.mode",
-        "title": "Select Mode Command"
+        "title": "Select Mode Command",
+        "when": "C_Cpp_Runner:activatedExtension"
       },
       {
         "command": "C_Cpp_Runner.build",
-        "title": "Build Command"
+        "title": "Build Command",
+        "when": "C_Cpp_Runner:activatedExtension"
       },
       {
         "command": "C_Cpp_Runner.run",
-        "title": "Run Command"
+        "title": "Run Command",
+        "when": "C_Cpp_Runner:activatedExtension"
       },
       {
         "command": "C_Cpp_Runner.debug",
-        "title": "Debug Command"
+        "title": "Debug Command",
+        "when": "C_Cpp_Runner:activatedExtension"
       },
       {
         "command": "C_Cpp_Runner.clean",
-        "title": "Clean Command"
+        "title": "Clean Command",
+        "when": "C_Cpp_Runner:activatedExtension"
       },
       {
         "command": "C_Cpp_Runner.folderContextMenu",
-        "title": "C/C++ Runner: Select Folder"
+        "title": "C/C++ Runner: Select Folder",
+        "when": "C_Cpp_Runner:activatedExtension"
       },
       {
         "command": "C_Cpp_Runner.toggleStatusBar",
-        "title": "Toggle status bar icons"
+        "title": "Toggle status bar icons",
+        "when": "C_Cpp_Runner:activatedExtension"
       }
     ],
     "keybindings": [
       {
         "command": "C_Cpp_Runner.tasks",
         "key": "ctrl+shift+r",
-        "mac": "ctrl+shift+r"
+        "mac": "ctrl+shift+r",
+        "when": "C_Cpp_Runner:activatedExtension"
       },
       {
         "command": "C_Cpp_Runner.toggleStatusBar",
-        "key": "alt+shift+r",
-        "mac": "alt+shift+r"
+        "key": "ctrl+alt+r",
+        "mac": "ctrl+alt+r",
+        "when": "C_Cpp_Runner:activatedExtension"
       }
     ],
     "menus": {

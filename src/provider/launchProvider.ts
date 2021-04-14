@@ -4,6 +4,7 @@ import { JsonConfiguration, OperatingSystems } from '../utils/types';
 import { readJsonFile, writeJsonFile } from '../utils/fileUtils';
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
+import { getLaunchConfigIndex } from '../utils/vscodeUtils';
 
 export class LaunchProvider extends FileProvider {
   constructor(
@@ -39,7 +40,7 @@ export class LaunchProvider extends FileProvider {
       configJsonTemplate.configurations[0].miDebuggerPath = this.settings.debuggerPath;
 
       if (OperatingSystems.windows === this.settings.operatingSystem) {
-        // XXX: Either gdb or the C/C++ extension has issues on windows with the internal terminal
+        // NOTE: Either gdb or the C/C++ extension has issues on windows with the internal terminal
         configJsonTemplate.configurations[0].externalConsole = true;
       }
     }
@@ -48,18 +49,16 @@ export class LaunchProvider extends FileProvider {
     const debugPath = path.join(this.activeFolder, 'build/Debug/outDebug');
     configJsonTemplate.configurations[0].program = debugPath;
 
-    let configJsonOutput: JsonConfiguration | undefined = readJsonFile(
+    const configJsonOutput: JsonConfiguration | undefined = readJsonFile(
       this.outputPath,
     );
 
-    let configIdx = 0;
-    if (configJsonOutput) {
-      configJsonOutput.configurations.forEach((config) => {
-        if (config.name !== configName) {
-          configIdx++;
-        }
-      });
+    if (!configJsonOutput) {
+      writeJsonFile(this.outputPath, configJsonTemplate);
+      return;
     }
+
+    const configIdx = getLaunchConfigIndex(configJsonOutput, configName);
 
     if (
       configJsonOutput &&
@@ -68,12 +67,9 @@ export class LaunchProvider extends FileProvider {
       configJsonOutput.configurations.push(
         configJsonTemplate.configurations[0],
       );
-      writeJsonFile(this.outputPath, configJsonOutput);
-    } else if (configJsonOutput) {
+    } else {
       configJsonOutput.configurations[configIdx] =
         configJsonTemplate.configurations[0];
-    } else {
-      configJsonOutput = configJsonTemplate;
     }
 
     writeJsonFile(this.outputPath, configJsonOutput);

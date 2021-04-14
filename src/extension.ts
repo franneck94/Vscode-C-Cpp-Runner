@@ -17,7 +17,11 @@ import { SettingsProvider } from './provider/settingsProvider';
 import { TaskProvider } from './provider/taskProvider';
 import { Architectures, Builds, Tasks } from './utils/types';
 import { foldersInDir, noCmakeFileFound } from './utils/fileUtils';
-import { createStatusBarItem, disposeItem } from './utils/vscodeUtils';
+import {
+  createStatusBarItem,
+  disposeItem,
+  setContextValue,
+} from './utils/vscodeUtils';
 
 const PROPERTIES_TEMPLATE = 'properties_template.json';
 const PROPERTIES_FILE = 'c_cpp_properties.json';
@@ -62,6 +66,8 @@ export function activate(context: vscode.ExtensionContext) {
     return;
   }
 
+  setContextValue('C_Cpp_Runner:activatedExtension', true);
+
   showStatusBarItems = noCmakeFileFound();
 
   initFolderStatusBar(context);
@@ -76,6 +82,8 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
+  setContextValue('C_Cpp_Runner:activatedExtension', false);
+
   disposeItem(folderContextMenuDisposable);
   disposeItem(taskProviderDisposable);
   disposeItem(commandHandlerDisposable);

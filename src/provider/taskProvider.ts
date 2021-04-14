@@ -17,6 +17,7 @@ import {
   replaceBackslashes,
 } from '../utils/fileUtils';
 import { SettingsProvider } from './settingsProvider';
+import { getLaunchConfigIndex } from '../utils/vscodeUtils';
 
 export class TaskProvider implements vscode.TaskProvider {
   private readonly _tasksFile: string;
@@ -227,10 +228,17 @@ export class TaskProvider implements vscode.TaskProvider {
 
     const uriWorkspaceFolder = vscode.Uri.file(this.workspaceFolder);
     const folder = vscode.workspace.getWorkspaceFolder(uriWorkspaceFolder);
-    const config: JsonConfiguration = readJsonFile(
+    const configJson: JsonConfiguration = readJsonFile(
       path.join(this.workspaceFolder, '.vscode', 'launch.json'),
     );
-    await vscode.debug.startDebugging(folder, config.configurations[0]);
+
+    const configName = 'C/C++ Runner: Debug Session';
+    const configIdx = getLaunchConfigIndex(configJson, configName);
+
+    await vscode.debug.startDebugging(
+      folder,
+      configJson.configurations[configIdx],
+    );
   }
 
   public get architectureMode() {

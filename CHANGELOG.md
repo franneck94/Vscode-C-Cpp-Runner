@@ -6,11 +6,11 @@
 
 ## Version 0.8.1: April 14, 2021
 
-- **Bugfix**: Toggle status bar command changes to `Ctrl+Alt+R`
 - **Bugfix**: Commands are now callable if the extension is not activated
 - **Bugfix**: Now the correct debug config is used
-- **Bugfix**: Removed bug that the debug task was always executed when the selected folder has "Debug" in its name
+- **Bugfix**: Removed bug that the debug task was always executed when the selected folder has "debug" in its name
 - **Improvement**: Now filtering only the target files on delete events
+- **Info**: Toggle status bar command changes to `Ctrl+Alt+R`
 - **Info**: Added toggle command description to README
 
 ## Version 0.8.0: April 14, 2021
@@ -18,7 +18,7 @@
 - **Feature**: Added command `Shift+Alt+R` to toggle (hide/show) the status bar items
 - **Improvement**: Renamed launch (debug) config to 'C/C++ Runner: Debug Session'
 - **Bugfix**: Fixed bug of passing the warnings flags to the Makefile
-- **Info**: Folders with a '.' in its name are not displayed in the folder quick pick menu
+- **Info**: Folders with a '.' in their name are not displayed in the folder quick pick menu
 
 ## Version 0.7.0: April 12, 2021
 

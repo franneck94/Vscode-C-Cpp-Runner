@@ -3,6 +3,7 @@
 ## TODO
 
 - In a multi workspace use-case, the settings.json is not stored (needs to be investigated)
+- Deactivate commands when extension is not activated
 
 ## Version 0.8.0: April 14, 2021
 

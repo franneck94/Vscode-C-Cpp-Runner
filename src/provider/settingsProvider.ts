@@ -279,52 +279,52 @@ export class SettingsProvider {
   public get operatingSystem() {
     return this._operatingSystem;
   }
-  public get architecure(): Architectures | undefined {
+  public get architecure() {
     return this._architecure;
   }
-  public get cCompiler(): Compilers | undefined {
+  public get cCompiler() {
     return this._cCompiler;
   }
-  public get cppCompiler(): Compilers | undefined {
+  public get cppCompiler() {
     return this._cppCompiler;
   }
-  public get debugger(): Debuggers | undefined {
+  public get debugger() {
     return this._debugger;
   }
-  public get enableWarnings(): boolean {
+  public get enableWarnings() {
     return this._enableWarnings;
   }
-  public get warnings(): string {
+  public get warnings() {
     return this._warnings;
   }
-  public get warningsAsError(): boolean {
+  public get warningsAsError() {
     return this._warningsAsError;
   }
-  public get compilerPathC(): string {
+  public get compilerPathC() {
     return this._compilerPathC;
   }
-  public get compilerPathCpp(): string {
+  public get compilerPathCpp() {
     return this._compilerPathCpp;
   }
-  public get debuggerPath(): string {
+  public get debuggerPath() {
     return this._debuggerPath;
   }
-  public get makePath(): string {
+  public get makePath() {
     return this._makePath;
   }
-  public get standardC(): string {
+  public get standardC() {
     return this._standardC;
   }
-  public get standardCpp(): string {
+  public get standardCpp() {
     return this._standardCpp;
   }
-  public get compilerArgs(): string {
+  public get compilerArgs() {
     return this._compilerArgs;
   }
-  public get linkerArgs(): string {
+  public get linkerArgs() {
     return this._linkerArgs;
   }
-  public get includePaths(): String {
+  public get includePaths() {
     return this._includePaths;
   }
 }

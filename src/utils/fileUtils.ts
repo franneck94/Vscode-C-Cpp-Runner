@@ -17,7 +17,7 @@ export function filterOnString(names: string[], filterName: string) {
   return names.filter((name) => !name.includes(filterName));
 }
 
-export function pathExists(filepath: string): boolean {
+export function pathExists(filepath: string) {
   try {
     fs.accessSync(filepath);
   } catch (err) {
@@ -97,7 +97,7 @@ export function foldersInDir(dir: fs.PathLike) {
   return folderNames;
 }
 
-export function readJsonFile(filepath: string): any | undefined {
+export function readJsonFile(filepath: string) {
   let configJson;
   try {
     const fileContent = fs.readFileSync(filepath, 'utf-8');

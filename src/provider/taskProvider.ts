@@ -42,11 +42,11 @@ export class TaskProvider implements vscode.TaskProvider {
     return task;
   }
 
-  public provideTasks(): Task[] {
+  public provideTasks() {
     return this.getTasks();
   }
 
-  public getTasks(): Task[] {
+  public getTasks() {
     if (!this.activeFolder) {
       return [];
     }
@@ -233,25 +233,25 @@ export class TaskProvider implements vscode.TaskProvider {
     await vscode.debug.startDebugging(folder, config.configurations[0]);
   }
 
-  public get architectureMode(): Architectures {
+  public get architectureMode() {
     return this._architectureMode;
   }
   public set architectureMode(value: Architectures) {
     this._architectureMode = value;
   }
-  public get buildMode(): Builds {
+  public get buildMode() {
     return this._buildMode;
   }
   public set buildMode(value: Builds) {
     this._buildMode = value;
   }
-  public get activeFolder(): string | undefined {
+  public get activeFolder() {
     return this._pickedFolder;
   }
   public set activeFolder(value: string | undefined) {
     this._pickedFolder = value;
   }
-  public get workspaceFolder(): string | undefined {
+  public get workspaceFolder() {
     return this._workspaceFolder;
   }
   public set workspaceFolder(value: string | undefined) {

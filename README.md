@@ -3,6 +3,7 @@
 🚀 Compile and run your C/C++ code with ease. 🚀
 
 This extension provides tasks to compile, run and debug your C/C++ code.  
+It does not only compile single C/C++ files but also multiple files.  
 You do not need to know about any compiler and Makefile commands. 😎
 
 ## Example
@@ -29,22 +30,20 @@ You can select the folder by the quick pick menu from the status bar.
 Besides that, you can also select a folder by right-clicking in the context menu.  
 2️⃣ The second step is to select either debug or release mode for building the binary.  
 ![TaskStatusBar](./media/ModeStatusBar.png)  
-3️⃣ Afterwards, you can press the shortcut `ctrl+shift+r` to get a quick pick dropdown for the tasks.  
-For every task in the quick pick, there is also an icon in the blue status bar.  
+3️⃣ The third step is to execute the extension's tasks.  
 ![TaskStatusBar](./media/TaskStatusBar.png)
-
-### Quick Pick Tasks
-
-For example, if you select a folder called *"vscode-test/folder1"* you will see the following tasks:
-
-![TaskQuickBar](./media/TaskQuickPick.png)
 
 - ⚙️ Build: This task will compile all C/C++ files in the selected folder and will link them into a binary.
 - ▶️ Run*: This task will execute the built binary.
 - 🐞 Debug*: This task will start a debugging session for the binary.
 - 🗑️ Clean*: This helper task will delete all compiled object files (*.o).
 
-*This task is only present if the build task was previously executed.
+*This task is only present if the build task was executed previously.
+
+You can also press the shortcut `ctrl+shift+r` to get a quick pick dropdown for the tasks.  
+For example, if you select a folder called *"vscode-test/folder1"* you will see the following tasks:
+
+![TaskQuickBar](./media/TaskQuickPick.png)
 
 ## Extension Features
 
@@ -57,7 +56,7 @@ Based on the operating system and the compiler, there will be a *c_cpp_propertie
 This file will be used by Microsoft's *C/C++* extension for intellisense. For more information refer to the official [documentation](https://code.visualstudio.com/docs/cpp/c-cpp-properties-schema-reference).  
 ![CCppConfig](./media/CCppConfig.png)  
 **Important:** It is recommended to edit the local *"settings.json"* instead of the *"c_cpp_properties.json"*.  
-The properties will be updated automatically after changing the settings. For more information about the extensions's settings, see [below](#extension-settings).
+The properties will be updated automatically after changing the settings.
 
 ## Extension Settings
 
@@ -80,7 +79,7 @@ The properties will be updated automatically after changing the settings. For mo
 
 - 📝 Allowed file extensions for headers: \*.h, \*.hpp, \*.hh, \*.hxx
 - 📝 Allowed file extensions for sources: \*.c, \*.cpp, \*.cc, \*.cxx
-- 📁 The extension will not list folder names starting with a dot (e.g. *".vscode"*)
+- 📁 The folder selection will not list folders that are called 'build' or include a '.' (e.g. '.vscode')
 
 ### CMake Projects
 

@@ -90,7 +90,7 @@ export function foldersInDir(dir: fs.PathLike) {
   let folders = fileDirents.filter((folder) => folder.isDirectory());
   folders = folders.filter((folder) => !folder.name.includes('.vscode'));
   folders = folders.filter((folder) => !folder.name.includes('build'));
-  folders = folders.filter((folder) => !folder.name.startsWith('.'));
+  folders = folders.filter((folder) => !folder.name.includes('.'));
   const folderNames = folders.map((folder) =>
     path.join(dir.toString(), folder.name),
   );

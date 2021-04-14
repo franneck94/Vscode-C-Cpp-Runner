@@ -9,6 +9,7 @@
 - **Feature**: Added command `Shift+Alt+R` to toggle (hide/show) the status bar items
 - **Improvement**: Renamed launch (debug) config to 'C/C++ Runner: Debug Session'
 - **Bugfix**: Fixed bug of passing the warnings flags to the Makefile
+- **Info**: Folders with a '.' in its name are not displayed in the folder quick pick menu
 
 ## Version 0.7.0: April 12, 2021
 

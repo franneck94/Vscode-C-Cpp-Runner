@@ -200,15 +200,15 @@ export class SettingsProvider {
    */
   public getSettings() {
     this._config = vscode.workspace.getConfiguration('C_Cpp_Runner');
-    this._enableWarnings = this._config.get('enableWarnings', true);
-    this._warnings = this._config.get('warnings', '-Wall -Wextra -Wpedantic');
+    this._enableWarnings = this._config.get('enableWarnings', false);
+    this._warnings = this._config.get('warnings', '');
     this._warningsAsError = this._config.get('warningsAsError', false);
-    this._compilerPathC = this._config.get('compilerPathC', 'gcc');
-    this._compilerPathCpp = this._config.get('compilerPathCpp', 'g++');
-    this._debuggerPath = this._config.get('debuggerPath', 'gdb');
-    this._makePath = this._config.get('makePath', 'make');
-    this._standardC = this._config.get('standardC', 'c90');
-    this._standardCpp = this._config.get('standardCpp', 'c++11');
+    this._compilerPathC = this._config.get('compilerPathC', '');
+    this._compilerPathCpp = this._config.get('compilerPathCpp', '');
+    this._debuggerPath = this._config.get('debuggerPath', '');
+    this._makePath = this._config.get('makePath', '');
+    this._standardC = this._config.get('standardC', '');
+    this._standardCpp = this._config.get('standardCpp', '');
     this._compilerArgs = this._config.get('compilerArgs', '');
     this._linkerArgs = this._config.get('linkerArgs', '');
     this._includePaths = this._config.get('includePaths', '');

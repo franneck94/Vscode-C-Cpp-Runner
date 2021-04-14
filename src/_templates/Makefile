@@ -7,7 +7,7 @@ ENABLE_WARNINGS ?= 1
 WARNINGS_AS_ERRORS ?= 0
 WARNINGS ?= -Wall -Wextra -Wpedantic
 C_COMPILER ?= gcc
-C_STANDARD ?= c89
+C_STANDARD ?= c99
 CPP_COMPILER ?= g++
 CPP_STANDARD ?= c++11
 EXECUTABLE_NAME ?= main
@@ -27,7 +27,7 @@ else
   detected_OS := $(shell uname 2>/dev/null || echo Unknown)
   detected_OS := $(patsubst CYGWIN%,Cygwin,$(detected_OS))
   detected_OS := $(patsubst MSYS%,MSYS,$(detected_OS))
-  detected_OS := $(patsubst MINGW%,MSYS,$(detected_OS))
+  detected_OS := $(patsubst MINGW%,MINGW,$(detected_OS))
 endif
 
 ifeq ($(detected_OS), Windows)
@@ -84,7 +84,7 @@ CPP_COMPILER_FLAGS = $(CPP_COMPILER_FLAGS) $(LINKER_ARGS)
 endif
 
 ifeq ($(ENABLE_WARNINGS), 1)
-ifeq ($(WARNINGS),)
+ifneq ($(WARNINGS), "")
 C_COMPILER_FLAGS += $(WARNINGS)
 CPP_COMPILER_FLAGS += $(WARNINGS)
 endif

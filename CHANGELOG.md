@@ -4,10 +4,11 @@
 
 - In a multi workspace use-case, the settings.json is not stored (needs to be investigated)
 
-## Version 0.8.0
+## Version 0.8.0: April 14, 2021
 
 - **Feature**: Added command `Shift+Alt+R` to toggle (hide/show) the status bar items
 - **Improvement**: Renamed launch (debug) config to 'C/C++ Runner: Debug Session'
+- **Bugfix**: Fixed bug of passing the warnings flags to the Makefile
 
 ## Version 0.7.0: April 12, 2021
 

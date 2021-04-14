@@ -1,10 +1,11 @@
 .vscode
 node_modules
 
-tsconfig.json
-webpack.config.js
-.prettierrc.js
 .editorconfig
+.eslintignore
 .eslintrc.js
 .gitattributes
 .gitignore
+.prettierrc.json
+tsconfig.json
+webpack.config.js

@@ -60,7 +60,7 @@ endif
 ifeq ($(C_STANDARD),)
 C_COMPILER_FLAGS := $(C_COMPILER_FLAGS) -std=$(C_STANDARD)
 endif
-ifeq ($(C_STANDARD),)
+ifeq ($(CPP_STANDARD),)
 CPP_COMPILER_FLAGS := $(CPP_COMPILER_FLAGS) -std=$(CPP_STANDARD)
 endif
 

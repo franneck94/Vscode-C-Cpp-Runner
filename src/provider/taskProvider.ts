@@ -129,16 +129,15 @@ export class TaskProvider implements vscode.TaskProvider {
       folder,
     );
     taskJson.label = replaceBackslashes(taskJson.label);
+    taskJson.command = settings.makePath;
     taskJson.args[1] = `--file=${this._makefileFile}`;
+    // Makefile arguments that hold single values
     taskJson.args.push(`COMPILATION_MODE=${this.buildMode}`);
     taskJson.args.push(`EXECUTABLE_NAME=out${this.buildMode}`);
     taskJson.args.push(`LANGUAGE_MODE=${language}`);
     const cleanTask = taskJson.label.includes(Tasks.clean);
     const runTask = taskJson.label.includes(Tasks.run);
     if (!cleanTask && !runTask) {
-      taskJson.args.push(`ENABLE_WARNINGS=${+settings.enableWarnings}`);
-      taskJson.args.push(`WARNINGS='${settings.warnings}'`);
-      taskJson.args.push(`WARNINGS_AS_ERRORS=${+settings.warningsAsError}`);
       if (language === Languages.c) {
         taskJson.args.push(`C_COMPILER=${settings.compilerPathC}`);
         taskJson.args.push(`C_STANDARD=${settings.standardC}`);
@@ -146,20 +145,23 @@ export class TaskProvider implements vscode.TaskProvider {
         taskJson.args.push(`CPP_COMPILER=${settings.compilerPathCpp}`);
         taskJson.args.push(`CPP_STANDARD=${settings.standardCpp}`);
       }
-      if (settings.compilerArgs) {
-        taskJson.args.push(`COMPILER_ARGS=${settings.compilerArgs}`);
-      }
-      if (settings.linkerArgs) {
-        taskJson.args.push(`LINKER_ARGS=${settings.linkerArgs}`);
-      }
-      if (settings.includePaths) {
-        taskJson.args.push(`INCLUDE_PATHS=${settings.includePaths}`);
-      }
+      taskJson.args.push(`ENABLE_WARNINGS=${+settings.enableWarnings}`);
+      taskJson.args.push(`WARNINGS_AS_ERRORS=${+settings.warningsAsError}`);
       const architectureStr =
         this.architectureMode === Architectures.x64 ? '64' : '32';
       taskJson.args.push(`ARCHITECTURE=${architectureStr}`);
+      // Makefile arguments that can hold multiple values
+      taskJson.args.push(`WARNINGS="${settings.warnings}"`);
+      if (settings.compilerArgs) {
+        taskJson.args.push(`COMPILER_ARGS="${settings.compilerArgs}"`);
+      }
+      if (settings.linkerArgs) {
+        taskJson.args.push(`LINKER_ARGS="${settings.linkerArgs}"`);
+      }
+      if (settings.includePaths) {
+        taskJson.args.push(`INCLUDE_PATHS="${settings.includePaths}"`);
+      }
     }
-    taskJson.command = settings.makePath;
   }
 
   public updateModeData(buildMode: Builds, architectureMode: Architectures) {

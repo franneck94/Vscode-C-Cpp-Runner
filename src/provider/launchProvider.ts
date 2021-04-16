@@ -39,8 +39,10 @@ export class LaunchProvider extends FileProvider {
       configJsonTemplate.configurations[0].MIMode = this.settings.debugger;
       configJsonTemplate.configurations[0].miDebuggerPath = this.settings.debuggerPath;
 
-      if (OperatingSystems.windows === this.settings.operatingSystem) {
-        // NOTE: Either gdb or the C/C++ extension has issues on windows with the internal terminal
+      if (
+        OperatingSystems.windows === this.settings.operatingSystem ||
+        OperatingSystems.mac === this.settings.operatingSystem
+      ) {
         configJsonTemplate.configurations[0].externalConsole = true;
       }
     }

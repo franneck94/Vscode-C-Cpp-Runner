@@ -23,27 +23,20 @@ C_COMPILER_FLAGS = ""
 #######################
 ## OS DEPENDENT VARS ##
 #######################
-ifeq '$(findstring ;,$(PATH))' ';'
-  detected_OS := PlainWindows
-else
-  detected_OS := $(shell uname 2>/dev/null || echo Unknown)
-  detected_OS := $(patsubst CYGWIN%,Cygwin,$(detected_OS))
-  detected_OS := $(patsubst MSYS%,MSYS,$(detected_OS))
-  detected_OS := $(patsubst MINGW%,MINGW,$(detected_OS))
-endif
+RM_CHECK = $(shell rm -f 2>/dev/null || echo Unknown)
 
-ifeq ($(detected_OS), PlainWindows)
-RM_FUNC = del /s /q
-MKDIR_FUNC = mkdir
-BUILD_DIR ?= build\$(COMPILATION_MODE)
-MKDIR_PATH = $(subst /,\\,$(BUILD_DIR))
-CLEAN_PATH = $(subst /,\\,$(BUILD_DIR)\*.o)
-else
-RM_FUNC = rm -f
-MKDIR_FUNC = mkdir -p
+ifneq ($(RM_CHECK), "Unknown") # Unix like terminal
 BUILD_DIR ?= build/$(COMPILATION_MODE)
 MKDIR_PATH = $(BUILD_DIR)
+MKDIR_FUNC = mkdir -p
+RM_FUNC = rm -f
 CLEAN_PATH = $(BUILD_DIR)/*.o
+else # Plain windows terminal
+BUILD_DIR ?= build\$(COMPILATION_MODE)
+MKDIR_PATH = $(subst /,\\,$(BUILD_DIR))
+MKDIR_FUNC = mkdir
+RM_FUNC = del /s /q
+CLEAN_PATH = $(subst /,\\,$(BUILD_DIR)\\*.o)
 endif
 
 ########################

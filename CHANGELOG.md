@@ -3,8 +3,11 @@
 ## TODO
 
 - In a multi workspace use-case, the settings.json is not stored (needs to be investigated)
-- For Mingw32-Make pass Warning Flags with "" instead of ''
-- Set debug console to external for lldb (MacOS)
+
+## Version 0.8.2: April 16, 2021
+
+- **Bugfix**: Set debug console to external for lldb (MacOS) - see: [github issue](https://github.com/microsoft/vscode-cpptools/issues/5079)
+- **Bugfix**: Makefile arguments that can hold multiple values are now passed with "" instead of ''
 
 ## Version 0.8.1: April 14, 2021
 

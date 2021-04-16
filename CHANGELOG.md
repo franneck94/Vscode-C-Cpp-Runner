@@ -4,6 +4,7 @@
 
 - In a multi workspace use-case, the settings.json is not stored (needs to be investigated)
 - For Mingw32-Make pass Warning Flags with "" instead of ''
+- Set debug console to external for lldb (MacOS)
 
 ## Version 0.8.1: April 14, 2021
 

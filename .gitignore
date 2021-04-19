@@ -2,3 +2,6 @@ node_modules
 *.vsix
 dist/
 out/
+build/
+.mypy_cache
+**/.vscode/

@@ -23,10 +23,10 @@ const CONFIGURATION_TARGET = vscode.ConfigurationTarget.Workspace;
 
 export class SettingsProvider {
   // Workspace data
-  private readonly _fileWatcherOnDelete: vscode.FileSystemWatcher;
-  private readonly _fileWatcherOnChange: vscode.FileSystemWatcher;
-  private readonly _outputPath: string;
-  private readonly _vscodeDirectory: string;
+  private _fileWatcherOnDelete: vscode.FileSystemWatcher;
+  private _fileWatcherOnChange: vscode.FileSystemWatcher;
+  private _outputPath: string;
+  private _vscodeDirectory: string;
   private readonly _outputFileName: string;
   private _config = vscode.workspace.getConfiguration('C_Cpp_Runner');
   // Machine information
@@ -53,26 +53,14 @@ export class SettingsProvider {
   private _linkerArgs: string = '';
   private _includePaths: String = '';
 
-  constructor(workspaceFolder: string) {
+  constructor(public workspaceFolder: string) {
     this._outputFileName = 'settings.json';
-    this._vscodeDirectory = path.join(workspaceFolder, '.vscode');
+    this._vscodeDirectory = path.join(this.workspaceFolder, '.vscode');
     this._outputPath = path.join(this._vscodeDirectory, this._outputFileName);
 
-    const deletePattern = `${replaceBackslashes(this._vscodeDirectory)}/**`;
-    this._fileWatcherOnDelete = vscode.workspace.createFileSystemWatcher(
-      deletePattern,
-      true,
-      true,
-      false,
-    );
-
-    const changePattern = replaceBackslashes(this._outputPath);
-    this._fileWatcherOnChange = vscode.workspace.createFileSystemWatcher(
-      changePattern,
-      true,
-      false,
-      false,
-    );
+    const ret = this.createFileWatcher();
+    this._fileWatcherOnChange = ret.fileWatcherOnChange;
+    this._fileWatcherOnDelete = ret.fileWatcherOnDelete;
 
     this.checkCompilers();
     this.getSettings();
@@ -95,7 +83,6 @@ export class SettingsProvider {
   /**
    * Check if gcc/g++ or clang/clang++ is in PATH and where it is located.
    */
-  // @ts-ignore
   public async checkCompilers() {
     if (pathExists(this._outputPath)) {
       const settingsJson: JsonSettings = readJsonFile(this._outputPath);
@@ -239,6 +226,36 @@ export class SettingsProvider {
     }
 
     this._architecure = getArchitecture(this._cCompiler);
+  }
+
+  private createFileWatcher() {
+    const deletePattern = `${replaceBackslashes(this._vscodeDirectory)}/**`;
+    const fileWatcherOnDelete = vscode.workspace.createFileSystemWatcher(
+      deletePattern,
+      true,
+      true,
+      false,
+    );
+
+    const changePattern = replaceBackslashes(this._outputPath);
+    const fileWatcherOnChange = vscode.workspace.createFileSystemWatcher(
+      changePattern,
+      true,
+      false,
+      false,
+    );
+
+    return { fileWatcherOnDelete, fileWatcherOnChange };
+  }
+
+  public updatFolderData(workspaceFolder: string) {
+    this.workspaceFolder = workspaceFolder;
+    this._vscodeDirectory = path.join(this.workspaceFolder, '.vscode');
+    this._outputPath = path.join(this._vscodeDirectory, this._outputFileName);
+
+    const ret = this.createFileWatcher();
+    this._fileWatcherOnChange = ret.fileWatcherOnChange;
+    this._fileWatcherOnDelete = ret.fileWatcherOnDelete;
   }
 
   private setGcc(pathGcc: string) {

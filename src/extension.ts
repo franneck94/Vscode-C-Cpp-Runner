@@ -518,6 +518,7 @@ function updateFolderData() {
   }
 
   if (workspaceFolder && activeFolder) {
+    settingsProvider.updatFolderData(workspaceFolder);
     settingsProvider.checkCompilers();
 
     if (propertiesProvider) {

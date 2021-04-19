@@ -78,7 +78,7 @@ export class LaunchProvider extends FileProvider {
   }
 
   public updatFolderData(workspaceFolder: string, activeFolder: string) {
-    this.workspaceFolder = workspaceFolder;
     this.activeFolder = activeFolder;
+    super._updatFolderData(workspaceFolder);
   }
 }

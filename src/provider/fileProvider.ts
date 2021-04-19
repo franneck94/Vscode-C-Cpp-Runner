@@ -12,9 +12,9 @@ import { SettingsProvider } from './settingsProvider';
 
 export abstract class FileProvider {
   protected readonly templatePath: string;
-  protected readonly outputPath: string;
-  private readonly _vscodeDirectory: string;
-  private readonly _fileWatcherOnDelete: vscode.FileSystemWatcher;
+  protected outputPath: string;
+  protected vscodeDirectory: string;
+  protected fileWatcherOnDelete: vscode.FileSystemWatcher;
 
   constructor(
     protected settings: SettingsProvider,
@@ -24,20 +24,13 @@ export abstract class FileProvider {
   ) {
     this.settings = settings;
     this.workspaceFolder = workspaceFolder;
-    this._vscodeDirectory = path.join(this.workspaceFolder, '.vscode');
-    this.outputPath = path.join(this._vscodeDirectory, outputFileName);
-    const deletePattern = `${replaceBackslashes(this._vscodeDirectory)}/**`;
+    this.vscodeDirectory = path.join(this.workspaceFolder, '.vscode');
+    this.outputPath = path.join(this.vscodeDirectory, outputFileName);
+    this.fileWatcherOnDelete = this.createFileWatcher();
 
     const extDirectory = path.dirname(__dirname);
     const templateDirectory = path.join(extDirectory, 'src', '_templates');
     this.templatePath = path.join(templateDirectory, templateFileName);
-
-    this._fileWatcherOnDelete = vscode.workspace.createFileSystemWatcher(
-      deletePattern,
-      true,
-      true,
-      false,
-    );
 
     let doUpdate = false;
     if (!pathExists(this.outputPath)) {
@@ -58,10 +51,10 @@ export abstract class FileProvider {
       this.createFileData();
     }
 
-    this._fileWatcherOnDelete.onDidDelete((e: vscode.Uri) => {
+    this.fileWatcherOnDelete.onDidDelete((e: vscode.Uri) => {
       const pathName = e.fsPath;
       if (
-        pathName === this._vscodeDirectory ||
+        pathName === this.vscodeDirectory ||
         path.basename(pathName) === this.outputFileName
       ) {
         this.createFileData();
@@ -74,8 +67,8 @@ export abstract class FileProvider {
       return;
     }
 
-    if (!pathExists(this._vscodeDirectory)) {
-      mkdirRecursive(this._vscodeDirectory);
+    if (!pathExists(this.vscodeDirectory)) {
+      mkdirRecursive(this.vscodeDirectory);
     }
 
     this.writeFileData();
@@ -87,5 +80,22 @@ export abstract class FileProvider {
 
   public writeFileData() {
     throw new Error('You have to implement the method doSomething!');
+  }
+
+  protected createFileWatcher() {
+    const deletePattern = `${replaceBackslashes(this.vscodeDirectory)}/**`;
+    return vscode.workspace.createFileSystemWatcher(
+      deletePattern,
+      true,
+      true,
+      false,
+    );
+  }
+
+  protected _updatFolderData(workspaceFolder: string) {
+    this.workspaceFolder = workspaceFolder;
+    this.vscodeDirectory = path.join(this.workspaceFolder, '.vscode');
+    this.outputPath = path.join(this.vscodeDirectory, this.outputFileName);
+    this.fileWatcherOnDelete = this.createFileWatcher();
   }
 }

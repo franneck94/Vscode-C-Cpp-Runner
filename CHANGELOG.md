@@ -4,7 +4,7 @@
 
 - In a multi workspace use-case, the settings.json is not stored (needs to be investigated)
 
-## Version 0.8.2: April 16, 2021
+## Version 0.8.2: April 19, 2021
 
 - **Bugfix**: Set debug console to external for lldb (MacOS) - see: [github issue](https://github.com/microsoft/vscode-cpptools/issues/5079)
 - **Bugfix**: Makefile arguments that can hold multiple values are now passed with "" instead of ''

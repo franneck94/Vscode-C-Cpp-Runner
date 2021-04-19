@@ -61,6 +61,6 @@ export class PropertiesProvider extends FileProvider {
   }
 
   public updatFolderData(workspaceFolder: string) {
-    this.workspaceFolder = workspaceFolder;
+    super._updatFolderData(workspaceFolder);
   }
 }

@@ -110,6 +110,10 @@ export function readJsonFile(filepath: string) {
 }
 
 export function writeJsonFile(outputFilePath: string, jsonContent: any) {
+  const dirname = path.dirname(outputFilePath);
+  if (!pathExists(dirname)) {
+    mkdirRecursive(dirname);
+  }
   const jsonString = JSON.stringify(jsonContent, null, 2);
   fs.writeFileSync(outputFilePath, jsonString);
 }

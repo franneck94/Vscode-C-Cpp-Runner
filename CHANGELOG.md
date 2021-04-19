@@ -1,13 +1,11 @@
 # C/C++ Runner Change Log
 
-## TODO
-
-- In a multi workspace use-case, the settings.json is not stored (needs to be investigated)
-
 ## Version 0.8.2: April 19, 2021
 
 - **Bugfix**: Set debug console to external for lldb (MacOS) - see: [github issue](https://github.com/microsoft/vscode-cpptools/issues/5079)
 - **Bugfix**: Makefile arguments that can hold multiple values are now passed with "" instead of ''
+- **Bugfix**: In a multi-root workspace use-case, the file watchers were not updated to a new selected workspace (on workspace change)
+- **Info**: In a multi-root workspace use-case, the extension's settings are stored to the '.code-workspace' file
 
 ## Version 0.8.1: April 14, 2021
 

@@ -225,6 +225,16 @@
           "default": "",
           "description": "Additional include paths. Seperated by whitespaces.",
           "scope": "resource"
+        },
+        "C_Cpp_Runner.loggingLevel": {
+          "type": "string",
+          "enum": [
+            "None",
+            "Debug"
+          ],
+          "default": "None",
+          "description": "Either if logging is enabled or not.",
+          "scope": "resource"
         }
       }
     }

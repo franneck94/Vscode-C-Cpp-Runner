@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import * as JSON5 from 'json5';
 
 import { Languages } from './types';
-import { logError } from './vscodeUtils';
+import * as logger from './logger';
 
 export function replaceBackslashes(text: string) {
   return text.replace(/\\/g, '/');
@@ -13,8 +13,12 @@ export function replaceBackslashes(text: string) {
 export function mkdirRecursive(dir: string) {
   try {
     fs.mkdirSync(dir, { recursive: true });
+    const message = `mkdirRecursive: success`;
+    logger.getOutputChannel().appendLine(message);
+    logger.showOutputChannel();
   } catch (err) {
-    logError(err, 'mkdirRecursive');
+    const message = `mkdirRecursive: ${err}`;
+    logger.getOutputChannel().appendLine(message);
     return false;
   }
 }
@@ -27,7 +31,8 @@ export function pathExists(filepath: string) {
   try {
     fs.accessSync(filepath);
   } catch (err) {
-    logError(err, 'pathExists');
+    const message = `pathExists: ${err}`;
+    logger.getOutputChannel().appendLine(message);
     return false;
   }
 
@@ -89,7 +94,8 @@ function readDir(dir: string | fs.PathLike) {
   try {
     return fs.readdirSync(dir, { withFileTypes: true });
   } catch (err) {
-    logError(err, 'readDir');
+    const message = `readDir: ${err}`;
+    logger.getOutputChannel().appendLine(message);
     return undefined;
   }
 }
@@ -133,7 +139,8 @@ export function readJsonFile(filepath: string) {
     const fileContent = fs.readFileSync(filepath, 'utf-8');
     configJson = JSON5.parse(fileContent);
   } catch (err) {
-    logError(err, 'readJsonFile');
+    const message = `readJsonFile: ${err}`;
+    logger.getOutputChannel().appendLine(message);
     return undefined;
   }
 
@@ -152,7 +159,8 @@ export function writeJsonFile(outputFilePath: string, jsonContent: any) {
   try {
     fs.writeFileSync(outputFilePath, jsonString);
   } catch (err) {
-    logError(err, 'writeJsonFile');
+    const message = `writeJsonFile: ${err}`;
+    logger.getOutputChannel().appendLine(message);
     return;
   }
 }

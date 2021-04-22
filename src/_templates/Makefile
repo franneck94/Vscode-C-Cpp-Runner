@@ -40,19 +40,13 @@ else # Plain windows terminal
 RM_FUNC = del /s /q
 endif
 
-MKDIR_CHECK = $(shell mkdir /? >nul 2>null || echo Unknown)
-
-ifeq ($(MKDIR_CHECK), "Unknown") # Unix like terminal
 MKDIR_FUNC = mkdir -p
-else # Plain windows terminal
-MKDIR_FUNC = mkdir
-endif
-
 BUILD_DIR = build/$(COMPILATION_MODE)
 CLEAN_PATH = $(BUILD_DIR)/*.o
 MKDIR_PATH = $(BUILD_DIR)
 
 ifeq ($(detected_OS), "Windows") # Plain windows terminal
+MKDIR_FUNC = mkdir
 BUILD_DIR = $(subst /,\,$(subst $(BUILD_DIR)))
 CLEAN_PATH = $(subst /,\,$(subst $(CLEAN_PATH)))
 MKDIR_PATH = $(subst /,\,$(subst $(MKDIR_PATH)))

@@ -10,7 +10,7 @@ C_COMPILER ?= gcc
 C_STANDARD ?= c99
 CPP_COMPILER ?= g++
 CPP_STANDARD ?= c++11
-EXECUTABLE_NAME ?= main
+EXECUTABLE_NAME ?= out$(COMPILATION_MODE)
 ARCHITECTURE ?= ""
 COMPILER_ARGS ?= ""
 LINKER_ARGS ?= ""
@@ -23,21 +23,47 @@ C_COMPILER_FLAGS = ""
 #######################
 ## OS DEPENDENT VARS ##
 #######################
+ifeq '$(findstring ;,$(PATH))' ';'
+  detected_OS := Windows
+else
+  detected_OS := $(shell uname 2>/dev/null || echo Unknown)
+  detected_OS := $(patsubst CYGWIN%,Cygwin,$(detected_OS))
+  detected_OS := $(patsubst MINGW%,MINGW,$(detected_OS))
+  detected_OS := $(patsubst MSYS%,MSYS,$(detected_OS))
+endif
+
 RM_CHECK = $(shell rm -f 2>/dev/null || echo Unknown)
 
 ifneq ($(RM_CHECK), "Unknown") # Unix like terminal
-BUILD_DIR ?= build/$(COMPILATION_MODE)
-MKDIR_PATH = $(BUILD_DIR)
-MKDIR_FUNC = mkdir -p
 RM_FUNC = rm -f
-CLEAN_PATH = $(BUILD_DIR)/*.o
 else # Plain windows terminal
-BUILD_DIR ?= build\$(COMPILATION_MODE)
-MKDIR_PATH = $(subst /,\\,$(BUILD_DIR))
-MKDIR_FUNC = mkdir
 RM_FUNC = del /s /q
-CLEAN_PATH = $(subst /,\\,$(BUILD_DIR)\\*.o)
 endif
+
+MKDIR_CHECK = $(shell mkdir /? >nul 2>null || echo Unknown)
+
+ifeq ($(MKDIR_CHECK), "Unknown") # Unix like terminal
+MKDIR_FUNC = mkdir -p
+else # Plain windows terminal
+MKDIR_FUNC = mkdir
+endif
+
+BUILD_DIR = build/$(COMPILATION_MODE)
+CLEAN_PATH = $(BUILD_DIR)/*.o
+MKDIR_PATH = $(BUILD_DIR)
+
+ifeq ($(detected_OS), "Windows") # Plain windows terminal
+BUILD_DIR = $(subst /,\,$(subst $(BUILD_DIR)))
+CLEAN_PATH = $(subst /,\,$(subst $(CLEAN_PATH)))
+MKDIR_PATH = $(subst /,\,$(subst $(MKDIR_PATH)))
+endif
+
+# $(info Detected OS: $(detected_OS)) # Debug Purpose
+# $(info BUILD PATH: $(BUILD_DIR)) # Debug Purpose
+# $(info RM: $(RM_FUNC)) # Debug Purpose
+# $(info CLEAN PATH: $(CLEAN_PATH)) # Debug Purpose
+# $(info MKDIR: $(MKDIR_FUNC)) # Debug Purpose
+# $(info MKDIR PATH: $(MKDIR_PATH)) # Debug Purpose
 
 ########################
 ## COMPILER ARGUMENTS ##

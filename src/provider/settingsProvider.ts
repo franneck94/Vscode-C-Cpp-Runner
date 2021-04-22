@@ -9,6 +9,7 @@ import {
   OperatingSystems,
 } from '../utils/types';
 import {
+  mkdirRecursive,
   pathExists,
   readJsonFile,
   replaceBackslashes,
@@ -40,18 +41,18 @@ export class SettingsProvider {
   private _foundMake: boolean = false;
   private _foundDebugger: boolean = false;
   // Settings
-  private _enableWarnings: boolean = true;
-  private _warnings: string = '';
-  private _warningsAsError: boolean = true;
-  private _compilerPathC: string = '';
-  private _compilerPathCpp: string = '';
-  private _debuggerPath: string = '';
-  private _makePath: string = '';
-  private _standardC: string = '';
-  private _standardCpp: string = '';
+  private _compilerPathC: string = 'gcc';
+  private _compilerPathCpp: string = 'g++';
+  private _debuggerPath: string = 'gdb';
+  private _makePath: string = 'make';
+  private _standardC: string = 'c99';
+  private _standardCpp: string = 'c++11';
   private _compilerArgs: string = '';
   private _linkerArgs: string = '';
   private _includePaths: String = '';
+  private _enableWarnings: boolean = true;
+  private _warningsAsError: boolean = true;
+  private _warnings: string = '-Wall -Wextra -Wpedantic';
 
   constructor(public workspaceFolder: string) {
     this._outputFileName = 'settings.json';
@@ -85,9 +86,15 @@ export class SettingsProvider {
    */
   public async checkCompilers() {
     if (pathExists(this._outputPath)) {
-      const settingsJson: JsonSettings = readJsonFile(this._outputPath);
+      const settingsJson: JsonSettings | undefined = readJsonFile(
+        this._outputPath,
+      );
       let skipCheckEntries = false;
       let skipCheckFound = false;
+
+      if (!settingsJson) {
+        return;
+      }
 
       if (
         settingsJson['C_Cpp_Runner.compilerPathC'] &&
@@ -110,6 +117,10 @@ export class SettingsProvider {
       if (skipCheckEntries || (skipCheckEntries && skipCheckFound)) {
         return;
       }
+    }
+
+    if (!pathExists(this._vscodeDirectory)) {
+      mkdirRecursive(this._vscodeDirectory);
     }
 
     const { f: foundGcc, p: pathGcc } = await commandExists('gcc');
@@ -302,51 +313,67 @@ export class SettingsProvider {
   public get operatingSystem() {
     return this._operatingSystem;
   }
+
   public get architecure() {
     return this._architecure;
   }
+
   public get cCompiler() {
     return this._cCompiler;
   }
+
   public get cppCompiler() {
     return this._cppCompiler;
   }
+
   public get debugger() {
     return this._debugger;
   }
+
   public get enableWarnings() {
     return this._enableWarnings;
   }
+
   public get warnings() {
     return this._warnings;
   }
+
   public get warningsAsError() {
     return this._warningsAsError;
   }
+
   public get compilerPathC() {
     return this._compilerPathC;
   }
+
   public get compilerPathCpp() {
     return this._compilerPathCpp;
   }
+
   public get debuggerPath() {
     return this._debuggerPath;
   }
+
   public get makePath() {
     return this._makePath;
   }
+
   public get standardC() {
     return this._standardC;
   }
+
   public get standardCpp() {
     return this._standardCpp;
   }
+
   public get compilerArgs() {
     return this._compilerArgs;
   }
+
   public get linkerArgs() {
     return this._linkerArgs;
   }
+
   public get includePaths() {
     return this._includePaths;
   }

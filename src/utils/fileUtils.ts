@@ -4,13 +4,19 @@ import * as vscode from 'vscode';
 import * as JSON5 from 'json5';
 
 import { Languages } from './types';
+import { logError } from './vscodeUtils';
 
 export function replaceBackslashes(text: string) {
   return text.replace(/\\/g, '/');
 }
 
 export function mkdirRecursive(dir: string) {
-  fs.mkdirSync(dir, { recursive: true });
+  try {
+    fs.mkdirSync(dir, { recursive: true });
+  } catch (err) {
+    logError(err, 'mkdirRecursive');
+    return false;
+  }
 }
 
 export function filterOnString(names: string[], filterName: string) {
@@ -21,6 +27,7 @@ export function pathExists(filepath: string) {
   try {
     fs.accessSync(filepath);
   } catch (err) {
+    logError(err, 'pathExists');
     return false;
   }
 
@@ -66,43 +73,67 @@ export function getLanguage(dir: string) {
 
 export function getDirectories(dir: fs.PathLike) {
   const directories = foldersInDir(dir);
+
   if (directories.length === 0) {
     return;
   }
+
   directories.forEach((dir) =>
     getDirectories(dir)?.forEach((newDir) => directories.push(newDir)),
   );
+
   return directories;
 }
 
+function readDir(dir: string | fs.PathLike) {
+  try {
+    return fs.readdirSync(dir, { withFileTypes: true });
+  } catch (err) {
+    logError(err, 'readDir');
+    return undefined;
+  }
+}
+
 export function filesInDir(dir: string) {
-  const fileDirents = fs.readdirSync(dir, { withFileTypes: true });
+  const fileDirents = readDir(dir);
+
+  if (!fileDirents) {
+    return [];
+  }
+
   const files = fileDirents
     .filter((file) => file.isFile())
     .map((file) => file.name);
+
   return files;
 }
 
 export function foldersInDir(dir: fs.PathLike) {
-  const fileDirents = fs.readdirSync(dir, {
-    withFileTypes: true,
-  });
+  const fileDirents = readDir(dir);
+
+  if (!fileDirents) {
+    return [];
+  }
+
   let folders = fileDirents.filter((folder) => folder.isDirectory());
-  folders = folders.filter((folder) => !folder.name.includes('.vscode'));
-  folders = folders.filter((folder) => !folder.name.includes('build'));
   folders = folders.filter((folder) => !folder.name.includes('.'));
+  folders = folders.filter((folder) => !folder.name.includes('build'));
+  folders = folders.filter((folder) => !folder.name.includes('CMakeFiles'));
   const folderNames = folders.map((folder) =>
     path.join(dir.toString(), folder.name),
   );
+
   return folderNames;
 }
 
 export function readJsonFile(filepath: string) {
-  let configJson;
+  let configJson: any | undefined;
+
   try {
     const fileContent = fs.readFileSync(filepath, 'utf-8');
     configJson = JSON5.parse(fileContent);
   } catch (err) {
+    logError(err, 'readJsonFile');
     return undefined;
   }
 
@@ -111,11 +142,19 @@ export function readJsonFile(filepath: string) {
 
 export function writeJsonFile(outputFilePath: string, jsonContent: any) {
   const dirname = path.dirname(outputFilePath);
+
   if (!pathExists(dirname)) {
     mkdirRecursive(dirname);
   }
+
   const jsonString = JSON.stringify(jsonContent, null, 2);
-  fs.writeFileSync(outputFilePath, jsonString);
+
+  try {
+    fs.writeFileSync(outputFilePath, jsonString);
+  } catch (err) {
+    logError(err, 'writeJsonFile');
+    return;
+  }
 }
 
 export function noCmakeFileFound() {

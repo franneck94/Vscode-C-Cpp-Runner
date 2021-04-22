@@ -3,6 +3,7 @@ import { lookpath } from 'lookpath';
 import { platform } from 'os';
 
 import { Architectures, Compilers, OperatingSystems } from './types';
+import { logError } from './vscodeUtils';
 
 export async function commandExists(command: string) {
   let commandPath = await lookpath(command);
@@ -46,6 +47,7 @@ export function getArchitecture(compiler: Compilers) {
       return Architectures.x86;
     }
   } catch (err) {
+    logError(err, 'getArchitecture');
     return Architectures.x86;
   }
 }

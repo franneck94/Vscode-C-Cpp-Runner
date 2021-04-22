@@ -37,3 +37,7 @@ export function getLaunchConfigIndex(
 
   return configIdx;
 }
+
+export function logError(err: Error, funcName: string) {
+  console.log(`${funcName}: ${err}`);
+}

@@ -230,9 +230,13 @@ export class TaskProvider implements vscode.TaskProvider {
 
     const uriWorkspaceFolder = vscode.Uri.file(this.workspaceFolder);
     const folder = vscode.workspace.getWorkspaceFolder(uriWorkspaceFolder);
-    const configJson: JsonConfiguration = readJsonFile(
+    const configJson: JsonConfiguration | undefined = readJsonFile(
       path.join(this.workspaceFolder, '.vscode', 'launch.json'),
     );
+
+    if (!configJson) {
+      return;
+    }
 
     const configName = 'C/C++ Runner: Debug Session';
     const configIdx = getLaunchConfigIndex(configJson, configName);
@@ -246,24 +250,31 @@ export class TaskProvider implements vscode.TaskProvider {
   public get architectureMode() {
     return this._architectureMode;
   }
+
   public set architectureMode(value: Architectures) {
     this._architectureMode = value;
   }
+
   public get buildMode() {
     return this._buildMode;
   }
+
   public set buildMode(value: Builds) {
     this._buildMode = value;
   }
+
   public get activeFolder() {
     return this._pickedFolder;
   }
+
   public set activeFolder(value: string | undefined) {
     this._pickedFolder = value;
   }
+
   public get workspaceFolder() {
     return this._workspaceFolder;
   }
+
   public set workspaceFolder(value: string | undefined) {
     this._workspaceFolder = value;
   }

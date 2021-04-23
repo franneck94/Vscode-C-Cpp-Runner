@@ -2,7 +2,7 @@
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
   "description": "Compile and run your C/C++ code with ease.",
-  "version": "0.8.2",
+  "version": "0.9.0",
   "publisher": "franneck94",
   "license": "MIT",
   "icon": "icon.png",
@@ -226,14 +226,10 @@
           "description": "Additional include paths. Seperated by whitespaces.",
           "scope": "resource"
         },
-        "C_Cpp_Runner.loggingLevel": {
-          "type": "string",
-          "enum": [
-            "None",
-            "Debug"
-          ],
-          "default": "None",
-          "description": "Either if logging is enabled or not.",
+        "C_Cpp_Runner.loggingActive": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to enable logging to the output channel or not.",
           "scope": "resource"
         }
       }

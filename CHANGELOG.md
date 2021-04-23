@@ -1,5 +1,11 @@
 # C/C++ Runner Change Log
 
+## Version 0.9.0: April 23, 2021
+
+- **Bugfix**: Makefile issue with Windows/MinGW
+- **Info**: Added try/catch clauses to all IO related functions
+- **Info**: Added logger to log certain infos/errors. Also added setting 'loggingActive' to activate the logger
+
 ## Version 0.8.2: April 19, 2021
 
 - **Bugfix**: Set debug console to external for lldb (MacOS) - see: [github issue](https://github.com/microsoft/vscode-cpptools/issues/5079)

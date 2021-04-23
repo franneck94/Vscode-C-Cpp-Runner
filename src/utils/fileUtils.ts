@@ -6,6 +6,10 @@ import * as JSON5 from 'json5';
 import { Languages } from './types';
 import * as logger from './logger';
 
+let loggingActive: boolean | undefined = vscode.workspace
+  .getConfiguration('C_Cpp_Runner')
+  .get('loggingActive');
+
 export function replaceBackslashes(text: string) {
   return text.replace(/\\/g, '/');
 }
@@ -13,12 +17,12 @@ export function replaceBackslashes(text: string) {
 export function mkdirRecursive(dir: string) {
   try {
     fs.mkdirSync(dir, { recursive: true });
-    const message = `mkdirRecursive: success`;
-    logger.getOutputChannel().appendLine(message);
-    logger.showOutputChannel();
   } catch (err) {
-    const message = `mkdirRecursive: ${err}`;
-    logger.getOutputChannel().appendLine(message);
+    if (loggingActive) {
+      const errorMessage = `mkdirRecursive: ${err}`;
+      logger.logMessage(errorMessage);
+    }
+
     return false;
   }
 }
@@ -31,8 +35,11 @@ export function pathExists(filepath: string) {
   try {
     fs.accessSync(filepath);
   } catch (err) {
-    const message = `pathExists: ${err}`;
-    logger.getOutputChannel().appendLine(message);
+    if (loggingActive) {
+      const errorMessage = `pathExists: ${err}`;
+      logger.logMessage(errorMessage);
+    }
+
     return false;
   }
 
@@ -94,8 +101,11 @@ function readDir(dir: string | fs.PathLike) {
   try {
     return fs.readdirSync(dir, { withFileTypes: true });
   } catch (err) {
-    const message = `readDir: ${err}`;
-    logger.getOutputChannel().appendLine(message);
+    if (loggingActive) {
+      const errorMessage = `readDir: ${err}`;
+      logger.logMessage(errorMessage);
+    }
+
     return undefined;
   }
 }
@@ -139,8 +149,11 @@ export function readJsonFile(filepath: string) {
     const fileContent = fs.readFileSync(filepath, 'utf-8');
     configJson = JSON5.parse(fileContent);
   } catch (err) {
-    const message = `readJsonFile: ${err}`;
-    logger.getOutputChannel().appendLine(message);
+    if (loggingActive) {
+      const errorMessage = `readJsonFile: ${err}`;
+      logger.logMessage(errorMessage);
+    }
+
     return undefined;
   }
 
@@ -159,8 +172,11 @@ export function writeJsonFile(outputFilePath: string, jsonContent: any) {
   try {
     fs.writeFileSync(outputFilePath, jsonString);
   } catch (err) {
-    const message = `writeJsonFile: ${err}`;
-    logger.getOutputChannel().appendLine(message);
+    if (loggingActive) {
+      const errorMessage = `writeJsonFile: ${err}`;
+      logger.logMessage(errorMessage);
+    }
+
     return;
   }
 }
@@ -181,8 +197,8 @@ export function noCmakeFileFound() {
   }
 
   if (foundNoCmakeFile) {
-    const config = vscode.workspace.getConfiguration();
-    const cmakeSetting = config.get('cmake.sourceDirectory');
+    const config = vscode.workspace.getConfiguration('cmake');
+    const cmakeSetting = config.get('sourceDirectory');
 
     if (cmakeSetting && cmakeSetting !== '${workspaceFolder}') {
       foundNoCmakeFile = false;

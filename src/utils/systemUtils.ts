@@ -3,7 +3,6 @@ import { lookpath } from 'lookpath';
 import { platform } from 'os';
 
 import { Architectures, Compilers, OperatingSystems } from './types';
-import * as logger from './logger';
 
 export async function commandExists(command: string) {
   let commandPath = await lookpath(command);
@@ -37,17 +36,12 @@ export function getOperatingSystem() {
 export function getArchitecture(compiler: Compilers) {
   const command = `${compiler} -dumpmachine`;
 
-  try {
-    const byteArray = execSync(command);
-    const str = String.fromCharCode(...byteArray);
+  const byteArray = execSync(command);
+  const str = String.fromCharCode(...byteArray);
 
-    if (str.includes('64')) {
-      return Architectures.x64;
-    } else {
-      return Architectures.x86;
-    }
-  } catch (err) {
-    logger.getOutputChannel().appendLine(`writeJsonFile: ${err}`);
+  if (str.includes('64')) {
+    return Architectures.x64;
+  } else {
     return Architectures.x86;
   }
 }

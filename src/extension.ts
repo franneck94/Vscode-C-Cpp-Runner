@@ -15,8 +15,9 @@ import { LaunchProvider } from './provider/launchProvider';
 import { PropertiesProvider } from './provider/propertiesProvider';
 import { SettingsProvider } from './provider/settingsProvider';
 import { TaskProvider } from './provider/taskProvider';
-import { Architectures, Builds, Tasks } from './utils/types';
 import { foldersInDir, noCmakeFileFound } from './utils/fileUtils';
+import * as logger from './utils/logger';
+import { Architectures, Builds, Tasks } from './utils/types';
 import {
   createStatusBarItem,
   disposeItem,
@@ -57,18 +58,31 @@ let buildMode: Builds = Builds.debug;
 let architectureMode: Architectures = Architectures.x64;
 let errorMessage: Thenable<string | undefined> | undefined;
 let showStatusBarItems: boolean = false;
+let loggingActive: boolean | undefined = vscode.workspace
+  .getConfiguration('C_Cpp_Runner')
+  .get('loggingActive');
 
 export function activate(context: vscode.ExtensionContext) {
   if (
     !vscode.workspace.workspaceFolders ||
     vscode.workspace.workspaceFolders.length === 0
   ) {
+    if (loggingActive) {
+      const infoMessage = `Empty Workspace opened.`;
+      logger.logMessage(infoMessage);
+    }
     return;
   }
 
   setContextValue('C_Cpp_Runner:activatedExtension', true);
 
   showStatusBarItems = noCmakeFileFound();
+  if (!showStatusBarItems) {
+    if (loggingActive) {
+      const infoMessage = `CMake Project found. Deactivating extension.`;
+      logger.logMessage(infoMessage);
+    }
+  }
 
   initFolderStatusBar(context);
   initModeStatusBar(context);
@@ -174,6 +188,9 @@ function initWorkspaceDisposables(context: vscode.ExtensionContext) {
     taskProvider.getTasks();
     propertiesProvider.updateFileContent();
     launchProvider.updateFileContent();
+    loggingActive = vscode.workspace
+      .getConfiguration('C_Cpp_Runner')
+      .get('loggingActive');
   });
 
   vscode.workspace.onDidRenameFiles((e: vscode.FileRenameEvent) => {
@@ -363,6 +380,11 @@ function buildCallback() {
     !taskProvider.workspaceFolder ||
     !taskProvider.activeFolder
   ) {
+    if (loggingActive) {
+      const infoMessage = `buildCallback: No Folder or Tasks defined.`;
+      logger.logMessage(infoMessage);
+    }
+
     return;
   }
 
@@ -393,6 +415,11 @@ function runCallback() {
     !taskProvider.workspaceFolder ||
     !taskProvider.activeFolder
   ) {
+    if (loggingActive) {
+      const infoMessage = `runCallback: No Folder or Tasks defined.`;
+      logger.logMessage(infoMessage);
+    }
+
     return;
   }
 
@@ -418,6 +445,11 @@ function runCallback() {
 
 async function debugCallback() {
   if (!activeFolder || !workspaceFolder) {
+    if (loggingActive) {
+      const infoMessage = `debugCallback: No Workspace or Folder picked.`;
+      logger.logMessage(infoMessage);
+    }
+
     return;
   }
 
@@ -431,6 +463,11 @@ function cleanCallback() {
     !taskProvider.workspaceFolder ||
     !taskProvider.activeFolder
   ) {
+    if (loggingActive) {
+      const infoMessage = `cleanCallback: No Folder or Tasks defined.`;
+      logger.logMessage(infoMessage);
+    }
+
     return;
   }
 

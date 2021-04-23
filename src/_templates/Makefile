@@ -17,8 +17,9 @@ LINKER_ARGS ?= ""
 INCLUDE_PATHS ?= ""
 DEBUG_FLAGS ?= -g3 -O0
 RELEASE_FLAGS ?= -O3 -DNDEBUG
-CPP_COMPILER_FLAGS = ""
-C_COMPILER_FLAGS = ""
+CPP_COMPILER_FLAGS ?= ""
+C_COMPILER_FLAGS ?= ""
+VERBOSE = 0
 
 #######################
 ## OS DEPENDENT VARS ##
@@ -27,37 +28,31 @@ ifeq '$(findstring ;,$(PATH))' ';'
   detected_OS := Windows
 else
   detected_OS := $(shell uname 2>/dev/null || echo Unknown)
-  detected_OS := $(patsubst CYGWIN%,Cygwin,$(detected_OS))
-  detected_OS := $(patsubst MINGW%,MINGW,$(detected_OS))
-  detected_OS := $(patsubst MSYS%,MSYS,$(detected_OS))
+  # detected_OS := $(patsubst CYGWIN%,Cygwin,$(detected_OS))
 endif
 
-RM_CHECK = $(shell rm -f 2>/dev/null || echo Unknown)
-
-ifneq ($(RM_CHECK), "Unknown") # Unix like terminal
-RM_FUNC = rm -f
-else # Plain windows terminal
+ifeq ($(detected_OS), Windows)
 RM_FUNC = del /s /q
-endif
-
+MKDIR_FUNC = mkdir
+BUILD_DIR = build\$(COMPILATION_MODE)
+CLEAN_PATH = $(BUILD_DIR)\*.o 2>NUL
+MKDIR_PATH = $(BUILD_DIR)
+else
+RM_FUNC = rm -f
 MKDIR_FUNC = mkdir -p
 BUILD_DIR = build/$(COMPILATION_MODE)
 CLEAN_PATH = $(BUILD_DIR)/*.o
 MKDIR_PATH = $(BUILD_DIR)
-
-ifeq ($(detected_OS), "Windows") # Plain windows terminal
-MKDIR_FUNC = mkdir
-BUILD_DIR = $(subst /,\,$(subst $(BUILD_DIR)))
-CLEAN_PATH = $(subst /,\,$(subst $(CLEAN_PATH)))
-MKDIR_PATH = $(subst /,\,$(subst $(MKDIR_PATH)))
 endif
 
-# $(info Detected OS: $(detected_OS)) # Debug Purpose
-# $(info BUILD PATH: $(BUILD_DIR)) # Debug Purpose
-# $(info RM: $(RM_FUNC)) # Debug Purpose
-# $(info CLEAN PATH: $(CLEAN_PATH)) # Debug Purpose
-# $(info MKDIR: $(MKDIR_FUNC)) # Debug Purpose
-# $(info MKDIR PATH: $(MKDIR_PATH)) # Debug Purpose
+ifeq ($(VERBOSE), 1)
+$(info Detected OS: $(detected_OS))
+$(info BUILD PATH: $(BUILD_DIR))
+$(info RM: $(RM_FUNC))
+$(info CLEAN PATH: $(CLEAN_PATH))
+$(info MKDIR: $(MKDIR_FUNC))
+$(info MKDIR PATH: $(MKDIR_PATH))
+endif
 
 ########################
 ## COMPILER ARGUMENTS ##

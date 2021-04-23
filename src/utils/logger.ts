@@ -1,19 +1,10 @@
-/* --------------------------------------------------------------------------------------------
- * Copyright (c) Microsoft Corporation. All Rights Reserved.
- * See 'LICENSE' in the project root for license information.
- * ------------------------------------------------------------------------------------------ */
-'use strict';
-
-import * as vscode from 'vscode';
 import * as os from 'os';
+import * as vscode from 'vscode';
 
-// This is used for testing purposes
-let Subscriber: (message: string) => void;
-export function subscribeToAllLoggers(
-  subscriber: (message: string) => void,
-): void {
-  Subscriber = subscriber;
-}
+const EXTENSION_NAME = 'C/C++ Runner';
+
+let outputChannel: vscode.OutputChannel | undefined;
+let outputChannelLogger: Logger | undefined;
 
 export class Logger {
   private writer: (message: string) => void;
@@ -24,16 +15,10 @@ export class Logger {
 
   public append(message: string): void {
     this.writer(message);
-    if (Subscriber) {
-      Subscriber(message);
-    }
   }
 
   public appendLine(message: string): void {
     this.writer(message + os.EOL);
-    if (Subscriber) {
-      Subscriber(message + os.EOL);
-    }
   }
 
   public showInformationMessage(
@@ -73,20 +58,16 @@ export class Logger {
   }
 }
 
-let outputChannel: vscode.OutputChannel | undefined;
-
 export function getOutputChannel(): vscode.OutputChannel {
   if (!outputChannel) {
-    outputChannel = vscode.window.createOutputChannel('C/C++ Runner');
+    outputChannel = vscode.window.createOutputChannel(EXTENSION_NAME);
   }
   return outputChannel;
 }
 
 export function showOutputChannel(): void {
-  getOutputChannel().show();
+  getOutputChannel().show(true);
 }
-
-let outputChannelLogger: Logger | undefined;
 
 export function getOutputChannelLogger(): Logger {
   if (!outputChannelLogger) {
@@ -95,4 +76,9 @@ export function getOutputChannelLogger(): Logger {
     );
   }
   return outputChannelLogger;
+}
+
+export function logMessage(message: string) {
+  getOutputChannel().appendLine(message);
+  showOutputChannel();
 }

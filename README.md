@@ -74,6 +74,7 @@ The properties will be updated automatically after changing the settings.
 - ⚙️ Additional compiler arguments (defaults to None)
 - ⚙️ Additional linker arguments (defaults to None)
 - ⚙️ Additional include paths (defaults to None)
+- ⚙️ (Optional): To activate the logger for certain infos/errors (only needed for developers)
 
 ## Important Notes
 

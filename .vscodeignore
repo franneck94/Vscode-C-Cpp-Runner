@@ -1,7 +1,8 @@
 .vscode
 node_modules
 test
-src
+src/
+!src/_templates
 
 .editorconfig
 .eslintignore

@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 0.9.1: April 23, 2021
+
+- **Bugfix**: Major bugfix of tasks were not working
+
 ## Version 0.9.0: April 23, 2021
 
 - **Bugfix**: Makefile issue with Windows/MinGW

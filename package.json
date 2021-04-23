@@ -228,7 +228,7 @@
         },
         "C_Cpp_Runner.loggingActive": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "description": "Whether to enable logging to the output channel or not.",
           "scope": "resource"
         }

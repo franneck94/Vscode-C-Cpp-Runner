@@ -23,6 +23,7 @@ import {
   disposeItem,
   getLoggingState,
   setContextValue,
+  updateLoggingState,
 } from './utils/vscodeUtils';
 
 const PROPERTIES_TEMPLATE = 'properties_template.json';
@@ -61,6 +62,9 @@ let errorMessage: Thenable<string | undefined> | undefined;
 let showStatusBarItems: boolean = false;
 let loggingActive: boolean = getLoggingState();
 
+export let extensionContext: vscode.ExtensionContext | undefined;
+export let extensionContextState: vscode.Memento | undefined;
+
 export function activate(context: vscode.ExtensionContext) {
   if (
     !vscode.workspace.workspaceFolders ||
@@ -72,7 +76,11 @@ export function activate(context: vscode.ExtensionContext) {
     return;
   }
 
+  extensionContext = context;
+  extensionContextState = context.workspaceState;
   setContextValue('C_Cpp_Runner:activatedExtension', true);
+
+  updateLoggingState();
 
   showStatusBarItems = noCmakeFileFound();
   if (!showStatusBarItems) {
@@ -180,17 +188,23 @@ function initWorkspaceDisposables(context: vscode.ExtensionContext) {
   context.subscriptions.push(folderContextMenuDisposable);
 
   vscode.workspace.onDidChangeConfiguration(() => {
+    const infoMessage = `Configuration change.`;
+    logger.log(loggingActive, infoMessage);
+
     settingsProvider.getSettings();
     taskProvider.getTasks();
     propertiesProvider.updateFileContent();
     launchProvider.updateFileContent();
-    loggingActive = getLoggingState();
+    updateLoggingState();
   });
 
   vscode.workspace.onDidRenameFiles((e: vscode.FileRenameEvent) => {
     if (e.files.length === 1) {
       const oldName = e.files[0].oldUri.fsPath;
       const newName = e.files[0].newUri.fsPath;
+
+      const infoMessage = `Renaming: ${oldName} -> ${newName}.`;
+      logger.log(loggingActive, infoMessage);
 
       if (oldName === workspaceFolder) {
         workspaceFolder = newName;
@@ -206,6 +220,9 @@ function initWorkspaceDisposables(context: vscode.ExtensionContext) {
     if (e.files.length >= 0) {
       const oldName = e.files[0].fsPath;
 
+      const infoMessage = `Deleting: ${oldName}.`;
+      logger.log(loggingActive, infoMessage);
+
       if (oldName === workspaceFolder) {
         workspaceFolder = undefined;
         updateFolderData();
@@ -217,108 +234,6 @@ function initWorkspaceDisposables(context: vscode.ExtensionContext) {
       }
     }
   });
-}
-
-// INIT STATUS BAR
-
-function initFolderStatusBar(context: vscode.ExtensionContext) {
-  folderStatusBar = createStatusBarItem();
-  context.subscriptions.push(folderStatusBar);
-
-  const workspaceFolders = vscode.workspace.workspaceFolders;
-  if (workspaceFolders) {
-    if (workspaceFolders.length === 1) {
-      const workspaceFolderFs = workspaceFolders[0].uri.fsPath;
-      const folders = foldersInDir(workspaceFolderFs);
-      if (folders.length === 0) {
-        workspaceFolder = workspaceFolderFs;
-        activeFolder = workspaceFolderFs;
-        updateFolderData();
-      } else {
-        updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
-      }
-    } else {
-      updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
-    }
-  }
-
-  commandFolderDisposable = vscode.commands.registerCommand(
-    'C_Cpp_Runner.init',
-    () => folderCallback(),
-  );
-  folderStatusBar.command = 'C_Cpp_Runner.init';
-  context.subscriptions.push(commandFolderDisposable);
-}
-
-function initModeStatusBar(context: vscode.ExtensionContext) {
-  modeStatusBar = createStatusBarItem();
-  context.subscriptions.push(modeStatusBar);
-  updateModeStatus(
-    modeStatusBar,
-    showStatusBarItems,
-    activeFolder,
-    buildMode,
-    architectureMode,
-  );
-
-  commandModeDisposable = vscode.commands.registerCommand(
-    'C_Cpp_Runner.mode',
-    () => modeCallback(),
-  );
-  modeStatusBar.command = 'C_Cpp_Runner.mode';
-  context.subscriptions.push(commandModeDisposable);
-}
-
-function initBuildStatusBar(context: vscode.ExtensionContext) {
-  buildStatusBar = createStatusBarItem();
-  context.subscriptions.push(buildStatusBar);
-  updateBuildStatus(buildStatusBar, showStatusBarItems, activeFolder);
-
-  commandBuildDisposable = vscode.commands.registerCommand(
-    'C_Cpp_Runner.build',
-    () => buildCallback(),
-  );
-  buildStatusBar.command = 'C_Cpp_Runner.build';
-  context.subscriptions.push(commandBuildDisposable);
-}
-
-function initRunStatusBar(context: vscode.ExtensionContext) {
-  runStatusBar = createStatusBarItem();
-  context.subscriptions.push(runStatusBar);
-  updateRunStatus(runStatusBar, showStatusBarItems, activeFolder);
-
-  commandRunDisposable = vscode.commands.registerCommand(
-    'C_Cpp_Runner.run',
-    () => runCallback(),
-  );
-  runStatusBar.command = 'C_Cpp_Runner.run';
-  context.subscriptions.push(commandRunDisposable);
-}
-
-function initDebugStatusBar(context: vscode.ExtensionContext) {
-  debugStatusBar = createStatusBarItem();
-  context.subscriptions.push(debugStatusBar);
-  updateDebugStatus(debugStatusBar, showStatusBarItems, activeFolder);
-
-  commandDebugDisposable = vscode.commands.registerCommand(
-    'C_Cpp_Runner.debug',
-    () => debugCallback(),
-  );
-  debugStatusBar.command = 'C_Cpp_Runner.debug';
-  context.subscriptions.push(commandDebugDisposable);
-}
-
-function initCleanStatusBar(context: vscode.ExtensionContext) {
-  cleanStatusBar = createStatusBarItem();
-  context.subscriptions.push(cleanStatusBar);
-  updateCleanStatus(cleanStatusBar, showStatusBarItems, activeFolder);
-
-  commandCleanDisposable = vscode.commands.registerCommand(
-    'C_Cpp_Runner.clean',
-    () => cleanCallback(),
-  );
-  cleanStatusBar.command = 'C_Cpp_Runner.clean';
-  context.subscriptions.push(commandCleanDisposable);
 }
 
 function toggleStatusBarItems() {
@@ -348,6 +263,9 @@ async function folderCallback() {
     workspaceFolder = ret.workspaceFolder;
 
     updateFolderData();
+  } else {
+    const infoMessage = `Folder callback aborted.`;
+    logger.log(loggingActive, infoMessage);
   }
 }
 
@@ -366,6 +284,9 @@ async function modeCallback() {
       buildMode,
       architectureMode,
     );
+  } else {
+    const infoMessage = `Mode callback aborted.`;
+    logger.log(loggingActive, infoMessage);
   }
 }
 
@@ -567,4 +488,106 @@ function updateFolderData() {
   updateRunStatus(runStatusBar, showStatusBarItems, activeFolder);
   updateCleanStatus(cleanStatusBar, showStatusBarItems, activeFolder);
   updateDebugStatus(debugStatusBar, showStatusBarItems, activeFolder);
+}
+
+// INIT STATUS BAR
+
+function initFolderStatusBar(context: vscode.ExtensionContext) {
+  folderStatusBar = createStatusBarItem();
+  context.subscriptions.push(folderStatusBar);
+
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+  if (workspaceFolders) {
+    if (workspaceFolders.length === 1) {
+      const workspaceFolderFs = workspaceFolders[0].uri.fsPath;
+      const folders = foldersInDir(workspaceFolderFs);
+      if (folders.length === 0) {
+        workspaceFolder = workspaceFolderFs;
+        activeFolder = workspaceFolderFs;
+        updateFolderData();
+      } else {
+        updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+      }
+    } else {
+      updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+    }
+  }
+
+  commandFolderDisposable = vscode.commands.registerCommand(
+    'C_Cpp_Runner.init',
+    () => folderCallback(),
+  );
+  folderStatusBar.command = 'C_Cpp_Runner.init';
+  context.subscriptions.push(commandFolderDisposable);
+}
+
+function initModeStatusBar(context: vscode.ExtensionContext) {
+  modeStatusBar = createStatusBarItem();
+  context.subscriptions.push(modeStatusBar);
+  updateModeStatus(
+    modeStatusBar,
+    showStatusBarItems,
+    activeFolder,
+    buildMode,
+    architectureMode,
+  );
+
+  commandModeDisposable = vscode.commands.registerCommand(
+    'C_Cpp_Runner.mode',
+    () => modeCallback(),
+  );
+  modeStatusBar.command = 'C_Cpp_Runner.mode';
+  context.subscriptions.push(commandModeDisposable);
+}
+
+function initBuildStatusBar(context: vscode.ExtensionContext) {
+  buildStatusBar = createStatusBarItem();
+  context.subscriptions.push(buildStatusBar);
+  updateBuildStatus(buildStatusBar, showStatusBarItems, activeFolder);
+
+  commandBuildDisposable = vscode.commands.registerCommand(
+    'C_Cpp_Runner.build',
+    () => buildCallback(),
+  );
+  buildStatusBar.command = 'C_Cpp_Runner.build';
+  context.subscriptions.push(commandBuildDisposable);
+}
+
+function initRunStatusBar(context: vscode.ExtensionContext) {
+  runStatusBar = createStatusBarItem();
+  context.subscriptions.push(runStatusBar);
+  updateRunStatus(runStatusBar, showStatusBarItems, activeFolder);
+
+  commandRunDisposable = vscode.commands.registerCommand(
+    'C_Cpp_Runner.run',
+    () => runCallback(),
+  );
+  runStatusBar.command = 'C_Cpp_Runner.run';
+  context.subscriptions.push(commandRunDisposable);
+}
+
+function initDebugStatusBar(context: vscode.ExtensionContext) {
+  debugStatusBar = createStatusBarItem();
+  context.subscriptions.push(debugStatusBar);
+  updateDebugStatus(debugStatusBar, showStatusBarItems, activeFolder);
+
+  commandDebugDisposable = vscode.commands.registerCommand(
+    'C_Cpp_Runner.debug',
+    () => debugCallback(),
+  );
+  debugStatusBar.command = 'C_Cpp_Runner.debug';
+  context.subscriptions.push(commandDebugDisposable);
+}
+
+function initCleanStatusBar(context: vscode.ExtensionContext) {
+  cleanStatusBar = createStatusBarItem();
+  context.subscriptions.push(cleanStatusBar);
+  updateCleanStatus(cleanStatusBar, showStatusBarItems, activeFolder);
+
+  commandCleanDisposable = vscode.commands.registerCommand(
+    'C_Cpp_Runner.clean',
+    () => cleanCallback(),
+  );
+  cleanStatusBar.command = 'C_Cpp_Runner.clean';
+  context.subscriptions.push(commandCleanDisposable);
 }

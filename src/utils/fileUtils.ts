@@ -5,10 +5,9 @@ import * as JSON5 from 'json5';
 
 import { Languages } from './types';
 import * as logger from './logger';
+import { getLoggingState } from './vscodeUtils';
 
-let loggingActive: boolean | undefined = vscode.workspace
-  .getConfiguration('C_Cpp_Runner')
-  .get('loggingActive');
+let loggingActive: boolean = getLoggingState();
 
 export function replaceBackslashes(text: string) {
   return text.replace(/\\/g, '/');
@@ -18,10 +17,8 @@ export function mkdirRecursive(dir: string) {
   try {
     fs.mkdirSync(dir, { recursive: true });
   } catch (err) {
-    if (loggingActive) {
-      const errorMessage = `mkdirRecursive: ${err}`;
-      logger.logMessage(errorMessage);
-    }
+    const errorMessage = `mkdirRecursive: ${err}`;
+    logger.log(loggingActive, errorMessage);
 
     return false;
   }
@@ -35,11 +32,6 @@ export function pathExists(filepath: string) {
   try {
     fs.accessSync(filepath);
   } catch (err) {
-    if (loggingActive) {
-      const errorMessage = `pathExists: ${err}`;
-      logger.logMessage(errorMessage);
-    }
-
     return false;
   }
 
@@ -101,10 +93,8 @@ function readDir(dir: string | fs.PathLike) {
   try {
     return fs.readdirSync(dir, { withFileTypes: true });
   } catch (err) {
-    if (loggingActive) {
-      const errorMessage = `readDir: ${err}`;
-      logger.logMessage(errorMessage);
-    }
+    const errorMessage = `readDir: ${err}`;
+    logger.log(loggingActive, errorMessage);
 
     return undefined;
   }
@@ -149,10 +139,8 @@ export function readJsonFile(filepath: string) {
     const fileContent = fs.readFileSync(filepath, 'utf-8');
     configJson = JSON5.parse(fileContent);
   } catch (err) {
-    if (loggingActive) {
-      const errorMessage = `readJsonFile: ${err}`;
-      logger.logMessage(errorMessage);
-    }
+    const errorMessage = `readJsonFile: ${err}`;
+    logger.log(loggingActive, errorMessage);
 
     return undefined;
   }
@@ -172,10 +160,8 @@ export function writeJsonFile(outputFilePath: string, jsonContent: any) {
   try {
     fs.writeFileSync(outputFilePath, jsonString);
   } catch (err) {
-    if (loggingActive) {
-      const errorMessage = `writeJsonFile: ${err}`;
-      logger.logMessage(errorMessage);
-    }
+    const errorMessage = `writeJsonFile: ${err}`;
+    logger.log(loggingActive, errorMessage);
 
     return;
   }

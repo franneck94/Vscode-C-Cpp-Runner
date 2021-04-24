@@ -32,7 +32,7 @@ export class TaskProvider implements vscode.TaskProvider {
     private _architectureMode: Architectures,
   ) {
     const extDirectory = path.dirname(__dirname);
-    const templateDirectory = path.join(extDirectory, 'src', '_templates');
+    const templateDirectory = path.join(extDirectory, 'templates');
     this._tasksFile = path.join(templateDirectory, 'tasks_template.json');
     this._makefileFile = path.join(templateDirectory, 'Makefile');
 

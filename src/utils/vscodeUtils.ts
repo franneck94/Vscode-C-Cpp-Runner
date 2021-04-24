@@ -37,3 +37,9 @@ export function getLaunchConfigIndex(
 
   return configIdx;
 }
+
+export function getLoggingState() {
+  return vscode.workspace
+    .getConfiguration('C_Cpp_Runner')
+    .get('loggingActive', false);
+}

@@ -8,7 +8,7 @@ import { replaceBackslashes } from '../utils/fileUtils';
 export function updateFolderStatus(
   status: vscode.StatusBarItem,
   taskProvider: TaskProvider,
-  showItem: boolean,
+  showStatusBarItems: boolean,
 ) {
   const workspaceFolders = vscode.workspace.workspaceFolders;
 
@@ -35,7 +35,7 @@ export function updateFolderStatus(
     status.text = '$(alert) Select folder.';
   }
 
-  if (showItem) {
+  if (showStatusBarItems) {
     status.show();
   } else {
     status.hide();
@@ -44,12 +44,20 @@ export function updateFolderStatus(
 
 export function updateModeStatus(
   status: vscode.StatusBarItem,
+  showStatusBarItems: boolean,
+  activeFolder: string | undefined,
   buildMode: Builds,
   architectureMode: Architectures,
-  showItem: boolean,
 ) {
+  if (activeFolder) {
+    status.color = '';
+  } else {
+    status.color = '#ffff00';
+  }
+
   status.text = `$(tools) ${buildMode} - ${architectureMode}`;
-  if (showItem) {
+
+  if (showStatusBarItems) {
     status.show();
   } else {
     status.hide();
@@ -58,10 +66,18 @@ export function updateModeStatus(
 
 export function updateBuildStatus(
   status: vscode.StatusBarItem,
-  showItem: boolean,
+  showStatusBarItems: boolean,
+  activeFolder: string | undefined,
 ) {
+  if (activeFolder) {
+    status.color = '';
+  } else {
+    status.color = '#ffff00';
+  }
+
   status.text = `$(gear)`;
-  if (showItem) {
+
+  if (showStatusBarItems) {
     status.show();
   } else {
     status.hide();
@@ -70,10 +86,18 @@ export function updateBuildStatus(
 
 export function updateRunStatus(
   status: vscode.StatusBarItem,
-  showItem: boolean,
+  showStatusBarItems: boolean,
+  activeFolder: string | undefined,
 ) {
+  if (activeFolder) {
+    status.color = '';
+  } else {
+    status.color = '#ffff00';
+  }
+
   status.text = `$(play)`;
-  if (showItem) {
+
+  if (showStatusBarItems) {
     status.show();
   } else {
     status.hide();
@@ -82,10 +106,18 @@ export function updateRunStatus(
 
 export function updateDebugStatus(
   status: vscode.StatusBarItem,
-  showItem: boolean,
+  showStatusBarItems: boolean,
+  activeFolder: string | undefined,
 ) {
+  if (activeFolder) {
+    status.color = '';
+  } else {
+    status.color = '#ffff00';
+  }
+
   status.text = `$(bug)`;
-  if (showItem) {
+
+  if (showStatusBarItems) {
     status.show();
   } else {
     status.hide();
@@ -94,10 +126,18 @@ export function updateDebugStatus(
 
 export function updateCleanStatus(
   status: vscode.StatusBarItem,
-  showItem: boolean,
+  showStatusBarItems: boolean,
+  activeFolder: string | undefined,
 ) {
+  if (activeFolder) {
+    status.color = '';
+  } else {
+    status.color = '#ffff00';
+  }
+
   status.text = `$(trash)`;
-  if (showItem) {
+
+  if (showStatusBarItems) {
     status.show();
   } else {
     status.hide();

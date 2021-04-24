@@ -1,5 +1,11 @@
 # C/C++ Runner Change Log
 
+## Version 0.9.2: April 24, 2021
+
+- **Improvement**: Icons in status bar are displayed yellow if no active folder is selected
+- **Info**: Added logging entries
+- **Info**: Updated project structure
+
 ## Version 0.9.1: April 23, 2021
 
 - **Bugfix**: Major bugfix of tasks were not working

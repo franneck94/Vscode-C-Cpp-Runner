@@ -78,7 +78,9 @@ export function getOutputChannelLogger(): Logger {
   return outputChannelLogger;
 }
 
-export function logMessage(message: string) {
-  getOutputChannel().appendLine(message);
-  showOutputChannel();
+export function log(loggingActive: boolean, message: string) {
+  if (loggingActive) {
+    getOutputChannel().appendLine(message);
+    showOutputChannel();
+  }
 }

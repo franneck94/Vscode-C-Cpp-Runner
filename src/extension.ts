@@ -21,6 +21,7 @@ import { Architectures, Builds, Tasks } from './utils/types';
 import {
   createStatusBarItem,
   disposeItem,
+  getLoggingState,
   setContextValue,
 } from './utils/vscodeUtils';
 
@@ -58,19 +59,16 @@ let buildMode: Builds = Builds.debug;
 let architectureMode: Architectures = Architectures.x64;
 let errorMessage: Thenable<string | undefined> | undefined;
 let showStatusBarItems: boolean = false;
-let loggingActive: boolean | undefined = vscode.workspace
-  .getConfiguration('C_Cpp_Runner')
-  .get('loggingActive');
+let loggingActive: boolean = getLoggingState();
 
 export function activate(context: vscode.ExtensionContext) {
   if (
     !vscode.workspace.workspaceFolders ||
     vscode.workspace.workspaceFolders.length === 0
   ) {
-    if (loggingActive) {
-      const infoMessage = `Empty Workspace opened.`;
-      logger.logMessage(infoMessage);
-    }
+    const infoMessage = `Empty Workspace opened.`;
+    logger.log(loggingActive, infoMessage);
+
     return;
   }
 
@@ -78,10 +76,8 @@ export function activate(context: vscode.ExtensionContext) {
 
   showStatusBarItems = noCmakeFileFound();
   if (!showStatusBarItems) {
-    if (loggingActive) {
-      const infoMessage = `CMake Project found. Deactivating extension.`;
-      logger.logMessage(infoMessage);
-    }
+    const infoMessage = `CMake Project found. Deactivating extension.`;
+    logger.log(loggingActive, infoMessage);
   }
 
   initFolderStatusBar(context);
@@ -188,9 +184,7 @@ function initWorkspaceDisposables(context: vscode.ExtensionContext) {
     taskProvider.getTasks();
     propertiesProvider.updateFileContent();
     launchProvider.updateFileContent();
-    loggingActive = vscode.workspace
-      .getConfiguration('C_Cpp_Runner')
-      .get('loggingActive');
+    loggingActive = getLoggingState();
   });
 
   vscode.workspace.onDidRenameFiles((e: vscode.FileRenameEvent) => {
@@ -261,9 +255,10 @@ function initModeStatusBar(context: vscode.ExtensionContext) {
   context.subscriptions.push(modeStatusBar);
   updateModeStatus(
     modeStatusBar,
+    showStatusBarItems,
+    activeFolder,
     buildMode,
     architectureMode,
-    showStatusBarItems,
   );
 
   commandModeDisposable = vscode.commands.registerCommand(
@@ -277,7 +272,7 @@ function initModeStatusBar(context: vscode.ExtensionContext) {
 function initBuildStatusBar(context: vscode.ExtensionContext) {
   buildStatusBar = createStatusBarItem();
   context.subscriptions.push(buildStatusBar);
-  updateBuildStatus(buildStatusBar, showStatusBarItems);
+  updateBuildStatus(buildStatusBar, showStatusBarItems, activeFolder);
 
   commandBuildDisposable = vscode.commands.registerCommand(
     'C_Cpp_Runner.build',
@@ -290,7 +285,7 @@ function initBuildStatusBar(context: vscode.ExtensionContext) {
 function initRunStatusBar(context: vscode.ExtensionContext) {
   runStatusBar = createStatusBarItem();
   context.subscriptions.push(runStatusBar);
-  updateRunStatus(runStatusBar, showStatusBarItems);
+  updateRunStatus(runStatusBar, showStatusBarItems, activeFolder);
 
   commandRunDisposable = vscode.commands.registerCommand(
     'C_Cpp_Runner.run',
@@ -303,7 +298,7 @@ function initRunStatusBar(context: vscode.ExtensionContext) {
 function initDebugStatusBar(context: vscode.ExtensionContext) {
   debugStatusBar = createStatusBarItem();
   context.subscriptions.push(debugStatusBar);
-  updateDebugStatus(debugStatusBar, showStatusBarItems);
+  updateDebugStatus(debugStatusBar, showStatusBarItems, activeFolder);
 
   commandDebugDisposable = vscode.commands.registerCommand(
     'C_Cpp_Runner.debug',
@@ -316,7 +311,7 @@ function initDebugStatusBar(context: vscode.ExtensionContext) {
 function initCleanStatusBar(context: vscode.ExtensionContext) {
   cleanStatusBar = createStatusBarItem();
   context.subscriptions.push(cleanStatusBar);
-  updateCleanStatus(cleanStatusBar, showStatusBarItems);
+  updateCleanStatus(cleanStatusBar, showStatusBarItems, activeFolder);
 
   commandCleanDisposable = vscode.commands.registerCommand(
     'C_Cpp_Runner.clean',
@@ -366,9 +361,10 @@ async function modeCallback() {
     }
     updateModeStatus(
       modeStatusBar,
+      showStatusBarItems,
+      activeFolder,
       buildMode,
       architectureMode,
-      showStatusBarItems,
     );
   }
 }
@@ -380,10 +376,8 @@ function buildCallback() {
     !taskProvider.workspaceFolder ||
     !taskProvider.activeFolder
   ) {
-    if (loggingActive) {
-      const infoMessage = `buildCallback: No Folder or Tasks defined.`;
-      logger.logMessage(infoMessage);
-    }
+    const infoMessage = `buildCallback: No Folder or Tasks defined.`;
+    logger.log(loggingActive, infoMessage);
 
     return;
   }
@@ -415,10 +409,8 @@ function runCallback() {
     !taskProvider.workspaceFolder ||
     !taskProvider.activeFolder
   ) {
-    if (loggingActive) {
-      const infoMessage = `runCallback: No Folder or Tasks defined.`;
-      logger.logMessage(infoMessage);
-    }
+    const infoMessage = `runCallback: No Folder or Tasks defined.`;
+    logger.log(loggingActive, infoMessage);
 
     return;
   }
@@ -445,10 +437,8 @@ function runCallback() {
 
 async function debugCallback() {
   if (!activeFolder || !workspaceFolder) {
-    if (loggingActive) {
-      const infoMessage = `debugCallback: No Workspace or Folder picked.`;
-      logger.logMessage(infoMessage);
-    }
+    const infoMessage = `debugCallback: No Workspace or Folder picked.`;
+    logger.log(loggingActive, infoMessage);
 
     return;
   }
@@ -463,10 +453,8 @@ function cleanCallback() {
     !taskProvider.workspaceFolder ||
     !taskProvider.activeFolder
   ) {
-    if (loggingActive) {
-      const infoMessage = `cleanCallback: No Folder or Tasks defined.`;
-      logger.logMessage(infoMessage);
-    }
+    const infoMessage = `cleanCallback: No Folder or Tasks defined.`;
+    logger.log(loggingActive, infoMessage);
 
     return;
   }
@@ -568,4 +556,15 @@ function updateFolderData() {
   }
 
   updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+  updateModeStatus(
+    modeStatusBar,
+    showStatusBarItems,
+    activeFolder,
+    buildMode,
+    architectureMode,
+  );
+  updateBuildStatus(buildStatusBar, showStatusBarItems, activeFolder);
+  updateRunStatus(runStatusBar, showStatusBarItems, activeFolder);
+  updateCleanStatus(cleanStatusBar, showStatusBarItems, activeFolder);
+  updateDebugStatus(debugStatusBar, showStatusBarItems, activeFolder);
 }

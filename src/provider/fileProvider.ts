@@ -29,7 +29,7 @@ export abstract class FileProvider {
     this.fileWatcherOnDelete = this.createFileWatcher();
 
     const extDirectory = path.dirname(__dirname);
-    const templateDirectory = path.join(extDirectory, 'src', '_templates');
+    const templateDirectory = path.join(extDirectory, 'templates');
     this.templatePath = path.join(templateDirectory, templateFileName);
 
     let doUpdate = false;

@@ -18,6 +18,7 @@ import {
 } from '../utils/fileUtils';
 import { SettingsProvider } from './settingsProvider';
 import { getLaunchConfigIndex } from '../utils/vscodeUtils';
+import { extensionPath } from '../extension';
 
 export class TaskProvider implements vscode.TaskProvider {
   private readonly _tasksFile: string;
@@ -31,8 +32,7 @@ export class TaskProvider implements vscode.TaskProvider {
     private _buildMode: Builds,
     private _architectureMode: Architectures,
   ) {
-    const extDirectory = path.dirname(__dirname);
-    const templateDirectory = path.join(extDirectory, 'templates');
+    const templateDirectory = path.join(extensionPath, 'templates');
     this._tasksFile = path.join(templateDirectory, 'tasks_template.json');
     this._makefileFile = path.join(templateDirectory, 'Makefile');
 

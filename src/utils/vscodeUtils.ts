@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { extensionContextState } from '../extension';
+import { extensionState } from '../extension';
 import { JsonConfiguration } from './types';
 
 const STATUS_BAR_ALIGN = vscode.StatusBarAlignment.Left;
@@ -40,8 +40,8 @@ export function getLaunchConfigIndex(
 }
 
 export function updateLoggingState() {
-  if (extensionContextState) {
-    extensionContextState.update(
+  if (extensionState) {
+    extensionState.update(
       'loggingActive',
       vscode.workspace
         .getConfiguration('C_Cpp_Runner')
@@ -51,8 +51,8 @@ export function updateLoggingState() {
 }
 
 export function getLoggingState() {
-  if (extensionContextState) {
-    return <boolean>extensionContextState.get('loggingActive');
+  if (extensionState) {
+    return <boolean>extensionState.get('loggingActive');
   }
 
   return false;

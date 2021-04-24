@@ -9,6 +9,7 @@ import {
   replaceBackslashes,
 } from '../utils/fileUtils';
 import { SettingsProvider } from './settingsProvider';
+import { extensionPath } from '../extension';
 
 export abstract class FileProvider {
   protected readonly templatePath: string;
@@ -28,8 +29,7 @@ export abstract class FileProvider {
     this.outputPath = path.join(this.vscodeDirectory, outputFileName);
     this.fileWatcherOnDelete = this.createFileWatcher();
 
-    const extDirectory = path.dirname(__dirname);
-    const templateDirectory = path.join(extDirectory, 'templates');
+    const templateDirectory = path.join(extensionPath, 'templates');
     this.templatePath = path.join(templateDirectory, templateFileName);
 
     let doUpdate = false;

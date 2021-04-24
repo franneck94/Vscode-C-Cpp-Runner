@@ -62,8 +62,9 @@ let errorMessage: Thenable<string | undefined> | undefined;
 let showStatusBarItems: boolean = false;
 let loggingActive: boolean = getLoggingState();
 
-export let extensionContext: vscode.ExtensionContext | undefined;
-export let extensionContextState: vscode.Memento | undefined;
+export let extensionContext: vscode.ExtensionContext;
+export let extensionState: vscode.Memento;
+export let extensionPath: string;
 
 export function activate(context: vscode.ExtensionContext) {
   if (
@@ -77,7 +78,8 @@ export function activate(context: vscode.ExtensionContext) {
   }
 
   extensionContext = context;
-  extensionContextState = context.workspaceState;
+  extensionPath = context.extensionPath;
+  extensionState = context.workspaceState;
   setContextValue('C_Cpp_Runner:activatedExtension', true);
 
   updateLoggingState();

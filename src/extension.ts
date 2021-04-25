@@ -100,6 +100,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   initWorkspaceProvider();
   initWorkspaceDisposables(context);
+  initEventListener();
 }
 
 export function deactivate() {
@@ -163,33 +164,41 @@ function initWorkspaceProvider() {
 }
 
 function initWorkspaceDisposables(context: vscode.ExtensionContext) {
-  if (taskProvider) {
+  if (taskProvider && !taskProviderDisposable) {
     taskProviderDisposable = vscode.tasks.registerTaskProvider(
       'C_Cpp_Runner',
       taskProvider,
     );
-  }
-  commandHandlerDisposable = vscode.commands.registerCommand(
-    'C_Cpp_Runner.tasks',
-    () => tasksCallback(),
-  );
-  toggleStatusBarDisposable = vscode.commands.registerCommand(
-    'C_Cpp_Runner.toggleStatusBar',
-    () => toggleStatusBarCallback(),
-  );
-  folderContextMenuDisposable = vscode.commands.registerCommand(
-    'C_Cpp_Runner.folderContextMenu',
-    async (clickedUriItem: vscode.Uri, selectedUriItems: vscode.Uri[]) =>
-      contextMenuCallback(clickedUriItem, selectedUriItems),
-  );
-
-  if (taskProviderDisposable) {
     context.subscriptions.push(taskProviderDisposable);
   }
-  context.subscriptions.push(commandHandlerDisposable);
-  context.subscriptions.push(toggleStatusBarDisposable);
-  context.subscriptions.push(folderContextMenuDisposable);
 
+  if (!commandHandlerDisposable) {
+    commandHandlerDisposable = vscode.commands.registerCommand(
+      'C_Cpp_Runner.tasks',
+      () => tasksCallback(),
+    );
+    context.subscriptions.push(commandHandlerDisposable);
+  }
+
+  if (!toggleStatusBarDisposable) {
+    toggleStatusBarDisposable = vscode.commands.registerCommand(
+      'C_Cpp_Runner.toggleStatusBar',
+      () => toggleStatusBarCallback(),
+    );
+    context.subscriptions.push(toggleStatusBarDisposable);
+  }
+
+  if (!folderContextMenuDisposable) {
+    folderContextMenuDisposable = vscode.commands.registerCommand(
+      'C_Cpp_Runner.folderContextMenu',
+      async (clickedUriItem: vscode.Uri, selectedUriItems: vscode.Uri[]) =>
+        contextMenuCallback(clickedUriItem, selectedUriItems),
+    );
+    context.subscriptions.push(folderContextMenuDisposable);
+  }
+}
+
+function initEventListener() {
   vscode.workspace.onDidChangeConfiguration(() => {
     const infoMessage = `Configuration change.`;
     logger.log(loggingActive, infoMessage);
@@ -209,10 +218,10 @@ function initWorkspaceDisposables(context: vscode.ExtensionContext) {
       const infoMessage = `Renaming: ${oldName} -> ${newName}.`;
       logger.log(loggingActive, infoMessage);
 
-      if (oldName === workspaceFolder) {
+      if (workspaceFolder && oldName === workspaceFolder) {
         workspaceFolder = newName;
         updateFolderData();
-      } else if (oldName === activeFolder) {
+      } else if (activeFolder && oldName === activeFolder) {
         activeFolder = newName;
         updateFolderData();
       }
@@ -226,11 +235,11 @@ function initWorkspaceDisposables(context: vscode.ExtensionContext) {
       const infoMessage = `Deleting: ${oldName}.`;
       logger.log(loggingActive, infoMessage);
 
-      if (oldName === workspaceFolder) {
+      if (workspaceFolder && oldName === workspaceFolder) {
         workspaceFolder = undefined;
         updateFolderData();
         updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
-      } else if (oldName === activeFolder) {
+      } else if (activeFolder && oldName === activeFolder) {
         activeFolder = undefined;
         updateFolderData();
         updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);

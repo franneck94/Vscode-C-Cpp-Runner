@@ -5,7 +5,7 @@ import { JsonConfiguration } from './types';
 const STATUS_BAR_ALIGN = vscode.StatusBarAlignment.Left;
 const STATUS_BAR_PRIORITY = 50;
 
-export function disposeItem(disposableItem: vscode.Disposable) {
+export function disposeItem(disposableItem: vscode.Disposable | undefined) {
   if (disposableItem) {
     disposableItem.dispose();
   }

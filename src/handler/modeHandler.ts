@@ -3,7 +3,9 @@ import * as vscode from 'vscode';
 import { SettingsProvider } from '../provider/settingsProvider';
 import { Architectures, Builds } from '../utils/types';
 
-export async function modeHandler(settingsProvider: SettingsProvider) {
+export async function modeHandler(
+  settingsProvider: SettingsProvider | undefined,
+) {
   let combinations = [
     `${Builds.debug} - ${Architectures.x86}`,
     `${Builds.debug} - ${Architectures.x64}`,

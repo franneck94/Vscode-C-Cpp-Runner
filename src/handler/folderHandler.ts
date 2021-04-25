@@ -10,9 +10,7 @@ import {
 export async function folderHandler() {
   const workspacesFolders = vscode.workspace.workspaceFolders;
 
-  if (!workspacesFolders) {
-    return;
-  }
+  if (!workspacesFolders) return;
 
   let foldersList: string[] = [];
   workspacesFolders.forEach((folder) => {

@@ -10,9 +10,7 @@ export async function taskHandler(taskProvider: TaskProvider) {
   let provideCleanTask = false;
   let provideDebugTask = false;
 
-  if (!taskProvider.tasks) {
-    return;
-  }
+  if (!taskProvider.tasks) return;
 
   const tasks: Task[] = taskProvider.tasks;
 

@@ -48,17 +48,13 @@ export class TaskProvider implements vscode.TaskProvider {
   }
 
   public getTasks() {
-    if (!this.activeFolder) {
-      return [];
-    }
+    if (!this.activeFolder) return [];
 
     const language = getLanguage(this.activeFolder);
 
     this.setTasksDefinition(language);
 
-    if (!this.tasks) {
-      return [];
-    }
+    if (!this.tasks) return [];
 
     return this.tasks;
   }

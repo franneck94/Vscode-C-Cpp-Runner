@@ -76,9 +76,7 @@ export function getLanguage(dir: string) {
 export function getDirectories(dir: fs.PathLike) {
   const directories = foldersInDir(dir);
 
-  if (directories.length === 0) {
-    return;
-  }
+  if (directories.length === 0) return;
 
   directories.forEach((dir) =>
     getDirectories(dir)?.forEach((newDir) => directories.push(newDir)),
@@ -101,9 +99,7 @@ function readDir(dir: string | fs.PathLike) {
 export function filesInDir(dir: string) {
   const fileDirents = readDir(dir);
 
-  if (!fileDirents) {
-    return [];
-  }
+  if (!fileDirents) return [];
 
   const files = fileDirents
     .filter((file) => file.isFile())
@@ -115,9 +111,7 @@ export function filesInDir(dir: string) {
 export function foldersInDir(dir: fs.PathLike) {
   const fileDirents = readDir(dir);
 
-  if (!fileDirents) {
-    return [];
-  }
+  if (!fileDirents) return [];
 
   let folders = fileDirents.filter((folder) => folder.isDirectory());
   folders = folders.filter((folder) => !folder.name.includes('.'));

@@ -31,28 +31,28 @@ const PROPERTIES_FILE = 'c_cpp_properties.json';
 const LAUNCH_TEMPLATE = 'launch_template.json';
 const LAUNCH_FILE = 'launch.json';
 
-let folderContextMenuDisposable: vscode.Disposable;
-let taskProviderDisposable: vscode.Disposable;
-let commandHandlerDisposable: vscode.Disposable;
-let toggleStatusBarDisposable: vscode.Disposable;
-let commandFolderDisposable: vscode.Disposable;
-let commandModeDisposable: vscode.Disposable;
-let commandBuildDisposable: vscode.Disposable;
-let commandRunDisposable: vscode.Disposable;
-let commandDebugDisposable: vscode.Disposable;
-let commandCleanDisposable: vscode.Disposable;
+let folderContextMenuDisposable: vscode.Disposable | undefined;
+let taskProviderDisposable: vscode.Disposable | undefined;
+let commandHandlerDisposable: vscode.Disposable | undefined;
+let toggleStatusBarDisposable: vscode.Disposable | undefined;
+let commandFolderDisposable: vscode.Disposable | undefined;
+let commandModeDisposable: vscode.Disposable | undefined;
+let commandBuildDisposable: vscode.Disposable | undefined;
+let commandRunDisposable: vscode.Disposable | undefined;
+let commandDebugDisposable: vscode.Disposable | undefined;
+let commandCleanDisposable: vscode.Disposable | undefined;
 
-let settingsProvider: SettingsProvider;
-let launchProvider: LaunchProvider;
-let propertiesProvider: PropertiesProvider;
-let taskProvider: TaskProvider;
+let settingsProvider: SettingsProvider | undefined;
+let launchProvider: LaunchProvider | undefined;
+let propertiesProvider: PropertiesProvider | undefined;
+let taskProvider: TaskProvider | undefined;
 
-let folderStatusBar: vscode.StatusBarItem;
-let modeStatusBar: vscode.StatusBarItem;
-let buildStatusBar: vscode.StatusBarItem;
-let runStatusBar: vscode.StatusBarItem;
-let debugStatusBar: vscode.StatusBarItem;
-let cleanStatusBar: vscode.StatusBarItem;
+let folderStatusBar: vscode.StatusBarItem | undefined;
+let modeStatusBar: vscode.StatusBarItem | undefined;
+let buildStatusBar: vscode.StatusBarItem | undefined;
+let runStatusBar: vscode.StatusBarItem | undefined;
+let debugStatusBar: vscode.StatusBarItem | undefined;
+let cleanStatusBar: vscode.StatusBarItem | undefined;
 
 let workspaceFolder: string | undefined;
 let activeFolder: string | undefined;
@@ -124,9 +124,7 @@ export function deactivate() {
 }
 
 function initWorkspaceProvider() {
-  if (!workspaceFolder) {
-    return;
-  }
+  if (!workspaceFolder) return;
 
   if (!settingsProvider) {
     settingsProvider = new SettingsProvider(workspaceFolder);
@@ -141,9 +139,7 @@ function initWorkspaceProvider() {
     );
   }
 
-  if (!activeFolder) {
-    return;
-  }
+  if (!activeFolder) return;
 
   if (!launchProvider) {
     launchProvider = new LaunchProvider(
@@ -167,10 +163,12 @@ function initWorkspaceProvider() {
 }
 
 function initWorkspaceDisposables(context: vscode.ExtensionContext) {
-  taskProviderDisposable = vscode.tasks.registerTaskProvider(
-    'C_Cpp_Runner',
-    taskProvider,
-  );
+  if (taskProvider) {
+    taskProviderDisposable = vscode.tasks.registerTaskProvider(
+      'C_Cpp_Runner',
+      taskProvider,
+    );
+  }
   commandHandlerDisposable = vscode.commands.registerCommand(
     'C_Cpp_Runner.tasks',
     () => tasksCallback(),
@@ -185,7 +183,9 @@ function initWorkspaceDisposables(context: vscode.ExtensionContext) {
       contextMenuCallback(clickedUriItem, selectedUriItems),
   );
 
-  context.subscriptions.push(taskProviderDisposable);
+  if (taskProviderDisposable) {
+    context.subscriptions.push(taskProviderDisposable);
+  }
   context.subscriptions.push(commandHandlerDisposable);
   context.subscriptions.push(toggleStatusBarDisposable);
   context.subscriptions.push(folderContextMenuDisposable);
@@ -193,12 +193,12 @@ function initWorkspaceDisposables(context: vscode.ExtensionContext) {
   vscode.workspace.onDidChangeConfiguration(() => {
     const infoMessage = `Configuration change.`;
     logger.log(loggingActive, infoMessage);
-
-    settingsProvider.getSettings();
-    taskProvider.getTasks();
-    propertiesProvider.updateFileContent();
-    launchProvider.updateFileContent();
     updateLoggingState();
+
+    if (settingsProvider) settingsProvider.getSettings();
+    if (taskProvider) taskProvider.getTasks();
+    if (propertiesProvider) propertiesProvider.updateFileContent();
+    if (launchProvider) launchProvider.updateFileContent();
   });
 
   vscode.workspace.onDidRenameFiles((e: vscode.FileRenameEvent) => {
@@ -241,19 +241,19 @@ function initWorkspaceDisposables(context: vscode.ExtensionContext) {
 
 function toggleStatusBarItems() {
   if (showStatusBarItems) {
-    folderStatusBar.show();
-    modeStatusBar.show();
-    buildStatusBar.show();
-    runStatusBar.show();
-    debugStatusBar.show();
-    cleanStatusBar.show();
+    if (folderStatusBar) folderStatusBar.show();
+    if (modeStatusBar) modeStatusBar.show();
+    if (buildStatusBar) buildStatusBar.show();
+    if (runStatusBar) runStatusBar.show();
+    if (debugStatusBar) debugStatusBar.show();
+    if (cleanStatusBar) cleanStatusBar.show();
   } else {
-    folderStatusBar.hide();
-    modeStatusBar.hide();
-    buildStatusBar.hide();
-    runStatusBar.hide();
-    debugStatusBar.hide();
-    cleanStatusBar.hide();
+    if (folderStatusBar) folderStatusBar.hide();
+    if (modeStatusBar) modeStatusBar.hide();
+    if (buildStatusBar) buildStatusBar.hide();
+    if (runStatusBar) runStatusBar.hide();
+    if (debugStatusBar) debugStatusBar.hide();
+    if (cleanStatusBar) cleanStatusBar.hide();
   }
 }
 
@@ -264,7 +264,6 @@ async function folderCallback() {
   if (ret && ret.activeFolder && ret.workspaceFolder) {
     activeFolder = ret.activeFolder;
     workspaceFolder = ret.workspaceFolder;
-
     updateFolderData();
   } else {
     const infoMessage = `Folder callback aborted.`;
@@ -367,7 +366,7 @@ async function debugCallback() {
     return;
   }
 
-  taskProvider.runDebugTask();
+  if (taskProvider) taskProvider.runDebugTask();
 }
 
 function cleanCallback() {
@@ -441,15 +440,11 @@ function contextMenuCallback(
   clickedUriItem: vscode.Uri,
   selectedUriItems: vscode.Uri[],
 ) {
-  if (selectedUriItems.length > 1) {
-    return;
-  }
+  if (selectedUriItems.length > 1) return;
 
   const workspaceItem = vscode.workspace.getWorkspaceFolder(clickedUriItem);
 
-  if (!workspaceItem) {
-    return;
-  }
+  if (!workspaceItem) return;
 
   activeFolder = clickedUriItem.fsPath;
   workspaceFolder = workspaceItem.uri.fsPath;
@@ -467,8 +462,10 @@ function updateFolderData() {
   }
 
   if (workspaceFolder && activeFolder) {
-    settingsProvider.updatFolderData(workspaceFolder);
-    settingsProvider.checkCompilers();
+    if (settingsProvider) {
+      settingsProvider.updatFolderData(workspaceFolder);
+      settingsProvider.checkCompilers();
+    }
 
     if (propertiesProvider) {
       propertiesProvider.updatFolderData(workspaceFolder);
@@ -479,18 +476,30 @@ function updateFolderData() {
     }
   }
 
-  updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
-  updateModeStatus(
-    modeStatusBar,
-    showStatusBarItems,
-    activeFolder,
-    buildMode,
-    architectureMode,
-  );
-  updateBuildStatus(buildStatusBar, showStatusBarItems, activeFolder);
-  updateRunStatus(runStatusBar, showStatusBarItems, activeFolder);
-  updateCleanStatus(cleanStatusBar, showStatusBarItems, activeFolder);
-  updateDebugStatus(debugStatusBar, showStatusBarItems, activeFolder);
+  if (folderStatusBar) {
+    updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+  }
+  if (modeStatusBar) {
+    updateModeStatus(
+      modeStatusBar,
+      showStatusBarItems,
+      activeFolder,
+      buildMode,
+      architectureMode,
+    );
+  }
+  if (buildStatusBar) {
+    updateBuildStatus(buildStatusBar, showStatusBarItems, activeFolder);
+  }
+  if (runStatusBar) {
+    updateRunStatus(runStatusBar, showStatusBarItems, activeFolder);
+  }
+  if (cleanStatusBar) {
+    updateCleanStatus(cleanStatusBar, showStatusBarItems, activeFolder);
+  }
+  if (debugStatusBar) {
+    updateDebugStatus(debugStatusBar, showStatusBarItems, activeFolder);
+  }
 }
 
 // INIT STATUS BAR

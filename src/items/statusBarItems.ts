@@ -6,15 +6,13 @@ import { Architectures, Builds } from '../utils/types';
 import { replaceBackslashes } from '../utils/fileUtils';
 
 export function updateFolderStatus(
-  status: vscode.StatusBarItem,
-  taskProvider: TaskProvider,
+  status: vscode.StatusBarItem | undefined,
+  taskProvider: TaskProvider | undefined,
   showStatusBarItems: boolean,
 ) {
   const workspaceFolders = vscode.workspace.workspaceFolders;
 
-  if (!workspaceFolders) {
-    return;
-  }
+  if (!workspaceFolders || !status || !taskProvider) return;
 
   if (
     taskProvider &&
@@ -43,12 +41,14 @@ export function updateFolderStatus(
 }
 
 export function updateModeStatus(
-  status: vscode.StatusBarItem,
+  status: vscode.StatusBarItem | undefined,
   showStatusBarItems: boolean,
   activeFolder: string | undefined,
   buildMode: Builds,
   architectureMode: Architectures,
 ) {
+  if (!status) return;
+
   status.color = '';
   status.text = `$(tools) ${buildMode} - ${architectureMode}`;
 
@@ -60,10 +60,12 @@ export function updateModeStatus(
 }
 
 export function updateBuildStatus(
-  status: vscode.StatusBarItem,
+  status: vscode.StatusBarItem | undefined,
   showStatusBarItems: boolean,
   activeFolder: string | undefined,
 ) {
+  if (!status) return;
+
   status.color = '';
   status.text = `$(gear)`;
 
@@ -75,10 +77,12 @@ export function updateBuildStatus(
 }
 
 export function updateRunStatus(
-  status: vscode.StatusBarItem,
+  status: vscode.StatusBarItem | undefined,
   showStatusBarItems: boolean,
   activeFolder: string | undefined,
 ) {
+  if (!status) return;
+
   status.color = '';
   status.text = `$(play)`;
 
@@ -90,10 +94,12 @@ export function updateRunStatus(
 }
 
 export function updateDebugStatus(
-  status: vscode.StatusBarItem,
+  status: vscode.StatusBarItem | undefined,
   showStatusBarItems: boolean,
   activeFolder: string | undefined,
 ) {
+  if (!status) return;
+
   status.color = '';
   status.text = `$(bug)`;
 
@@ -105,10 +111,12 @@ export function updateDebugStatus(
 }
 
 export function updateCleanStatus(
-  status: vscode.StatusBarItem,
+  status: vscode.StatusBarItem | undefined,
   showStatusBarItems: boolean,
   activeFolder: string | undefined,
 ) {
+  if (!status) return;
+
   status.color = '';
   status.text = `$(trash)`;
 

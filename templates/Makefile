@@ -1,41 +1,49 @@
 ###############
 ## VARIABLES ##
 ###############
+# Pre-defined values
+DEBUG_FLAGS = -g3 -O0
+RELEASE_FLAGS = -O3 -DNDEBUG
+C_COMPILER_FLAGS = ""
+CPP_COMPILER_FLAGS = ""
+
+# Required arguments with default values
 LANGUAGE_MODE ?= Cpp
 COMPILATION_MODE ?= Debug
-ENABLE_WARNINGS ?= 1
-WARNINGS_AS_ERRORS ?= 0
-WARNINGS ?= -Wall -Wextra -Wpedantic
 C_COMPILER ?= gcc
-C_STANDARD ?= c99
 CPP_COMPILER ?= g++
-CPP_STANDARD ?= c++11
 EXECUTABLE_NAME ?= out$(COMPILATION_MODE)
+
+# Optional arguments with default values
+ENABLE_WARNINGS ?= 0
+WARNINGS_AS_ERRORS ?= 0
+
+# Optional arguments without default values
+C_STANDARD ?= ""
+CPP_STANDARD ?= ""
 ARCHITECTURE ?= ""
+WARNINGS ?= ""
 COMPILER_ARGS ?= ""
 LINKER_ARGS ?= ""
 INCLUDE_PATHS ?= ""
-DEBUG_FLAGS ?= -g3 -O0
-RELEASE_FLAGS ?= -O3 -DNDEBUG
-CPP_COMPILER_FLAGS ?= ""
-C_COMPILER_FLAGS ?= ""
+
+# Internal variable
 VERBOSE = 0
 
 #######################
 ## OS DEPENDENT VARS ##
 #######################
 ifeq '$(findstring ;,$(PATH))' ';'
-  detected_OS := Windows
+ detected_OS := Windows
 else
-  detected_OS := $(shell uname 2>/dev/null || echo Unknown)
-  # detected_OS := $(patsubst CYGWIN%,Cygwin,$(detected_OS))
+ detected_OS := $(shell uname 2>/dev/null || echo Unknown)
 endif
 
 ifeq ($(detected_OS), Windows)
 RM_FUNC = del /s /q
 MKDIR_FUNC = mkdir
 BUILD_DIR = build\$(COMPILATION_MODE)
-CLEAN_PATH = $(BUILD_DIR)\*.o 2>NUL
+CLEAN_PATH = $(BUILD_DIR)\*.o
 MKDIR_PATH = $(BUILD_DIR)
 else
 RM_FUNC = rm -f
@@ -58,17 +66,17 @@ endif
 ## COMPILER ARGUMENTS ##
 ########################
 ifeq ($(COMPILATION_MODE), Release)
-C_COMPILER_FLAGS := $(RELEASE_FLAGS)
-CPP_COMPILER_FLAGS := $(RELEASE_FLAGS)
+C_COMPILER_FLAGS = $(RELEASE_FLAGS)
+CPP_COMPILER_FLAGS = $(RELEASE_FLAGS)
 else
-C_COMPILER_FLAGS := $(DEBUG_FLAGS)
-CPP_COMPILER_FLAGS := $(DEBUG_FLAGS)
+C_COMPILER_FLAGS = $(DEBUG_FLAGS)
+CPP_COMPILER_FLAGS = $(DEBUG_FLAGS)
 endif
 
-ifeq ($(C_STANDARD),)
+ifneq ($(C_STANDARD), "")
 C_COMPILER_FLAGS := $(C_COMPILER_FLAGS) -std=$(C_STANDARD)
 endif
-ifeq ($(CPP_STANDARD),)
+ifneq ($(CPP_STANDARD), "")
 CPP_COMPILER_FLAGS := $(CPP_COMPILER_FLAGS) -std=$(CPP_STANDARD)
 endif
 

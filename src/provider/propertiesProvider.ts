@@ -45,14 +45,22 @@ export class PropertiesProvider extends FileProvider {
       config.includePath = [config.includePath[0]];
     }
 
-    config.cppStandard = this.settings.standardCpp;
-    config.cStandard =
-      this.settings.standardC === 'c90' ? 'c89' : this.settings.standardC;
+    if (this.settings.cStandard) {
+      config.cStandard = this.settings.cStandard;
+    } else {
+      config.cStandard = '${default}';
+    }
+
+    if (this.settings.cppStandard) {
+      config.cppStandard = this.settings.cppStandard;
+    } else {
+      config.cppStandard = '${default}';
+    }
 
     if (Languages.cpp === language) {
-      config.compilerPath = this.settings.compilerPathCpp;
+      config.compilerPath = this.settings.cppCompilerPath;
     } else {
-      config.compilerPath = this.settings.compilerPathC;
+      config.compilerPath = this.settings.cCompilerPath;
     }
     config.name = triplet;
     config.intelliSenseMode = triplet;

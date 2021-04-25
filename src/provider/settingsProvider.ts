@@ -36,22 +36,22 @@ export class SettingsProvider {
   private _cCompiler: Compilers | undefined;
   private _cppCompiler: Compilers | undefined;
   private _debugger: Debuggers | undefined;
-  private _foundCCompiler: boolean = false;
-  private _foundCppCompiler: boolean = false;
+  private _cCompilerFound: boolean = false;
+  private _cppCompilerFound: boolean = false;
   private _foundMake: boolean = false;
   private _foundDebugger: boolean = false;
   // Settings
-  private _compilerPathC: string = 'gcc';
-  private _compilerPathCpp: string = 'g++';
+  private _cCompilerPath: string = 'gcc';
+  private _cppCompilerPath: string = 'g++';
   private _debuggerPath: string = 'gdb';
   private _makePath: string = 'make';
-  private _standardC: string = 'c99';
-  private _standardCpp: string = 'c++11';
+  private _cStandard: string = 'c99';
+  private _cppStandard: string = 'c++11';
   private _compilerArgs: string = '';
   private _linkerArgs: string = '';
   private _includePaths: String = '';
-  private _enableWarnings: boolean = true;
-  private _warningsAsError: boolean = true;
+  private _enableWarnings: boolean = false;
+  private _warningsAsError: boolean = false;
   private _warnings: string = '-Wall -Wextra -Wpedantic';
 
   constructor(public workspaceFolder: string) {
@@ -97,8 +97,8 @@ export class SettingsProvider {
       }
 
       if (
-        settingsJson['C_Cpp_Runner.compilerPathC'] &&
-        settingsJson['C_Cpp_Runner.compilerPathCpp'] &&
+        settingsJson['C_Cpp_Runner.cCompilerPath'] &&
+        settingsJson['C_Cpp_Runner.cppCompilerPath'] &&
         settingsJson['C_Cpp_Runner.debuggerPath'] &&
         settingsJson['C_Cpp_Runner.makePath']
       ) {
@@ -106,8 +106,8 @@ export class SettingsProvider {
       }
 
       if (
-        this._foundCCompiler &&
-        this._foundCppCompiler &&
+        this._cCompilerFound &&
+        this._cppCompilerFound &&
         this._foundMake &&
         this._foundDebugger
       ) {
@@ -207,18 +207,18 @@ export class SettingsProvider {
     this._enableWarnings = this._config.get('enableWarnings', false);
     this._warnings = this._config.get('warnings', '');
     this._warningsAsError = this._config.get('warningsAsError', false);
-    this._compilerPathC = this._config.get('compilerPathC', '');
-    this._compilerPathCpp = this._config.get('compilerPathCpp', '');
+    this._cCompilerPath = this._config.get('cCompilerPath', '');
+    this._cppCompilerPath = this._config.get('cppCompilerPath', '');
     this._debuggerPath = this._config.get('debuggerPath', '');
     this._makePath = this._config.get('makePath', '');
-    this._standardC = this._config.get('standardC', '');
-    this._standardCpp = this._config.get('standardCpp', '');
+    this._cStandard = this._config.get('cStandard', '');
+    this._cppStandard = this._config.get('cppStandard', '');
     this._compilerArgs = this._config.get('compilerArgs', '');
     this._linkerArgs = this._config.get('linkerArgs', '');
     this._includePaths = this._config.get('includePaths', '');
 
-    const cBasename = path.basename(this.compilerPathC, 'exe');
-    const cppBasename = path.basename(this.compilerPathCpp, 'exe');
+    const cBasename = path.basename(this.cCompilerPath, 'exe');
+    const cppBasename = path.basename(this.cppCompilerPath, 'exe');
 
     if (cBasename.includes(Compilers.clang)) {
       this._cCompiler = Compilers.clang;
@@ -270,27 +270,27 @@ export class SettingsProvider {
   }
 
   private setGcc(pathGcc: string) {
-    this._config.update('compilerPathC', pathGcc, CONFIGURATION_TARGET);
+    this._config.update('cCompilerPath', pathGcc, CONFIGURATION_TARGET);
     this._cCompiler = Compilers.gcc;
-    this._foundCCompiler = true;
+    this._cCompilerFound = true;
   }
 
   private setClang(pathClang: string) {
-    this._config.update('compilerPathC', pathClang, CONFIGURATION_TARGET);
+    this._config.update('cCompilerPath', pathClang, CONFIGURATION_TARGET);
     this._cCompiler = Compilers.clang;
-    this._foundCCompiler = true;
+    this._cCompilerFound = true;
   }
 
   private setGpp(pathGpp: string) {
-    this._config.update('compilerPathCpp', pathGpp, CONFIGURATION_TARGET);
+    this._config.update('cppCompilerPath', pathGpp, CONFIGURATION_TARGET);
     this._cppCompiler = Compilers.gpp;
-    this._foundCppCompiler = true;
+    this._cppCompilerFound = true;
   }
 
   private setClangpp(pathClangpp: string) {
-    this._config.update('compilerPathCpp', pathClangpp, CONFIGURATION_TARGET);
+    this._config.update('cppCompilerPath', pathClangpp, CONFIGURATION_TARGET);
     this._cppCompiler = Compilers.clangpp;
-    this._foundCppCompiler = true;
+    this._cppCompilerFound = true;
   }
 
   private setLLDB(pathLLDB: string) {
@@ -342,12 +342,12 @@ export class SettingsProvider {
     return this._warningsAsError;
   }
 
-  public get compilerPathC() {
-    return this._compilerPathC;
+  public get cCompilerPath() {
+    return this._cCompilerPath;
   }
 
-  public get compilerPathCpp() {
-    return this._compilerPathCpp;
+  public get cppCompilerPath() {
+    return this._cppCompilerPath;
   }
 
   public get debuggerPath() {
@@ -358,12 +358,12 @@ export class SettingsProvider {
     return this._makePath;
   }
 
-  public get standardC() {
-    return this._standardC;
+  public get cStandard() {
+    return this._cStandard;
   }
 
-  public get standardCpp() {
-    return this._standardCpp;
+  public get cppStandard() {
+    return this._cppStandard;
   }
 
   public get compilerArgs() {

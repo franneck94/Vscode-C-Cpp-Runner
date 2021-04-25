@@ -1,8 +1,6 @@
 import * as os from 'os';
 import * as vscode from 'vscode';
 
-const EXTENSION_NAME = 'C/C++ Runner';
-
 let outputChannel: vscode.OutputChannel | undefined;
 let outputChannelLogger: Logger | undefined;
 
@@ -60,7 +58,7 @@ export class Logger {
 
 export function getOutputChannel(): vscode.OutputChannel {
   if (!outputChannel) {
-    outputChannel = vscode.window.createOutputChannel(EXTENSION_NAME);
+    outputChannel = vscode.window.createOutputChannel('C/C++ Runner');
   }
   return outputChannel;
 }

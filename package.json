@@ -144,13 +144,13 @@
           "description": "Whether to treat warnings as compiler errors or not.",
           "scope": "resource"
         },
-        "C_Cpp_Runner.compilerPathC": {
+        "C_Cpp_Runner.cCompilerPath": {
           "type": "string",
           "default": "gcc",
           "description": "The path to the C Compiler (either gcc or clang).",
           "scope": "resource"
         },
-        "C_Cpp_Runner.compilerPathCpp": {
+        "C_Cpp_Runner.cppCompilerPath": {
           "type": "string",
           "default": "g++",
           "description": "The path to the C++ Compiler (either g++ or clang++).",
@@ -168,17 +168,15 @@
           "description": "The path to the make installation.",
           "scope": "resource"
         },
-        "C_Cpp_Runner.standardC": {
+        "C_Cpp_Runner.cStandard": {
           "type": "string",
           "enum": [
             "",
             "c89",
-            "c90",
             "c99",
             "c11",
             "c17",
             "gnu89",
-            "gnu90",
             "gnu99",
             "gnu11",
             "gnu17"
@@ -187,7 +185,7 @@
           "description": "C-Standard for the C Compiler.",
           "scope": "resource"
         },
-        "C_Cpp_Runner.standardCpp": {
+        "C_Cpp_Runner.cppStandard": {
           "type": "string",
           "enum": [
             "",

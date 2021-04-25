@@ -60,13 +60,19 @@ let buildMode: Builds = Builds.debug;
 let architectureMode: Architectures = Architectures.x64;
 let errorMessage: Thenable<string | undefined> | undefined;
 let showStatusBarItems: boolean = false;
-let loggingActive: boolean = getLoggingState();
 
 export let extensionContext: vscode.ExtensionContext;
 export let extensionState: vscode.Memento;
 export let extensionPath: string;
+export let loggingActive: boolean;
 
 export function activate(context: vscode.ExtensionContext) {
+  extensionContext = context;
+  extensionPath = context.extensionPath;
+  extensionState = context.workspaceState;
+  updateLoggingState();
+  loggingActive = getLoggingState();
+
   if (
     !vscode.workspace.workspaceFolders ||
     vscode.workspace.workspaceFolders.length === 0
@@ -77,12 +83,7 @@ export function activate(context: vscode.ExtensionContext) {
     return;
   }
 
-  extensionContext = context;
-  extensionPath = context.extensionPath;
-  extensionState = context.workspaceState;
   setContextValue('C_Cpp_Runner:activatedExtension', true);
-
-  updateLoggingState();
 
   showStatusBarItems = noCmakeFileFound();
   if (!showStatusBarItems) {

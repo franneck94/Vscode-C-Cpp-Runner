@@ -64,6 +64,7 @@ export class TaskProvider implements vscode.TaskProvider {
   }
 
   private setTasksDefinition(language: Languages) {
+    const taskType = 'shell';
     const configJson: JsonTask = readJsonFile(this._tasksFile);
 
     if (!configJson) {
@@ -73,7 +74,7 @@ export class TaskProvider implements vscode.TaskProvider {
     this.tasks = [];
 
     for (const taskJson of configJson.tasks) {
-      if (taskJson.type !== 'shell') {
+      if (taskJson.type !== taskType) {
         continue;
       }
       if (taskJson.options) {
@@ -87,7 +88,7 @@ export class TaskProvider implements vscode.TaskProvider {
       const shellCommand = `${taskJson.command} ${taskJson.args.join(' ')}`;
 
       const definition = {
-        type: 'shell',
+        type: taskType,
         task: taskJson.label,
       };
       const problemMatcher = '$gcc';
@@ -139,19 +140,27 @@ export class TaskProvider implements vscode.TaskProvider {
     const runTask = taskJson.label.includes(Tasks.run);
     if (!cleanTask && !runTask) {
       if (language === Languages.c) {
-        taskJson.args.push(`C_COMPILER=${settings.compilerPathC}`);
-        taskJson.args.push(`C_STANDARD=${settings.standardC}`);
+        taskJson.args.push(`C_COMPILER=${settings.cCompilerPath}`);
+        if (settings.cStandard) {
+          taskJson.args.push(`C_STANDARD=${settings.cStandard}`);
+        }
       } else {
-        taskJson.args.push(`CPP_COMPILER=${settings.compilerPathCpp}`);
-        taskJson.args.push(`CPP_STANDARD=${settings.standardCpp}`);
+        taskJson.args.push(`CPP_COMPILER=${settings.cppCompilerPath}`);
+        if (settings.cppStandard) {
+          taskJson.args.push(`CPP_STANDARD=${settings.cppStandard}`);
+        }
       }
       taskJson.args.push(`ENABLE_WARNINGS=${+settings.enableWarnings}`);
       taskJson.args.push(`WARNINGS_AS_ERRORS=${+settings.warningsAsError}`);
       const architectureStr =
         this.architectureMode === Architectures.x64 ? '64' : '32';
-      taskJson.args.push(`ARCHITECTURE=${architectureStr}`);
+      if (architectureStr) {
+        taskJson.args.push(`ARCHITECTURE=${architectureStr}`);
+      }
       // Makefile arguments that can hold multiple values
-      taskJson.args.push(`WARNINGS="${settings.warnings}"`);
+      if (settings.warnings) {
+        taskJson.args.push(`WARNINGS="${settings.warnings}"`);
+      }
       if (settings.compilerArgs) {
         taskJson.args.push(`COMPILER_ARGS="${settings.compilerArgs}"`);
       }

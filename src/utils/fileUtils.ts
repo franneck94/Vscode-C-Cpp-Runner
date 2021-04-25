@@ -5,9 +5,7 @@ import * as JSON5 from 'json5';
 
 import { Languages } from './types';
 import * as logger from './logger';
-import { getLoggingState } from './vscodeUtils';
-
-let loggingActive: boolean = getLoggingState();
+import { loggingActive } from '../extension';
 
 export function replaceBackslashes(text: string) {
   return text.replace(/\\/g, '/');

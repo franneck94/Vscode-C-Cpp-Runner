@@ -28,7 +28,8 @@ You do not need to know about any compiler and Makefile commands. 😎
 You can select the folder by the quick pick menu from the status bar.  
 ![TaskStatusBar](./media/FolderStatusBar.png)  
 Besides that, you can also select a folder by right-clicking in the context menu.  
-2️⃣ The second step is to select either debug or release mode for building the binary.  
+After selecting the folder, the icons for building, running and debugging are shown.  
+2️⃣ The second step is to select either debug or release mode for building the binary (debug is the default case).  
 ![TaskStatusBar](./media/ModeStatusBar.png)  
 3️⃣ The third step is to execute the extension's tasks.  
 ![TaskStatusBar](./media/TaskStatusBar.png)
@@ -38,7 +39,7 @@ Besides that, you can also select a folder by right-clicking in the context menu
 - 🐞 Debug*: This task will start a debugging session for the binary.
 - 🗑️ Clean*: This helper task will delete all compiled object files (*.o).
 
-*This task is only present if the build task was executed previously.
+*This task is a no-op if the build task was not executed previously.
 
 You can also press the shortcut `ctrl+shift+r` to get a quick pick dropdown for the tasks.  
 For example, if you select a folder called *"vscode-test/folder1"* you will see the following tasks:
@@ -74,7 +75,7 @@ The properties will be updated automatically after changing the settings.
 - ⚙️ Additional compiler arguments (defaults to None)
 - ⚙️ Additional linker arguments (defaults to None)
 - ⚙️ Additional include paths (defaults to None)
-- ⚙️ (Optional): To activate the logger for certain infos/errors (only needed for developers)
+- ⚙️ Whether to activate the logging or not (only for extension developers)
 
 ## Important Notes
 

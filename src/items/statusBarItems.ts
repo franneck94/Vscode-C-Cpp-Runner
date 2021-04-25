@@ -49,15 +49,10 @@ export function updateModeStatus(
   buildMode: Builds,
   architectureMode: Architectures,
 ) {
-  if (activeFolder) {
-    status.color = '';
-  } else {
-    status.color = '#ffff00';
-  }
-
+  status.color = '';
   status.text = `$(tools) ${buildMode} - ${architectureMode}`;
 
-  if (showStatusBarItems) {
+  if (showStatusBarItems && activeFolder) {
     status.show();
   } else {
     status.hide();
@@ -69,15 +64,10 @@ export function updateBuildStatus(
   showStatusBarItems: boolean,
   activeFolder: string | undefined,
 ) {
-  if (activeFolder) {
-    status.color = '';
-  } else {
-    status.color = '#ffff00';
-  }
-
+  status.color = '';
   status.text = `$(gear)`;
 
-  if (showStatusBarItems) {
+  if (showStatusBarItems && activeFolder) {
     status.show();
   } else {
     status.hide();
@@ -89,15 +79,10 @@ export function updateRunStatus(
   showStatusBarItems: boolean,
   activeFolder: string | undefined,
 ) {
-  if (activeFolder) {
-    status.color = '';
-  } else {
-    status.color = '#ffff00';
-  }
-
+  status.color = '';
   status.text = `$(play)`;
 
-  if (showStatusBarItems) {
+  if (showStatusBarItems && activeFolder) {
     status.show();
   } else {
     status.hide();
@@ -109,15 +94,10 @@ export function updateDebugStatus(
   showStatusBarItems: boolean,
   activeFolder: string | undefined,
 ) {
-  if (activeFolder) {
-    status.color = '';
-  } else {
-    status.color = '#ffff00';
-  }
-
+  status.color = '';
   status.text = `$(bug)`;
 
-  if (showStatusBarItems) {
+  if (showStatusBarItems && activeFolder) {
     status.show();
   } else {
     status.hide();
@@ -129,15 +109,10 @@ export function updateCleanStatus(
   showStatusBarItems: boolean,
   activeFolder: string | undefined,
 ) {
-  if (activeFolder) {
-    status.color = '';
-  } else {
-    status.color = '#ffff00';
-  }
-
+  status.color = '';
   status.text = `$(trash)`;
 
-  if (showStatusBarItems) {
+  if (showStatusBarItems && activeFolder) {
     status.show();
   } else {
     status.hide();

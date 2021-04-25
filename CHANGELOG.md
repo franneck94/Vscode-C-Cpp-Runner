@@ -2,7 +2,7 @@
 
 ## Version 0.9.2: April 24, 2021
 
-- **Improvement**: Icons in status bar are displayed yellow if no active folder is selected
+- **Improvement**: Updated display logic of status bar items
 - **Info**: Added logging entries
 - **Info**: Updated project structure
 

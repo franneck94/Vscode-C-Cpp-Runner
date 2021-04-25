@@ -217,8 +217,16 @@ export class SettingsProvider {
     this._linkerArgs = this._config.get('linkerArgs', '');
     this._includePaths = this._config.get('includePaths', '');
 
-    const cBasename = path.basename(this.cCompilerPath, 'exe');
-    const cppBasename = path.basename(this.cppCompilerPath, 'exe');
+    let cBasename: string;
+    let cppBasename: string;
+
+    if (this.operatingSystem === OperatingSystems.windows) {
+      cBasename = path.basename(this.cCompilerPath, 'exe');
+      cppBasename = path.basename(this.cppCompilerPath, 'exe');
+    } else {
+      cBasename = path.basename(this.cCompilerPath);
+      cppBasename = path.basename(this.cppCompilerPath);
+    }
 
     if (cBasename.includes(Compilers.clang)) {
       this._cCompiler = Compilers.clang;

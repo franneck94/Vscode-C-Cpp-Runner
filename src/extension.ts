@@ -99,7 +99,7 @@ export function activate(context: vscode.ExtensionContext) {
   initCleanStatusBar(context);
 
   initWorkspaceProvider();
-  initWorkspaceDisposables(context);
+  initWorkspaceDisposables();
   initEventListener();
 }
 
@@ -163,13 +163,13 @@ function initWorkspaceProvider() {
   }
 }
 
-function initWorkspaceDisposables(context: vscode.ExtensionContext) {
+function initWorkspaceDisposables() {
   if (taskProvider && !taskProviderDisposable) {
     taskProviderDisposable = vscode.tasks.registerTaskProvider(
       'C_Cpp_Runner',
       taskProvider,
     );
-    context.subscriptions.push(taskProviderDisposable);
+    extensionContext.subscriptions.push(taskProviderDisposable);
   }
 
   if (!commandHandlerDisposable) {
@@ -177,7 +177,7 @@ function initWorkspaceDisposables(context: vscode.ExtensionContext) {
       'C_Cpp_Runner.tasks',
       () => tasksCallback(),
     );
-    context.subscriptions.push(commandHandlerDisposable);
+    extensionContext.subscriptions.push(commandHandlerDisposable);
   }
 
   if (!toggleStatusBarDisposable) {
@@ -185,7 +185,7 @@ function initWorkspaceDisposables(context: vscode.ExtensionContext) {
       'C_Cpp_Runner.toggleStatusBar',
       () => toggleStatusBarCallback(),
     );
-    context.subscriptions.push(toggleStatusBarDisposable);
+    extensionContext.subscriptions.push(toggleStatusBarDisposable);
   }
 
   if (!folderContextMenuDisposable) {
@@ -194,7 +194,7 @@ function initWorkspaceDisposables(context: vscode.ExtensionContext) {
       async (clickedUriItem: vscode.Uri, selectedUriItems: vscode.Uri[]) =>
         contextMenuCallback(clickedUriItem, selectedUriItems),
     );
-    context.subscriptions.push(folderContextMenuDisposable);
+    extensionContext.subscriptions.push(folderContextMenuDisposable);
   }
 }
 
@@ -462,6 +462,7 @@ function contextMenuCallback(
 
 function updateFolderData() {
   initWorkspaceProvider();
+  initWorkspaceDisposables();
 
   if (taskProvider) {
     taskProvider.updatFolderData(workspaceFolder, activeFolder);

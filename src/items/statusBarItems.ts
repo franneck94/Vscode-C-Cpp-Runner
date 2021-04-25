@@ -10,9 +10,7 @@ export function updateFolderStatus(
   taskProvider: TaskProvider | undefined,
   showStatusBarItems: boolean,
 ) {
-  const workspaceFolders = vscode.workspace.workspaceFolders;
-
-  if (!workspaceFolders || !status || !taskProvider) return;
+  if (!status) return;
 
   if (
     taskProvider &&

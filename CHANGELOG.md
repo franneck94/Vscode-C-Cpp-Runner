@@ -1,6 +1,6 @@
 # C/C++ Runner Change Log
 
-## Version 0.9.2: April 24, 2021
+## Version 0.10.0: April 26, 2021
 
 - **Improvement**: Updated display logic of status bar items
 - **Info**: Added logging entries

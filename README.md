@@ -58,7 +58,7 @@ If you wish to use any other installed compiler, just edit the entries in the lo
 Based on the operating system and the compiler, there will be a *c_cpp_properties.json* file created in the local *.vscode* folder.  
 This file will be used by Microsoft's *C/C++* extension for intellisense. For more information refer to the official [documentation](https://code.visualstudio.com/docs/cpp/c-cpp-properties-schema-reference).  
 ![CCppConfig](./media/CCppConfig.png)  
-**Important:** It is recommended to edit the local *"settings.json"* instead of the *"c_cpp_properties.json"*.  
+**Important:** It is *recommended* to edit the local *"settings.json"* instead of the *"c_cpp_properties.json"*.  
 The properties will be updated automatically after changing the settings.
 
 ## Extension Settings
@@ -75,7 +75,7 @@ The properties will be updated automatically after changing the settings.
 - ⚙️ Additional compiler arguments (defaults to None)
 - ⚙️ Additional linker arguments (defaults to None)
 - ⚙️ Additional include paths (defaults to None)
-- ⚙️ Whether to activate the logging or not (only for extension developers)
+- ⚙️ Whether to activate logging or not (only for extension developers)
 
 ## Important Notes
 
@@ -89,7 +89,7 @@ The properties will be updated automatically after changing the settings.
 
 The extension does not activate on start whenever there is a CMakeLists.txt file in the root folder of the workspace.  
 Otherwise, the status bar would have a lot of buttons from this extension and *Microsoft's CMake Tools* extension.  
-However, the user can trigger the start-up of this extension by pressing `ctrl+shift+r` regardless of a present CMake file.
+However, the user can trigger the start-up of this extension by pressing `ctrl+alt+r` regardless of a present CMake file.
 
 ## Release Notes
 

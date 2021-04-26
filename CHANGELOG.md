@@ -2,7 +2,7 @@
 
 ## Version 0.10.0: April 26, 2021
 
-- **Improvement**: Updated display logic of status bar items
+- **Info**: Updated display logic of status bar items
 - **Info**: Added logging entries
 - **Info**: Updated project structure
 

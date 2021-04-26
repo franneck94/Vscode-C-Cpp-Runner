@@ -251,11 +251,11 @@ function initEventListener() {
 function toggleStatusBarItems() {
   if (showStatusBarItems) {
     if (folderStatusBar) folderStatusBar.show();
-    if (modeStatusBar) modeStatusBar.show();
-    if (buildStatusBar) buildStatusBar.show();
-    if (runStatusBar) runStatusBar.show();
-    if (debugStatusBar) debugStatusBar.show();
-    if (cleanStatusBar) cleanStatusBar.show();
+    if (modeStatusBar && activeFolder) modeStatusBar.show();
+    if (buildStatusBar && activeFolder) buildStatusBar.show();
+    if (runStatusBar && activeFolder) runStatusBar.show();
+    if (debugStatusBar && activeFolder) debugStatusBar.show();
+    if (cleanStatusBar && activeFolder) cleanStatusBar.show();
   } else {
     if (folderStatusBar) folderStatusBar.hide();
     if (modeStatusBar) modeStatusBar.hide();

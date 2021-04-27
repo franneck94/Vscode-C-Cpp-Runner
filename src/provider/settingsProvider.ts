@@ -1,7 +1,17 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { writeJsonFile } from '../utils/fileUtils';
 
+import {
+  mkdirRecursive,
+  pathExists,
+  readJsonFile,
+  writeJsonFile,
+} from '../utils/fileUtils';
+import {
+  commandExists,
+  getArchitecture,
+  getOperatingSystem,
+} from '../utils/systemUtils';
 import {
   Architectures,
   Compilers,
@@ -9,24 +19,13 @@ import {
   JsonSettings,
   OperatingSystems,
 } from '../utils/types';
-import {
-  mkdirRecursive,
-  pathExists,
-  readJsonFile,
-  replaceBackslashes,
-} from '../utils/fileUtils';
-import {
-  commandExists,
-  getArchitecture,
-  getOperatingSystem,
-} from '../utils/systemUtils';
 
 const outputFileName = 'settings.json';
 
 export class SettingsProvider {
   // Workspace data
-  private _fileWatcherOnDelete: vscode.FileSystemWatcher;
-  private _fileWatcherOnChange: vscode.FileSystemWatcher;
+  private _fileWatcherOnDelete: vscode.FileSystemWatcher | undefined;
+  private _fileWatcherOnChange: vscode.FileSystemWatcher | undefined;
   private _outputPath: string;
   private _vscodeDirectory: string;
   private _config = vscode.workspace.getConfiguration('C_Cpp_Runner');
@@ -58,26 +57,9 @@ export class SettingsProvider {
     this._vscodeDirectory = path.join(this.workspaceFolder, '.vscode');
     this._outputPath = path.join(this._vscodeDirectory, outputFileName);
 
-    const ret = this.createFileWatcher();
-    this._fileWatcherOnChange = ret.fileWatcherOnChange;
-    this._fileWatcherOnDelete = ret.fileWatcherOnDelete;
-
+    this.createFileWatcher();
     this.checkCompilers();
     this.getSettings();
-
-    this._fileWatcherOnDelete.onDidDelete((e: vscode.Uri) => {
-      const pathName = e.fsPath;
-      if (
-        pathName === this._vscodeDirectory ||
-        path.basename(pathName) === outputFileName
-      ) {
-        this.checkCompilers();
-      }
-    });
-
-    this._fileWatcherOnChange.onDidChange(() => {
-      this.getSettings();
-    });
   }
 
   /**
@@ -88,10 +70,12 @@ export class SettingsProvider {
       const settingsJson: JsonSettings | undefined = readJsonFile(
         this._outputPath,
       );
+
+      if (!settingsJson) return;
+
       let skipCheckEntries = false;
       let skipCheckFound = false;
 
-      if (!settingsJson) return;
       if (
         settingsJson['C_Cpp_Runner.cCompilerPath'] &&
         settingsJson['C_Cpp_Runner.cppCompilerPath'] &&
@@ -244,23 +228,41 @@ export class SettingsProvider {
   }
 
   private createFileWatcher() {
-    const deletePattern = `${replaceBackslashes(this._vscodeDirectory)}/**`;
-    const fileWatcherOnDelete = vscode.workspace.createFileSystemWatcher(
+    const deletePattern = new vscode.RelativePattern(
+      this.workspaceFolder,
+      '.vscode/**',
+    );
+    this._fileWatcherOnDelete = vscode.workspace.createFileSystemWatcher(
       deletePattern,
       true,
       true,
       false,
     );
 
-    const changePattern = replaceBackslashes(this._outputPath);
-    const fileWatcherOnChange = vscode.workspace.createFileSystemWatcher(
+    const changePattern = new vscode.RelativePattern(
+      this.workspaceFolder,
+      '.vscode/settings.json',
+    );
+    this._fileWatcherOnChange = vscode.workspace.createFileSystemWatcher(
       changePattern,
       true,
       false,
-      false,
+      true,
     );
 
-    return { fileWatcherOnDelete, fileWatcherOnChange };
+    this._fileWatcherOnDelete.onDidDelete((e: vscode.Uri) => {
+      const pathName = e.fsPath;
+      if (
+        pathName === this._vscodeDirectory ||
+        path.basename(pathName) === outputFileName
+      ) {
+        this.checkCompilers();
+      }
+    });
+
+    this._fileWatcherOnChange.onDidChange(() => {
+      this.getSettings();
+    });
   }
 
   public updatFolderData(workspaceFolder: string) {
@@ -268,9 +270,7 @@ export class SettingsProvider {
     this._vscodeDirectory = path.join(this.workspaceFolder, '.vscode');
     this._outputPath = path.join(this._vscodeDirectory, outputFileName);
 
-    const ret = this.createFileWatcher();
-    this._fileWatcherOnChange = ret.fileWatcherOnChange;
-    this._fileWatcherOnDelete = ret.fileWatcherOnDelete;
+    this.createFileWatcher();
   }
 
   private update(key: string, value: any) {

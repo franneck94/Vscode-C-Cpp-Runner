@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+
 import { extensionState } from '../extension';
 import { JsonConfiguration } from './types';
 

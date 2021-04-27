@@ -1,6 +1,12 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
+import { extensionPath } from '../extension';
+import {
+  getLanguage,
+  readJsonFile,
+  replaceBackslashes,
+} from '../utils/fileUtils';
 import {
   Architectures,
   Builds,
@@ -11,14 +17,8 @@ import {
   Task,
   Tasks,
 } from '../utils/types';
-import {
-  getLanguage,
-  readJsonFile,
-  replaceBackslashes,
-} from '../utils/fileUtils';
-import { SettingsProvider } from './settingsProvider';
 import { getLaunchConfigIndex } from '../utils/vscodeUtils';
-import { extensionPath } from '../extension';
+import { SettingsProvider } from './settingsProvider';
 
 export class TaskProvider implements vscode.TaskProvider {
   private readonly _tasksFile: string;

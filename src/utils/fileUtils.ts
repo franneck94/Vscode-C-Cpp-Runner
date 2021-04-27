@@ -1,11 +1,11 @@
 import * as fs from 'fs';
+import * as JSON5 from 'json5';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import * as JSON5 from 'json5';
 
-import { Languages } from './types';
-import * as logger from './logger';
 import { loggingActive } from '../extension';
+import * as logger from './logger';
+import { Languages } from './types';
 
 export function replaceBackslashes(text: string) {
   return text.replace(/\\/g, '/');

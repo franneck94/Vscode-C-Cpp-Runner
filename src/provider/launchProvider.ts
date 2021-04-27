@@ -1,10 +1,10 @@
 import * as path from 'path';
 
-import { JsonConfiguration, OperatingSystems } from '../utils/types';
 import { readJsonFile, writeJsonFile } from '../utils/fileUtils';
+import { JsonConfiguration, OperatingSystems } from '../utils/types';
+import { getLaunchConfigIndex } from '../utils/vscodeUtils';
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
-import { getLaunchConfigIndex } from '../utils/vscodeUtils';
 
 const templateFileName = 'launch_template.json';
 const outputFileName = 'launch.json';

@@ -1,15 +1,15 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import { JsonConfiguration } from '../utils/types';
+import { extensionPath } from '../extension';
 import {
   mkdirRecursive,
   pathExists,
   readJsonFile,
   replaceBackslashes,
 } from '../utils/fileUtils';
+import { JsonConfiguration } from '../utils/types';
 import { SettingsProvider } from './settingsProvider';
-import { extensionPath } from '../extension';
 
 export abstract class FileProvider {
   protected readonly templatePath: string;

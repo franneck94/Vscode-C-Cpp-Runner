@@ -31,9 +31,7 @@ export class LaunchProvider extends FileProvider {
     const configJsonTemplate: JsonConfiguration | undefined = readJsonFile(
       this.templatePath,
     );
-    if (!configJsonTemplate) {
-      return;
-    }
+    if (!configJsonTemplate) return;
 
     configJsonTemplate.configurations[0].name = configName;
     if (this.settings.debugger) {

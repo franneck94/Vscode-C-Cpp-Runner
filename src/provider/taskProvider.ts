@@ -113,9 +113,7 @@ export class TaskProvider implements vscode.TaskProvider {
     taskJson: JsonInnerTask,
     language: Languages,
   ) {
-    if (!this.workspaceFolder || !this.activeFolder) {
-      return;
-    }
+    if (!this.workspaceFolder || !this.activeFolder) return;
 
     const settings = this._settingsProvider;
     const activeFolder = this.activeFolder;
@@ -198,12 +196,8 @@ export class TaskProvider implements vscode.TaskProvider {
   }
 
   private addDebugTask() {
-    if (!this.tasks) {
-      return;
-    }
-    if (!this.workspaceFolder || !this.activeFolder) {
-      return;
-    }
+    if (!this.tasks) return;
+    if (!this.workspaceFolder || !this.activeFolder) return;
 
     const folder = this.activeFolder.replace(
       this.workspaceFolder,
@@ -232,9 +226,7 @@ export class TaskProvider implements vscode.TaskProvider {
   }
 
   public async runDebugTask() {
-    if (!this.workspaceFolder) {
-      return;
-    }
+    if (!this.workspaceFolder) return;
 
     const uriWorkspaceFolder = vscode.Uri.file(this.workspaceFolder);
     const folder = vscode.workspace.getWorkspaceFolder(uriWorkspaceFolder);
@@ -242,9 +234,7 @@ export class TaskProvider implements vscode.TaskProvider {
       path.join(this.workspaceFolder, '.vscode', 'launch.json'),
     );
 
-    if (!configJson) {
-      return;
-    }
+    if (!configJson) return;
 
     const configName = 'C/C++ Runner: Debug Session';
     const configIdx = getLaunchConfigIndex(configJson, configName);

@@ -152,7 +152,6 @@ export function writeJsonFile(outputFilePath: string, jsonContent: any) {
   } catch (err) {
     const errorMessage = `writeJsonFile: ${err}`;
     logger.log(loggingActive, errorMessage);
-
     return;
   }
 }

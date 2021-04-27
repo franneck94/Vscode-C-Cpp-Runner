@@ -66,9 +66,7 @@ export abstract class FileProvider {
   }
 
   public createFileData() {
-    if (pathExists(this.outputPath)) {
-      return;
-    }
+    if (pathExists(this.outputPath)) return;
 
     if (!pathExists(this.vscodeDirectory)) {
       mkdirRecursive(this.vscodeDirectory);

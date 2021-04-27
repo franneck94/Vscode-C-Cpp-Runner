@@ -15,6 +15,8 @@ export async function taskHandler(taskProvider: TaskProvider) {
   const tasks: Task[] = taskProvider.tasks;
 
   const projectFolder = taskProvider.getProjectFolder();
+  if (!projectFolder) return;
+
   const buildFolder = path.join(projectFolder, 'build');
   const debugFolder = path.join(buildFolder, Builds.debug);
   const releaseFolder = path.join(buildFolder, Builds.release);

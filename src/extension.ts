@@ -76,9 +76,10 @@ export function activate(context: vscode.ExtensionContext) {
   ) {
     const infoMessage = `Empty Workspace opened.`;
     logger.log(loggingActive, infoMessage);
-
     return;
-  } else if (vscode.workspace.workspaceFolders.length === 1) {
+  }
+
+  if (vscode.workspace.workspaceFolders.length === 1) {
     workspaceFolder = vscode.workspace.workspaceFolders[0].uri.fsPath;
   }
 
@@ -457,16 +458,13 @@ function initBuildStatusBar(context: vscode.ExtensionContext) {
       ) {
         const infoMessage = `buildCallback: No Folder or Tasks defined.`;
         logger.log(loggingActive, infoMessage);
-
         return;
       }
 
       taskProvider.getTasks();
 
       const projectFolder = taskProvider.getProjectFolder();
-      if (!projectFolder) {
-        return;
-      }
+      if (!projectFolder) return;
 
       taskProvider.tasks.forEach(async (task) => {
         if (task.name.includes(Tasks.build)) {
@@ -505,16 +503,13 @@ function initRunStatusBar(context: vscode.ExtensionContext) {
       ) {
         const infoMessage = `runCallback: No Folder or Tasks defined.`;
         logger.log(loggingActive, infoMessage);
-
         return;
       }
 
       taskProvider.getTasks();
 
       const projectFolder = taskProvider.getProjectFolder();
-      if (!projectFolder) {
-        return;
-      }
+      if (!projectFolder) return;
 
       taskProvider.tasks.forEach(async (task) => {
         if (task.name.includes(Tasks.run)) {
@@ -548,7 +543,6 @@ function initDebugStatusBar(context: vscode.ExtensionContext) {
       if (!activeFolder || !workspaceFolder) {
         const infoMessage = `debugCallback: No Workspace or Folder picked.`;
         logger.log(loggingActive, infoMessage);
-
         return;
       }
 
@@ -575,16 +569,13 @@ function initCleanStatusBar(context: vscode.ExtensionContext) {
       ) {
         const infoMessage = `cleanCallback: No Folder or Tasks defined.`;
         logger.log(loggingActive, infoMessage);
-
         return;
       }
 
       taskProvider.getTasks();
 
       const projectFolder = taskProvider.getProjectFolder();
-      if (!projectFolder) {
-        return;
-      }
+      if (!projectFolder) return;
 
       taskProvider.tasks.forEach(async (task) => {
         if (task.name.includes(Tasks.clean)) {

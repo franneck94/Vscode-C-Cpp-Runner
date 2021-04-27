@@ -16,9 +16,7 @@ export class PropertiesProvider extends FileProvider {
 
   public writeFileData() {
     const configJson: JsonConfiguration = readJsonFile(this.templatePath);
-    if (!configJson) {
-      return;
-    }
+    if (!configJson) return;
 
     const language = getLanguage(this.workspaceFolder);
     const triplet =

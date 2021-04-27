@@ -91,10 +91,7 @@ export class SettingsProvider {
       let skipCheckEntries = false;
       let skipCheckFound = false;
 
-      if (!settingsJson) {
-        return;
-      }
-
+      if (!settingsJson) return;
       if (
         settingsJson['C_Cpp_Runner.cCompilerPath'] &&
         settingsJson['C_Cpp_Runner.cppCompilerPath'] &&

@@ -386,8 +386,9 @@ function initFolderStatusBar(context: vscode.ExtensionContext) {
     }
   }
 
+  const commandName = 'C_Cpp_Runner.init';
   commandFolderDisposable = vscode.commands.registerCommand(
-    'C_Cpp_Runner.init',
+    commandName,
     async () => {
       const ret = await folderHandler();
       if (ret && ret.activeFolder && ret.workspaceFolder) {
@@ -400,7 +401,7 @@ function initFolderStatusBar(context: vscode.ExtensionContext) {
       }
     },
   );
-  folderStatusBar.command = 'C_Cpp_Runner.init';
+  folderStatusBar.command = commandName;
   context.subscriptions.push(commandFolderDisposable);
 }
 
@@ -415,8 +416,9 @@ function initModeStatusBar(context: vscode.ExtensionContext) {
     architectureMode,
   );
 
+  const commandName = 'C_Cpp_Runner.mode';
   commandModeDisposable = vscode.commands.registerCommand(
-    'C_Cpp_Runner.mode',
+    commandName,
     async () => {
       const ret = await modeHandler(settingsProvider);
       if (ret && ret.pickedArchitecture && ret.pickedMode) {
@@ -438,7 +440,7 @@ function initModeStatusBar(context: vscode.ExtensionContext) {
       }
     },
   );
-  modeStatusBar.command = 'C_Cpp_Runner.mode';
+  modeStatusBar.command = commandName;
   context.subscriptions.push(commandModeDisposable);
 }
 
@@ -447,43 +449,41 @@ function initBuildStatusBar(context: vscode.ExtensionContext) {
   context.subscriptions.push(buildStatusBar);
   updateBuildStatus(buildStatusBar, showStatusBarItems, activeFolder);
 
-  commandBuildDisposable = vscode.commands.registerCommand(
-    'C_Cpp_Runner.build',
-    () => {
-      if (
-        !taskProvider ||
-        !taskProvider.tasks ||
-        !taskProvider.workspaceFolder ||
-        !taskProvider.activeFolder
-      ) {
-        const infoMessage = `buildCallback: No Folder or Tasks defined.`;
-        logger.log(loggingActive, infoMessage);
-        return;
-      }
+  const commandName = 'C_Cpp_Runner.build';
+  commandBuildDisposable = vscode.commands.registerCommand(commandName, () => {
+    if (
+      !taskProvider ||
+      !taskProvider.tasks ||
+      !taskProvider.workspaceFolder ||
+      !taskProvider.activeFolder
+    ) {
+      const infoMessage = `buildCallback: No Folder or Tasks defined.`;
+      logger.log(loggingActive, infoMessage);
+      return;
+    }
 
-      taskProvider.getTasks();
+    taskProvider.getTasks();
 
-      const projectFolder = taskProvider.getProjectFolder();
-      if (!projectFolder) return;
+    const projectFolder = taskProvider.getProjectFolder();
+    if (!projectFolder) return;
 
-      taskProvider.tasks.forEach(async (task) => {
-        if (task.name.includes(Tasks.build)) {
-          if (
-            task.execution &&
-            task.execution instanceof vscode.ShellExecution &&
-            task.execution.commandLine
-          ) {
-            task.execution.commandLine = task.execution.commandLine.replace(
-              'FILE_DIR',
-              projectFolder,
-            );
-          }
-          await vscode.tasks.executeTask(task);
+    taskProvider.tasks.forEach(async (task) => {
+      if (task.name.includes(Tasks.build)) {
+        if (
+          task.execution &&
+          task.execution instanceof vscode.ShellExecution &&
+          task.execution.commandLine
+        ) {
+          task.execution.commandLine = task.execution.commandLine.replace(
+            'FILE_DIR',
+            projectFolder,
+          );
         }
-      });
-    },
-  );
-  buildStatusBar.command = 'C_Cpp_Runner.build';
+        await vscode.tasks.executeTask(task);
+      }
+    });
+  });
+  buildStatusBar.command = commandName;
   context.subscriptions.push(commandBuildDisposable);
 }
 
@@ -492,43 +492,41 @@ function initRunStatusBar(context: vscode.ExtensionContext) {
   context.subscriptions.push(runStatusBar);
   updateRunStatus(runStatusBar, showStatusBarItems, activeFolder);
 
-  commandRunDisposable = vscode.commands.registerCommand(
-    'C_Cpp_Runner.run',
-    () => {
-      if (
-        !taskProvider ||
-        !taskProvider.tasks ||
-        !taskProvider.workspaceFolder ||
-        !taskProvider.activeFolder
-      ) {
-        const infoMessage = `runCallback: No Folder or Tasks defined.`;
-        logger.log(loggingActive, infoMessage);
-        return;
-      }
+  const commandName = 'C_Cpp_Runner.run';
+  commandRunDisposable = vscode.commands.registerCommand(commandName, () => {
+    if (
+      !taskProvider ||
+      !taskProvider.tasks ||
+      !taskProvider.workspaceFolder ||
+      !taskProvider.activeFolder
+    ) {
+      const infoMessage = `runCallback: No Folder or Tasks defined.`;
+      logger.log(loggingActive, infoMessage);
+      return;
+    }
 
-      taskProvider.getTasks();
+    taskProvider.getTasks();
 
-      const projectFolder = taskProvider.getProjectFolder();
-      if (!projectFolder) return;
+    const projectFolder = taskProvider.getProjectFolder();
+    if (!projectFolder) return;
 
-      taskProvider.tasks.forEach(async (task) => {
-        if (task.name.includes(Tasks.run)) {
-          if (
-            task.execution &&
-            task.execution instanceof vscode.ShellExecution &&
-            task.execution.commandLine
-          ) {
-            task.execution.commandLine = task.execution.commandLine.replace(
-              'FILE_DIR',
-              projectFolder,
-            );
-          }
-          await vscode.tasks.executeTask(task);
+    taskProvider.tasks.forEach(async (task) => {
+      if (task.name.includes(Tasks.run)) {
+        if (
+          task.execution &&
+          task.execution instanceof vscode.ShellExecution &&
+          task.execution.commandLine
+        ) {
+          task.execution.commandLine = task.execution.commandLine.replace(
+            'FILE_DIR',
+            projectFolder,
+          );
         }
-      });
-    },
-  );
-  runStatusBar.command = 'C_Cpp_Runner.run';
+        await vscode.tasks.executeTask(task);
+      }
+    });
+  });
+  runStatusBar.command = commandName;
   context.subscriptions.push(commandRunDisposable);
 }
 
@@ -537,19 +535,17 @@ function initDebugStatusBar(context: vscode.ExtensionContext) {
   context.subscriptions.push(debugStatusBar);
   updateDebugStatus(debugStatusBar, showStatusBarItems, activeFolder);
 
-  commandDebugDisposable = vscode.commands.registerCommand(
-    'C_Cpp_Runner.debug',
-    () => {
-      if (!activeFolder || !workspaceFolder) {
-        const infoMessage = `debugCallback: No Workspace or Folder picked.`;
-        logger.log(loggingActive, infoMessage);
-        return;
-      }
+  const commandName = 'C_Cpp_Runner.debug';
+  commandDebugDisposable = vscode.commands.registerCommand(commandName, () => {
+    if (!activeFolder || !workspaceFolder) {
+      const infoMessage = `debugCallback: No Workspace or Folder picked.`;
+      logger.log(loggingActive, infoMessage);
+      return;
+    }
 
-      if (taskProvider) taskProvider.runDebugTask();
-    },
-  );
-  debugStatusBar.command = 'C_Cpp_Runner.debug';
+    if (taskProvider) taskProvider.runDebugTask();
+  });
+  debugStatusBar.command = commandName;
   context.subscriptions.push(commandDebugDisposable);
 }
 
@@ -558,42 +554,40 @@ function initCleanStatusBar(context: vscode.ExtensionContext) {
   context.subscriptions.push(cleanStatusBar);
   updateCleanStatus(cleanStatusBar, showStatusBarItems, activeFolder);
 
-  commandCleanDisposable = vscode.commands.registerCommand(
-    'C_Cpp_Runner.clean',
-    () => {
-      if (
-        !taskProvider ||
-        !taskProvider.tasks ||
-        !taskProvider.workspaceFolder ||
-        !taskProvider.activeFolder
-      ) {
-        const infoMessage = `cleanCallback: No Folder or Tasks defined.`;
-        logger.log(loggingActive, infoMessage);
-        return;
-      }
+  const commandName = 'C_Cpp_Runner.clean';
+  commandCleanDisposable = vscode.commands.registerCommand(commandName, () => {
+    if (
+      !taskProvider ||
+      !taskProvider.tasks ||
+      !taskProvider.workspaceFolder ||
+      !taskProvider.activeFolder
+    ) {
+      const infoMessage = `cleanCallback: No Folder or Tasks defined.`;
+      logger.log(loggingActive, infoMessage);
+      return;
+    }
 
-      taskProvider.getTasks();
+    taskProvider.getTasks();
 
-      const projectFolder = taskProvider.getProjectFolder();
-      if (!projectFolder) return;
+    const projectFolder = taskProvider.getProjectFolder();
+    if (!projectFolder) return;
 
-      taskProvider.tasks.forEach(async (task) => {
-        if (task.name.includes(Tasks.clean)) {
-          if (
-            task.execution &&
-            task.execution instanceof vscode.ShellExecution &&
-            task.execution.commandLine
-          ) {
-            task.execution.commandLine = task.execution.commandLine.replace(
-              'FILE_DIR',
-              projectFolder,
-            );
-          }
-          await vscode.tasks.executeTask(task);
+    taskProvider.tasks.forEach(async (task) => {
+      if (task.name.includes(Tasks.clean)) {
+        if (
+          task.execution &&
+          task.execution instanceof vscode.ShellExecution &&
+          task.execution.commandLine
+        ) {
+          task.execution.commandLine = task.execution.commandLine.replace(
+            'FILE_DIR',
+            projectFolder,
+          );
         }
-      });
-    },
-  );
-  cleanStatusBar.command = 'C_Cpp_Runner.clean';
+        await vscode.tasks.executeTask(task);
+      }
+    });
+  });
+  cleanStatusBar.command = commandName;
   context.subscriptions.push(commandCleanDisposable);
 }

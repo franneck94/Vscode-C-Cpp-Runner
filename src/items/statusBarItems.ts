@@ -47,14 +47,8 @@ export function updateModeStatus(
 ) {
   if (!status) return;
 
-  status.color = '';
   status.text = `$(tools) ${buildMode} - ${architectureMode}`;
-
-  if (showStatusBarItems && activeFolder) {
-    status.show();
-  } else {
-    status.hide();
-  }
+  toggleShow(status, showStatusBarItems, activeFolder);
 }
 
 export function updateBuildStatus(
@@ -64,14 +58,8 @@ export function updateBuildStatus(
 ) {
   if (!status) return;
 
-  status.color = '';
   status.text = `$(gear)`;
-
-  if (showStatusBarItems && activeFolder) {
-    status.show();
-  } else {
-    status.hide();
-  }
+  toggleShow(status, showStatusBarItems, activeFolder);
 }
 
 export function updateRunStatus(
@@ -81,14 +69,8 @@ export function updateRunStatus(
 ) {
   if (!status) return;
 
-  status.color = '';
   status.text = `$(play)`;
-
-  if (showStatusBarItems && activeFolder) {
-    status.show();
-  } else {
-    status.hide();
-  }
+  toggleShow(status, showStatusBarItems, activeFolder);
 }
 
 export function updateDebugStatus(
@@ -98,14 +80,8 @@ export function updateDebugStatus(
 ) {
   if (!status) return;
 
-  status.color = '';
   status.text = `$(bug)`;
-
-  if (showStatusBarItems && activeFolder) {
-    status.show();
-  } else {
-    status.hide();
-  }
+  toggleShow(status, showStatusBarItems, activeFolder);
 }
 
 export function updateCleanStatus(
@@ -115,9 +91,15 @@ export function updateCleanStatus(
 ) {
   if (!status) return;
 
-  status.color = '';
   status.text = `$(trash)`;
+  toggleShow(status, showStatusBarItems, activeFolder);
+}
 
+function toggleShow(
+  status: vscode.StatusBarItem,
+  showStatusBarItems: boolean,
+  activeFolder: string | undefined,
+) {
   if (showStatusBarItems && activeFolder) {
     status.show();
   } else {

@@ -186,15 +186,15 @@ export class TaskProvider implements vscode.TaskProvider {
   }
 
   public getProjectFolder() {
-    let projectFolder = '';
-
     if (this.activeFolder) {
-      projectFolder = this.activeFolder;
-    } else if (this.workspaceFolder) {
-      projectFolder = this.workspaceFolder;
+      return this.activeFolder;
     }
 
-    return projectFolder;
+    if (this.workspaceFolder) {
+      return this.workspaceFolder;
+    }
+
+    return undefined;
   }
 
   private addDebugTask() {

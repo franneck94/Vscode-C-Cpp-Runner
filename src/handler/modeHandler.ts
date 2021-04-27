@@ -29,10 +29,14 @@ export async function modeHandler(
     placeHolder: 'Select a build mode',
   });
 
-  const pickedMode = pickedCombination?.includes(Builds.debug)
+  if (!pickedCombination) {
+    return { pickedMode: undefined, pickedArchitecture: undefined };
+  }
+
+  const pickedMode = pickedCombination.includes(Builds.debug)
     ? Builds.debug
     : Builds.release;
-  const pickedArchitecture = pickedCombination?.includes(Architectures.x86)
+  const pickedArchitecture = pickedCombination.includes(Architectures.x86)
     ? Architectures.x86
     : Architectures.x64;
   return { pickedMode, pickedArchitecture };

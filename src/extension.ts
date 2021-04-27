@@ -181,7 +181,34 @@ function initWorkspaceDisposables() {
   if (!commandHandlerDisposable) {
     commandHandlerDisposable = vscode.commands.registerCommand(
       'C_Cpp_Runner.tasks',
-      () => tasksCallback(),
+      () => {
+        let showErrorMessage = false;
+
+        if (!showStatusBarItems) {
+          showStatusBarItems = true;
+          toggleStatusBarItems();
+        } else {
+          if (!errorMessage) {
+            showErrorMessage = true;
+          }
+        }
+
+        if (!workspaceFolder) {
+          if (showErrorMessage) {
+            errorMessage = vscode.window.showErrorMessage(
+              'You have to select a folder first.',
+            );
+            errorMessage.then(() => (errorMessage = undefined));
+          }
+        } else {
+          errorMessage = undefined;
+
+          if (taskProvider) {
+            taskProvider.getTasks();
+            taskHandler(taskProvider);
+          }
+        }
+      },
     );
     if (extensionContext) {
       extensionContext.subscriptions.push(commandHandlerDisposable);
@@ -191,7 +218,10 @@ function initWorkspaceDisposables() {
   if (!toggleStatusBarDisposable) {
     toggleStatusBarDisposable = vscode.commands.registerCommand(
       'C_Cpp_Runner.toggleStatusBar',
-      () => toggleStatusBarCallback(),
+      () => {
+        showStatusBarItems = !showStatusBarItems;
+        toggleStatusBarItems();
+      },
     );
     if (extensionContext) {
       extensionContext.subscriptions.push(toggleStatusBarDisposable);
@@ -201,8 +231,19 @@ function initWorkspaceDisposables() {
   if (!folderContextMenuDisposable) {
     folderContextMenuDisposable = vscode.commands.registerCommand(
       'C_Cpp_Runner.folderContextMenu',
-      async (clickedUriItem: vscode.Uri, selectedUriItems: vscode.Uri[]) =>
-        contextMenuCallback(clickedUriItem, selectedUriItems),
+      async (clickedUriItem: vscode.Uri, selectedUriItems: vscode.Uri[]) => {
+        if (selectedUriItems.length > 1) return;
+
+        const workspaceItem = vscode.workspace.getWorkspaceFolder(
+          clickedUriItem,
+        );
+
+        if (!workspaceItem) return;
+
+        activeFolder = clickedUriItem.fsPath;
+        workspaceFolder = workspaceItem.uri.fsPath;
+        updateFolderData();
+      },
     );
     if (extensionContext) {
       extensionContext.subscriptions.push(folderContextMenuDisposable);
@@ -223,9 +264,9 @@ function initEventListener() {
   });
 
   vscode.workspace.onDidRenameFiles((e: vscode.FileRenameEvent) => {
-    if (e.files.length === 1) {
-      const oldName = e.files[0].oldUri.fsPath;
-      const newName = e.files[0].newUri.fsPath;
+    e.files.forEach((file) => {
+      const oldName = file.oldUri.fsPath;
+      const newName = file.newUri.fsPath;
 
       const infoMessage = `Renaming: ${oldName} -> ${newName}.`;
       logger.log(loggingActive, infoMessage);
@@ -237,12 +278,12 @@ function initEventListener() {
         activeFolder = newName;
         updateFolderData();
       }
-    }
+    });
   });
 
   vscode.workspace.onDidDeleteFiles((e: vscode.FileDeleteEvent) => {
-    if (e.files.length >= 0) {
-      const oldName = e.files[0].fsPath;
+    e.files.forEach((file) => {
+      const oldName = file.fsPath;
 
       const infoMessage = `Deleting: ${oldName}.`;
       logger.log(loggingActive, infoMessage);
@@ -256,7 +297,7 @@ function initEventListener() {
         updateFolderData();
         updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
       }
-    }
+    });
   });
 }
 
@@ -276,200 +317,6 @@ function toggleStatusBarItems() {
     if (debugStatusBar) debugStatusBar.hide();
     if (cleanStatusBar) cleanStatusBar.hide();
   }
-}
-
-// STATUS BAR CALLBACKS
-
-async function folderCallback() {
-  const ret = await folderHandler();
-  if (ret && ret.activeFolder && ret.workspaceFolder) {
-    activeFolder = ret.activeFolder;
-    workspaceFolder = ret.workspaceFolder;
-    updateFolderData();
-  } else {
-    const infoMessage = `Folder callback aborted.`;
-    logger.log(loggingActive, infoMessage);
-  }
-}
-
-async function modeCallback() {
-  const ret = await modeHandler(settingsProvider);
-  if (ret && ret.pickedArchitecture && ret.pickedMode) {
-    buildMode = ret.pickedMode;
-    architectureMode = ret.pickedArchitecture;
-    if (taskProvider) {
-      taskProvider.updateModeData(buildMode, architectureMode);
-    }
-    updateModeStatus(
-      modeStatusBar,
-      showStatusBarItems,
-      activeFolder,
-      buildMode,
-      architectureMode,
-    );
-  } else {
-    const infoMessage = `Mode callback aborted.`;
-    logger.log(loggingActive, infoMessage);
-  }
-}
-
-function buildCallback() {
-  if (
-    !taskProvider ||
-    !taskProvider.tasks ||
-    !taskProvider.workspaceFolder ||
-    !taskProvider.activeFolder
-  ) {
-    const infoMessage = `buildCallback: No Folder or Tasks defined.`;
-    logger.log(loggingActive, infoMessage);
-
-    return;
-  }
-
-  taskProvider.getTasks();
-
-  const projectFolder = taskProvider.getProjectFolder();
-  taskProvider.tasks.forEach(async (task) => {
-    if (task.name.includes(Tasks.build)) {
-      if (
-        task.execution &&
-        task.execution instanceof vscode.ShellExecution &&
-        task.execution.commandLine
-      ) {
-        task.execution.commandLine = task.execution.commandLine.replace(
-          'FILE_DIR',
-          projectFolder,
-        );
-      }
-      await vscode.tasks.executeTask(task);
-    }
-  });
-}
-
-function runCallback() {
-  if (
-    !taskProvider ||
-    !taskProvider.tasks ||
-    !taskProvider.workspaceFolder ||
-    !taskProvider.activeFolder
-  ) {
-    const infoMessage = `runCallback: No Folder or Tasks defined.`;
-    logger.log(loggingActive, infoMessage);
-
-    return;
-  }
-
-  taskProvider.getTasks();
-
-  const projectFolder = taskProvider.getProjectFolder();
-  taskProvider.tasks.forEach(async (task) => {
-    if (task.name.includes(Tasks.run)) {
-      if (
-        task.execution &&
-        task.execution instanceof vscode.ShellExecution &&
-        task.execution.commandLine
-      ) {
-        task.execution.commandLine = task.execution.commandLine.replace(
-          'FILE_DIR',
-          projectFolder,
-        );
-      }
-      await vscode.tasks.executeTask(task);
-    }
-  });
-}
-
-async function debugCallback() {
-  if (!activeFolder || !workspaceFolder) {
-    const infoMessage = `debugCallback: No Workspace or Folder picked.`;
-    logger.log(loggingActive, infoMessage);
-
-    return;
-  }
-
-  if (taskProvider) taskProvider.runDebugTask();
-}
-
-function cleanCallback() {
-  if (
-    !taskProvider ||
-    !taskProvider.tasks ||
-    !taskProvider.workspaceFolder ||
-    !taskProvider.activeFolder
-  ) {
-    const infoMessage = `cleanCallback: No Folder or Tasks defined.`;
-    logger.log(loggingActive, infoMessage);
-
-    return;
-  }
-
-  taskProvider.getTasks();
-
-  const projectFolder = taskProvider.getProjectFolder();
-  taskProvider.tasks.forEach(async (task) => {
-    if (task.name.includes(Tasks.clean)) {
-      if (
-        task.execution &&
-        task.execution instanceof vscode.ShellExecution &&
-        task.execution.commandLine
-      ) {
-        task.execution.commandLine = task.execution.commandLine.replace(
-          'FILE_DIR',
-          projectFolder,
-        );
-      }
-      await vscode.tasks.executeTask(task);
-    }
-  });
-}
-
-function tasksCallback() {
-  let showErrorMessage = false;
-
-  if (!showStatusBarItems) {
-    showStatusBarItems = true;
-    toggleStatusBarItems();
-  } else {
-    if (!errorMessage) {
-      showErrorMessage = true;
-    }
-  }
-
-  if (!workspaceFolder) {
-    if (showErrorMessage) {
-      errorMessage = vscode.window.showErrorMessage(
-        'You have to select a folder first.',
-      );
-      errorMessage.then(() => (errorMessage = undefined));
-    }
-  } else {
-    errorMessage = undefined;
-
-    if (taskProvider) {
-      taskProvider.getTasks();
-      taskHandler(taskProvider);
-    }
-  }
-}
-
-function toggleStatusBarCallback() {
-  showStatusBarItems = !showStatusBarItems;
-  toggleStatusBarItems();
-}
-
-function contextMenuCallback(
-  clickedUriItem: vscode.Uri,
-  selectedUriItems: vscode.Uri[],
-) {
-  if (selectedUriItems.length > 1) return;
-
-  const workspaceItem = vscode.workspace.getWorkspaceFolder(clickedUriItem);
-
-  if (!workspaceItem) return;
-
-  activeFolder = clickedUriItem.fsPath;
-  workspaceFolder = workspaceItem.uri.fsPath;
-  updateFolderData();
 }
 
 function updateFolderData() {
@@ -549,7 +396,17 @@ function initFolderStatusBar(context: vscode.ExtensionContext) {
 
   commandFolderDisposable = vscode.commands.registerCommand(
     'C_Cpp_Runner.init',
-    () => folderCallback(),
+    async () => {
+      const ret = await folderHandler();
+      if (ret && ret.activeFolder && ret.workspaceFolder) {
+        activeFolder = ret.activeFolder;
+        workspaceFolder = ret.workspaceFolder;
+        updateFolderData();
+      } else {
+        const infoMessage = `Folder callback aborted.`;
+        logger.log(loggingActive, infoMessage);
+      }
+    },
   );
   folderStatusBar.command = 'C_Cpp_Runner.init';
   context.subscriptions.push(commandFolderDisposable);
@@ -568,7 +425,26 @@ function initModeStatusBar(context: vscode.ExtensionContext) {
 
   commandModeDisposable = vscode.commands.registerCommand(
     'C_Cpp_Runner.mode',
-    () => modeCallback(),
+    async () => {
+      const ret = await modeHandler(settingsProvider);
+      if (ret && ret.pickedArchitecture && ret.pickedMode) {
+        buildMode = ret.pickedMode;
+        architectureMode = ret.pickedArchitecture;
+        if (taskProvider) {
+          taskProvider.updateModeData(buildMode, architectureMode);
+        }
+        updateModeStatus(
+          modeStatusBar,
+          showStatusBarItems,
+          activeFolder,
+          buildMode,
+          architectureMode,
+        );
+      } else {
+        const infoMessage = `Mode callback aborted.`;
+        logger.log(loggingActive, infoMessage);
+      }
+    },
   );
   modeStatusBar.command = 'C_Cpp_Runner.mode';
   context.subscriptions.push(commandModeDisposable);
@@ -581,7 +457,42 @@ function initBuildStatusBar(context: vscode.ExtensionContext) {
 
   commandBuildDisposable = vscode.commands.registerCommand(
     'C_Cpp_Runner.build',
-    () => buildCallback(),
+    () => {
+      if (
+        !taskProvider ||
+        !taskProvider.tasks ||
+        !taskProvider.workspaceFolder ||
+        !taskProvider.activeFolder
+      ) {
+        const infoMessage = `buildCallback: No Folder or Tasks defined.`;
+        logger.log(loggingActive, infoMessage);
+
+        return;
+      }
+
+      taskProvider.getTasks();
+
+      const projectFolder = taskProvider.getProjectFolder();
+      if (!projectFolder) {
+        return;
+      }
+
+      taskProvider.tasks.forEach(async (task) => {
+        if (task.name.includes(Tasks.build)) {
+          if (
+            task.execution &&
+            task.execution instanceof vscode.ShellExecution &&
+            task.execution.commandLine
+          ) {
+            task.execution.commandLine = task.execution.commandLine.replace(
+              'FILE_DIR',
+              projectFolder,
+            );
+          }
+          await vscode.tasks.executeTask(task);
+        }
+      });
+    },
   );
   buildStatusBar.command = 'C_Cpp_Runner.build';
   context.subscriptions.push(commandBuildDisposable);
@@ -594,7 +505,42 @@ function initRunStatusBar(context: vscode.ExtensionContext) {
 
   commandRunDisposable = vscode.commands.registerCommand(
     'C_Cpp_Runner.run',
-    () => runCallback(),
+    () => {
+      if (
+        !taskProvider ||
+        !taskProvider.tasks ||
+        !taskProvider.workspaceFolder ||
+        !taskProvider.activeFolder
+      ) {
+        const infoMessage = `runCallback: No Folder or Tasks defined.`;
+        logger.log(loggingActive, infoMessage);
+
+        return;
+      }
+
+      taskProvider.getTasks();
+
+      const projectFolder = taskProvider.getProjectFolder();
+      if (!projectFolder) {
+        return;
+      }
+
+      taskProvider.tasks.forEach(async (task) => {
+        if (task.name.includes(Tasks.run)) {
+          if (
+            task.execution &&
+            task.execution instanceof vscode.ShellExecution &&
+            task.execution.commandLine
+          ) {
+            task.execution.commandLine = task.execution.commandLine.replace(
+              'FILE_DIR',
+              projectFolder,
+            );
+          }
+          await vscode.tasks.executeTask(task);
+        }
+      });
+    },
   );
   runStatusBar.command = 'C_Cpp_Runner.run';
   context.subscriptions.push(commandRunDisposable);
@@ -607,7 +553,16 @@ function initDebugStatusBar(context: vscode.ExtensionContext) {
 
   commandDebugDisposable = vscode.commands.registerCommand(
     'C_Cpp_Runner.debug',
-    () => debugCallback(),
+    () => {
+      if (!activeFolder || !workspaceFolder) {
+        const infoMessage = `debugCallback: No Workspace or Folder picked.`;
+        logger.log(loggingActive, infoMessage);
+
+        return;
+      }
+
+      if (taskProvider) taskProvider.runDebugTask();
+    },
   );
   debugStatusBar.command = 'C_Cpp_Runner.debug';
   context.subscriptions.push(commandDebugDisposable);
@@ -620,7 +575,42 @@ function initCleanStatusBar(context: vscode.ExtensionContext) {
 
   commandCleanDisposable = vscode.commands.registerCommand(
     'C_Cpp_Runner.clean',
-    () => cleanCallback(),
+    () => {
+      if (
+        !taskProvider ||
+        !taskProvider.tasks ||
+        !taskProvider.workspaceFolder ||
+        !taskProvider.activeFolder
+      ) {
+        const infoMessage = `cleanCallback: No Folder or Tasks defined.`;
+        logger.log(loggingActive, infoMessage);
+
+        return;
+      }
+
+      taskProvider.getTasks();
+
+      const projectFolder = taskProvider.getProjectFolder();
+      if (!projectFolder) {
+        return;
+      }
+
+      taskProvider.tasks.forEach(async (task) => {
+        if (task.name.includes(Tasks.clean)) {
+          if (
+            task.execution &&
+            task.execution instanceof vscode.ShellExecution &&
+            task.execution.commandLine
+          ) {
+            task.execution.commandLine = task.execution.commandLine.replace(
+              'FILE_DIR',
+              projectFolder,
+            );
+          }
+          await vscode.tasks.executeTask(task);
+        }
+      });
+    },
   );
   cleanStatusBar.command = 'C_Cpp_Runner.clean';
   context.subscriptions.push(commandCleanDisposable);

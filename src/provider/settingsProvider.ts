@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
+import { writeJsonFile } from '../utils/fileUtils';
 
 import {
   Architectures,
@@ -19,8 +20,6 @@ import {
   getArchitecture,
   getOperatingSystem,
 } from '../utils/systemUtils';
-
-const CONFIGURATION_TARGET = vscode.ConfigurationTarget.Workspace;
 
 export class SettingsProvider {
   // Workspace data
@@ -277,44 +276,64 @@ export class SettingsProvider {
     this._fileWatcherOnDelete = ret.fileWatcherOnDelete;
   }
 
+  private update(key: string, value: any) {
+    let settingsJson: JsonSettings | undefined = readJsonFile(this._outputPath);
+
+    if (!settingsJson) {
+      settingsJson = {};
+    }
+
+    const settingName = `C_Cpp_Runner.${key}`;
+
+    try {
+      if (!settingsJson.settingName) {
+        settingsJson[settingName] = value;
+      }
+
+      writeJsonFile(this._outputPath, settingsJson);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   private setGcc(pathGcc: string) {
-    this._config.update('cCompilerPath', pathGcc, CONFIGURATION_TARGET);
+    this.update('cCompilerPath', pathGcc);
     this._cCompiler = Compilers.gcc;
     this._cCompilerFound = true;
   }
 
   private setClang(pathClang: string) {
-    this._config.update('cCompilerPath', pathClang, CONFIGURATION_TARGET);
+    this.update('cCompilerPath', pathClang);
     this._cCompiler = Compilers.clang;
     this._cCompilerFound = true;
   }
 
   private setGpp(pathGpp: string) {
-    this._config.update('cppCompilerPath', pathGpp, CONFIGURATION_TARGET);
+    this.update('cppCompilerPath', pathGpp);
     this._cppCompiler = Compilers.gpp;
     this._cppCompilerFound = true;
   }
 
   private setClangpp(pathClangpp: string) {
-    this._config.update('cppCompilerPath', pathClangpp, CONFIGURATION_TARGET);
+    this.update('cppCompilerPath', pathClangpp);
     this._cppCompiler = Compilers.clangpp;
     this._cppCompilerFound = true;
   }
 
   private setLLDB(pathLLDB: string) {
-    this._config.update('debuggerPath', pathLLDB, CONFIGURATION_TARGET);
+    this.update('debuggerPath', pathLLDB);
     this._debugger = Debuggers.lldb;
     this._foundDebugger = true;
   }
 
   private setGDB(pathGDB: string) {
-    this._config.update('debuggerPath', pathGDB, CONFIGURATION_TARGET);
+    this.update('debuggerPath', pathGDB);
     this._debugger = Debuggers.gdb;
     this._foundDebugger = true;
   }
 
   private setMake(pathMake: string) {
-    this._config.update('makePath', pathMake, CONFIGURATION_TARGET);
+    this.update('makePath', pathMake);
     this._foundMake = true;
   }
 

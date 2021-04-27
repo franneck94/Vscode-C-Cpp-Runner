@@ -56,15 +56,17 @@ let cleanStatusBar: vscode.StatusBarItem | undefined;
 
 let workspaceFolder: string | undefined;
 let activeFolder: string | undefined;
+
 let buildMode: Builds = Builds.debug;
 let architectureMode: Architectures = Architectures.x64;
+
 let errorMessage: Thenable<string | undefined> | undefined;
 let showStatusBarItems: boolean = false;
 
-export let extensionContext: vscode.ExtensionContext;
-export let extensionState: vscode.Memento;
-export let extensionPath: string;
-export let loggingActive: boolean;
+export let extensionContext: vscode.ExtensionContext | undefined;
+export let extensionState: vscode.Memento | undefined;
+export let extensionPath: string | undefined;
+export let loggingActive: boolean = false;
 
 export function activate(context: vscode.ExtensionContext) {
   extensionContext = context;
@@ -81,6 +83,8 @@ export function activate(context: vscode.ExtensionContext) {
     logger.log(loggingActive, infoMessage);
 
     return;
+  } else if (vscode.workspace.workspaceFolders.length === 1) {
+    workspaceFolder = vscode.workspace.workspaceFolders[0].uri.fsPath;
   }
 
   setContextValue('C_Cpp_Runner:activatedExtension', true);
@@ -169,7 +173,9 @@ function initWorkspaceDisposables() {
       'C_Cpp_Runner',
       taskProvider,
     );
-    extensionContext.subscriptions.push(taskProviderDisposable);
+    if (extensionContext) {
+      extensionContext.subscriptions.push(taskProviderDisposable);
+    }
   }
 
   if (!commandHandlerDisposable) {
@@ -177,7 +183,9 @@ function initWorkspaceDisposables() {
       'C_Cpp_Runner.tasks',
       () => tasksCallback(),
     );
-    extensionContext.subscriptions.push(commandHandlerDisposable);
+    if (extensionContext) {
+      extensionContext.subscriptions.push(commandHandlerDisposable);
+    }
   }
 
   if (!toggleStatusBarDisposable) {
@@ -185,7 +193,9 @@ function initWorkspaceDisposables() {
       'C_Cpp_Runner.toggleStatusBar',
       () => toggleStatusBarCallback(),
     );
-    extensionContext.subscriptions.push(toggleStatusBarDisposable);
+    if (extensionContext) {
+      extensionContext.subscriptions.push(toggleStatusBarDisposable);
+    }
   }
 
   if (!folderContextMenuDisposable) {
@@ -194,7 +204,9 @@ function initWorkspaceDisposables() {
       async (clickedUriItem: vscode.Uri, selectedUriItems: vscode.Uri[]) =>
         contextMenuCallback(clickedUriItem, selectedUriItems),
     );
-    extensionContext.subscriptions.push(folderContextMenuDisposable);
+    if (extensionContext) {
+      extensionContext.subscriptions.push(folderContextMenuDisposable);
+    }
   }
 }
 

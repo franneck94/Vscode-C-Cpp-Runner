@@ -31,8 +31,8 @@ export async function folderHandler() {
   const pickedFolderStr = await vscode.window.showQuickPick(foldersList, {
     placeHolder: 'Select folder to init the C/C++ Runner extension.',
   });
-  let activeFolder;
-  let workspaceFolder;
+  let activeFolder: string | undefined;
+  let workspaceFolder: string | undefined;
 
   if (pickedFolderStr) {
     const folderSplit = pickedFolderStr.split('/');

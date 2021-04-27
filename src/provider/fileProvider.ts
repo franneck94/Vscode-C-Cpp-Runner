@@ -29,7 +29,10 @@ export abstract class FileProvider {
     this.outputPath = path.join(this.vscodeDirectory, outputFileName);
     this.fileWatcherOnDelete = this.createFileWatcher();
 
-    const templateDirectory = path.join(extensionPath, 'templates');
+    const templateDirectory = path.join(
+      extensionPath ? extensionPath : '',
+      'templates',
+    );
     this.templatePath = path.join(templateDirectory, templateFileName);
 
     let doUpdate = false;

@@ -21,13 +21,14 @@ import {
   getOperatingSystem,
 } from '../utils/systemUtils';
 
+const outputFileName = 'settings.json';
+
 export class SettingsProvider {
   // Workspace data
   private _fileWatcherOnDelete: vscode.FileSystemWatcher;
   private _fileWatcherOnChange: vscode.FileSystemWatcher;
   private _outputPath: string;
   private _vscodeDirectory: string;
-  private readonly _outputFileName: string;
   private _config = vscode.workspace.getConfiguration('C_Cpp_Runner');
   // Machine information
   private _operatingSystem = getOperatingSystem();
@@ -54,9 +55,8 @@ export class SettingsProvider {
   private _warnings: string = '-Wall -Wextra -Wpedantic';
 
   constructor(public workspaceFolder: string) {
-    this._outputFileName = 'settings.json';
     this._vscodeDirectory = path.join(this.workspaceFolder, '.vscode');
-    this._outputPath = path.join(this._vscodeDirectory, this._outputFileName);
+    this._outputPath = path.join(this._vscodeDirectory, outputFileName);
 
     const ret = this.createFileWatcher();
     this._fileWatcherOnChange = ret.fileWatcherOnChange;
@@ -69,7 +69,7 @@ export class SettingsProvider {
       const pathName = e.fsPath;
       if (
         pathName === this._vscodeDirectory ||
-        path.basename(pathName) === this._outputFileName
+        path.basename(pathName) === outputFileName
       ) {
         this.checkCompilers();
       }
@@ -269,7 +269,7 @@ export class SettingsProvider {
   public updatFolderData(workspaceFolder: string) {
     this.workspaceFolder = workspaceFolder;
     this._vscodeDirectory = path.join(this.workspaceFolder, '.vscode');
-    this._outputPath = path.join(this._vscodeDirectory, this._outputFileName);
+    this._outputPath = path.join(this._vscodeDirectory, outputFileName);
 
     const ret = this.createFileWatcher();
     this._fileWatcherOnChange = ret.fileWatcherOnChange;

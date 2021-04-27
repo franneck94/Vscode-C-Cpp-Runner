@@ -6,13 +6,14 @@ import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
 import { getLaunchConfigIndex } from '../utils/vscodeUtils';
 
+const templateFileName = 'launch_template.json';
+const outputFileName = 'launch.json';
+
 export class LaunchProvider extends FileProvider {
   constructor(
     protected settings: SettingsProvider,
     public workspaceFolder: string,
     public activeFolder: string,
-    protected templateFileName: string,
-    protected outputFileName: string,
   ) {
     super(settings, workspaceFolder, templateFileName, outputFileName);
 

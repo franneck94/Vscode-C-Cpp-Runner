@@ -17,8 +17,6 @@ export function mkdirRecursive(dir: string) {
   } catch (err) {
     const errorMessage = `mkdirRecursive: ${err}`;
     logger.log(loggingActive, errorMessage);
-
-    return false;
   }
 }
 

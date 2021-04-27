@@ -3,12 +3,13 @@ import { getLanguage, readJsonFile, writeJsonFile } from '../utils/fileUtils';
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
 
+const templateFileName = 'properties_template.json';
+const outputFileName = 'c_cpp_Properties.json';
+
 export class PropertiesProvider extends FileProvider {
   constructor(
     protected settings: SettingsProvider,
     public workspaceFolder: string,
-    public templateFileName: string,
-    protected outputFileName: string,
   ) {
     super(settings, workspaceFolder, templateFileName, outputFileName);
   }

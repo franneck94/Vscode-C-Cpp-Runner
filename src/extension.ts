@@ -26,11 +26,6 @@ import {
   updateLoggingState,
 } from './utils/vscodeUtils';
 
-const PROPERTIES_TEMPLATE = 'properties_template.json';
-const PROPERTIES_FILE = 'c_cpp_properties.json';
-const LAUNCH_TEMPLATE = 'launch_template.json';
-const LAUNCH_FILE = 'launch.json';
-
 let folderContextMenuDisposable: vscode.Disposable | undefined;
 let taskProviderDisposable: vscode.Disposable | undefined;
 let commandHandlerDisposable: vscode.Disposable | undefined;
@@ -139,8 +134,6 @@ function initWorkspaceProvider() {
     propertiesProvider = new PropertiesProvider(
       settingsProvider,
       workspaceFolder,
-      PROPERTIES_TEMPLATE,
-      PROPERTIES_FILE,
     );
   }
 
@@ -151,8 +144,6 @@ function initWorkspaceProvider() {
       settingsProvider,
       workspaceFolder,
       activeFolder,
-      LAUNCH_TEMPLATE,
-      LAUNCH_FILE,
     );
   }
 

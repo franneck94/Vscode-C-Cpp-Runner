@@ -67,7 +67,7 @@ export class PropertiesProvider extends FileProvider {
     writeJsonFile(this.outputPath, configJson);
   }
 
-  public updatFolderData(workspaceFolder: string) {
-    super._updatFolderData(workspaceFolder);
+  public updateFolderData(workspaceFolder: string) {
+    super._updateFolderData(workspaceFolder);
   }
 }

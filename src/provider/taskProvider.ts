@@ -175,7 +175,7 @@ export class TaskProvider implements vscode.TaskProvider {
     this.architectureMode = architectureMode;
   }
 
-  public updatFolderData(
+  public updateFolderData(
     workspaceFolder: string | undefined,
     activeFolder: string | undefined,
   ) {

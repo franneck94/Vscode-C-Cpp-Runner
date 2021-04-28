@@ -1,8 +1,14 @@
 # C/C++ Runner Change Log
 
+## Version 0.11.0: April 28, 2021
+
+- **Improvement**: The settings are now read/saved correctly in a use case with multiple workspaces.  
+A multi-workspace setting is now fully compatible with the extension.
+- **Bugfix**: External console is now set to false for Max due to debugging issues.
+
 ## Version 0.10.0: April 26, 2021
 
-- **Info**: Updated display logic of status bar items
+- **Info**: Updated display logic of status bar items. For more info see the [here](./README.md)
 - **Info**: Added logging entries
 - **Info**: Updated project structure
 

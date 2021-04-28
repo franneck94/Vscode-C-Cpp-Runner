@@ -38,10 +38,7 @@ export class LaunchProvider extends FileProvider {
       configJsonTemplate.configurations[0].MIMode = this.settings.debugger;
       configJsonTemplate.configurations[0].miDebuggerPath = this.settings.debuggerPath;
 
-      if (
-        OperatingSystems.windows === this.settings.operatingSystem ||
-        OperatingSystems.mac === this.settings.operatingSystem
-      ) {
+      if (OperatingSystems.windows === this.settings.operatingSystem) {
         configJsonTemplate.configurations[0].externalConsole = true;
       }
     }
@@ -76,8 +73,8 @@ export class LaunchProvider extends FileProvider {
     writeJsonFile(this.outputPath, configJsonOutput);
   }
 
-  public updatFolderData(workspaceFolder: string, activeFolder: string) {
+  public updateFolderData(workspaceFolder: string, activeFolder: string) {
     this.activeFolder = activeFolder;
-    super._updatFolderData(workspaceFolder);
+    super._updateFolderData(workspaceFolder);
   }
 }

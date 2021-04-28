@@ -93,7 +93,7 @@ export abstract class FileProvider {
     );
   }
 
-  protected _updatFolderData(workspaceFolder: string) {
+  protected _updateFolderData(workspaceFolder: string) {
     this.workspaceFolder = workspaceFolder;
     this.vscodeDirectory = path.join(this.workspaceFolder, '.vscode');
     this.outputPath = path.join(this.vscodeDirectory, this.outputFileName);

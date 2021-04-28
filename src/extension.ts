@@ -36,6 +36,9 @@ let commandBuildDisposable: vscode.Disposable | undefined;
 let commandRunDisposable: vscode.Disposable | undefined;
 let commandDebugDisposable: vscode.Disposable | undefined;
 let commandCleanDisposable: vscode.Disposable | undefined;
+let eventConfigurationDisposable: vscode.Disposable | undefined;
+let eventRenameFilesDisposable: vscode.Disposable | undefined;
+let eventDeleteFilesDisposable: vscode.Disposable | undefined;
 
 let settingsProvider: SettingsProvider | undefined;
 let launchProvider: LaunchProvider | undefined;
@@ -122,6 +125,9 @@ export function deactivate() {
   disposeItem(commandRunDisposable);
   disposeItem(commandDebugDisposable);
   disposeItem(commandCleanDisposable);
+  disposeItem(eventConfigurationDisposable);
+  disposeItem(eventDeleteFilesDisposable);
+  disposeItem(eventRenameFilesDisposable);
 }
 
 function initWorkspaceProvider() {
@@ -244,53 +250,65 @@ function initWorkspaceDisposables() {
 }
 
 function initEventListener() {
-  vscode.workspace.onDidChangeConfiguration(() => {
-    const infoMessage = `Configuration change.`;
-    logger.log(loggingActive, infoMessage);
-    updateLoggingState();
+  if (!eventConfigurationDisposable) {
+    eventConfigurationDisposable = vscode.workspace.onDidChangeConfiguration(
+      (e: vscode.ConfigurationChangeEvent) => {
+        if (e.affectsConfiguration('C_Cpp_Runner')) {
+          const infoMessage = `Configuration change.`;
+          logger.log(loggingActive, infoMessage);
+          updateLoggingState();
 
-    if (settingsProvider) settingsProvider.getSettings();
-    if (taskProvider) taskProvider.getTasks();
-    if (propertiesProvider) propertiesProvider.updateFileContent();
-    if (launchProvider) launchProvider.updateFileContent();
-  });
+          if (settingsProvider) settingsProvider.getSettings();
+          if (taskProvider) taskProvider.getTasks();
+          if (propertiesProvider) propertiesProvider.updateFileContent();
+          if (launchProvider) launchProvider.updateFileContent();
+        }
+      },
+    );
+  }
 
-  vscode.workspace.onDidRenameFiles((e: vscode.FileRenameEvent) => {
-    e.files.forEach((file) => {
-      const oldName = file.oldUri.fsPath;
-      const newName = file.newUri.fsPath;
+  if (!eventRenameFilesDisposable) {
+    eventRenameFilesDisposable = vscode.workspace.onDidRenameFiles(
+      (e: vscode.FileRenameEvent) => {
+        e.files.forEach((file) => {
+          const oldName = file.oldUri.fsPath;
+          const newName = file.newUri.fsPath;
 
-      const infoMessage = `Renaming: ${oldName} -> ${newName}.`;
-      logger.log(loggingActive, infoMessage);
+          const infoMessage = `Renaming: ${oldName} -> ${newName}.`;
+          logger.log(loggingActive, infoMessage);
 
-      if (workspaceFolder && oldName === workspaceFolder) {
-        workspaceFolder = newName;
-        updateFolderData();
-      } else if (activeFolder && oldName === activeFolder) {
-        activeFolder = newName;
-        updateFolderData();
-      }
+          if (workspaceFolder && oldName === workspaceFolder) {
+            workspaceFolder = newName;
+            updateFolderData();
+          } else if (activeFolder && oldName === activeFolder) {
+            activeFolder = newName;
+            updateFolderData();
+          }
+        });
+      },
+    );
+  }
+
+  if (!eventDeleteFilesDisposable) {
+    vscode.workspace.onDidDeleteFiles((e: vscode.FileDeleteEvent) => {
+      e.files.forEach((file) => {
+        const oldName = file.fsPath;
+
+        const infoMessage = `Deleting: ${oldName}.`;
+        logger.log(loggingActive, infoMessage);
+
+        if (workspaceFolder && oldName === workspaceFolder) {
+          workspaceFolder = undefined;
+          updateFolderData();
+          updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+        } else if (activeFolder && oldName === activeFolder) {
+          activeFolder = undefined;
+          updateFolderData();
+          updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+        }
+      });
     });
-  });
-
-  vscode.workspace.onDidDeleteFiles((e: vscode.FileDeleteEvent) => {
-    e.files.forEach((file) => {
-      const oldName = file.fsPath;
-
-      const infoMessage = `Deleting: ${oldName}.`;
-      logger.log(loggingActive, infoMessage);
-
-      if (workspaceFolder && oldName === workspaceFolder) {
-        workspaceFolder = undefined;
-        updateFolderData();
-        updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
-      } else if (activeFolder && oldName === activeFolder) {
-        activeFolder = undefined;
-        updateFolderData();
-        updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
-      }
-    });
-  });
+  }
 }
 
 function toggleStatusBarItems() {
@@ -316,7 +334,7 @@ function updateFolderData() {
   initWorkspaceDisposables();
 
   if (taskProvider) {
-    taskProvider.updatFolderData(workspaceFolder, activeFolder);
+    taskProvider.updateFolderData(workspaceFolder, activeFolder);
     if (buildMode && architectureMode) {
       taskProvider.updateModeData(buildMode, architectureMode);
     }
@@ -324,16 +342,21 @@ function updateFolderData() {
 
   if (workspaceFolder && activeFolder) {
     if (settingsProvider) {
-      settingsProvider.updatFolderData(workspaceFolder);
+      settingsProvider.updateFolderData(workspaceFolder);
       settingsProvider.checkCompilers();
     }
 
     if (propertiesProvider) {
-      propertiesProvider.updatFolderData(workspaceFolder);
+      propertiesProvider.updateFolderData(workspaceFolder);
     }
+
     if (launchProvider) {
-      launchProvider.updatFolderData(workspaceFolder, activeFolder);
+      launchProvider.updateFolderData(workspaceFolder, activeFolder);
       launchProvider.updateFileContent();
+    }
+
+    if (settingsProvider) {
+      settingsProvider.getSettings();
     }
   }
 

@@ -28,7 +28,8 @@ export class SettingsProvider {
   private _fileWatcherOnChange: vscode.FileSystemWatcher | undefined;
   private _outputPath: string;
   private _vscodeDirectory: string;
-  private _config = vscode.workspace.getConfiguration('C_Cpp_Runner');
+  private _configLocal: JsonSettings | undefined;
+  private _configGlobal = vscode.workspace.getConfiguration('C_Cpp_Runner');
   // Machine information
   private _operatingSystem = getOperatingSystem();
   private _architecure: Architectures | undefined;
@@ -56,6 +57,7 @@ export class SettingsProvider {
   constructor(public workspaceFolder: string) {
     this._vscodeDirectory = path.join(this.workspaceFolder, '.vscode');
     this._outputPath = path.join(this._vscodeDirectory, outputFileName);
+    this.readLocalConfig();
 
     this.createFileWatcher();
     this.checkCompilers();
@@ -183,20 +185,39 @@ export class SettingsProvider {
    * Read in the current settings.
    */
   public getSettings() {
-    this._config = vscode.workspace.getConfiguration('C_Cpp_Runner');
-    this._enableWarnings = this._config.get('enableWarnings', false);
-    this._warnings = this._config.get('warnings', '');
-    this._warningsAsError = this._config.get('warningsAsError', false);
-    this._cCompilerPath = this._config.get('cCompilerPath', '');
-    this._cppCompilerPath = this._config.get('cppCompilerPath', '');
-    this._debuggerPath = this._config.get('debuggerPath', '');
-    this._makePath = this._config.get('makePath', '');
-    this._cStandard = this._config.get('cStandard', '');
-    this._cppStandard = this._config.get('cppStandard', '');
-    this._compilerArgs = this._config.get('compilerArgs', '');
-    this._linkerArgs = this._config.get('linkerArgs', '');
-    this._includePaths = this._config.get('includePaths', '');
+    this.readLocalConfig();
 
+    this._enableWarnings = this.checkSetting('enableWarnings', false);
+    this._warnings = this.checkSetting('warnings', '');
+    this._warningsAsError = this.checkSetting('warningsAsError', false);
+    this._cCompilerPath = this.checkSetting('cCompilerPath', '');
+    this._cppCompilerPath = this.checkSetting('cppCompilerPath', '');
+    this._debuggerPath = this.checkSetting('debuggerPath', '');
+    this._makePath = this.checkSetting('makePath', '');
+    this._cStandard = this.checkSetting('cStandard', '');
+    this._cppStandard = this.checkSetting('cppStandard', '');
+    this._compilerArgs = this.checkSetting('compilerArgs', '');
+    this._linkerArgs = this.checkSetting('linkerArgs', '');
+    this._includePaths = this.checkSetting('includePaths', '');
+
+    this.setConfiguration();
+  }
+
+  private checkSetting(name: string, defaultValue: any) {
+    const settingName = `C_Cpp_Runner.${name}`;
+
+    if (this._configLocal && this._configLocal[settingName]) {
+      return this._configLocal[settingName];
+    }
+
+    if (this._configGlobal.has(name)) {
+      return this._configGlobal.get(name, defaultValue);
+    }
+
+    return defaultValue;
+  }
+
+  private setConfiguration() {
     let cBasename: string;
     let cppBasename: string;
 
@@ -265,12 +286,17 @@ export class SettingsProvider {
     });
   }
 
-  public updatFolderData(workspaceFolder: string) {
+  public updateFolderData(workspaceFolder: string) {
     this.workspaceFolder = workspaceFolder;
     this._vscodeDirectory = path.join(this.workspaceFolder, '.vscode');
     this._outputPath = path.join(this._vscodeDirectory, outputFileName);
+    this.readLocalConfig();
 
     this.createFileWatcher();
+  }
+
+  private readLocalConfig() {
+    this._configLocal = readJsonFile(this._outputPath);
   }
 
   private update(key: string, value: any) {

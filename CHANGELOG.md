@@ -1,6 +1,6 @@
 # C/C++ Runner Change Log
 
-## Version 0.11.0: April 28, 2021
+## Version 0.11.0: April 29, 2021
 
 - **Improvement**: The settings are now read/saved correctly in a use case with multiple workspaces.  
 A multi-workspace setting is now fully compatible with the extension.

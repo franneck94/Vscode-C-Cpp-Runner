@@ -4,7 +4,7 @@
 
 - **Improvement**: The settings are now read/saved correctly in a use case with multiple workspaces.  
 A multi-workspace setting is now fully compatible with the extension.
-- **Bugfix**: External console is now set to false for Max due to debugging issues.
+- **Bugfix**: External console is now set to false for Mac due to debugging issues.
 
 ## Version 0.10.0: April 26, 2021
 
@@ -20,14 +20,14 @@ A multi-workspace setting is now fully compatible with the extension.
 
 - **Bugfix**: Makefile issue with Windows/MinGW
 - **Info**: Added try/catch clauses to all IO related functions
-- **Info**: Added logger to log certain infos/errors. Also added setting 'loggingActive' to activate the logger
+- **Info**: Added logger to log certain info/errors. Also added setting 'loggingActive' to activate the logger
 
 ## Version 0.8.2: April 19, 2021
 
 - **Bugfix**: Set debug console to external for lldb (MacOS) - see: [github issue](https://github.com/microsoft/vscode-cpptools/issues/5079)
 - **Bugfix**: Makefile arguments that can hold multiple values are now passed with "" instead of ''
 - **Bugfix**: In a multi-root workspace use-case, the file watchers were not updated to a new selected workspace (on workspace change)
-- **Info**: In a multi-root workspace use-case, the extension's settings are stored to the '.code-workspace' file
+- **Info**: In a multi-root workspace use-case, the extension's settings are stored in the '.code-workspace' file
 
 ## Version 0.8.1: April 14, 2021
 

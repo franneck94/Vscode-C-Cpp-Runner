@@ -28,7 +28,7 @@ You do not need to know about any compiler and Makefile commands. 😎
 You can select the folder by the quick pick menu from the status bar.  
 ![TaskStatusBar](./media/FolderStatusBar.png)  
 Besides that, you can also select a folder by right-clicking in the context menu.  
-After selecting the folder, the icons for building, running and debugging are shown.  
+After selecting the folder, the icons for building, running, and debugging are shown.  
 2️⃣ The second step is to select either debug or release mode for building the binary (debug is the default case).  
 ![TaskStatusBar](./media/ModeStatusBar.png)  
 3️⃣ The third step is to execute the extension's tasks.  

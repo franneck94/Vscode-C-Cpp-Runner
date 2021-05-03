@@ -80,7 +80,7 @@ export abstract class FileProvider {
   }
 
   public writeFileData() {
-    throw new Error('You have to implement the method doSomething!');
+    throw new Error('Not implemented error.');
   }
 
   protected createFileWatcher() {

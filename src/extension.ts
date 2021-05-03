@@ -54,12 +54,12 @@ let cleanStatusBar: vscode.StatusBarItem | undefined;
 
 let workspaceFolder: string | undefined;
 let activeFolder: string | undefined;
-
 let buildMode: Builds = Builds.debug;
 let architectureMode: Architectures = Architectures.x64;
-
 let errorMessage: Thenable<string | undefined> | undefined;
 let showStatusBarItems: boolean = false;
+
+const EXTENSION_NAME = 'C_Cpp_Runner';
 
 export let extensionContext: vscode.ExtensionContext | undefined;
 export let extensionState: vscode.Memento | undefined;
@@ -86,7 +86,7 @@ export function activate(context: vscode.ExtensionContext) {
     workspaceFolder = vscode.workspace.workspaceFolders[0].uri.fsPath;
   }
 
-  setContextValue('C_Cpp_Runner:activatedExtension', true);
+  setContextValue(`${EXTENSION_NAME}:activatedExtension`, true);
 
   showStatusBarItems = noCmakeFileFound();
   if (!showStatusBarItems) {
@@ -107,7 +107,7 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-  setContextValue('C_Cpp_Runner:activatedExtension', false);
+  setContextValue(`${EXTENSION_NAME}:activatedExtension`, false);
 
   disposeItem(folderContextMenuDisposable);
   disposeItem(taskProviderDisposable);
@@ -168,7 +168,7 @@ function initWorkspaceProvider() {
 function initWorkspaceDisposables() {
   if (taskProvider && !taskProviderDisposable) {
     taskProviderDisposable = vscode.tasks.registerTaskProvider(
-      'C_Cpp_Runner',
+      EXTENSION_NAME,
       taskProvider,
     );
     if (extensionContext) {
@@ -178,7 +178,7 @@ function initWorkspaceDisposables() {
 
   if (!commandHandlerDisposable) {
     commandHandlerDisposable = vscode.commands.registerCommand(
-      'C_Cpp_Runner.tasks',
+      `${EXTENSION_NAME}.tasks`,
       () => {
         let showErrorMessage = false;
 
@@ -215,7 +215,7 @@ function initWorkspaceDisposables() {
 
   if (!toggleStatusBarDisposable) {
     toggleStatusBarDisposable = vscode.commands.registerCommand(
-      'C_Cpp_Runner.toggleStatusBar',
+      `${EXTENSION_NAME}.toggleStatusBar`,
       () => {
         showStatusBarItems = !showStatusBarItems;
         toggleStatusBarItems();
@@ -228,7 +228,7 @@ function initWorkspaceDisposables() {
 
   if (!folderContextMenuDisposable) {
     folderContextMenuDisposable = vscode.commands.registerCommand(
-      'C_Cpp_Runner.folderContextMenu',
+      `${EXTENSION_NAME}.folderContextMenu`,
       async (clickedUriItem: vscode.Uri, selectedUriItems: vscode.Uri[]) => {
         if (selectedUriItems.length > 1) return;
 
@@ -253,7 +253,7 @@ function initEventListener() {
   if (!eventConfigurationDisposable) {
     eventConfigurationDisposable = vscode.workspace.onDidChangeConfiguration(
       (e: vscode.ConfigurationChangeEvent) => {
-        if (e.affectsConfiguration('C_Cpp_Runner')) {
+        if (e.affectsConfiguration(EXTENSION_NAME)) {
           const infoMessage = `Configuration change.`;
           logger.log(loggingActive, infoMessage);
           updateLoggingState();
@@ -409,7 +409,7 @@ function initFolderStatusBar(context: vscode.ExtensionContext) {
     }
   }
 
-  const commandName = 'C_Cpp_Runner.init';
+  const commandName = `${EXTENSION_NAME}.init`;
   commandFolderDisposable = vscode.commands.registerCommand(
     commandName,
     async () => {
@@ -439,7 +439,7 @@ function initModeStatusBar(context: vscode.ExtensionContext) {
     architectureMode,
   );
 
-  const commandName = 'C_Cpp_Runner.mode';
+  const commandName = `${EXTENSION_NAME}.mode`;
   commandModeDisposable = vscode.commands.registerCommand(
     commandName,
     async () => {
@@ -472,7 +472,7 @@ function initBuildStatusBar(context: vscode.ExtensionContext) {
   context.subscriptions.push(buildStatusBar);
   updateBuildStatus(buildStatusBar, showStatusBarItems, activeFolder);
 
-  const commandName = 'C_Cpp_Runner.build';
+  const commandName = `${EXTENSION_NAME}.build`;
   commandBuildDisposable = vscode.commands.registerCommand(commandName, () => {
     if (
       !taskProvider ||
@@ -515,7 +515,7 @@ function initRunStatusBar(context: vscode.ExtensionContext) {
   context.subscriptions.push(runStatusBar);
   updateRunStatus(runStatusBar, showStatusBarItems, activeFolder);
 
-  const commandName = 'C_Cpp_Runner.run';
+  const commandName = `${EXTENSION_NAME}.run`;
   commandRunDisposable = vscode.commands.registerCommand(commandName, () => {
     if (
       !taskProvider ||
@@ -558,7 +558,7 @@ function initDebugStatusBar(context: vscode.ExtensionContext) {
   context.subscriptions.push(debugStatusBar);
   updateDebugStatus(debugStatusBar, showStatusBarItems, activeFolder);
 
-  const commandName = 'C_Cpp_Runner.debug';
+  const commandName = `${EXTENSION_NAME}.debug`;
   commandDebugDisposable = vscode.commands.registerCommand(commandName, () => {
     if (!activeFolder || !workspaceFolder) {
       const infoMessage = `debugCallback: No Workspace or Folder picked.`;
@@ -577,7 +577,7 @@ function initCleanStatusBar(context: vscode.ExtensionContext) {
   context.subscriptions.push(cleanStatusBar);
   updateCleanStatus(cleanStatusBar, showStatusBarItems, activeFolder);
 
-  const commandName = 'C_Cpp_Runner.clean';
+  const commandName = `${EXTENSION_NAME}.clean`;
   commandCleanDisposable = vscode.commands.registerCommand(commandName, () => {
     if (
       !taskProvider ||

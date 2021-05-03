@@ -6,8 +6,8 @@ import { getLaunchConfigIndex } from '../utils/vscodeUtils';
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
 
-const templateFileName = 'launch_template.json';
-const outputFileName = 'launch.json';
+const TEMPLATE_FILENAME = 'launch_template.json';
+const OUTPUT_FILENAME = 'launch.json';
 
 export class LaunchProvider extends FileProvider {
   constructor(
@@ -15,7 +15,7 @@ export class LaunchProvider extends FileProvider {
     public workspaceFolder: string,
     public activeFolder: string,
   ) {
-    super(settings, workspaceFolder, templateFileName, outputFileName);
+    super(settings, workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
 
     if (!this.activeFolder) {
       this.activeFolder = this.workspaceFolder;

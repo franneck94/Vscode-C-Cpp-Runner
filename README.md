@@ -87,9 +87,9 @@ The properties will be updated automatically after changing the settings.
 
 ### CMake Projects
 
-The extension does not activate on start whenever there is a CMakeLists.txt file in the root folder of the workspace.  
-Otherwise, the status bar would have a lot of buttons from this extension and *Microsoft's CMake Tools* extension.  
-However, the user can trigger the start-up of this extension by pressing `ctrl+alt+r` regardless of a present CMake file.
+The extension does not activate on start whenever there is a CMakeLists.txt file in the root folder of the workspace or if a source directory for the CMake extension is set by the user.
+This prevents an overloaded status bar with a lot of icons.  
+However, the user can trigger the start-up of this extension by pressing `ctrl+alt+r` regardless of the CMake extension.
 
 ## Release Notes
 

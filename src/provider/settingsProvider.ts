@@ -20,7 +20,8 @@ import {
   OperatingSystems,
 } from '../utils/types';
 
-const outputFileName = 'settings.json';
+const OUTPUT_FILENAME = 'settings.json';
+const EXTENSION_NAME = 'C_Cpp_Runner';
 
 export class SettingsProvider {
   // Workspace data
@@ -29,7 +30,7 @@ export class SettingsProvider {
   private _outputPath: string;
   private _vscodeDirectory: string;
   private _configLocal: JsonSettings | undefined;
-  private _configGlobal = vscode.workspace.getConfiguration('C_Cpp_Runner');
+  private _configGlobal = vscode.workspace.getConfiguration(EXTENSION_NAME);
   // Machine information
   private _operatingSystem = getOperatingSystem();
   private _architecure: Architectures | undefined;
@@ -56,9 +57,9 @@ export class SettingsProvider {
 
   constructor(public workspaceFolder: string) {
     this._vscodeDirectory = path.join(this.workspaceFolder, '.vscode');
-    this._outputPath = path.join(this._vscodeDirectory, outputFileName);
-    this.readLocalConfig();
+    this._outputPath = path.join(this._vscodeDirectory, OUTPUT_FILENAME);
 
+    this.readLocalConfig();
     this.createFileWatcher();
     this.checkCompilers();
     this.getSettings();
@@ -79,10 +80,10 @@ export class SettingsProvider {
       let skipCheckFound = false;
 
       if (
-        settingsJson['C_Cpp_Runner.cCompilerPath'] &&
-        settingsJson['C_Cpp_Runner.cppCompilerPath'] &&
-        settingsJson['C_Cpp_Runner.debuggerPath'] &&
-        settingsJson['C_Cpp_Runner.makePath']
+        settingsJson[`${EXTENSION_NAME}.cCompilerPath`] &&
+        settingsJson[`${EXTENSION_NAME}.cppCompilerPath`] &&
+        settingsJson[`${EXTENSION_NAME}.debuggerPath`] &&
+        settingsJson[`${EXTENSION_NAME}.makePath`]
       ) {
         skipCheckEntries = true;
       }
@@ -204,7 +205,7 @@ export class SettingsProvider {
   }
 
   private checkSetting(name: string, defaultValue: any) {
-    const settingName = `C_Cpp_Runner.${name}`;
+    const settingName = `${EXTENSION_NAME}.${name}`;
 
     if (this._configLocal && this._configLocal[settingName]) {
       return this._configLocal[settingName];
@@ -275,7 +276,7 @@ export class SettingsProvider {
       const pathName = e.fsPath;
       if (
         pathName === this._vscodeDirectory ||
-        path.basename(pathName) === outputFileName
+        path.basename(pathName) === OUTPUT_FILENAME
       ) {
         this.checkCompilers();
       }
@@ -289,9 +290,9 @@ export class SettingsProvider {
   public updateFolderData(workspaceFolder: string) {
     this.workspaceFolder = workspaceFolder;
     this._vscodeDirectory = path.join(this.workspaceFolder, '.vscode');
-    this._outputPath = path.join(this._vscodeDirectory, outputFileName);
-    this.readLocalConfig();
+    this._outputPath = path.join(this._vscodeDirectory, OUTPUT_FILENAME);
 
+    this.readLocalConfig();
     this.createFileWatcher();
   }
 
@@ -306,7 +307,7 @@ export class SettingsProvider {
       settingsJson = {};
     }
 
-    const settingName = `C_Cpp_Runner.${key}`;
+    const settingName = `${EXTENSION_NAME}.${key}`;
 
     try {
       if (!settingsJson.settingName) {

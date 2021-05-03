@@ -5,7 +5,7 @@ import * as vscode from 'vscode';
 
 import { loggingActive } from '../extension';
 import * as logger from './logger';
-import { Languages } from './types';
+import { JsonSettings, Languages } from './types';
 
 export function replaceBackslashes(text: string) {
   return text.replace(/\\/g, '/');
@@ -157,30 +157,49 @@ export function writeJsonFile(outputFilePath: string, jsonContent: any) {
 }
 
 export function noCmakeFileFound() {
-  let foundNoCmakeFile = true;
+  let cmakeNotActive = true;
   const workspaceFodlers = vscode.workspace.workspaceFolders;
+  const cmakeSettingName = 'cmake.sourceDirectory';
 
   if (workspaceFodlers) {
     workspaceFodlers.forEach((folder) => {
-      const files = filesInDir(folder.uri.fsPath);
-      files.forEach((file) => {
-        if (file.toLowerCase() === 'CMakeLists.txt'.toLowerCase()) {
-          foundNoCmakeFile = false;
+      if (cmakeNotActive) {
+        const files = filesInDir(folder.uri.fsPath);
+        files.forEach((file) => {
+          if (file.toLowerCase() === 'CMakeLists.txt'.toLowerCase()) {
+            cmakeNotActive = false;
+          }
+        });
+
+        const settingsPath = path.join(
+          folder.uri.fsPath,
+          '.vscode',
+          'settings.json',
+        );
+
+        if (pathExists(settingsPath)) {
+          const configLocal: JsonSettings | undefined = readJsonFile(
+            settingsPath,
+          );
+
+          if (configLocal && configLocal[cmakeSettingName]) {
+            cmakeNotActive = false;
+          }
         }
-      });
+      }
     });
   }
 
-  if (foundNoCmakeFile) {
+  if (cmakeNotActive) {
     const config = vscode.workspace.getConfiguration('cmake');
     const cmakeSetting = config.get('sourceDirectory');
 
     if (cmakeSetting && cmakeSetting !== '${workspaceFolder}') {
-      foundNoCmakeFile = false;
+      cmakeNotActive = false;
     }
   }
 
-  return foundNoCmakeFile;
+  return cmakeNotActive;
 }
 
 export function naturalSort(names: string[]) {

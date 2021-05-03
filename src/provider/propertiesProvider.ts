@@ -3,15 +3,15 @@ import { JsonConfiguration, Languages } from '../utils/types';
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
 
-const templateFileName = 'properties_template.json';
-const outputFileName = 'c_cpp_Properties.json';
+const TEMPLATE_FILENAME = 'properties_template.json';
+const OUTPUT_FILENAME = 'c_cpp_Properties.json';
 
 export class PropertiesProvider extends FileProvider {
   constructor(
     protected settings: SettingsProvider,
     public workspaceFolder: string,
   ) {
-    super(settings, workspaceFolder, templateFileName, outputFileName);
+    super(settings, workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
   }
 
   public writeFileData() {

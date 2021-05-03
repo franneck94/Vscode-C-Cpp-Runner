@@ -20,6 +20,8 @@ import {
 import { getLaunchConfigIndex } from '../utils/vscodeUtils';
 import { SettingsProvider } from './settingsProvider';
 
+const EXTENSION_NAME = 'C_Cpp_Runner';
+
 export class TaskProvider implements vscode.TaskProvider {
   private readonly _tasksFile: string;
   private readonly _makefileFile: string;
@@ -97,7 +99,7 @@ export class TaskProvider implements vscode.TaskProvider {
         definition,
         scope,
         taskJson.label,
-        'C_Cpp_Runner',
+        EXTENSION_NAME,
         execution,
         problemMatcher,
       );
@@ -217,7 +219,7 @@ export class TaskProvider implements vscode.TaskProvider {
       definition,
       scope,
       label,
-      'C_Cpp_Runner',
+      EXTENSION_NAME,
       undefined,
       problemMatcher,
     );

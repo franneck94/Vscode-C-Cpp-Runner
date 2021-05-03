@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 0.11.1: May 03, 2021
+
+- **Bugfix**: In a multi-root workspace use-case the cmake detection is now working properly.
+
 ## Version 0.11.0: April 29, 2021
 
 - **Improvement**: The settings are now read/saved correctly in a use case with multiple workspaces.  

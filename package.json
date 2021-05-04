@@ -2,7 +2,7 @@
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
   "description": "Compile and run your C/C++ code with ease.",
-  "version": "0.11.1",
+  "version": "0.11.0",
   "publisher": "franneck94",
   "license": "MIT",
   "icon": "icon.png",

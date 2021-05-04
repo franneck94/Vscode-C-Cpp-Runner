@@ -1,14 +1,11 @@
 # C/C++ Runner Change Log
 
-## Version 0.11.1: May 03, 2021
-
-- **Bugfix**: In a multi-root workspace use-case the cmake detection is now working properly.
-
-## Version 0.11.0: April 29, 2021
+## Version 0.11.0: May 04, 2021
 
 - **Improvement**: The settings are now read/saved correctly in a use case with multiple workspaces.  
 A multi-workspace setting is now fully compatible with the extension.
 - **Bugfix**: External console is now set to false for Mac due to debugging issues.
+- **Bugfix**: In a multi-root workspace use-case the cmake detection is now working properly.
 
 ## Version 0.10.0: April 26, 2021
 

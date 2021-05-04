@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 0.11.0: Planned
+
+- **Improvement**: Add setting for program args to pass for running and debugging
+
 ## Version 0.11.0: May 04, 2021
 
 - **Improvement**: The settings are now read/saved correctly in a use case with multiple workspaces.  

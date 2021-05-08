@@ -202,6 +202,54 @@ export function noCmakeFileFound() {
   return cmakeNotActive;
 }
 
+export function noMakeFileFound() {
+  let makeNotActive = true;
+  const workspaceFodlers = vscode.workspace.workspaceFolders;
+  const makeSettingName = 'makefile.makefilePath';
+
+  if (workspaceFodlers) {
+    workspaceFodlers.forEach((folder) => {
+      if (makeNotActive) {
+        const files = filesInDir(folder.uri.fsPath);
+        files.forEach((file) => {
+          if (file.toLowerCase() === 'Makefile'.toLowerCase()) {
+            makeNotActive = false;
+          }
+        });
+
+        const vscodePath = path.join(folder.uri.fsPath, '.vscode');
+        const makefilePath = path.join(vscodePath, 'Makefile');
+        const settingsPath = path.join(vscodePath, 'settings.json');
+
+        if (pathExists(settingsPath)) {
+          const configLocal: JsonSettings | undefined = readJsonFile(
+            settingsPath,
+          );
+
+          if (configLocal && configLocal[makeSettingName]) {
+            makeNotActive = false;
+          }
+        }
+
+        if (pathExists(makefilePath)) {
+          makeNotActive = false;
+        }
+      }
+    });
+  }
+
+  if (makeNotActive) {
+    const config = vscode.workspace.getConfiguration('makefile');
+    const makeSetting = config.get('makefilePath');
+
+    if (makeSetting) {
+      makeNotActive = false;
+    }
+  }
+
+  return makeNotActive;
+}
+
 export function naturalSort(names: string[]) {
   return names.sort((a, b) => {
     return a.localeCompare(b, undefined, {

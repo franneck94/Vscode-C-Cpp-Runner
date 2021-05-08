@@ -85,9 +85,9 @@ The properties will be updated automatically after changing the settings.
 - 📝 Allowed file extensions for sources: \*.c, \*.cpp, \*.cc, \*.cxx
 - 📁 The folder selection will not list folders that are called 'build' or include a '.' (e.g. '.vscode')
 
-### CMake Projects
+### CMake and Makefile Projects
 
-The extension does not activate on start whenever there is a CMakeLists.txt file in the root folder of the workspace or if a source directory for the CMake extension is set by the user.
+The extension icons do not show up in the status bar whenever there is a CMakeLists.txt or a Makefile in the root folder of the workspace. Also, if a source directory for Microsoft's CMake or Makefile extension is set by the user.
 This prevents an overloaded status bar with a lot of icons.  
 However, the user can trigger the start-up of this extension by pressing `ctrl+alt+r` regardless of the CMake extension.
 

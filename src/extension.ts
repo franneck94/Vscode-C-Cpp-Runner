@@ -15,7 +15,11 @@ import { LaunchProvider } from './provider/launchProvider';
 import { PropertiesProvider } from './provider/propertiesProvider';
 import { SettingsProvider } from './provider/settingsProvider';
 import { TaskProvider } from './provider/taskProvider';
-import { foldersInDir, noCmakeFileFound } from './utils/fileUtils';
+import {
+  foldersInDir,
+  noCmakeFileFound,
+  noMakeFileFound,
+} from './utils/fileUtils';
 import * as logger from './utils/logger';
 import { Architectures, Builds, Tasks } from './utils/types';
 import {
@@ -57,7 +61,7 @@ let activeFolder: string | undefined;
 let buildMode: Builds = Builds.debug;
 let architectureMode: Architectures = Architectures.x64;
 let errorMessage: Thenable<string | undefined> | undefined;
-let showStatusBarItems: boolean = false;
+let showStatusBarItems: boolean = true;
 
 const EXTENSION_NAME = 'C_Cpp_Runner';
 
@@ -88,10 +92,20 @@ export function activate(context: vscode.ExtensionContext) {
 
   setContextValue(`${EXTENSION_NAME}:activatedExtension`, true);
 
-  showStatusBarItems = noCmakeFileFound();
+  const noCmake = noCmakeFileFound();
   if (!showStatusBarItems) {
     const infoMessage = `CMake Project found. Deactivating extension.`;
     logger.log(loggingActive, infoMessage);
+  }
+
+  const noMake = noMakeFileFound();
+  if (!showStatusBarItems) {
+    const infoMessage = `Makefile found. Deactivating extension.`;
+    logger.log(loggingActive, infoMessage);
+  }
+
+  if (!noCmake || !noMake) {
+    showStatusBarItems = false;
   }
 
   initFolderStatusBar(context);

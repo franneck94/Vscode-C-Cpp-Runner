@@ -15,11 +15,7 @@ import { LaunchProvider } from './provider/launchProvider';
 import { PropertiesProvider } from './provider/propertiesProvider';
 import { SettingsProvider } from './provider/settingsProvider';
 import { TaskProvider } from './provider/taskProvider';
-import {
-  foldersInDir,
-  noCmakeFileFound,
-  noMakeFileFound,
-} from './utils/fileUtils';
+import { foldersInDir, isCmakeActive, isMakeActive } from './utils/fileUtils';
 import * as logger from './utils/logger';
 import { Architectures, Builds, Tasks } from './utils/types';
 import {
@@ -92,20 +88,18 @@ export function activate(context: vscode.ExtensionContext) {
 
   setContextValue(`${EXTENSION_NAME}:activatedExtension`, true);
 
-  const noCmake = noCmakeFileFound();
-  if (!showStatusBarItems) {
+  const cmakeActive = isCmakeActive();
+  if (cmakeActive) {
+    showStatusBarItems = false;
     const infoMessage = `CMake Project found. Deactivating extension.`;
     logger.log(loggingActive, infoMessage);
   }
 
-  const noMake = noMakeFileFound();
-  if (!showStatusBarItems) {
+  const makeActive = isMakeActive();
+  if (makeActive) {
+    showStatusBarItems = false;
     const infoMessage = `Makefile found. Deactivating extension.`;
     logger.log(loggingActive, infoMessage);
-  }
-
-  if (!noCmake || !noMake) {
-    showStatusBarItems = false;
   }
 
   initFolderStatusBar(context);

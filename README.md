@@ -1,6 +1,6 @@
 # VSCode C/C++ Runner
 
-🚀 Compile and run your C/C++ code with ease. 🚀
+🚀 Compile, run and debug single or multiple C/C++ files with ease. 🚀
 
 This extension provides tasks to compile, run and debug your C/C++ code.  
 It does not only compile single C/C++ files but also multiple files.  

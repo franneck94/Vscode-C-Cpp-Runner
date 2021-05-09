@@ -156,18 +156,20 @@ export function writeJsonFile(outputFilePath: string, jsonContent: any) {
   }
 }
 
-export function noCmakeFileFound() {
-  let cmakeNotActive = true;
+export function isCmakeActive() {
+  let cmakeActive = false;
+
   const workspaceFodlers = vscode.workspace.workspaceFolders;
-  const cmakeSettingName = 'cmake.sourceDirectory';
+  const cmakeExtensionName = 'cmake';
+  const cmakeSettingName = 'sourceDirectory';
 
   if (workspaceFodlers) {
     workspaceFodlers.forEach((folder) => {
-      if (cmakeNotActive) {
+      if (!cmakeActive) {
         const files = filesInDir(folder.uri.fsPath);
         files.forEach((file) => {
           if (file.toLowerCase() === 'CMakeLists.txt'.toLowerCase()) {
-            cmakeNotActive = false;
+            cmakeActive = true;
           }
         });
 
@@ -182,38 +184,43 @@ export function noCmakeFileFound() {
             settingsPath,
           );
 
-          if (configLocal && configLocal[cmakeSettingName]) {
-            cmakeNotActive = false;
+          if (
+            configLocal &&
+            configLocal[`${cmakeExtensionName}.${cmakeSettingName}`]
+          ) {
+            cmakeActive = true;
           }
         }
       }
     });
   }
 
-  if (cmakeNotActive) {
-    const config = vscode.workspace.getConfiguration('cmake');
-    const cmakeSetting = config.get('sourceDirectory');
+  if (!cmakeActive) {
+    const config = vscode.workspace.getConfiguration(cmakeExtensionName);
+    const cmakeSetting = config.get(cmakeSettingName);
 
     if (cmakeSetting && cmakeSetting !== '${workspaceFolder}') {
-      cmakeNotActive = false;
+      cmakeActive = true;
     }
   }
 
-  return cmakeNotActive;
+  return cmakeActive;
 }
 
-export function noMakeFileFound() {
-  let makeNotActive = true;
+export function isMakeActive() {
+  let makeActive = false;
+
   const workspaceFodlers = vscode.workspace.workspaceFolders;
-  const makeSettingName = 'makefile.makefilePath';
+  const makeExtensionName = 'makefile';
+  const makeSettingName = 'makefilePath';
 
   if (workspaceFodlers) {
     workspaceFodlers.forEach((folder) => {
-      if (makeNotActive) {
+      if (!makeActive) {
         const files = filesInDir(folder.uri.fsPath);
         files.forEach((file) => {
           if (file.toLowerCase() === 'Makefile'.toLowerCase()) {
-            makeNotActive = false;
+            makeActive = true;
           }
         });
 
@@ -226,28 +233,31 @@ export function noMakeFileFound() {
             settingsPath,
           );
 
-          if (configLocal && configLocal[makeSettingName]) {
-            makeNotActive = false;
+          if (
+            configLocal &&
+            configLocal[`${makeExtensionName}.${makeSettingName}`]
+          ) {
+            makeActive = true;
           }
         }
 
         if (pathExists(makefilePath)) {
-          makeNotActive = false;
+          makeActive = true;
         }
       }
     });
   }
 
-  if (makeNotActive) {
-    const config = vscode.workspace.getConfiguration('makefile');
-    const makeSetting = config.get('makefilePath');
+  if (!makeActive) {
+    const config = vscode.workspace.getConfiguration(makeExtensionName);
+    const makeSetting = config.get(makeSettingName);
 
     if (makeSetting) {
-      makeNotActive = false;
+      makeActive = true;
     }
   }
 
-  return makeNotActive;
+  return makeActive;
 }
 
 export function naturalSort(names: string[]) {

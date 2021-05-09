@@ -4,7 +4,7 @@
 
 - **Improvement**: Add setting for program args to pass for running and debugging
 
-## Version 0.12.0: May 08, 2021
+## Version 0.12.0: May 09, 2021
 
 - **Info**: Extension does not show up if a Makefile is present in the root directory of the workspace or inside the .vscode folder of the workspace
 

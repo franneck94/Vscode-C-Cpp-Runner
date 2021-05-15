@@ -3,6 +3,11 @@
 ## Version 0.13.0: Planned
 
 - **Improvement**: Add setting for program args to pass for running and debugging
+- **Improvement**: Investigate CPU load: [Github Issue](https://github.com/franneck94/Vscode-C-Cpp-Runner/issues/4#issue-890677104)
+
+## Version 0.12.1: May 10, 2021
+
+- **Bugfix**: Fixed naming "c_cpp_Properties.json" to "c_cpp_properties.json".
 
 ## Version 0.12.0: May 09, 2021
 

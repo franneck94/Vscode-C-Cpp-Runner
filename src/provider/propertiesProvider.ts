@@ -4,7 +4,7 @@ import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
 
 const TEMPLATE_FILENAME = 'properties_template.json';
-const OUTPUT_FILENAME = 'c_cpp_Properties.json';
+const OUTPUT_FILENAME = 'c_cpp_properties.json';
 
 export class PropertiesProvider extends FileProvider {
   constructor(

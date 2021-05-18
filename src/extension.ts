@@ -67,20 +67,18 @@ export let extensionPath: string | undefined;
 export let loggingActive: boolean = false;
 
 export function activate(context: vscode.ExtensionContext) {
+  if (
+    !vscode.workspace.workspaceFolders ||
+    vscode.workspace.workspaceFolders.length === 0
+  ) {
+    return;
+  }
+
   extensionContext = context;
   extensionPath = context.extensionPath;
   extensionState = context.workspaceState;
   updateLoggingState();
   loggingActive = getLoggingState();
-
-  if (
-    !vscode.workspace.workspaceFolders ||
-    vscode.workspace.workspaceFolders.length === 0
-  ) {
-    const infoMessage = `Empty Workspace opened.`;
-    logger.log(loggingActive, infoMessage);
-    return;
-  }
 
   if (vscode.workspace.workspaceFolders.length === 1) {
     workspaceFolder = vscode.workspace.workspaceFolders[0].uri.fsPath;

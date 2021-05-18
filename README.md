@@ -13,8 +13,8 @@ You do not need to know about any compiler and Makefile commands. 😎
 ## Software Requirements
 
 - 🔧 Microsoft's C/C++ VSCode Extension (will be installed automatically)
-- 🔧 For C: gcc/clang, gdb/lldb and make
-- 🔧 For C++: g++/clang++, gdb/lldb and make
+- 🔧 For C code: gcc/clang, gdb/lldb and make
+- 🔧 For C++ code: g++/clang++, gdb/lldb and make
 
 ## Install the Software Requirements (optional)
 
@@ -51,7 +51,7 @@ If you do not want to see the status bar items you can toggle the visibility wit
 ## Extension Features
 
 The extension will automatically search for an installed compiler on your computer.  
-If any compiler can be found in the PATH variables it will be stored to the local workspace settings (*".vscode/settings.json"*).  
+If any gcc or clang compiler can be found in the PATH variables it will be stored to the local workspace settings (*".vscode/settings.json"*).  
 If you wish to use any other installed compiler, just edit the entries in the local settings.  
 ![FoundCompiler](./media/FoundCompiler.png)  
 
@@ -75,7 +75,6 @@ The properties will be updated automatically after changing the settings.
 - ⚙️ Additional compiler arguments (defaults to None)
 - ⚙️ Additional linker arguments (defaults to None)
 - ⚙️ Additional include paths (defaults to None)
-- ⚙️ Whether to activate logging or not (only for extension developers)
 
 ## Important Notes
 
@@ -87,7 +86,7 @@ The properties will be updated automatically after changing the settings.
 
 ### CMake and Makefile Projects
 
-The extension icons do not show up in the status bar whenever there is a CMakeLists.txt or a Makefile in the root folder of the workspace. Also, if a source directory for Microsoft's CMake or Makefile extension is set by the user.
+The extension does not start whenever there is a CMakeLists.txt or a Makefile in the root folder of the workspace or if a source directory for Microsoft's CMake or Makefile extension is set by the user.
 This prevents an overloaded status bar with a lot of icons.  
 However, the user can trigger the start-up of this extension by pressing `ctrl+alt+r` regardless of the CMake extension.
 
@@ -97,5 +96,4 @@ Refer to the [CHANGELOG](CHANGELOG.md).
 
 ## License
 
-Copyright (C) 2021 Jan Schaffranek. Licensed under the MIT License.  
-For the *C/C++* extension from Microsoft refer to their license.
+Copyright (C) 2021 Jan Schaffranek. Licensed under the MIT License.

@@ -3,6 +3,12 @@
 ## Version 0.13.0: Planned
 
 - **Improvement**: Add setting for program args to pass for running and debugging
+- **Improvement**: Selected folder should be shortened in status bar
+- **Improvement**: Remove x86/x64 selection from build mode, hene it does not work anyway
+
+## Version 0.12.1: May 10, 2021
+
+- **Bugfix**: Fixed naming "C_cpp_Properties.json" to "c_cpp_properties.json".
 
 ## Version 0.12.0: May 09, 2021
 

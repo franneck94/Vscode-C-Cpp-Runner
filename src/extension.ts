@@ -17,7 +17,7 @@ import { SettingsProvider } from './provider/settingsProvider';
 import { TaskProvider } from './provider/taskProvider';
 import { foldersInDir, isCmakeActive, isMakeActive } from './utils/fileUtils';
 import * as logger from './utils/logger';
-import { Architectures, Builds, Tasks } from './utils/types';
+import { Builds, Tasks } from './utils/types';
 import {
   createStatusBarItem,
   disposeItem,
@@ -55,7 +55,6 @@ let cleanStatusBar: vscode.StatusBarItem | undefined;
 let workspaceFolder: string | undefined;
 let activeFolder: string | undefined;
 let buildMode: Builds = Builds.debug;
-let architectureMode: Architectures = Architectures.x64;
 let errorMessage: Thenable<string | undefined> | undefined;
 let showStatusBarItems: boolean = true;
 
@@ -166,7 +165,6 @@ function initWorkspaceProvider() {
       workspaceFolder,
       activeFolder,
       buildMode,
-      architectureMode,
     );
   }
 }
@@ -341,8 +339,8 @@ function updateFolderData() {
 
   if (taskProvider) {
     taskProvider.updateFolderData(workspaceFolder, activeFolder);
-    if (buildMode && architectureMode) {
-      taskProvider.updateModeData(buildMode, architectureMode);
+    if (buildMode) {
+      taskProvider.updateModeData(buildMode);
     }
   }
 
@@ -375,7 +373,6 @@ function updateFolderData() {
       showStatusBarItems,
       activeFolder,
       buildMode,
-      architectureMode,
     );
   }
   if (buildStatusBar) {
@@ -437,31 +434,23 @@ function initFolderStatusBar(context: vscode.ExtensionContext) {
 function initModeStatusBar(context: vscode.ExtensionContext) {
   modeStatusBar = createStatusBarItem();
   context.subscriptions.push(modeStatusBar);
-  updateModeStatus(
-    modeStatusBar,
-    showStatusBarItems,
-    activeFolder,
-    buildMode,
-    architectureMode,
-  );
+  updateModeStatus(modeStatusBar, showStatusBarItems, activeFolder, buildMode);
 
   const commandName = `${EXTENSION_NAME}.mode`;
   commandModeDisposable = vscode.commands.registerCommand(
     commandName,
     async () => {
-      const ret = await modeHandler(settingsProvider);
-      if (ret && ret.pickedArchitecture && ret.pickedMode) {
-        buildMode = ret.pickedMode;
-        architectureMode = ret.pickedArchitecture;
+      const pickedMode = await modeHandler();
+      if (pickedMode) {
+        buildMode = pickedMode;
         if (taskProvider) {
-          taskProvider.updateModeData(buildMode, architectureMode);
+          taskProvider.updateModeData(buildMode);
         }
         updateModeStatus(
           modeStatusBar,
           showStatusBarItems,
           activeFolder,
           buildMode,
-          architectureMode,
         );
       } else {
         const infoMessage = `Mode callback aborted.`;

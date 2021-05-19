@@ -2,9 +2,9 @@
 
 ## Version 0.13.0: Planned
 
-- **Improvement**: Add setting for program args to pass for running and debugging
-- **Improvement**: Selected folder should be shortened in status bar
-- **Improvement**: Remove x86/x64 selection from build mode, hene it does not work anyway
+- **Improvement**: Add setting for program args to pass for running and debugging.
+- **Improvement**: Selected folder should be shortened in status bar.
+- **Improvement**: Remove x86/x64 architecture from build mode. The user should rather select an appropiate x86 or x64 compiler in the settings.
 
 ## Version 0.12.1: May 10, 2021
 
@@ -12,7 +12,7 @@
 
 ## Version 0.12.0: May 09, 2021
 
-- **Info**: Extension does not show up if a Makefile is present in the root directory of the workspace or inside the .vscode folder of the workspace
+- **Info**: Extension does not show up if a Makefile is present in the root directory of the workspace or inside the .vscode folder of the workspace.
 
 ## Version 0.11.0: May 04, 2021
 

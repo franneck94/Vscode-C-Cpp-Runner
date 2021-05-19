@@ -8,7 +8,6 @@ import {
   replaceBackslashes,
 } from '../utils/fileUtils';
 import {
-  Architectures,
   Builds,
   JsonConfiguration,
   JsonInnerTask,
@@ -32,7 +31,6 @@ export class TaskProvider implements vscode.TaskProvider {
     private _workspaceFolder: string | undefined,
     private _pickedFolder: string | undefined,
     private _buildMode: Builds,
-    private _architectureMode: Architectures,
   ) {
     const templateDirectory = path.join(
       extensionPath ? extensionPath : '',
@@ -151,11 +149,7 @@ export class TaskProvider implements vscode.TaskProvider {
       }
       taskJson.args.push(`ENABLE_WARNINGS=${+settings.enableWarnings}`);
       taskJson.args.push(`WARNINGS_AS_ERRORS=${+settings.warningsAsError}`);
-      const architectureStr =
-        this.architectureMode === Architectures.x64 ? '64' : '32';
-      if (architectureStr) {
-        taskJson.args.push(`ARCHITECTURE=${architectureStr}`);
-      }
+
       // Makefile arguments that can hold multiple values
       if (settings.warnings) {
         taskJson.args.push(`WARNINGS="${settings.warnings}"`);
@@ -172,9 +166,8 @@ export class TaskProvider implements vscode.TaskProvider {
     }
   }
 
-  public updateModeData(buildMode: Builds, architectureMode: Architectures) {
+  public updateModeData(buildMode: Builds) {
     this.buildMode = buildMode;
-    this.architectureMode = architectureMode;
   }
 
   public updateFolderData(
@@ -245,14 +238,6 @@ export class TaskProvider implements vscode.TaskProvider {
       folder,
       configJson.configurations[configIdx],
     );
-  }
-
-  public get architectureMode() {
-    return this._architectureMode;
-  }
-
-  public set architectureMode(value: Architectures) {
-    this._architectureMode = value;
   }
 
   public get buildMode() {

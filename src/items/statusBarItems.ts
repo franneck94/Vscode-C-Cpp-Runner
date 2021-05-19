@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 
 import { TaskProvider } from '../provider/taskProvider';
 import { replaceBackslashes } from '../utils/fileUtils';
-import { Architectures, Builds } from '../utils/types';
+import { Builds } from '../utils/types';
 
 export function updateFolderStatus(
   status: vscode.StatusBarItem | undefined,
@@ -43,11 +43,10 @@ export function updateModeStatus(
   showStatusBarItems: boolean,
   activeFolder: string | undefined,
   buildMode: Builds,
-  architectureMode: Architectures,
 ) {
   if (!status) return;
 
-  status.text = `$(tools) ${buildMode} - ${architectureMode}`;
+  status.text = `$(tools) ${buildMode}`;
   toggleShow(status, showStatusBarItems, activeFolder);
 }
 

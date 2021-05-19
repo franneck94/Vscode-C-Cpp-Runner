@@ -177,9 +177,7 @@ export class SettingsProvider {
       }
     }
 
-    if (this._cCompiler) {
-      this._architecure = getArchitecture(this._cCompiler);
-    }
+    this.updateArchitecture();
   }
 
   /**
@@ -246,7 +244,7 @@ export class SettingsProvider {
       this._debugger = Debuggers.gdb;
     }
 
-    this._architecure = getArchitecture(this._cCompiler);
+    this.updateArchitecture();
   }
 
   private createFileWatcher() {
@@ -317,6 +315,14 @@ export class SettingsProvider {
       writeJsonFile(this._outputPath, settingsJson);
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  private updateArchitecture() {
+    if (this._cCompiler) {
+      this._architecure = getArchitecture(this._cCompiler);
+    } else if (this._cppCompiler) {
+      this._architecure = getArchitecture(this._cppCompiler);
     }
   }
 

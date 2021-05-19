@@ -23,7 +23,15 @@ export function updateFolderStatus(
       workspaceFolder,
       workspaceName,
     );
+
     text = replaceBackslashes(text);
+    const dirs = text.split('/');
+
+    if (dirs.length >= 2) {
+      const lastElement = dirs.length - 1;
+      text = `${dirs[0]}/.../${dirs[lastElement]}`;
+    }
+
     status.color = '';
     status.text = `$(folder-active) ${text}`;
   } else {

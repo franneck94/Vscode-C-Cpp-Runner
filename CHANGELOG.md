@@ -2,7 +2,10 @@
 
 ## Planned
 
-- **Improvement**: Add setting for program args to pass for running and debugging. To be discussed how and where to define the arguments. I am open for suggestions.
+- **Improvement**: Add setting for program args to pass for running and debugging.
+  - For debug config: "args": []
+    - Only override the args value if binary (active) folder has changed
+  - for build config: To be discussed.
 
 ## Version 0.13.0: May 19, 2021
 

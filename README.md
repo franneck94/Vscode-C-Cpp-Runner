@@ -96,4 +96,5 @@ Refer to the [CHANGELOG](CHANGELOG.md).
 
 ## License
 
-Copyright (C) 2021 Jan Schaffranek. Licensed under the MIT License.
+Copyright (C) 2021 Jan Schaffranek.
+Licensed under the [MIT](LICENSE) License.

@@ -21,9 +21,6 @@ export interface JsonTask {
 }
 
 export class Task extends vscode.Task {
-  /**
-   * The task's execution engine: ShellExecution only
-   */
   execution?: vscode.ShellExecution;
 }
 
@@ -42,6 +39,11 @@ export enum Compilers {
 export enum Debuggers {
   lldb = 'lldb',
   gdb = 'gdb',
+}
+
+export enum Makefiles {
+  make = 'make',
+  makeMinGW = 'mingw32-make',
 }
 
 export enum OperatingSystems {

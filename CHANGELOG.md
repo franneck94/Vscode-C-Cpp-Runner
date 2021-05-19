@@ -2,13 +2,14 @@
 
 ## Planned
 
-- **Improvement**: Add setting for program args to pass for running and debugging.
+- **Improvement**: Add setting for program args to pass for running and debugging. To be discussed how and where to define the arguments. I am open for suggestions.
 
 ## Version 0.13.0: May 19, 2021
 
 - **Improvement**: Selected folder path is shortened in the status bar.
 - **Improvement**: Remove x86/x64 architecture from build mode. The user should rather select an appropriate x86 or x64 compiler in the settings.
 - **Improvement**: Default c and cpp standard is now the compiler's default.
+- **Improvement**: Improved look-up performance for installed software.
 
 ## Version 0.12.1: May 10, 2021
 

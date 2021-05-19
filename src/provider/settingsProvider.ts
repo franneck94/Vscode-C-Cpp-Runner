@@ -17,6 +17,7 @@ import {
   Compilers,
   Debuggers,
   JsonSettings,
+  Makefiles,
   OperatingSystems,
 } from '../utils/types';
 
@@ -46,12 +47,12 @@ export class SettingsProvider {
   private _cppCompilerPath: string = 'g++';
   private _debuggerPath: string = 'gdb';
   private _makePath: string = 'make';
-  private _cStandard: string = 'c99';
-  private _cppStandard: string = 'c++11';
+  private _cStandard: string = '';
+  private _cppStandard: string = '';
   private _compilerArgs: string = '';
   private _linkerArgs: string = '';
   private _includePaths: String = '';
-  private _enableWarnings: boolean = false;
+  private _enableWarnings: boolean = true;
   private _warningsAsError: boolean = false;
   private _warnings: string = '-Wall -Wextra -Wpedantic';
 
@@ -106,74 +107,61 @@ export class SettingsProvider {
       mkdirRecursive(this._vscodeDirectory);
     }
 
-    const { f: foundGcc, p: pathGcc } = await commandExists('gcc');
-    const { f: foundClang, p: pathClang } = await commandExists('clang');
-    const { f: foundGpp, p: pathGpp } = await commandExists('g++');
-    const { f: foundClangpp, p: pathClangpp } = await commandExists('clang++');
-    const { f: foundGDB, p: pathGDB } = await commandExists('gdb');
-    const { f: foundLLDB, p: pathLLDB } = await commandExists('lldb');
-    const { f: foundMake, p: pathMake } = await commandExists('make');
+    const { f: foundGcc, p: pathGcc } = await commandExists(Compilers.gcc);
+    const { f: foundGpp, p: pathGpp } = await commandExists(Compilers.gpp);
+    const { f: foundGDB, p: pathGDB } = await commandExists(Debuggers.gdb);
+    const { f: foundMake, p: pathMake } = await commandExists(Makefiles.make);
 
-    if (this._operatingSystem === OperatingSystems.mac) {
+    if (foundGcc && pathGcc) {
+      this.setGcc(pathGcc);
+    } else {
+      const { f: foundClang, p: pathClang } = await commandExists(
+        Compilers.clang,
+      );
+
       if (foundClang && pathClang) {
         this.setClang(pathClang);
-      } else if (foundGcc && pathGcc) {
-        this.setGcc(pathGcc);
       } else {
         this._cCompiler = undefined;
       }
+    }
+
+    if (foundGpp && pathGpp) {
+      this.setGpp(pathGpp);
+    } else {
+      const { f: foundClangpp, p: pathClangpp } = await commandExists(
+        Compilers.clangpp,
+      );
 
       if (foundClangpp && pathClangpp) {
         this.setClangpp(pathClangpp);
-      } else if (foundGpp && pathGpp) {
-        this.setGpp(pathGpp);
       } else {
         this._cppCompiler = undefined;
       }
+    }
+
+    if (foundGDB && pathGDB) {
+      this.setGDB(pathGDB);
+    } else {
+      const { f: foundLLDB, p: pathLLDB } = await commandExists(Debuggers.lldb);
 
       if (foundLLDB && pathLLDB) {
         this.setLLDB(pathLLDB);
-      } else if (foundGDB && pathGDB) {
-        this.setGDB(pathGDB);
       } else {
         this._debugger = undefined;
       }
-    } else {
-      if (foundGcc && pathGcc) {
-        this.setGcc(pathGcc);
-      } else if (foundClang && pathClang) {
-        this.setClang(pathClang);
-      } else {
-        this._cCompiler = undefined;
-      }
+    }
 
-      if (foundGpp && pathGpp) {
-        this.setGpp(pathGpp);
-      } else if (foundClangpp && pathClangpp) {
-        this.setClangpp(pathClangpp);
-      } else {
-        this._cppCompiler = undefined;
-      }
-
-      if (foundGDB && pathGDB) {
-        this.setGDB(pathGDB);
-      } else if (foundLLDB && pathLLDB) {
-        this.setLLDB(pathLLDB);
-      } else {
-        this._debugger = undefined;
-      }
-
+    if (foundMake && pathMake) {
+      this.setMake(pathMake);
+    } else if (this._operatingSystem === OperatingSystems.windows) {
+      const { f: foundMake, p: pathMake } = await commandExists(
+        Makefiles.makeMinGW,
+      );
       if (foundMake && pathMake) {
         this.setMake(pathMake);
       } else {
-        if (this._operatingSystem === OperatingSystems.windows) {
-          const { f: foundMake, p: pathMake } = await commandExists(
-            'mingw32-make',
-          );
-          if (foundMake && pathMake) {
-            this.setMake(pathMake);
-          }
-        }
+        this._foundMake = false;
       }
     }
 

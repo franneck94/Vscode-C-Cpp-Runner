@@ -1,9 +1,12 @@
 # C/C++ Runner Change Log
 
-## Version 0.13.0: Planned
+## Planned
 
 - **Improvement**: Add setting for program args to pass for running and debugging.
-- **Improvement**: Selected folder should be shortened in status bar.
+
+## Version 0.13.0: May 19, 2021
+
+- **Improvement**: Selected folder path is shortened in status bar.
 - **Improvement**: Remove x86/x64 architecture from build mode. The user should rather select an appropiate x86 or x64 compiler in the settings.
 
 ## Version 0.12.1: May 10, 2021

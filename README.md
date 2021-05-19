@@ -64,9 +64,9 @@ The properties will be updated automatically after changing the settings.
 ## Extension Settings
 
 - ⚙️ C Compiler path (defaults to gcc)
-- ⚙️ C Standard (defaults to c99)
+- ⚙️ C Standard (defaults to the compiler's default)
 - ⚙️ C++ Compiler path (defaults to g++)
-- ⚙️ C++ Standard (defaults to c++11)
+- ⚙️ C++ Standard (defaults to the compiler's default)
 - ⚙️ Make path (defaults to make)
 - ⚙️ Debugger path (defaults to gdb)
 - ⚙️ To enable warnings (defaults to True)

@@ -181,7 +181,7 @@
             "gnu11",
             "gnu17"
           ],
-          "default": "c99",
+          "default": "",
           "description": "C-Standard for the C Compiler.",
           "scope": "resource"
         },
@@ -202,7 +202,7 @@
             "gnu++17",
             "gnu++20"
           ],
-          "default": "c++11",
+          "default": "",
           "description": "C++ Standard for the C++ Compiler.",
           "scope": "resource"
         },

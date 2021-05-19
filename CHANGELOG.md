@@ -6,8 +6,9 @@
 
 ## Version 0.13.0: May 19, 2021
 
-- **Improvement**: Selected folder path is shortened in status bar.
-- **Improvement**: Remove x86/x64 architecture from build mode. The user should rather select an appropiate x86 or x64 compiler in the settings.
+- **Improvement**: Selected folder path is shortened in the status bar.
+- **Improvement**: Remove x86/x64 architecture from build mode. The user should rather select an appropriate x86 or x64 compiler in the settings.
+- **Improvement**: Default c and cpp standard is now the compiler's default.
 
 ## Version 0.12.1: May 10, 2021
 

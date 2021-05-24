@@ -1,11 +1,10 @@
 # C/C++ Runner Change Log
 
-## Planned
+## Version 0.14.0: Planned
 
-- **Improvement**: Add setting for program args to pass for running and debugging.
-  - For debug config: "args": []
-    - Only override the args value if binary (active) folder has changed
-  - for build config: To be discussed.
+- **Info**: Updated build mode images in README.
+- **Improvement**: Added option to pass arguments to binary for running and debugging. User can set the args in the debug config, this will be used for running and debuggung. The args are only resetted when the active folder is changed.
+- **Improvement**: Added select folder task to dropdown menu.
 
 ## Version 0.13.0: May 19, 2021
 

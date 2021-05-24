@@ -41,12 +41,13 @@ After selecting the folder, the icons for building, running, and debugging are s
 
 *This task is a no-op if the build task was not executed previously.
 
-You can also press the shortcut `ctrl+shift+r` to get a quick pick dropdown for the tasks.  
+### Alternative Usage
+
+If you do not want to see the status bar items you can toggle the visibility with the command `crtl+alt+r`.
+Then you can use the shortcut `ctrl+shift+r` to get a quick pick dropdown for the tasks.  
 For example, if you select a folder called *"vscode-test/folder1"* you will see the following tasks:
 
 ![TaskQuickBar](./media/TaskQuickPick.png)
-
-If you do not want to see the status bar items you can toggle the visibility with the command `crtl+alt+r`.
 
 ## Extension Features
 

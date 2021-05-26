@@ -27,6 +27,9 @@ COMPILER_ARGS ?= ""
 LINKER_ARGS ?= ""
 INCLUDE_PATHS ?= ""
 
+# Run/Debug arguments
+ARGUMENTS ?= ""
+
 # Internal variable
 VERBOSE = 0
 
@@ -159,7 +162,7 @@ $(BUILD_DIR)/$(EXECUTABLE_NAME): $(OBJECTS)
 	$(COMPILER_CALL) $^ -o $@
 
 execute:
-	./$(BUILD_DIR)/$(EXECUTABLE_NAME)
+	./$(BUILD_DIR)/$(EXECUTABLE_NAME) $(ARGUMENTS)
 
 clean:
 	$(RM_FUNC) $(CLEAN_PATH)

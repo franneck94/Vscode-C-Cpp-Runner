@@ -5,6 +5,7 @@ import { extensionPath } from '../extension';
 import {
   getLanguage,
   readJsonFile,
+  writeJsonFile,
   replaceBackslashes,
 } from '../utils/fileUtils';
 import {
@@ -20,6 +21,7 @@ import { getLaunchConfigIndex } from '../utils/vscodeUtils';
 import { SettingsProvider } from './settingsProvider';
 
 const EXTENSION_NAME = 'C_Cpp_Runner';
+const CONFIG_NAME = 'C/C++ Runner: Debug Session';
 
 export class TaskProvider implements vscode.TaskProvider {
   private readonly _tasksFile: string;
@@ -31,6 +33,7 @@ export class TaskProvider implements vscode.TaskProvider {
     private _workspaceFolder: string | undefined,
     private _pickedFolder: string | undefined,
     private _buildMode: Builds,
+    private _argumentsString: string | undefined,
   ) {
     const templateDirectory = path.join(
       extensionPath ? extensionPath : '',
@@ -129,12 +132,15 @@ export class TaskProvider implements vscode.TaskProvider {
     taskJson.label = replaceBackslashes(taskJson.label);
     taskJson.command = settings.makePath;
     taskJson.args[1] = `--file=${this._makefileFile}`;
+
     // Makefile arguments that hold single values
     taskJson.args.push(`COMPILATION_MODE=${this.buildMode}`);
     taskJson.args.push(`EXECUTABLE_NAME=out${this.buildMode}`);
     taskJson.args.push(`LANGUAGE_MODE=${language}`);
+
     const cleanTask = taskJson.label.includes(Tasks.clean);
     const runTask = taskJson.label.includes(Tasks.run);
+
     if (!cleanTask && !runTask) {
       if (language === Languages.c) {
         taskJson.args.push(`C_COMPILER=${settings.cCompilerPath}`);
@@ -164,18 +170,76 @@ export class TaskProvider implements vscode.TaskProvider {
         taskJson.args.push(`INCLUDE_PATHS="${settings.includePaths}"`);
       }
     }
+
+    if (runTask) {
+      if (this.argumentsString) {
+        taskJson.args.push(`ARGUMENTS=${this.argumentsString}`);
+      }
+    }
   }
 
   public updateModeData(buildMode: Builds) {
     this.buildMode = buildMode;
   }
 
+  public updateArguments(argumentsString: string | undefined) {
+    this.argumentsString = argumentsString;
+
+    if (this.workspaceFolder) {
+      const launchPath = path.join(
+        this.workspaceFolder,
+        '.vscode',
+        'launch.json',
+      );
+
+      const configJson: JsonConfiguration | undefined = readJsonFile(
+        launchPath,
+      );
+
+      if (!configJson) return;
+
+      const configIdx = getLaunchConfigIndex(configJson, CONFIG_NAME);
+
+      if (this.argumentsString) {
+        configJson.configurations[configIdx].args.push(this.argumentsString);
+
+        writeJsonFile(launchPath, configJson);
+      }
+    }
+  }
+
   public updateFolderData(
     workspaceFolder: string | undefined,
     activeFolder: string | undefined,
   ) {
+    this.resetArguments();
+
     this.workspaceFolder = workspaceFolder;
     this.activeFolder = activeFolder;
+  }
+
+  private resetArguments() {
+    if (this.workspaceFolder) {
+      const launchPath = path.join(
+        this.workspaceFolder,
+        '.vscode',
+        'launch.json',
+      );
+
+      const configJson: JsonConfiguration | undefined = readJsonFile(
+        launchPath,
+      );
+
+      if (configJson) {
+        const configIdx = getLaunchConfigIndex(configJson, CONFIG_NAME);
+
+        configJson.configurations[configIdx].args = [];
+
+        writeJsonFile(launchPath, configJson);
+      }
+    }
+
+    this.argumentsString = undefined;
   }
 
   public getProjectFolder() {
@@ -225,14 +289,17 @@ export class TaskProvider implements vscode.TaskProvider {
 
     const uriWorkspaceFolder = vscode.Uri.file(this.workspaceFolder);
     const folder = vscode.workspace.getWorkspaceFolder(uriWorkspaceFolder);
-    const configJson: JsonConfiguration | undefined = readJsonFile(
-      path.join(this.workspaceFolder, '.vscode', 'launch.json'),
+    const launchPath = path.join(
+      this.workspaceFolder,
+      '.vscode',
+      'launch.json',
     );
+
+    const configJson: JsonConfiguration | undefined = readJsonFile(launchPath);
 
     if (!configJson) return;
 
-    const configName = 'C/C++ Runner: Debug Session';
-    const configIdx = getLaunchConfigIndex(configJson, configName);
+    const configIdx = getLaunchConfigIndex(configJson, CONFIG_NAME);
 
     await vscode.debug.startDebugging(
       folder,
@@ -262,5 +329,13 @@ export class TaskProvider implements vscode.TaskProvider {
 
   public set workspaceFolder(value: string | undefined) {
     this._workspaceFolder = value;
+  }
+
+  public get argumentsString() {
+    return this._argumentsString;
+  }
+
+  public set argumentsString(value: string | undefined) {
+    this._argumentsString = value;
   }
 }

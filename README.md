@@ -44,10 +44,19 @@ After selecting the folder, the icons for building, running, and debugging are s
 ### Alternative Usage
 
 If you do not want to see the status bar items you can toggle the visibility with the command `crtl+alt+r`.
-Then you can use the shortcut `ctrl+shift+r` to get a quick pick dropdown for the tasks.  
-For example, if you select a folder called *"vscode-test/folder1"* you will see the following tasks:
+Then you can use the different commands in vscode's command palette:
 
-![TaskQuickBar](./media/TaskQuickPick.png)
+![TaskQuickBar](./media/CommandPalette.png)
+
+### Passing Commandline Arguments to the Binary
+
+If you want to pass in command-line arguments for running or debugging the binary, you have to press the key bind `ctrl+shift+a`. Then a message box will appear where you can type the arguments:
+
+![Arguments](./media/arguments.png)
+
+These arguments will be stored in the launch.json config for debugging the binary.
+
+![ArgumentsDebug](./media/argumentsDebug.png)
 
 ## Extension Features
 
@@ -87,9 +96,9 @@ The properties will be updated automatically after changing the settings.
 
 ### CMake and Makefile Projects
 
-The extension does not start whenever there is a CMakeLists.txt or a Makefile in the root folder of the workspace or if a source directory for Microsoft's CMake or Makefile extension is set by the user.
+This extension does not start whenever the CMake or Make extension by Microsoft is active in the current workspace folder.
 This prevents an overloaded status bar with a lot of icons.  
-However, the user can trigger the start-up of this extension by pressing `ctrl+alt+r` regardless of the CMake extension.
+However, the user can trigger the start-up of this extension by pressing `ctrl+alt+r`.
 
 ## Release Notes
 
@@ -97,5 +106,5 @@ Refer to the [CHANGELOG](CHANGELOG.md).
 
 ## License
 
-Copyright (C) 2021 Jan Schaffranek.
-Licensed under the [MIT](LICENSE) License.
+Copyright (C) 2021 Jan Schaffranek.  
+Licensed under the [MIT License](LICENSE).

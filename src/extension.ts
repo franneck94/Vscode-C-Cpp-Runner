@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 
 import { folderHandler } from './handler/folderHandler';
 import { modeHandler } from './handler/modeHandler';
-import { taskHandler } from './handler/taskHandler';
 import {
   updateBuildStatus,
   updateCleanStatus,
@@ -36,6 +35,7 @@ let commandBuildDisposable: vscode.Disposable | undefined;
 let commandRunDisposable: vscode.Disposable | undefined;
 let commandDebugDisposable: vscode.Disposable | undefined;
 let commandCleanDisposable: vscode.Disposable | undefined;
+let commandArgumentParser: vscode.Disposable | undefined;
 let eventConfigurationDisposable: vscode.Disposable | undefined;
 let eventRenameFilesDisposable: vscode.Disposable | undefined;
 let eventDeleteFilesDisposable: vscode.Disposable | undefined;
@@ -51,11 +51,11 @@ let buildStatusBar: vscode.StatusBarItem | undefined;
 let runStatusBar: vscode.StatusBarItem | undefined;
 let debugStatusBar: vscode.StatusBarItem | undefined;
 let cleanStatusBar: vscode.StatusBarItem | undefined;
+let argumentsString: string | undefined;
 
 let workspaceFolder: string | undefined;
 let activeFolder: string | undefined;
 let buildMode: Builds = Builds.debug;
-let errorMessage: Thenable<string | undefined> | undefined;
 let showStatusBarItems: boolean = true;
 
 const EXTENSION_NAME = 'C_Cpp_Runner';
@@ -106,6 +106,7 @@ export function activate(context: vscode.ExtensionContext) {
   initDebugStatusBar(context);
   initCleanStatusBar(context);
 
+  initArgumentParser();
   initWorkspaceProvider();
   initWorkspaceDisposables();
   initEventListener();
@@ -130,6 +131,7 @@ export function deactivate() {
   disposeItem(commandRunDisposable);
   disposeItem(commandDebugDisposable);
   disposeItem(commandCleanDisposable);
+  disposeItem(commandArgumentParser);
   disposeItem(eventConfigurationDisposable);
   disposeItem(eventDeleteFilesDisposable);
   disposeItem(eventRenameFilesDisposable);
@@ -165,6 +167,7 @@ function initWorkspaceProvider() {
       workspaceFolder,
       activeFolder,
       buildMode,
+      argumentsString,
     );
   }
 }
@@ -177,43 +180,6 @@ function initWorkspaceDisposables() {
     );
     if (extensionContext) {
       extensionContext.subscriptions.push(taskProviderDisposable);
-    }
-  }
-
-  if (!commandHandlerDisposable) {
-    commandHandlerDisposable = vscode.commands.registerCommand(
-      `${EXTENSION_NAME}.tasks`,
-      () => {
-        let showErrorMessage = false;
-
-        if (!showStatusBarItems) {
-          showStatusBarItems = true;
-          toggleStatusBarItems();
-        } else {
-          if (!errorMessage) {
-            showErrorMessage = true;
-          }
-        }
-
-        if (!workspaceFolder) {
-          if (showErrorMessage) {
-            errorMessage = vscode.window.showErrorMessage(
-              'You have to select a folder first.',
-            );
-            errorMessage.then(() => (errorMessage = undefined));
-          }
-        } else {
-          errorMessage = undefined;
-
-          if (taskProvider) {
-            taskProvider.getTasks();
-            taskHandler(taskProvider);
-          }
-        }
-      },
-    );
-    if (extensionContext) {
-      extensionContext.subscriptions.push(commandHandlerDisposable);
     }
   }
 
@@ -412,7 +378,7 @@ function initFolderStatusBar(context: vscode.ExtensionContext) {
     }
   }
 
-  const commandName = `${EXTENSION_NAME}.init`;
+  const commandName = `${EXTENSION_NAME}.folder`;
   commandFolderDisposable = vscode.commands.registerCommand(
     commandName,
     async () => {
@@ -460,6 +426,21 @@ function initModeStatusBar(context: vscode.ExtensionContext) {
   );
   modeStatusBar.command = commandName;
   context.subscriptions.push(commandModeDisposable);
+}
+
+function initArgumentParser() {
+  const commandName = `${EXTENSION_NAME}.args`;
+
+  commandArgumentParser = vscode.commands.registerCommand(
+    commandName,
+    async () => {
+      argumentsString = await vscode.window.showInputBox();
+
+      if (taskProvider) {
+        taskProvider.updateArguments(argumentsString);
+      }
+    },
+  );
 }
 
 function initBuildStatusBar(context: vscode.ExtensionContext) {
@@ -529,7 +510,7 @@ function initRunStatusBar(context: vscode.ExtensionContext) {
     if (!projectFolder) return;
 
     taskProvider.tasks.forEach(async (task) => {
-      if (task.name.includes(Tasks.run)) {
+      if (task.name.includes(`${Tasks.run}: `)) {
         if (
           task.execution &&
           task.execution instanceof vscode.ShellExecution &&
@@ -540,6 +521,7 @@ function initRunStatusBar(context: vscode.ExtensionContext) {
             projectFolder,
           );
         }
+
         await vscode.tasks.executeTask(task);
       }
     });

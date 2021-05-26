@@ -23,9 +23,10 @@ export class PropertiesProvider extends FileProvider {
       `${this.settings.operatingSystem}-` +
       `${this.settings.cCompiler}-` +
       `${this.settings.architecure}`;
-    const config = configJson.configurations[0];
 
+    const config = configJson.configurations[0];
     config.compilerArgs = this.settings.warnings.split(' ');
+
     if (this.settings.compilerArgs) {
       config.compilerArgs = [
         ...config.compilerArgs,
@@ -61,6 +62,7 @@ export class PropertiesProvider extends FileProvider {
     } else {
       config.compilerPath = this.settings.cCompilerPath;
     }
+
     config.name = triplet;
     config.intelliSenseMode = triplet;
 

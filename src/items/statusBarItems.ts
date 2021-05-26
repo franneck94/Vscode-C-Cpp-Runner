@@ -27,7 +27,7 @@ export function updateFolderStatus(
     text = replaceBackslashes(text);
     const dirs = text.split('/');
 
-    if (dirs.length >= 2) {
+    if (dirs.length > 2) {
       const lastElement = dirs.length - 1;
       text = `${dirs[0]}/.../${dirs[lastElement]}`;
     }
@@ -103,10 +103,12 @@ export function updateCleanStatus(
 }
 
 function toggleShow(
-  status: vscode.StatusBarItem,
+  status: vscode.StatusBarItem | undefined,
   showStatusBarItems: boolean,
   activeFolder: string | undefined,
 ) {
+  if (!status) return;
+
   if (showStatusBarItems && activeFolder) {
     status.show();
   } else {

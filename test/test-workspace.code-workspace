@@ -6,11 +6,5 @@
 		{
 			"path": "test_root"
 		}
-	],
-	"settings": {
-		"C_Cpp_Runner.cCompilerPath": "C:\\cygwin64\\bin\\gcc.exe",
-		"C_Cpp_Runner.cppCompilerPath": "C:\\cygwin64\\bin\\g++.exe",
-		"C_Cpp_Runner.debuggerPath": "C:\\cygwin64\\bin\\gdb.exe",
-		"C_Cpp_Runner.makePath": "C:\\cygwin64\\bin\\make.exe"
-	}
+	]
 }

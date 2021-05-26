@@ -1,17 +1,19 @@
 # C/C++ Runner Change Log
 
-## Version 0.14.0: Planned
+## Version 0.14.0: May 26, 2021
 
-- **Info**: Updated build mode images in README.
-- **Improvement**: Added option to pass arguments to binary for running and debugging. User can set the args in the debug config, this will be used for running and debuggung. The args are only resetted when the active folder is changed.
-- **Improvement**: Added select folder task to dropdown menu.
+- **Feature**: Added option to pass arguments to the binary for running and debugging. Users can set the arguments by the new keybinding `ctrl+shift+a`.
+- **Bugfix**: Fixed bug for shortened folder path in the status bar.
+- **Important Info**: Removed `ctrl+rshift+r` keybinding for the tasks dropdown menu. If the user does not want to use the status bar items, the commands can be executed from the command palette.
+- **Info**: Removed extension activation "onDebugResolve:c/cpp" since the debugging is not triggered by the user anyway.
+- **Info**: Removed extension activation  "workspaceContains:.vscode/c_cpp_properties.json" since this may result in extension activations where the user does not intend to use c/cpp code.
 
 ## Version 0.13.0: May 19, 2021
 
 - **Improvement**: Selected folder path is shortened in the status bar.
 - **Improvement**: Remove x86/x64 architecture from build mode. The user should rather select an appropriate x86 or x64 compiler in the settings.
 - **Improvement**: Default c and cpp standard is now the compiler's default.
-- **Improvement**: Improved look-up performance for installed software.
+- **Improvement**: Improved lookup performance for installed software.
 
 ## Version 0.12.1: May 10, 2021
 
@@ -42,7 +44,7 @@ A multi-workspace setting is now fully compatible with the extension.
 
 - **Bugfix**: Makefile issue with Windows/MinGW
 - **Info**: Added try/catch clauses to all IO related functions
-- **Info**: Added logger to log certain info/errors. Also added setting 'loggingActive' to activate the logger
+- **Info**: Added logger to log certain info/errors. Also added setting loggingActive to activate the logger
 
 ## Version 0.8.2: April 19, 2021
 
@@ -70,7 +72,7 @@ A multi-workspace setting is now fully compatible with the extension.
 ## Version 0.7.0: April 12, 2021
 
 - **Feature**: Added context menu option to select the folder
-- **Improvement**: Deactivate extension, if "cmake.sourceDirectory" is set
+- **Feature**: Deactivate extension, if "cmake.sourceDirectory" is set
 - **Improvement**: Added events for a selected folder on a name change and delete
 - **Bugfix**: Fixed behavior of settings/launch/c_cpp_properties.json files if these were already present without the extension entries
 - **Bugfix**: Fixed makefile issue when 'Warnings' is an empty string

@@ -2,7 +2,7 @@
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
   "description": "🚀 Compile, run and debug single or multiple C/C++ files with ease. 🚀",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "publisher": "franneck94",
   "license": "MIT",
   "icon": "icon.png",
@@ -37,13 +37,10 @@
   "activationEvents": [
     "onLanguage:c",
     "onLanguage:cpp",
-    "onDebugResolve:c",
-    "onDebugResolve:cpp",
     "workspaceContains:*.c",
     "workspaceContains:*.cc",
     "workspaceContains:*.cxx",
-    "workspaceContains:*.cpp",
-    "workspaceContains:.vscode/c_cpp_properties.json"
+    "workspaceContains:*.cpp"
   ],
   "main": "./dist/main",
   "contributes": {
@@ -54,62 +51,69 @@
     ],
     "commands": [
       {
-        "command": "C_Cpp_Runner.tasks",
-        "title": "Run Command",
-        "when": "C_Cpp_Runner:activatedExtension"
-      },
-      {
         "command": "C_Cpp_Runner.folder",
-        "title": "Select Folder Command",
-        "when": "C_Cpp_Runner:activatedExtension"
+        "title": "Select Folder",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
       },
       {
         "command": "C_Cpp_Runner.mode",
-        "title": "Select Mode Command",
-        "when": "C_Cpp_Runner:activatedExtension"
+        "title": "Select Mode",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
       },
       {
         "command": "C_Cpp_Runner.build",
-        "title": "Build Command",
-        "when": "C_Cpp_Runner:activatedExtension"
+        "title": "Build Folder",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
       },
       {
         "command": "C_Cpp_Runner.run",
-        "title": "Run Command",
-        "when": "C_Cpp_Runner:activatedExtension"
+        "title": "Run Folder",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
       },
       {
         "command": "C_Cpp_Runner.debug",
-        "title": "Debug Command",
-        "when": "C_Cpp_Runner:activatedExtension"
+        "title": "Debug Folder",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
       },
       {
         "command": "C_Cpp_Runner.clean",
-        "title": "Clean Command",
-        "when": "C_Cpp_Runner:activatedExtension"
+        "title": "Clean Folder",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
       },
       {
         "command": "C_Cpp_Runner.folderContextMenu",
-        "title": "C/C++ Runner: Select Folder",
+        "title": "Select folder from context menu",
         "when": "C_Cpp_Runner:activatedExtension"
       },
       {
         "command": "C_Cpp_Runner.toggleStatusBar",
         "title": "Toggle status bar icons",
         "when": "C_Cpp_Runner:activatedExtension"
+      },
+      {
+        "command": "C_Cpp_Runner.args",
+        "title": "Commandline Arguments",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
       }
     ],
     "keybindings": [
       {
-        "command": "C_Cpp_Runner.tasks",
-        "key": "ctrl+shift+r",
-        "mac": "ctrl+shift+r",
-        "when": "C_Cpp_Runner:activatedExtension"
-      },
-      {
         "command": "C_Cpp_Runner.toggleStatusBar",
         "key": "ctrl+alt+r",
         "mac": "ctrl+alt+r",
+        "when": "C_Cpp_Runner:activatedExtension"
+      },
+      {
+        "command": "C_Cpp_Runner.args",
+        "key": "ctrl+shift+a",
+        "mac": "ctrl+shift+a",
         "when": "C_Cpp_Runner:activatedExtension"
       }
     ],

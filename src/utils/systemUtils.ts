@@ -35,8 +35,14 @@ export function getOperatingSystem() {
 
 export function getArchitecture(compiler: Compilers) {
   const command = `${compiler} -dumpmachine`;
+  let byteArray: Buffer | undefined;
 
-  const byteArray = execSync(command);
+  try {
+    byteArray = execSync(command);
+  } catch (err) {
+    byteArray = Buffer.from('x64', 'utf-8');
+  }
+
   const str = String.fromCharCode(...byteArray);
 
   if (str.includes('64')) {

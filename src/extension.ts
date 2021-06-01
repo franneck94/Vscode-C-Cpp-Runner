@@ -313,7 +313,7 @@ function updateFolderData() {
   if (workspaceFolder && activeFolder) {
     if (settingsProvider) {
       settingsProvider.updateFolderData(workspaceFolder);
-      settingsProvider.checkCompilers();
+      settingsProvider.getCommands();
     }
 
     if (propertiesProvider) {

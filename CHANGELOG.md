@@ -1,5 +1,16 @@
 # C/C++ Runner Change Log
 
+## Planned
+
+- **Improvement**: Add exclude pattern (as a setting) for the folder selection menu
+
+## Version 0.14.1: June 1, 2021
+
+- **Bugfix**: Fixed crash when no compiler was found
+- **Info**: Do not list folders in the selection that contain '__' (2 underscores)
+- **Info**: Do not list folders that are named 'build' (equallity check)
+- **Info**: Added x64 as default architecture
+
 ## Version 0.14.0: May 26, 2021
 
 - **Feature**: Added option to pass arguments to the binary for running and debugging. Users can set the arguments by the new keybinding `ctrl+shift+a`.

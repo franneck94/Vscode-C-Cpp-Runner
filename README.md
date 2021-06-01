@@ -92,7 +92,9 @@ The properties will be updated automatically after changing the settings.
 
 - 📝 Allowed file extensions for headers: \*.h, \*.hpp, \*.hh, \*.hxx
 - 📝 Allowed file extensions for sources: \*.c, \*.cpp, \*.cc, \*.cxx
-- 📁 The folder selection will not list folders that are called 'build' or include a '.' (e.g. '.vscode')
+- 📁 The folder selection menu will not list:
+  - Folder names including '.' (e.g. *.vscode*), '\_\_' (e.g. temp folders) or 'CMake'
+  - The folder named *build* since this is the auto generated folder by this extension
 
 ### CMake and Makefile Projects
 

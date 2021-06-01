@@ -113,8 +113,11 @@ export function foldersInDir(dir: fs.PathLike) {
 
   let folders = fileDirents.filter((folder) => folder.isDirectory());
   folders = folders.filter((folder) => !folder.name.includes('.'));
-  folders = folders.filter((folder) => !folder.name.includes('build'));
-  folders = folders.filter((folder) => !folder.name.includes('CMakeFiles'));
+  folders = folders.filter((folder) => !folder.name.includes('__'));
+  folders = folders.filter((folder) => !(folder.name == 'build'));
+  folders = folders.filter(
+    (folder) => !folder.name.includes('CMake'.toLowerCase()),
+  );
   const folderNames = folders.map((folder) =>
     path.join(dir.toString(), folder.name),
   );

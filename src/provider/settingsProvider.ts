@@ -62,14 +62,14 @@ export class SettingsProvider {
 
     this.readLocalConfig();
     this.createFileWatcher();
-    this.checkCompilers();
+    this.getCommands();
     this.getSettings();
   }
 
   /**
    * Check if gcc/g++ or clang/clang++ is in PATH and where it is located.
    */
-  public async checkCompilers() {
+  public async getCommands() {
     if (pathExists(this._outputPath)) {
       const settingsJson: JsonSettings | undefined = readJsonFile(
         this._outputPath,
@@ -77,8 +77,7 @@ export class SettingsProvider {
 
       if (!settingsJson) return;
 
-      let skipCheckEntries = false;
-      let skipCheckFound = false;
+      let settingsExist = false;
 
       if (
         settingsJson[`${EXTENSION_NAME}.cCompilerPath`] &&
@@ -86,8 +85,10 @@ export class SettingsProvider {
         settingsJson[`${EXTENSION_NAME}.debuggerPath`] &&
         settingsJson[`${EXTENSION_NAME}.makePath`]
       ) {
-        skipCheckEntries = true;
+        settingsExist = true;
       }
+
+      let commandsExist = false;
 
       if (
         this._cCompilerFound &&
@@ -95,10 +96,10 @@ export class SettingsProvider {
         this._foundMake &&
         this._foundDebugger
       ) {
-        skipCheckFound = true;
+        commandsExist = true;
       }
 
-      if (skipCheckEntries || (skipCheckEntries && skipCheckFound)) {
+      if (settingsExist || (settingsExist && commandsExist)) {
         return;
       }
     }
@@ -174,23 +175,23 @@ export class SettingsProvider {
   public getSettings() {
     this.readLocalConfig();
 
-    this._enableWarnings = this.checkSetting('enableWarnings', false);
-    this._warnings = this.checkSetting('warnings', '');
-    this._warningsAsError = this.checkSetting('warningsAsError', false);
-    this._cCompilerPath = this.checkSetting('cCompilerPath', '');
-    this._cppCompilerPath = this.checkSetting('cppCompilerPath', '');
-    this._debuggerPath = this.checkSetting('debuggerPath', '');
-    this._makePath = this.checkSetting('makePath', '');
-    this._cStandard = this.checkSetting('cStandard', '');
-    this._cppStandard = this.checkSetting('cppStandard', '');
-    this._compilerArgs = this.checkSetting('compilerArgs', '');
-    this._linkerArgs = this.checkSetting('linkerArgs', '');
-    this._includePaths = this.checkSetting('includePaths', '');
+    this._enableWarnings = this.getSettingsValue('enableWarnings', false);
+    this._warnings = this.getSettingsValue('warnings', '');
+    this._warningsAsError = this.getSettingsValue('warningsAsError', false);
+    this._cCompilerPath = this.getSettingsValue('cCompilerPath', '');
+    this._cppCompilerPath = this.getSettingsValue('cppCompilerPath', '');
+    this._debuggerPath = this.getSettingsValue('debuggerPath', '');
+    this._makePath = this.getSettingsValue('makePath', '');
+    this._cStandard = this.getSettingsValue('cStandard', '');
+    this._cppStandard = this.getSettingsValue('cppStandard', '');
+    this._compilerArgs = this.getSettingsValue('compilerArgs', '');
+    this._linkerArgs = this.getSettingsValue('linkerArgs', '');
+    this._includePaths = this.getSettingsValue('includePaths', '');
 
-    this.setConfiguration();
+    this.setCommands();
   }
 
-  private checkSetting(name: string, defaultValue: any) {
+  private getSettingsValue(name: string, defaultValue: any) {
     const settingName = `${EXTENSION_NAME}.${name}`;
 
     if (this._configLocal && this._configLocal[settingName]) {
@@ -204,7 +205,7 @@ export class SettingsProvider {
     return defaultValue;
   }
 
-  private setConfiguration() {
+  private setCommands() {
     let cBasename: string;
     let cppBasename: string;
 
@@ -264,7 +265,7 @@ export class SettingsProvider {
         pathName === this._vscodeDirectory ||
         path.basename(pathName) === OUTPUT_FILENAME
       ) {
-        this.checkCompilers();
+        this.getCommands();
       }
     });
 

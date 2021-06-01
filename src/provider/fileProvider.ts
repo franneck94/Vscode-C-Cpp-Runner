@@ -50,7 +50,7 @@ export abstract class FileProvider {
     }
 
     if (doUpdate) {
-      this.settings.checkCompilers();
+      this.settings.getCommands();
       this.createFileData();
     }
 

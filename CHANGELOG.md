@@ -4,6 +4,10 @@
 
 - **Improvement**: Add exclude pattern (as a setting) for the folder selection menu
 
+## Version 0.14.2: June 3, 2021
+
+- **Info**: When using cygwin64 the intellisense triplet is changed to "linux" due to the following [issue](https://github.com/microsoft/vscode-cpptools/issues/7637).
+
 ## Version 0.14.1: June 1, 2021
 
 - **Bugfix**: Fixed crash when no compiler was found

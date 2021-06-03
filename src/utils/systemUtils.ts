@@ -22,7 +22,7 @@ export function getOperatingSystem() {
   const platformName = platform();
   let operatingSystem: OperatingSystems;
 
-  if (platformName === 'win32' || platformName === 'cygwin') {
+  if (platformName === 'win32') {
     operatingSystem = OperatingSystems.windows;
   } else if (platformName === 'darwin') {
     operatingSystem = OperatingSystems.mac;
@@ -44,10 +44,16 @@ export function getArchitecture(compiler: Compilers) {
   }
 
   const str = String.fromCharCode(...byteArray);
+  let architecure = Architectures.x86;
+  let isCygwin = false;
 
   if (str.includes('64')) {
-    return Architectures.x64;
-  } else {
-    return Architectures.x86;
+    architecure = Architectures.x64;
   }
+
+  if (str.includes('cygwin')) {
+    isCygwin = true;
+  }
+
+  return { architecure: architecure, isCygwin: isCygwin };
 }

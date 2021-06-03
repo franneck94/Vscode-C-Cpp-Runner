@@ -63,8 +63,14 @@ export class PropertiesProvider extends FileProvider {
       config.compilerPath = this.settings.cCompilerPath;
     }
 
-    config.name = triplet;
-    config.intelliSenseMode = triplet;
+    // Since C/C++ Extension Version 1.4.0 cygwin is a linux triplet
+    if (this.settings.isCygwin) {
+      config.name = triplet.replace('windows', 'windows-cygwin');
+      config.intelliSenseMode = triplet.replace('windows', 'linux');
+    } else {
+      config.name = triplet;
+      config.intelliSenseMode = triplet;
+    }
 
     writeJsonFile(this.outputPath, configJson);
   }

@@ -35,6 +35,7 @@ export class SettingsProvider {
   // Machine information
   private _operatingSystem = getOperatingSystem();
   private _architecure: Architectures | undefined;
+  private _isCygwin: boolean | undefined;
   private _cCompiler: Compilers | undefined;
   private _cppCompiler: Compilers | undefined;
   private _debugger: Debuggers | undefined;
@@ -309,9 +310,13 @@ export class SettingsProvider {
 
   private updateArchitecture() {
     if (this._cCompiler) {
-      this._architecure = getArchitecture(this._cCompiler);
+      const ret = getArchitecture(this._cCompiler);
+      this._architecure = ret.architecure;
+      this._isCygwin = ret.isCygwin;
     } else if (this._cppCompiler) {
-      this._architecure = getArchitecture(this._cppCompiler);
+      const ret = getArchitecture(this._cppCompiler);
+      this._architecure = ret.architecure;
+      this._isCygwin = ret.isCygwin;
     }
   }
 
@@ -362,6 +367,10 @@ export class SettingsProvider {
 
   public get architecure() {
     return this._architecure;
+  }
+
+  public get isCygwin() {
+    return this._isCygwin;
   }
 
   public get cCompiler() {

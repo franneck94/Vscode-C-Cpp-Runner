@@ -4,7 +4,7 @@
 
 - **Improvement**: Add exclude pattern (as a setting) for the folder selection menu
 
-## Version 0.15.0: June 3, 2021
+## Version 0.15.0: June 7, 2021
 
 - **Info**: If settings/properties was configured for e.g. windows and the project is opened in for example linux, the commands (compiler etc.) are searched again and stored to the settings.json/c_cpp_properties.json file
 - **Bugfix**: Fixed extension crash

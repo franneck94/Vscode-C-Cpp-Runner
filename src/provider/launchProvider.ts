@@ -58,6 +58,8 @@ export class LaunchProvider extends FileProvider {
 
     const configIdx = getLaunchConfigIndex(configJsonOutput, configName);
 
+    if (!configIdx) return;
+
     if (
       configJsonOutput &&
       configJsonOutput.configurations.length === configIdx

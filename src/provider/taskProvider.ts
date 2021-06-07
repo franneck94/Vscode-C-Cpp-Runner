@@ -200,11 +200,15 @@ export class TaskProvider implements vscode.TaskProvider {
 
       const configIdx = getLaunchConfigIndex(configJson, CONFIG_NAME);
 
+      if (!configIdx) return;
+
       if (this.argumentsString) {
         configJson.configurations[configIdx].args.push(this.argumentsString);
-
-        writeJsonFile(launchPath, configJson);
+      } else {
+        configJson.configurations[configIdx].args = [];
       }
+
+      writeJsonFile(launchPath, configJson);
     }
   }
 
@@ -233,8 +237,9 @@ export class TaskProvider implements vscode.TaskProvider {
       if (configJson) {
         const configIdx = getLaunchConfigIndex(configJson, CONFIG_NAME);
 
-        configJson.configurations[configIdx].args = [];
+        if (!configIdx) return;
 
+        configJson.configurations[configIdx].args = [];
         writeJsonFile(launchPath, configJson);
       }
     }
@@ -300,6 +305,8 @@ export class TaskProvider implements vscode.TaskProvider {
     if (!configJson) return;
 
     const configIdx = getLaunchConfigIndex(configJson, CONFIG_NAME);
+
+    if (!configIdx) return;
 
     await vscode.debug.startDebugging(
       folder,

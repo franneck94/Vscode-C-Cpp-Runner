@@ -271,3 +271,13 @@ export function naturalSort(names: string[]) {
     });
   });
 }
+
+export function commandCheck(key: string, jsonData: JsonSettings) {
+  const commandPath = jsonData[key];
+
+  if (!commandPath) return false;
+
+  if (!pathExists(commandPath)) return false;
+
+  return true;
+}

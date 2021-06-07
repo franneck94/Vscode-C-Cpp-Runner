@@ -302,9 +302,11 @@ function toggleStatusBarItems() {
 function updateFolderData() {
   initWorkspaceProvider();
   initWorkspaceDisposables();
+  argumentsString = '';
 
   if (taskProvider) {
     taskProvider.updateFolderData(workspaceFolder, activeFolder);
+    taskProvider.updateArguments(argumentsString);
     if (buildMode) {
       taskProvider.updateModeData(buildMode);
     }

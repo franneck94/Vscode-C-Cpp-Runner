@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import {
+  commandCheck,
   mkdirRecursive,
   pathExists,
   readJsonFile,
@@ -81,10 +82,10 @@ export class SettingsProvider {
       let settingsExist = false;
 
       if (
-        settingsJson[`${EXTENSION_NAME}.cCompilerPath`] &&
-        settingsJson[`${EXTENSION_NAME}.cppCompilerPath`] &&
-        settingsJson[`${EXTENSION_NAME}.debuggerPath`] &&
-        settingsJson[`${EXTENSION_NAME}.makePath`]
+        commandCheck(`${EXTENSION_NAME}.cCompilerPath`, settingsJson) &&
+        commandCheck(`${EXTENSION_NAME}.cppCompilerPath`, settingsJson) &&
+        commandCheck(`${EXTENSION_NAME}.debuggerPath`, settingsJson) &&
+        commandCheck(`${EXTENSION_NAME}.makePath`, settingsJson)
       ) {
         settingsExist = true;
       }
@@ -238,23 +239,19 @@ export class SettingsProvider {
   }
 
   private createFileWatcher() {
-    const deletePattern = new vscode.RelativePattern(
+    const filePattern = new vscode.RelativePattern(
       this.workspaceFolder,
       '.vscode/**',
     );
     this._fileWatcherOnDelete = vscode.workspace.createFileSystemWatcher(
-      deletePattern,
+      filePattern,
       true,
       true,
       false,
     );
 
-    const changePattern = new vscode.RelativePattern(
-      this.workspaceFolder,
-      '.vscode/settings.json',
-    );
     this._fileWatcherOnChange = vscode.workspace.createFileSystemWatcher(
-      changePattern,
+      filePattern,
       true,
       false,
       true,
@@ -262,16 +259,16 @@ export class SettingsProvider {
 
     this._fileWatcherOnDelete.onDidDelete((e: vscode.Uri) => {
       const pathName = e.fsPath;
-      if (
-        pathName === this._vscodeDirectory ||
-        path.basename(pathName) === OUTPUT_FILENAME
-      ) {
+      if (pathName === this._vscodeDirectory || pathName === this._outputPath) {
         this.getCommands();
       }
     });
 
-    this._fileWatcherOnChange.onDidChange(() => {
-      this.getSettings();
+    this._fileWatcherOnChange.onDidChange((e: vscode.Uri) => {
+      const pathName = e.fsPath;
+      if (pathName === this._outputPath) {
+        this.getSettings();
+      }
     });
   }
 

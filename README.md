@@ -68,8 +68,6 @@ If you wish to use any other installed compiler, just edit the entries in the lo
 Based on the operating system and the compiler, there will be a *c_cpp_properties.json* file created in the local *.vscode* folder.  
 This file will be used by Microsoft's *C/C++* extension for intellisense. For more information refer to the official [documentation](https://code.visualstudio.com/docs/cpp/c-cpp-properties-schema-reference).  
 ![CCppConfig](./media/CCppConfig.png)  
-**Important:** It is *recommended* to edit the local *"settings.json"* instead of the *"c_cpp_properties.json"*.  
-The properties will be updated automatically after changing the settings.
 
 ## Extension Settings
 

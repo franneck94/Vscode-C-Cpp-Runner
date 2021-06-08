@@ -30,13 +30,13 @@ export function getLaunchConfigIndex(
   let configIdx = 0;
 
   if (configJson) {
-    configJson.configurations.forEach((config) => {
+    for (const config of configJson.configurations) {
       if (config.name !== configName) {
         configIdx++;
       } else {
         return configIdx;
       }
-    });
+    }
   }
 
   return undefined;

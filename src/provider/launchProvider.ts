@@ -1,13 +1,14 @@
 import * as path from 'path';
 
 import { readJsonFile, writeJsonFile } from '../utils/fileUtils';
-import { JsonConfiguration, OperatingSystems } from '../utils/types';
+import { Debuggers, JsonConfiguration, OperatingSystems } from '../utils/types';
 import { getLaunchConfigIndex } from '../utils/vscodeUtils';
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
 
 const TEMPLATE_FILENAME = 'launch_template.json';
 const OUTPUT_FILENAME = 'launch.json';
+const CONFIG_NAME = 'C/C++ Runner: Debug Session';
 
 export class LaunchProvider extends FileProvider {
   constructor(
@@ -25,7 +26,6 @@ export class LaunchProvider extends FileProvider {
   public writeFileData() {
     if (!this.workspaceFolder && !this.activeFolder) return;
 
-    const configName = 'C/C++ Runner: Debug Session';
     if (!this.activeFolder) {
       this.activeFolder = this.workspaceFolder;
     }
@@ -35,7 +35,7 @@ export class LaunchProvider extends FileProvider {
     );
     if (!configJsonTemplate) return;
 
-    configJsonTemplate.configurations[0].name = configName;
+    configJsonTemplate.configurations[0].name = CONFIG_NAME;
     if (this.settings.debugger) {
       configJsonTemplate.configurations[0].MIMode = this.settings.debugger;
       configJsonTemplate.configurations[0].miDebuggerPath = this.settings.debuggerPath;
@@ -58,9 +58,9 @@ export class LaunchProvider extends FileProvider {
       return;
     }
 
-    const configIdx = getLaunchConfigIndex(configJsonOutput, configName);
+    const configIdx = getLaunchConfigIndex(configJsonOutput, CONFIG_NAME);
 
-    if (!configIdx) return;
+    if (configIdx === undefined) return;
 
     if (
       configJsonOutput &&
@@ -85,5 +85,27 @@ export class LaunchProvider extends FileProvider {
   /**
    * No-op for launch.json
    */
-  public changeCallback() {}
+  public changeCallback() {
+    const configJsonOutput: JsonConfiguration | undefined = readJsonFile(
+      this._outputPath,
+    );
+
+    if (!configJsonOutput) return;
+
+    const configIdx = getLaunchConfigIndex(configJsonOutput, CONFIG_NAME);
+
+    if (configIdx === undefined) return;
+
+    const currentConfig = configJsonOutput.configurations[configIdx];
+
+    if (currentConfig.miDebuggerPath != this.settings.debuggerPath) {
+      this.settings.debuggerPath = currentConfig.miDebuggerPath;
+
+      if (currentConfig.miDebuggerPath.includes(Debuggers.gdb)) {
+        this.settings.setGDB(currentConfig.miDebuggerPath);
+      } else if (currentConfig.miDebuggerPath.includes(Debuggers.lldb)) {
+        this.settings.setLLDB(currentConfig.miDebuggerPath);
+      }
+    }
+  }
 }

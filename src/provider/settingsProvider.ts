@@ -311,19 +311,19 @@ export class SettingsProvider extends CallbackProvider {
     this._cppCompilerFound = true;
   }
 
-  private setLLDB(pathLLDB: string) {
+  public setLLDB(pathLLDB: string) {
     this.update('debuggerPath', pathLLDB);
     this._debugger = Debuggers.lldb;
     this._foundDebugger = true;
   }
 
-  private setGDB(pathGDB: string) {
+  public setGDB(pathGDB: string) {
     this.update('debuggerPath', pathGDB);
     this._debugger = Debuggers.gdb;
     this._foundDebugger = true;
   }
 
-  private setMake(pathMake: string) {
+  public setMake(pathMake: string) {
     this.update('makePath', pathMake);
     this._foundMake = true;
   }
@@ -414,5 +414,9 @@ export class SettingsProvider extends CallbackProvider {
 
   public set cppStandard(newStandard: string) {
     this._cppStandard = newStandard;
+  }
+
+  public set debuggerPath(newPath: string) {
+    this._debuggerPath = newPath;
   }
 }

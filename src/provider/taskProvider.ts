@@ -200,7 +200,7 @@ export class TaskProvider implements vscode.TaskProvider {
 
       const configIdx = getLaunchConfigIndex(configJson, CONFIG_NAME);
 
-      if (!configIdx) return;
+      if (configIdx === undefined) return;
 
       if (this.argumentsString) {
         configJson.configurations[configIdx].args.push(this.argumentsString);
@@ -237,7 +237,7 @@ export class TaskProvider implements vscode.TaskProvider {
       if (configJson) {
         const configIdx = getLaunchConfigIndex(configJson, CONFIG_NAME);
 
-        if (!configIdx) return;
+        if (configIdx === undefined) return;
 
         configJson.configurations[configIdx].args = [];
         writeJsonFile(launchPath, configJson);
@@ -306,7 +306,7 @@ export class TaskProvider implements vscode.TaskProvider {
 
     const configIdx = getLaunchConfigIndex(configJson, CONFIG_NAME);
 
-    if (!configIdx) return;
+    if (configIdx === undefined) return;
 
     await vscode.debug.startDebugging(
       folder,

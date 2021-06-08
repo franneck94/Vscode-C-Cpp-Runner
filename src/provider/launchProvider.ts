@@ -82,7 +82,8 @@ export class LaunchProvider extends FileProvider {
     super._updateFolderData(workspaceFolder);
   }
 
-  public changeCallback() {
-    console.log('change');
-  }
+  /**
+   * No-op for launch.json
+   */
+  public changeCallback() {}
 }

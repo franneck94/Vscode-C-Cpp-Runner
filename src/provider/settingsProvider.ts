@@ -287,25 +287,25 @@ export class SettingsProvider extends CallbackProvider {
     this.getSettings();
   }
 
-  private setGcc(pathGcc: string) {
+  public setGcc(pathGcc: string) {
     this.update('cCompilerPath', pathGcc);
     this._cCompiler = Compilers.gcc;
     this._cCompilerFound = true;
   }
 
-  private setClang(pathClang: string) {
+  public setClang(pathClang: string) {
     this.update('cCompilerPath', pathClang);
     this._cCompiler = Compilers.clang;
     this._cCompilerFound = true;
   }
 
-  private setGpp(pathGpp: string) {
+  public setGpp(pathGpp: string) {
     this.update('cppCompilerPath', pathGpp);
     this._cppCompiler = Compilers.gpp;
     this._cppCompilerFound = true;
   }
 
-  private setClangpp(pathClangpp: string) {
+  public setClangpp(pathClangpp: string) {
     this.update('cppCompilerPath', pathClangpp);
     this._cppCompiler = Compilers.clangpp;
     this._cppCompilerFound = true;

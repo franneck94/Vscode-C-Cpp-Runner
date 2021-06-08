@@ -1,5 +1,10 @@
 import { getLanguage, readJsonFile, writeJsonFile } from '../utils/fileUtils';
-import { JsonConfiguration, Languages, OperatingSystems } from '../utils/types';
+import {
+  Compilers,
+  JsonConfiguration,
+  Languages,
+  OperatingSystems,
+} from '../utils/types';
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
 
@@ -93,7 +98,16 @@ export class PropertiesProvider extends FileProvider {
       currentConfig.compilerPath != this.settings.cppCompilerPath
     ) {
       this.settings.cCompilerPath = currentConfig.compilerPath;
-      // TODO
+
+      if (currentConfig.compilerPath.includes(Compilers.gcc)) {
+        this.settings.setGcc(currentConfig.compilerPath);
+      } else if (currentConfig.compilerPath.includes(Compilers.clang)) {
+        this.settings.setClang(currentConfig.compilerPath);
+      } else if (currentConfig.compilerPath.includes(Compilers.gpp)) {
+        this.settings.setGpp(currentConfig.compilerPath);
+      } else if (currentConfig.compilerPath.includes(Compilers.clangpp)) {
+        this.settings.setClangpp(currentConfig.compilerPath);
+      }
     }
 
     if (

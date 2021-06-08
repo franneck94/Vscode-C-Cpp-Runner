@@ -21,16 +21,14 @@ import {
   Makefiles,
   OperatingSystems,
 } from '../utils/types';
+import { CallbackProvider } from './callbackProvider';
 
+const TEMPLATE_FILENAME = 'settings.json';
 const OUTPUT_FILENAME = 'settings.json';
 const EXTENSION_NAME = 'C_Cpp_Runner';
 
-export class SettingsProvider {
+export class SettingsProvider extends CallbackProvider {
   // Workspace data
-  private _fileWatcherOnDelete: vscode.FileSystemWatcher | undefined;
-  private _fileWatcherOnChange: vscode.FileSystemWatcher | undefined;
-  private _outputPath: string;
-  private _vscodeDirectory: string;
   private _configLocal: JsonSettings | undefined;
   private _configGlobal = vscode.workspace.getConfiguration(EXTENSION_NAME);
   // Machine information
@@ -59,11 +57,9 @@ export class SettingsProvider {
   private _warnings: string = '-Wall -Wextra -Wpedantic';
 
   constructor(public workspaceFolder: string) {
-    this._vscodeDirectory = path.join(this.workspaceFolder, '.vscode');
-    this._outputPath = path.join(this._vscodeDirectory, OUTPUT_FILENAME);
+    super(workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
 
     this.readLocalConfig();
-    this.createFileWatcher();
     this.getCommands();
     this.getSettings();
   }
@@ -238,40 +234,6 @@ export class SettingsProvider {
     this.updateArchitecture();
   }
 
-  private createFileWatcher() {
-    const filePattern = new vscode.RelativePattern(
-      this.workspaceFolder,
-      '.vscode/**',
-    );
-    this._fileWatcherOnDelete = vscode.workspace.createFileSystemWatcher(
-      filePattern,
-      true,
-      true,
-      false,
-    );
-
-    this._fileWatcherOnChange = vscode.workspace.createFileSystemWatcher(
-      filePattern,
-      true,
-      false,
-      true,
-    );
-
-    this._fileWatcherOnDelete.onDidDelete((e: vscode.Uri) => {
-      const pathName = e.fsPath;
-      if (pathName === this._vscodeDirectory || pathName === this._outputPath) {
-        this.getCommands();
-      }
-    });
-
-    this._fileWatcherOnChange.onDidChange((e: vscode.Uri) => {
-      const pathName = e.fsPath;
-      if (pathName === this._outputPath) {
-        this.getSettings();
-      }
-    });
-  }
-
   public updateFolderData(workspaceFolder: string) {
     this.workspaceFolder = workspaceFolder;
     this._vscodeDirectory = path.join(this.workspaceFolder, '.vscode');
@@ -285,7 +247,7 @@ export class SettingsProvider {
     this._configLocal = readJsonFile(this._outputPath);
   }
 
-  private update(key: string, value: any) {
+  public update(key: string, value: any) {
     let settingsJson: JsonSettings | undefined = readJsonFile(this._outputPath);
 
     if (!settingsJson) {
@@ -315,6 +277,14 @@ export class SettingsProvider {
       this._architecure = ret.architecure;
       this._isCygwin = ret.isCygwin;
     }
+  }
+
+  public deleteCallback() {
+    this.getCommands();
+  }
+
+  public changeCallback() {
+    this.getSettings();
   }
 
   private setGcc(pathGcc: string) {
@@ -428,5 +398,21 @@ export class SettingsProvider {
 
   public get includePaths() {
     return this._includePaths;
+  }
+
+  public set cppCompilerPath(newPath: string) {
+    this._cppCompilerPath = newPath;
+  }
+
+  public set cCompilerPath(newPath: string) {
+    this._cCompilerPath = newPath;
+  }
+
+  public set cStandard(newStandard: string) {
+    this._cStandard = newStandard;
+  }
+
+  public set cppStandard(newStandard: string) {
+    this._cppStandard = newStandard;
   }
 }

@@ -1,5 +1,5 @@
 import { getLanguage, readJsonFile, writeJsonFile } from '../utils/fileUtils';
-import { JsonConfiguration, Languages } from '../utils/types';
+import { JsonConfiguration, Languages, OperatingSystems } from '../utils/types';
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
 
@@ -64,7 +64,10 @@ export class PropertiesProvider extends FileProvider {
     }
 
     // Since C/C++ Extension Version 1.4.0 cygwin is a linux triplet
-    if (this.settings.isCygwin) {
+    if (
+      this.settings.isCygwin &&
+      this.settings.operatingSystem == OperatingSystems.windows
+    ) {
       config.name = triplet.replace('windows', 'windows-cygwin');
       config.intelliSenseMode = triplet.replace('windows', 'linux');
     } else {
@@ -72,10 +75,41 @@ export class PropertiesProvider extends FileProvider {
       config.intelliSenseMode = triplet;
     }
 
-    writeJsonFile(this.outputPath, configJson);
+    writeJsonFile(this._outputPath, configJson);
   }
 
   public updateFolderData(workspaceFolder: string) {
     super._updateFolderData(workspaceFolder);
+  }
+
+  public changeCallback() {
+    const configJson: JsonConfiguration = readJsonFile(this._outputPath);
+    if (!configJson) return;
+
+    const currentConfig = configJson.configurations[0];
+
+    if (
+      currentConfig.compilerPath != this.settings.cCompilerPath &&
+      currentConfig.compilerPath != this.settings.cppCompilerPath
+    ) {
+      this.settings.cCompilerPath = currentConfig.compilerPath;
+      // TODO
+    }
+
+    if (
+      currentConfig.cStandard != '${default}' &&
+      currentConfig.cStandard != this.settings.cStandard
+    ) {
+      this.settings.cStandard = currentConfig.cStandard;
+      this.settings.update('cStandard', currentConfig.cStandard);
+    }
+
+    if (
+      currentConfig.cppStandard != '${default}' &&
+      currentConfig.cppStandard != this.settings.cppStandard
+    ) {
+      this.settings.cppStandard = currentConfig.cppStandard;
+      this.settings.update('cppStandard', currentConfig.cppStandard);
+    }
   }
 }

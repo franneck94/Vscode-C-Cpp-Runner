@@ -23,6 +23,8 @@ export class LaunchProvider extends FileProvider {
   }
 
   public writeFileData() {
+    if (!this.workspaceFolder && !this.activeFolder) return;
+
     const configName = 'C/C++ Runner: Debug Session';
     if (!this.activeFolder) {
       this.activeFolder = this.workspaceFolder;
@@ -48,11 +50,11 @@ export class LaunchProvider extends FileProvider {
     configJsonTemplate.configurations[0].program = debugPath;
 
     const configJsonOutput: JsonConfiguration | undefined = readJsonFile(
-      this.outputPath,
+      this._outputPath,
     );
 
     if (!configJsonOutput) {
-      writeJsonFile(this.outputPath, configJsonTemplate);
+      writeJsonFile(this._outputPath, configJsonTemplate);
       return;
     }
 
@@ -72,11 +74,15 @@ export class LaunchProvider extends FileProvider {
         configJsonTemplate.configurations[0];
     }
 
-    writeJsonFile(this.outputPath, configJsonOutput);
+    writeJsonFile(this._outputPath, configJsonOutput);
   }
 
   public updateFolderData(workspaceFolder: string, activeFolder: string) {
     this.activeFolder = activeFolder;
     super._updateFolderData(workspaceFolder);
+  }
+
+  public changeCallback() {
+    console.log('change');
   }
 }

@@ -1,4 +1,10 @@
-import { getLanguage, readJsonFile, writeJsonFile } from '../utils/fileUtils';
+import * as path from 'path';
+import {
+  getLanguage,
+  pathExists,
+  readJsonFile,
+  writeJsonFile,
+} from '../utils/fileUtils';
 import {
   Compilers,
   JsonConfiguration,
@@ -20,7 +26,14 @@ export class PropertiesProvider extends FileProvider {
   }
 
   public writeFileData() {
-    const configJson: JsonConfiguration = readJsonFile(this.templatePath);
+    let configJson: JsonConfiguration | undefined;
+
+    if (!pathExists(this._outputPath)) {
+      configJson = readJsonFile(this.templatePath);
+    } else {
+      configJson = readJsonFile(this._outputPath);
+    }
+
     if (!configJson) return;
 
     const language = getLanguage(this.workspaceFolder);
@@ -30,24 +43,45 @@ export class PropertiesProvider extends FileProvider {
       `${this.settings.architecure}`;
 
     const config = configJson.configurations[0];
-    config.compilerArgs = this.settings.warnings.split(' ');
 
-    if (this.settings.compilerArgs) {
-      config.compilerArgs = [
-        ...config.compilerArgs,
-        ...this.settings.compilerArgs.split(' '),
-      ];
-    } else {
-      config.compilerArgs = [...this.settings.warnings.split(' ')];
+    if (config.compilerArgs.length === 1 && config.compilerArgs[0] === '') {
+      config.compilerArgs = [];
     }
 
+    if (this.settings.warnings) {
+      const warnings = this.settings.warnings.split(' ');
+      config.compilerArgs = [];
+      // Add set
+      for (let warning of warnings) {
+        if (!config.compilerArgs.has(warning)) {
+          config.compilerArgs.push(warning);
+        }
+      }
+    }
+
+    if (this.settings.compilerArgs) {
+      const args = this.settings.compilerArgs.split(' ');
+      config.compilerArgs = [];
+      for (let arg of args) {
+        // Add set
+        if (!config.compilerArgs.has(arg)) {
+          config.compilerArgs.push(arg);
+        }
+      }
+    }
+
+    const pattern = '${workspaceFolder}/**';
     if (this.settings.includePaths) {
-      config.includePath = [
-        ...config.includePath,
-        ...this.settings.includePaths.split(' '),
-      ];
+      const paths = this.settings.includePaths.split(' ');
+      config.includePath = [pattern];
+      for (let path of paths) {
+        // Add set
+        if (path !== pattern && !config.includePath.has(path)) {
+          config.includePath.push(path);
+        }
+      }
     } else {
-      config.includePath = [config.includePath[0]];
+      config.includePath = [pattern];
     }
 
     if (this.settings.cStandard) {
@@ -89,6 +123,7 @@ export class PropertiesProvider extends FileProvider {
 
   public changeCallback() {
     const configJson: JsonConfiguration = readJsonFile(this._outputPath);
+
     if (!configJson) return;
 
     const currentConfig = configJson.configurations[0];
@@ -97,16 +132,24 @@ export class PropertiesProvider extends FileProvider {
       currentConfig.compilerPath != this.settings.cCompilerPath &&
       currentConfig.compilerPath != this.settings.cppCompilerPath
     ) {
+      let compilerName = currentConfig.compilerPath;
       this.settings.cCompilerPath = currentConfig.compilerPath;
 
-      if (currentConfig.compilerPath.includes(Compilers.gcc)) {
+      if (compilerName.includes('/') || compilerName.includes('\\')) {
+        compilerName = path.basename(compilerName);
+      }
+      if (compilerName.includes('.exe')) {
+        compilerName = compilerName.replace('.exe', '');
+      }
+
+      if (compilerName.includes(Compilers.gcc)) {
         this.settings.setGcc(currentConfig.compilerPath);
-      } else if (currentConfig.compilerPath.includes(Compilers.clang)) {
+      } else if (compilerName.includes(Compilers.clang)) {
         this.settings.setClang(currentConfig.compilerPath);
-      } else if (currentConfig.compilerPath.includes(Compilers.gpp)) {
-        this.settings.setGpp(currentConfig.compilerPath);
-      } else if (currentConfig.compilerPath.includes(Compilers.clangpp)) {
+      } else if (compilerName.includes(Compilers.clangpp)) {
         this.settings.setClangpp(currentConfig.compilerPath);
+      } else if (compilerName.includes(Compilers.gpp)) {
+        this.settings.setGpp(currentConfig.compilerPath);
       }
     }
 
@@ -124,6 +167,40 @@ export class PropertiesProvider extends FileProvider {
     ) {
       this.settings.cppStandard = currentConfig.cppStandard;
       this.settings.update('cppStandard', currentConfig.cppStandard);
+    }
+
+    const args: Set<string> = new Set(currentConfig.compilerArgs);
+
+    const warningArgs = [...args].filter((arg: string) => {
+      return arg.includes('-W');
+    });
+    const compilerArgs = [...args].filter((arg: string) => {
+      return !arg.includes('-W');
+    });
+
+    const warningsStr = warningArgs.join(' ');
+    if (warningsStr !== SettingsProvider.DEFAULT_WARNINGS) {
+      this.settings.warnings = warningsStr;
+      this.settings.update('warnings', this.settings.warnings);
+    }
+
+    const argsStr = compilerArgs.join(' ');
+    if (argsStr !== SettingsProvider.DEFAULT_COMPILER_ARGS) {
+      this.settings.compilerArgs = argsStr;
+      this.settings.update('compilerArgs', this.settings.compilerArgs);
+    }
+
+    const pattern = '${workspaceFolder}/**';
+    const includePaths: Set<string> = new Set(
+      currentConfig.includePath.filter((path: string) => {
+        return path != pattern;
+      }),
+    );
+
+    const includeStr = [...includePaths].join(' ');
+    if (includeStr !== SettingsProvider.DEFAULT_INCLUDE_PATHS) {
+      this.settings.includePaths = includeStr;
+      this.settings.update('includePaths', this.settings.includePaths);
     }
   }
 }

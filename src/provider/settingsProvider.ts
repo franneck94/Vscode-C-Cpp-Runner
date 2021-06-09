@@ -28,13 +28,26 @@ const OUTPUT_FILENAME = 'settings.json';
 const EXTENSION_NAME = 'C_Cpp_Runner';
 
 export class SettingsProvider extends CallbackProvider {
+  static DEFAULT_C_COMPILER_PATH = 'gcc';
+  static DEFAULT_CPP_COMPILER_PATH = 'g++';
+  static DEFAULT_DEBUGGER_PATH = 'gdb';
+  static DEFAULT_MAKE_PATH = 'make';
+  static DEFAULT_C_STANDARD = '';
+  static DEFAULT_CPP_STANDARD = '';
+  static DEFAULT_COMPILER_ARGS = '';
+  static DEFAULT_LINKER_ARGS = '';
+  static DEFAULT_INCLUDE_PATHS = '';
+  static DEFAULT_ENABLE_WARNINGS = true;
+  static DEFAULT_WARNINGS_AS_ERRORS = false;
+  static DEFAULT_WARNINGS = '-Wall -Wextra -Wpedantic';
+
   // Workspace data
   private _configLocal: JsonSettings | undefined;
   private _configGlobal = vscode.workspace.getConfiguration(EXTENSION_NAME);
   // Machine information
   private _operatingSystem = getOperatingSystem();
   private _architecure: Architectures | undefined;
-  private _isCygwin: boolean | undefined;
+  private _isCygwin: boolean = false;
   private _cCompiler: Compilers | undefined;
   private _cppCompiler: Compilers | undefined;
   private _debugger: Debuggers | undefined;
@@ -43,18 +56,19 @@ export class SettingsProvider extends CallbackProvider {
   private _foundMake: boolean = false;
   private _foundDebugger: boolean = false;
   // Settings
-  private _cCompilerPath: string = 'gcc';
-  private _cppCompilerPath: string = 'g++';
-  private _debuggerPath: string = 'gdb';
-  private _makePath: string = 'make';
-  private _cStandard: string = '';
-  private _cppStandard: string = '';
-  private _compilerArgs: string = '';
-  private _linkerArgs: string = '';
-  private _includePaths: String = '';
-  private _enableWarnings: boolean = true;
-  private _warningsAsError: boolean = false;
-  private _warnings: string = '-Wall -Wextra -Wpedantic';
+  private _cCompilerPath: string = SettingsProvider.DEFAULT_C_COMPILER_PATH;
+  private _cppCompilerPath: string = SettingsProvider.DEFAULT_CPP_COMPILER_PATH;
+  private _debuggerPath: string = SettingsProvider.DEFAULT_DEBUGGER_PATH;
+  private _makePath: string = SettingsProvider.DEFAULT_MAKE_PATH;
+  private _cStandard: string = SettingsProvider.DEFAULT_C_STANDARD;
+  private _cppStandard: string = SettingsProvider.DEFAULT_CPP_STANDARD;
+  private _compilerArgs: string = SettingsProvider.DEFAULT_COMPILER_ARGS;
+  private _linkerArgs: string = SettingsProvider.DEFAULT_LINKER_ARGS;
+  private _includePaths: string = SettingsProvider.DEFAULT_INCLUDE_PATHS;
+  private _enableWarnings: boolean = SettingsProvider.DEFAULT_ENABLE_WARNINGS;
+  private _warningsAsError: boolean =
+    SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
+  private _warnings: string = SettingsProvider.DEFAULT_WARNINGS;
 
   constructor(public workspaceFolder: string) {
     super(workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
@@ -173,18 +187,54 @@ export class SettingsProvider extends CallbackProvider {
   public getSettings() {
     this.readLocalConfig();
 
-    this._enableWarnings = this.getSettingsValue('enableWarnings', false);
-    this._warnings = this.getSettingsValue('warnings', '');
-    this._warningsAsError = this.getSettingsValue('warningsAsError', false);
-    this._cCompilerPath = this.getSettingsValue('cCompilerPath', '');
-    this._cppCompilerPath = this.getSettingsValue('cppCompilerPath', '');
-    this._debuggerPath = this.getSettingsValue('debuggerPath', '');
-    this._makePath = this.getSettingsValue('makePath', '');
-    this._cStandard = this.getSettingsValue('cStandard', '');
-    this._cppStandard = this.getSettingsValue('cppStandard', '');
-    this._compilerArgs = this.getSettingsValue('compilerArgs', '');
-    this._linkerArgs = this.getSettingsValue('linkerArgs', '');
-    this._includePaths = this.getSettingsValue('includePaths', '');
+    this._enableWarnings = this.getSettingsValue(
+      'enableWarnings',
+      SettingsProvider.DEFAULT_ENABLE_WARNINGS,
+    );
+    this._warnings = this.getSettingsValue(
+      'warnings',
+      SettingsProvider.DEFAULT_WARNINGS,
+    );
+    this._warningsAsError = this.getSettingsValue(
+      'warningsAsError',
+      SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS,
+    );
+    this._cCompilerPath = this.getSettingsValue(
+      'cCompilerPath',
+      SettingsProvider.DEFAULT_C_COMPILER_PATH,
+    );
+    this._cppCompilerPath = this.getSettingsValue(
+      'cppCompilerPath',
+      SettingsProvider.DEFAULT_CPP_COMPILER_PATH,
+    );
+    this._debuggerPath = this.getSettingsValue(
+      'debuggerPath',
+      SettingsProvider.DEFAULT_DEBUGGER_PATH,
+    );
+    this._makePath = this.getSettingsValue(
+      'makePath',
+      SettingsProvider.DEFAULT_MAKE_PATH,
+    );
+    this._cStandard = this.getSettingsValue(
+      'cStandard',
+      SettingsProvider.DEFAULT_C_STANDARD,
+    );
+    this._cppStandard = this.getSettingsValue(
+      'cppStandard',
+      SettingsProvider.DEFAULT_CPP_STANDARD,
+    );
+    this._compilerArgs = this.getSettingsValue(
+      'compilerArgs',
+      SettingsProvider.DEFAULT_COMPILER_ARGS,
+    );
+    this._linkerArgs = this.getSettingsValue(
+      'linkerArgs',
+      SettingsProvider.DEFAULT_LINKER_ARGS,
+    );
+    this._includePaths = this.getSettingsValue(
+      'includePaths',
+      SettingsProvider.DEFAULT_INCLUDE_PATHS,
+    );
 
     this.setCommands();
   }
@@ -192,7 +242,7 @@ export class SettingsProvider extends CallbackProvider {
   private getSettingsValue(name: string, defaultValue: any) {
     const settingName = `${EXTENSION_NAME}.${name}`;
 
-    if (this._configLocal && this._configLocal[settingName]) {
+    if (this._configLocal && this._configLocal[settingName] !== undefined) {
       return this._configLocal[settingName];
     }
 
@@ -204,31 +254,41 @@ export class SettingsProvider extends CallbackProvider {
   }
 
   private setCommands() {
-    let cBasename: string;
-    let cppBasename: string;
+    let cBasename: string = this.cCompilerPath;
+    let cppBasename: string = this.cppCompilerPath;
 
-    if (this.operatingSystem === OperatingSystems.windows) {
-      cBasename = path.basename(this.cCompilerPath, 'exe');
-      cppBasename = path.basename(this.cppCompilerPath, 'exe');
-    } else {
-      cBasename = path.basename(this.cCompilerPath);
-      cppBasename = path.basename(this.cppCompilerPath);
+    if (cBasename.includes('/') || cBasename.includes('\\')) {
+      cBasename = path.basename(cBasename);
+    }
+    if (cBasename.includes('.exe')) {
+      cBasename = cBasename.replace('.exe', '');
     }
 
-    if (cBasename.includes(Compilers.clang)) {
-      this._cCompiler = Compilers.clang;
-      this._debugger = Debuggers.lldb;
-    } else {
-      this._cCompiler = Compilers.gcc;
-      this._debugger = Debuggers.gdb;
+    if (cppBasename.includes('/') || cppBasename.includes('\\')) {
+      cppBasename = path.basename(cppBasename);
+    }
+    if (cppBasename.includes('.exe')) {
+      cppBasename = cppBasename.replace('.exe', '');
     }
 
-    if (cppBasename.includes(Compilers.clangpp)) {
-      this._cppCompiler = Compilers.clangpp;
-      this._debugger = Debuggers.lldb;
-    } else {
-      this._cppCompiler = Compilers.gpp;
-      this._debugger = Debuggers.gdb;
+    if (cBasename) {
+      if (cBasename.includes(Compilers.clang)) {
+        this._cCompiler = Compilers.clang;
+        this._debugger = Debuggers.lldb;
+      } else {
+        this._cCompiler = Compilers.gcc;
+        this._debugger = Debuggers.gdb;
+      }
+    }
+
+    if (cppBasename) {
+      if (cppBasename.includes(Compilers.clangpp)) {
+        this._cppCompiler = Compilers.clangpp;
+        this._debugger = Debuggers.lldb;
+      } else {
+        this._cppCompiler = Compilers.gpp;
+        this._debugger = Debuggers.gdb;
+      }
     }
 
     this.updateArchitecture();
@@ -418,5 +478,17 @@ export class SettingsProvider extends CallbackProvider {
 
   public set debuggerPath(newPath: string) {
     this._debuggerPath = newPath;
+  }
+
+  public set warnings(newWarnings: string) {
+    this._warnings = newWarnings;
+  }
+
+  public set compilerArgs(newArgs: string) {
+    this._compilerArgs = newArgs;
+  }
+
+  public set includePaths(newPaths: string) {
+    this._includePaths = newPaths;
   }
 }

@@ -51,9 +51,9 @@ export class PropertiesProvider extends FileProvider {
     if (this.settings.warnings) {
       const warnings = this.settings.warnings.split(' ');
       config.compilerArgs = [];
-      // Add set
       for (let warning of warnings) {
-        if (!config.compilerArgs.has(warning)) {
+        const compilerArgsSet = new Set(config.compilerArgs);
+        if (!compilerArgsSet.has(warning)) {
           config.compilerArgs.push(warning);
         }
       }
@@ -63,8 +63,8 @@ export class PropertiesProvider extends FileProvider {
       const args = this.settings.compilerArgs.split(' ');
       config.compilerArgs = [];
       for (let arg of args) {
-        // Add set
-        if (!config.compilerArgs.has(arg)) {
+        const compilerArgsSet = new Set(config.compilerArgs);
+        if (!compilerArgsSet.has(arg)) {
           config.compilerArgs.push(arg);
         }
       }
@@ -75,8 +75,8 @@ export class PropertiesProvider extends FileProvider {
       const paths = this.settings.includePaths.split(' ');
       config.includePath = [pattern];
       for (let path of paths) {
-        // Add set
-        if (path !== pattern && !config.includePath.has(path)) {
+        const includePathSet = new Set(config.includePath);
+        if (path !== pattern && !includePathSet.has(path)) {
           config.includePath.push(path);
         }
       }

@@ -187,18 +187,7 @@ export class SettingsProvider extends CallbackProvider {
   public getSettings() {
     this.readLocalConfig();
 
-    this._enableWarnings = this.getSettingsValue(
-      'enableWarnings',
-      SettingsProvider.DEFAULT_ENABLE_WARNINGS,
-    );
-    this._warnings = this.getSettingsValue(
-      'warnings',
-      SettingsProvider.DEFAULT_WARNINGS,
-    );
-    this._warningsAsError = this.getSettingsValue(
-      'warningsAsError',
-      SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS,
-    );
+    /* Mandatory Settings in settings.json */
     this._cCompilerPath = this.getSettingsValue(
       'cCompilerPath',
       SettingsProvider.DEFAULT_C_COMPILER_PATH,
@@ -214,6 +203,20 @@ export class SettingsProvider extends CallbackProvider {
     this._makePath = this.getSettingsValue(
       'makePath',
       SettingsProvider.DEFAULT_MAKE_PATH,
+    );
+
+    /* Optional Settings in settings.json */
+    this._enableWarnings = this.getSettingsValue(
+      'enableWarnings',
+      SettingsProvider.DEFAULT_ENABLE_WARNINGS,
+    );
+    this._warnings = this.getSettingsValue(
+      'warnings',
+      SettingsProvider.DEFAULT_WARNINGS,
+    );
+    this._warningsAsError = this.getSettingsValue(
+      'warningsAsError',
+      SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS,
     );
     this._cStandard = this.getSettingsValue(
       'cStandard',
@@ -236,6 +239,7 @@ export class SettingsProvider extends CallbackProvider {
       SettingsProvider.DEFAULT_INCLUDE_PATHS,
     );
 
+    this.checkSettingsDelete();
     this.setCommands();
   }
 
@@ -317,7 +321,7 @@ export class SettingsProvider extends CallbackProvider {
     const settingName = `${EXTENSION_NAME}.${key}`;
 
     try {
-      if (!settingsJson.settingName) {
+      if (!settingsJson[settingName]) {
         settingsJson[settingName] = value;
       }
 
@@ -336,6 +340,23 @@ export class SettingsProvider extends CallbackProvider {
       const ret = getArchitecture(this._cppCompiler);
       this._architecure = ret.architecure;
       this._isCygwin = ret.isCygwin;
+    }
+  }
+
+  private checkSettingsDelete() {
+    let settingsJson: JsonSettings | undefined = readJsonFile(this._outputPath);
+
+    if (!settingsJson) return;
+
+    let doUpdate = false;
+
+    if (!settingsJson[`${EXTENSION_NAME}.cCompilerPath`]) doUpdate = true;
+    if (!settingsJson[`${EXTENSION_NAME}.cppCompilerPath`]) doUpdate = true;
+    if (!settingsJson[`${EXTENSION_NAME}.debuggerPath`]) doUpdate = true;
+    if (!settingsJson[`${EXTENSION_NAME}.makePath`]) doUpdate = true;
+
+    if (doUpdate) {
+      this.getCommands();
     }
   }
 

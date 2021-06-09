@@ -1,8 +1,7 @@
 import * as path from 'path';
 
 import { extensionPath } from '../extension';
-import { mkdirRecursive, pathExists, readJsonFile } from '../utils/fileUtils';
-import { JsonConfiguration } from '../utils/types';
+import { mkdirRecursive, pathExists } from '../utils/fileUtils';
 import { CallbackProvider } from './callbackProvider';
 import { SettingsProvider } from './settingsProvider';
 
@@ -22,25 +21,6 @@ export abstract class FileProvider extends CallbackProvider {
       'templates',
     );
     this.templatePath = path.join(templateDirectory, templateFileName);
-
-    let doUpdate = false;
-    if (!pathExists(this._outputPath)) {
-      doUpdate = true;
-    } else {
-      const configJson: JsonConfiguration = readJsonFile(this._outputPath);
-      if (configJson) {
-        const triplet: string = configJson.configurations[0].name;
-
-        if (!triplet.includes(this.settings.operatingSystem)) {
-          doUpdate = true;
-        }
-      }
-    }
-
-    if (doUpdate) {
-      this.settings.getCommands();
-      this.createFileData();
-    }
   }
 
   public createFileData() {

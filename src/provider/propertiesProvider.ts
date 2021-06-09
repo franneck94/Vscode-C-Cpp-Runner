@@ -23,6 +23,25 @@ export class PropertiesProvider extends FileProvider {
     public workspaceFolder: string,
   ) {
     super(settings, workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
+
+    let doUpdate = false;
+    if (!pathExists(this._outputPath)) {
+      doUpdate = true;
+    } else {
+      const configJson: JsonConfiguration = readJsonFile(this._outputPath);
+      if (configJson) {
+        const triplet: string = configJson.configurations[0].name;
+
+        if (!triplet.includes(this.settings.operatingSystem)) {
+          doUpdate = true;
+        }
+      }
+    }
+
+    if (doUpdate) {
+      this.settings.getCommands(); // TODO: Needed?
+      this.createFileData();
+    }
   }
 
   public writeFileData() {

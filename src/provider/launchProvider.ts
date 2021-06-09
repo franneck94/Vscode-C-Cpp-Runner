@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import { readJsonFile, writeJsonFile } from '../utils/fileUtils';
+import { pathExists, readJsonFile, writeJsonFile } from '../utils/fileUtils';
 import { Debuggers, JsonConfiguration, OperatingSystems } from '../utils/types';
 import { getLaunchConfigIndex } from '../utils/vscodeUtils';
 import { FileProvider } from './fileProvider';
@@ -20,6 +20,32 @@ export class LaunchProvider extends FileProvider {
 
     if (!this.activeFolder) {
       this.activeFolder = this.workspaceFolder;
+    }
+
+    let doUpdate = false;
+    if (!pathExists(this._outputPath)) {
+      doUpdate = true;
+    } else {
+      const configJson: JsonConfiguration = readJsonFile(this._outputPath);
+      if (configJson) {
+        let foundConfig = false;
+
+        configJson.configurations.forEach((config) => {
+          const triplet: string = config.name;
+          if (triplet.includes(this.settings.operatingSystem)) {
+            foundConfig = true;
+          }
+        });
+
+        if (!foundConfig) {
+          doUpdate = true;
+        }
+      }
+    }
+
+    if (doUpdate) {
+      this.settings.getCommands(); // TODO: Needed?
+      this.createFileData();
     }
   }
 
@@ -43,6 +69,11 @@ export class LaunchProvider extends FileProvider {
       if (OperatingSystems.windows === this.settings.operatingSystem) {
         configJsonTemplate.configurations[0].externalConsole = true;
       }
+    } else {
+      configJsonTemplate.configurations[0].MIMode =
+        SettingsProvider.DEFAULT_DEBUGGER_PATH;
+      configJsonTemplate.configurations[0].miDebuggerPath =
+        SettingsProvider.DEFAULT_DEBUGGER_PATH;
     }
 
     configJsonTemplate.configurations[0].cwd = this.activeFolder;
@@ -58,9 +89,11 @@ export class LaunchProvider extends FileProvider {
       return;
     }
 
-    const configIdx = getLaunchConfigIndex(configJsonOutput, CONFIG_NAME);
+    let configIdx = getLaunchConfigIndex(configJsonOutput, CONFIG_NAME);
 
-    if (configIdx === undefined) return;
+    if (configIdx === undefined) {
+      configIdx = configJsonOutput.configurations.length;
+    }
 
     if (
       configJsonOutput &&
@@ -82,9 +115,6 @@ export class LaunchProvider extends FileProvider {
     super._updateFolderData(workspaceFolder);
   }
 
-  /**
-   * No-op for launch.json
-   */
   public changeCallback() {
     const configJsonOutput: JsonConfiguration | undefined = readJsonFile(
       this._outputPath,
@@ -94,18 +124,20 @@ export class LaunchProvider extends FileProvider {
 
     const configIdx = getLaunchConfigIndex(configJsonOutput, CONFIG_NAME);
 
-    if (configIdx === undefined) return;
+    if (configIdx !== undefined) {
+      const currentConfig = configJsonOutput.configurations[configIdx];
 
-    const currentConfig = configJsonOutput.configurations[configIdx];
+      if (currentConfig.miDebuggerPath != this.settings.debuggerPath) {
+        this.settings.debuggerPath = currentConfig.miDebuggerPath;
 
-    if (currentConfig.miDebuggerPath != this.settings.debuggerPath) {
-      this.settings.debuggerPath = currentConfig.miDebuggerPath;
-
-      if (currentConfig.miDebuggerPath.includes(Debuggers.gdb)) {
-        this.settings.setGDB(currentConfig.miDebuggerPath);
-      } else if (currentConfig.miDebuggerPath.includes(Debuggers.lldb)) {
-        this.settings.setLLDB(currentConfig.miDebuggerPath);
+        if (currentConfig.miDebuggerPath.includes(Debuggers.gdb)) {
+          this.settings.setGDB(currentConfig.miDebuggerPath);
+        } else if (currentConfig.miDebuggerPath.includes(Debuggers.lldb)) {
+          this.settings.setLLDB(currentConfig.miDebuggerPath);
+        }
       }
+    } else {
+      this.writeFileData();
     }
   }
 }

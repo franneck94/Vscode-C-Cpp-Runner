@@ -1,7 +1,9 @@
 node_modules
-*.vsix
 dist/
 out/
 build/
 .mypy_cache
 **/.vscode/
+
+*.vsix
+*.cpuprofile

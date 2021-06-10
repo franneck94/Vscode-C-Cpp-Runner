@@ -3,6 +3,7 @@ import * as vscode from 'vscode';
 
 import {
   commandCheck,
+  hasPathSeperators,
   mkdirRecursive,
   pathExists,
   readJsonFile,
@@ -20,6 +21,7 @@ import {
   JsonSettings,
   Makefiles,
   OperatingSystems,
+  CompilerSystems,
 } from '../utils/types';
 import { CallbackProvider } from './callbackProvider';
 
@@ -82,6 +84,10 @@ export class SettingsProvider extends CallbackProvider {
    * Check if gcc/g++ or clang/clang++ is in PATH and where it is located.
    */
   public async getCommands() {
+    if (!pathExists(this._vscodeDirectory)) {
+      mkdirRecursive(this._vscodeDirectory);
+    }
+
     if (pathExists(this._outputPath)) {
       const settingsJson: JsonSettings | undefined = readJsonFile(
         this._outputPath,
@@ -116,21 +122,111 @@ export class SettingsProvider extends CallbackProvider {
       }
     }
 
-    if (!pathExists(this._vscodeDirectory)) {
-      mkdirRecursive(this._vscodeDirectory);
+    let foundGcc = false;
+    let foundGpp = false;
+    let foundGDB = false;
+    let foundMake = false;
+    let foundClang = false;
+    let foundClangpp = false;
+    let foundLLDB = false;
+
+    let pathGcc: string | undefined;
+    let pathGpp: string | undefined;
+    let pathGDB: string | undefined;
+    let pathMake: string | undefined;
+    let pathClang: string | undefined;
+    let pathClangpp: string | undefined;
+    let pathLLDB: string | undefined;
+
+    const env = process.env;
+    if (this.operatingSystem === OperatingSystems.windows && env.PATH) {
+      const paths = env.PATH.split(';');
+      for (let env_path of paths) {
+        if (
+          (foundGcc && foundGpp && foundGDB) ||
+          (foundClang && foundClangpp && foundLLDB)
+        ) {
+          break;
+        }
+        const lower_path = env_path.toLocaleLowerCase();
+        if (
+          lower_path.includes('bin') &&
+          (lower_path.includes(CompilerSystems.cygwin) ||
+            lower_path.includes(CompilerSystems.mingw) ||
+            lower_path.includes(CompilerSystems.msys2))
+        ) {
+          pathGcc = path.join(env_path, Compilers.gcc + '.exe');
+          pathGpp = path.join(env_path, Compilers.gpp + '.exe');
+          pathGDB = path.join(env_path, Debuggers.gdb + '.exe');
+          pathMake = path.join(env_path, Makefiles.make + '.exe');
+
+          if (pathExists(pathGcc)) {
+            foundGcc = true;
+          }
+          if (pathExists(pathGpp)) {
+            foundGpp = true;
+          }
+          if (pathExists(pathGDB)) {
+            foundGDB = true;
+          }
+          if (pathExists(pathMake)) {
+            foundMake = true;
+          } else {
+            const altpathMake = path.join(
+              env_path,
+              Makefiles.make_mingw + '.exe',
+            );
+
+            if (pathExists(altpathMake)) {
+              foundMake = true;
+            }
+          }
+        } else if (
+          lower_path.includes('bin') &&
+          lower_path.includes(CompilerSystems.clang)
+        ) {
+          pathClang = path.join(env_path, Compilers.clang + '.exe');
+          pathClangpp = path.join(env_path, Compilers.clangpp + '.exe');
+          pathLLDB = path.join(env_path, Debuggers.lldb + '.exe');
+          pathMake = path.join(env_path, Makefiles.make + '.exe');
+
+          if (pathExists(pathClang)) {
+            foundClang = true;
+          }
+          if (pathExists(pathClangpp)) {
+            foundClangpp = true;
+          }
+          if (pathExists(pathLLDB)) {
+            foundLLDB = true;
+          }
+          if (pathExists(pathMake)) {
+            foundMake = true;
+          }
+        }
+      }
     }
 
-    const { f: foundGcc, p: pathGcc } = await commandExists(Compilers.gcc);
-    const { f: foundGpp, p: pathGpp } = await commandExists(Compilers.gpp);
-    const { f: foundGDB, p: pathGDB } = await commandExists(Debuggers.gdb);
-    const { f: foundMake, p: pathMake } = await commandExists(Makefiles.make);
+    if (!foundGcc) {
+      ({ f: foundGcc, p: pathGcc } = await commandExists(Compilers.gcc));
+    }
+    if (!foundGpp) {
+      ({ f: foundGpp, p: pathGpp } = await commandExists(Compilers.gpp));
+    }
+    if (!foundGDB) {
+      ({ f: foundGDB, p: pathGDB } = await commandExists(Debuggers.gdb));
+    }
+    if (!foundMake) {
+      ({ f: foundMake, p: pathMake } = await commandExists(Makefiles.make));
+    }
 
     if (foundGcc && pathGcc) {
       this.setGcc(pathGcc);
     } else {
-      const { f: foundClang, p: pathClang } = await commandExists(
-        Compilers.clang,
-      );
+      if (!foundClang) {
+        ({ f: foundClang, p: pathClang } = await commandExists(
+          Compilers.clang,
+        ));
+      }
 
       if (foundClang && pathClang) {
         this.setClang(pathClang);
@@ -142,9 +238,11 @@ export class SettingsProvider extends CallbackProvider {
     if (foundGpp && pathGpp) {
       this.setGpp(pathGpp);
     } else {
-      const { f: foundClangpp, p: pathClangpp } = await commandExists(
-        Compilers.clangpp,
-      );
+      if (!foundClangpp) {
+        ({ f: foundClangpp, p: pathClangpp } = await commandExists(
+          Compilers.clangpp,
+        ));
+      }
 
       if (foundClangpp && pathClangpp) {
         this.setClangpp(pathClangpp);
@@ -156,7 +254,9 @@ export class SettingsProvider extends CallbackProvider {
     if (foundGDB && pathGDB) {
       this.setGDB(pathGDB);
     } else {
-      const { f: foundLLDB, p: pathLLDB } = await commandExists(Debuggers.lldb);
+      if (!foundLLDB) {
+        ({ f: foundLLDB, p: pathLLDB } = await commandExists(Debuggers.lldb));
+      }
 
       if (foundLLDB && pathLLDB) {
         this.setLLDB(pathLLDB);
@@ -168,9 +268,9 @@ export class SettingsProvider extends CallbackProvider {
     if (foundMake && pathMake) {
       this.setMake(pathMake);
     } else if (this._operatingSystem === OperatingSystems.windows) {
-      const { f: foundMake, p: pathMake } = await commandExists(
-        Makefiles.makeMinGW,
-      );
+      ({ f: foundMake, p: pathMake } = await commandExists(
+        Makefiles.make_mingw,
+      ));
       if (foundMake && pathMake) {
         this.setMake(pathMake);
       } else {
@@ -187,7 +287,7 @@ export class SettingsProvider extends CallbackProvider {
   public getSettings() {
     this.readLocalConfig();
 
-    /* Mandatory Settings in settings.json */
+    /* Mandatory in settings.json */
     this._cCompilerPath = this.getSettingsValue(
       'cCompilerPath',
       SettingsProvider.DEFAULT_C_COMPILER_PATH,
@@ -205,7 +305,7 @@ export class SettingsProvider extends CallbackProvider {
       SettingsProvider.DEFAULT_MAKE_PATH,
     );
 
-    /* Optional Settings in settings.json */
+    /* Optional in settings.json */
     this._enableWarnings = this.getSettingsValue(
       'enableWarnings',
       SettingsProvider.DEFAULT_ENABLE_WARNINGS,
@@ -241,6 +341,7 @@ export class SettingsProvider extends CallbackProvider {
 
     this.checkSettingsDelete();
     this.setCommands();
+    this.updateArchitecture();
   }
 
   private getSettingsValue(name: string, defaultValue: any) {
@@ -261,14 +362,14 @@ export class SettingsProvider extends CallbackProvider {
     let cBasename: string = this.cCompilerPath;
     let cppBasename: string = this.cppCompilerPath;
 
-    if (cBasename.includes('/') || cBasename.includes('\\')) {
+    if (hasPathSeperators(cBasename)) {
       cBasename = path.basename(cBasename);
     }
     if (cBasename.includes('.exe')) {
       cBasename = cBasename.replace('.exe', '');
     }
 
-    if (cppBasename.includes('/') || cppBasename.includes('\\')) {
+    if (hasPathSeperators(cppBasename)) {
       cppBasename = path.basename(cppBasename);
     }
     if (cppBasename.includes('.exe')) {
@@ -294,8 +395,6 @@ export class SettingsProvider extends CallbackProvider {
         this._debugger = Debuggers.gdb;
       }
     }
-
-    this.updateArchitecture();
   }
 
   public updateFolderData(workspaceFolder: string) {
@@ -320,15 +419,9 @@ export class SettingsProvider extends CallbackProvider {
 
     const settingName = `${EXTENSION_NAME}.${key}`;
 
-    try {
-      if (!settingsJson[settingName]) {
-        settingsJson[settingName] = value;
-      }
+    settingsJson[settingName] = value;
 
-      writeJsonFile(this._outputPath, settingsJson);
-    } catch (error) {
-      console.log(error);
-    }
+    writeJsonFile(this._outputPath, settingsJson);
   }
 
   private updateArchitecture() {
@@ -405,7 +498,7 @@ export class SettingsProvider extends CallbackProvider {
   }
 
   public setMake(pathMake: string) {
-    this.update('makePath', pathMake);
+    this.update('pathMake', pathMake);
     this._foundMake = true;
   }
 

@@ -59,6 +59,7 @@ export class LaunchProvider extends FileProvider {
     const configJsonTemplate: JsonConfiguration | undefined = readJsonFile(
       this.templatePath,
     );
+
     if (!configJsonTemplate) return;
 
     configJsonTemplate.configurations[0].name = CONFIG_NAME;
@@ -66,7 +67,11 @@ export class LaunchProvider extends FileProvider {
       configJsonTemplate.configurations[0].MIMode = this.settings.debugger;
       configJsonTemplate.configurations[0].miDebuggerPath = this.settings.debuggerPath;
 
-      if (OperatingSystems.windows === this.settings.operatingSystem) {
+      /* On Windows with Cygwin the internal console does not work properly. */
+      if (
+        OperatingSystems.windows === this.settings.operatingSystem &&
+        this.settings.isCygwin
+      ) {
         configJsonTemplate.configurations[0].externalConsole = true;
       }
     } else {

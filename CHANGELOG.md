@@ -4,24 +4,26 @@
 
 - **Improvement**: Add exclude pattern (as a setting) for the folder selection menu
 
-## Version 0.16.0: June 9, 2021
+## Version 0.16.0: June 10, 2021
 
-- **Improvement**: Updating c_cpp_properties does trigger a update for settings.json.
+- **Improvement**: Updating c_cpp_properties.json and launch.json do trigger an update for settings.json. Hence, the user can edit any of these files and all other files are updated accordingly.
+- **Improvement**: Updated compiler search on windows, to speed-up the process.
+- **Bugfix**: Several bug fixes
 
 ## Version 0.15.0: June 7, 2021
 
-- **Info**: If settings/properties was configured for e.g. windows and the project is opened in for example linux, the commands (compiler etc.) are searched again and stored to the settings.json/c_cpp_properties.json file
+- **Info**: If settings/properties were configured e.g. windows and the project is opened in for example Linux, the commands (compiler, etc.) are searched again and stored in the settings.json/c_cpp_properties.json file
 - **Bugfix**: Fixed extension crash
 
 ## Version 0.14.2: June 3, 2021
 
-- **Info**: When using cygwin64 the intellisense triplet is changed to "linux" due to the following [issue](https://github.com/microsoft/vscode-cpptools/issues/7637).
+- **Info**: When using cygwin64 the intellisense triplet is changed to "Linux" due to the following [issue](https://github.com/microsoft/vscode-cpptools/issues/7637).
 
 ## Version 0.14.1: June 1, 2021
 
 - **Bugfix**: Fixed crash when no compiler was found
 - **Info**: Do not list folders in the selection that contain '__' (2 underscores)
-- **Info**: Do not list folders that are named 'build' (equallity check)
+- **Info**: Do not list folders that are named 'build' (equality check)
 - **Info**: Added x64 as default architecture
 
 ## Version 0.14.0: May 26, 2021

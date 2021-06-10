@@ -281,3 +281,7 @@ export function commandCheck(key: string, jsonData: JsonSettings) {
 
   return true;
 }
+
+export function hasPathSeperators(path: string) {
+  return path.includes('/') || path.includes('\\');
+}

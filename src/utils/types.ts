@@ -43,7 +43,14 @@ export enum Debuggers {
 
 export enum Makefiles {
   make = 'make',
-  makeMinGW = 'mingw32-make',
+  make_mingw = 'mingw32-make',
+}
+
+export enum CompilerSystems {
+  cygwin = 'cygwin',
+  mingw = 'mingw',
+  msys2 = 'msys2',
+  clang = 'clang',
 }
 
 export enum OperatingSystems {

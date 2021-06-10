@@ -1,6 +1,7 @@
 import * as path from 'path';
 import {
   getLanguage,
+  hasPathSeperators,
   pathExists,
   readJsonFile,
   writeJsonFile,
@@ -16,6 +17,7 @@ import { SettingsProvider } from './settingsProvider';
 
 const TEMPLATE_FILENAME = 'properties_template.json';
 const OUTPUT_FILENAME = 'c_cpp_properties.json';
+const INCLUDE_PATTERN = '${workspaceFolder}/**';
 
 export class PropertiesProvider extends FileProvider {
   constructor(
@@ -89,18 +91,17 @@ export class PropertiesProvider extends FileProvider {
       }
     }
 
-    const pattern = '${workspaceFolder}/**';
     if (this.settings.includePaths) {
       const paths = this.settings.includePaths.split(' ');
-      config.includePath = [pattern];
+      config.includePath = [INCLUDE_PATTERN];
       for (let path of paths) {
         const includePathSet = new Set(config.includePath);
-        if (path !== pattern && !includePathSet.has(path)) {
+        if (path !== INCLUDE_PATTERN && !includePathSet.has(path)) {
           config.includePath.push(path);
         }
       }
     } else {
-      config.includePath = [pattern];
+      config.includePath = [INCLUDE_PATTERN];
     }
 
     if (this.settings.cStandard) {
@@ -154,19 +155,19 @@ export class PropertiesProvider extends FileProvider {
       let compilerName = currentConfig.compilerPath;
       this.settings.cCompilerPath = currentConfig.compilerPath;
 
-      if (compilerName.includes('/') || compilerName.includes('\\')) {
+      if (hasPathSeperators(compilerName)) {
         compilerName = path.basename(compilerName);
       }
       if (compilerName.includes('.exe')) {
         compilerName = compilerName.replace('.exe', '');
       }
 
-      if (compilerName.includes(Compilers.gcc)) {
-        this.settings.setGcc(currentConfig.compilerPath);
-      } else if (compilerName.includes(Compilers.clang)) {
+      if (compilerName.includes(Compilers.clang)) {
         this.settings.setClang(currentConfig.compilerPath);
       } else if (compilerName.includes(Compilers.clangpp)) {
         this.settings.setClangpp(currentConfig.compilerPath);
+      } else if (compilerName.includes(Compilers.gcc)) {
+        this.settings.setGcc(currentConfig.compilerPath);
       } else if (compilerName.includes(Compilers.gpp)) {
         this.settings.setGpp(currentConfig.compilerPath);
       }
@@ -209,10 +210,9 @@ export class PropertiesProvider extends FileProvider {
       this.settings.update('compilerArgs', this.settings.compilerArgs);
     }
 
-    const pattern = '${workspaceFolder}/**';
     const includePaths: Set<string> = new Set(
       currentConfig.includePath.filter((path: string) => {
-        return path != pattern;
+        return path != INCLUDE_PATTERN;
       }),
     );
 

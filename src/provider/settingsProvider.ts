@@ -496,7 +496,7 @@ export class SettingsProvider extends CallbackProvider {
   }
 
   public setMake(pathMake: string) {
-    this.update('pathMake', pathMake);
+    this.update('makePath', pathMake);
     this._foundMake = true;
   }
 

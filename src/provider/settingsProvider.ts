@@ -96,18 +96,14 @@ export class SettingsProvider extends CallbackProvider {
 
       if (!settingsJson) return false;
 
-      let settingsExist = false;
-
       if (
         commandCheck(`${EXTENSION_NAME}.cCompilerPath`, settingsJson) &&
         commandCheck(`${EXTENSION_NAME}.cppCompilerPath`, settingsJson) &&
         commandCheck(`${EXTENSION_NAME}.debuggerPath`, settingsJson) &&
         commandCheck(`${EXTENSION_NAME}.makePath`, settingsJson)
       ) {
-        settingsExist = true;
+        return true;
       }
-
-      let commandsExist = false;
 
       if (
         this._cCompilerFound &&
@@ -115,10 +111,6 @@ export class SettingsProvider extends CallbackProvider {
         this._foundMake &&
         this._foundDebugger
       ) {
-        commandsExist = true;
-      }
-
-      if (settingsExist || (settingsExist && commandsExist)) {
         return true;
       }
     }

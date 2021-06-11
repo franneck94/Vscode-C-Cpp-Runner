@@ -1,17 +1,11 @@
 import {
   getBasename,
-  getLanguage,
   pathExists,
   readJsonFile,
   removeExtension,
   writeJsonFile,
 } from '../utils/fileUtils';
-import {
-  Compilers,
-  JsonConfiguration,
-  Languages,
-  OperatingSystems,
-} from '../utils/types';
+import { Compilers, JsonConfiguration, OperatingSystems } from '../utils/types';
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
 
@@ -62,7 +56,6 @@ export class PropertiesProvider extends FileProvider {
 
     if (!configJson) return;
 
-    const language = getLanguage(this.workspaceFolder);
     const triplet =
       `${this.settings.operatingSystem}-` +
       `${this.settings.cCompiler}-` +
@@ -121,11 +114,7 @@ export class PropertiesProvider extends FileProvider {
       config.cppStandard = '${default}';
     }
 
-    if (Languages.cpp === language) {
-      config.compilerPath = this.settings.cppCompilerPath;
-    } else {
-      config.compilerPath = this.settings.cCompilerPath;
-    }
+    config.compilerPath = this.settings.cCompilerPath;
 
     // Since C/C++ Extension Version 1.4.0 cygwin is a linux triplet
     if (

@@ -22,7 +22,7 @@
 			"group": "build",
 			"problemMatcher": [],
 			"label": "npm: compile",
-			"detail": "webpack --mode development"
+			"detail": "webpack --mode development && tsc -p ./"
 		}
 	]
 }

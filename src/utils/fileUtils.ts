@@ -1,8 +1,6 @@
 import * as fs from 'fs';
 import * as JSON5 from 'json5';
 import * as path from 'path';
-import * as vscode from 'vscode';
-
 import { loggingActive } from '../extension';
 import * as logger from './logger';
 import { JsonSettings, Languages } from './types';
@@ -48,15 +46,26 @@ export function isSourceFile(fileExt: string) {
   return true;
 }
 
+export function addFileExtensionDot(fileExt: string) {
+  if (!fileExt.includes('.')) {
+    fileExt = `.${fileExt}`;
+  }
+
+  return fileExt;
+}
+
 export function isHeaderFile(fileExtLower: string) {
+  fileExtLower = addFileExtensionDot(fileExtLower);
   return ['.hpp', '.hh', '.hxx', '.h'].some((ext) => fileExtLower === ext);
 }
 
 export function isCppSourceFile(fileExtLower: string) {
+  fileExtLower = addFileExtensionDot(fileExtLower);
   return ['.cpp', '.cc', '.cxx'].some((ext) => fileExtLower === ext);
 }
 
 export function isCSourceFile(fileExtLower: string) {
+  fileExtLower = addFileExtensionDot(fileExtLower);
   return fileExtLower === '.c';
 }
 
@@ -71,19 +80,19 @@ export function getLanguage(dir: string) {
   }
 }
 
-export function getDirectories(dir: fs.PathLike) {
+export function getDirectoriesRecursive(dir: fs.PathLike) {
   const directories = foldersInDir(dir);
 
   if (directories.length === 0) return;
 
   directories.forEach((dir) =>
-    getDirectories(dir)?.forEach((newDir) => directories.push(newDir)),
+    getDirectoriesRecursive(dir)?.forEach((newDir) => directories.push(newDir)),
   );
 
   return directories;
 }
 
-function readDir(dir: string | fs.PathLike) {
+export function readDir(dir: string | fs.PathLike) {
   try {
     return fs.readdirSync(dir, { withFileTypes: true });
   } catch (err) {
@@ -142,6 +151,8 @@ export function readJsonFile(filepath: string) {
 }
 
 export function writeJsonFile(outputFilePath: string, jsonContent: any) {
+  if (jsonContent === undefined) return;
+
   const dirname = path.dirname(outputFilePath);
 
   if (!pathExists(dirname)) {
@@ -157,110 +168,6 @@ export function writeJsonFile(outputFilePath: string, jsonContent: any) {
     logger.log(loggingActive, errorMessage);
     return;
   }
-}
-
-export function isCmakeActive() {
-  let cmakeActive = false;
-
-  const workspaceFodlers = vscode.workspace.workspaceFolders;
-  const cmakeExtensionName = 'cmake';
-  const cmakeSettingName = 'sourceDirectory';
-
-  if (workspaceFodlers) {
-    workspaceFodlers.forEach((folder) => {
-      if (!cmakeActive) {
-        const files = filesInDir(folder.uri.fsPath);
-        files.forEach((file) => {
-          if (file.toLowerCase() === 'CMakeLists.txt'.toLowerCase()) {
-            cmakeActive = true;
-          }
-        });
-
-        const settingsPath = path.join(
-          folder.uri.fsPath,
-          '.vscode',
-          'settings.json',
-        );
-
-        if (pathExists(settingsPath)) {
-          const configLocal: JsonSettings | undefined = readJsonFile(
-            settingsPath,
-          );
-
-          if (
-            configLocal &&
-            configLocal[`${cmakeExtensionName}.${cmakeSettingName}`]
-          ) {
-            cmakeActive = true;
-          }
-        }
-      }
-    });
-  }
-
-  if (!cmakeActive) {
-    const config = vscode.workspace.getConfiguration(cmakeExtensionName);
-    const cmakeSetting = config.get(cmakeSettingName);
-
-    if (cmakeSetting && cmakeSetting !== '${workspaceFolder}') {
-      cmakeActive = true;
-    }
-  }
-
-  return cmakeActive;
-}
-
-export function isMakeActive() {
-  let makeActive = false;
-
-  const workspaceFodlers = vscode.workspace.workspaceFolders;
-  const makeExtensionName = 'makefile';
-  const makeSettingName = 'makefilePath';
-
-  if (workspaceFodlers) {
-    workspaceFodlers.forEach((folder) => {
-      if (!makeActive) {
-        const files = filesInDir(folder.uri.fsPath);
-        files.forEach((file) => {
-          if (file.toLowerCase() === 'Makefile'.toLowerCase()) {
-            makeActive = true;
-          }
-        });
-
-        const vscodePath = path.join(folder.uri.fsPath, '.vscode');
-        const makefilePath = path.join(vscodePath, 'Makefile');
-        const settingsPath = path.join(vscodePath, 'settings.json');
-
-        if (pathExists(settingsPath)) {
-          const configLocal: JsonSettings | undefined = readJsonFile(
-            settingsPath,
-          );
-
-          if (
-            configLocal &&
-            configLocal[`${makeExtensionName}.${makeSettingName}`]
-          ) {
-            makeActive = true;
-          }
-        }
-
-        if (pathExists(makefilePath)) {
-          makeActive = true;
-        }
-      }
-    });
-  }
-
-  if (!makeActive) {
-    const config = vscode.workspace.getConfiguration(makeExtensionName);
-    const makeSetting = config.get(makeSettingName);
-
-    if (makeSetting) {
-      makeActive = true;
-    }
-  }
-
-  return makeActive;
 }
 
 export function naturalSort(names: string[]) {
@@ -286,8 +193,9 @@ export function hasPathSeperators(pathStr: string) {
   return pathStr.includes('/') || pathStr.includes('\\');
 }
 
-export function replaceExtension(pathStr: string, ext: string) {
-  const extStr = `.${ext}`;
+export function removeExtension(pathStr: string, ext: string) {
+  const extStr = addFileExtensionDot(ext);
+
   if (pathStr.includes(extStr)) {
     return pathStr.replace(extStr, '');
   }

@@ -1,7 +1,9 @@
+import path from 'path';
 import * as vscode from 'vscode';
 
 import { extensionState } from '../extension';
-import { JsonConfiguration } from './types';
+import { filesInDir, pathExists, readJsonFile } from './fileUtils';
+import { JsonConfiguration, JsonSettings } from './types';
 
 const STATUS_BAR_ALIGN = vscode.StatusBarAlignment.Left;
 const STATUS_BAR_PRIORITY = 50;
@@ -59,4 +61,108 @@ export function getLoggingState() {
   }
 
   return false;
+}
+
+export function isCmakeActive() {
+  let cmakeActive = false;
+
+  const workspaceFodlers = vscode.workspace.workspaceFolders;
+  const cmakeExtensionName = 'cmake';
+  const cmakeSettingName = 'sourceDirectory';
+
+  if (workspaceFodlers) {
+    workspaceFodlers.forEach((folder) => {
+      if (!cmakeActive) {
+        const files = filesInDir(folder.uri.fsPath);
+        files.forEach((file) => {
+          if (file.toLowerCase() === 'CMakeLists.txt'.toLowerCase()) {
+            cmakeActive = true;
+          }
+        });
+
+        const settingsPath = path.join(
+          folder.uri.fsPath,
+          '.vscode',
+          'settings.json',
+        );
+
+        if (pathExists(settingsPath)) {
+          const configLocal: JsonSettings | undefined = readJsonFile(
+            settingsPath,
+          );
+
+          if (
+            configLocal &&
+            configLocal[`${cmakeExtensionName}.${cmakeSettingName}`]
+          ) {
+            cmakeActive = true;
+          }
+        }
+      }
+    });
+  }
+
+  if (!cmakeActive) {
+    const config = vscode.workspace.getConfiguration(cmakeExtensionName);
+    const cmakeSetting = config.get(cmakeSettingName);
+
+    if (cmakeSetting && cmakeSetting !== '${workspaceFolder}') {
+      cmakeActive = true;
+    }
+  }
+
+  return cmakeActive;
+}
+
+export function isMakeActive() {
+  let makeActive = false;
+
+  const workspaceFodlers = vscode.workspace.workspaceFolders;
+  const makeExtensionName = 'makefile';
+  const makeSettingName = 'makefilePath';
+
+  if (workspaceFodlers) {
+    workspaceFodlers.forEach((folder) => {
+      if (!makeActive) {
+        const files = filesInDir(folder.uri.fsPath);
+        files.forEach((file) => {
+          if (file.toLowerCase() === 'Makefile'.toLowerCase()) {
+            makeActive = true;
+          }
+        });
+
+        const vscodePath = path.join(folder.uri.fsPath, '.vscode');
+        const makefilePath = path.join(vscodePath, 'Makefile');
+        const settingsPath = path.join(vscodePath, 'settings.json');
+
+        if (pathExists(settingsPath)) {
+          const configLocal: JsonSettings | undefined = readJsonFile(
+            settingsPath,
+          );
+
+          if (
+            configLocal &&
+            configLocal[`${makeExtensionName}.${makeSettingName}`]
+          ) {
+            makeActive = true;
+          }
+        }
+
+        if (pathExists(makefilePath)) {
+          makeActive = true;
+        }
+      }
+    });
+  }
+
+  if (!makeActive) {
+    const config = vscode.workspace.getConfiguration(makeExtensionName);
+    const makeSetting = config.get(makeSettingName);
+
+    if (makeSetting) {
+      makeActive = true;
+    }
+  }
+
+  return makeActive;
 }

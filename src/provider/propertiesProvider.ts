@@ -3,7 +3,7 @@ import {
   getLanguage,
   pathExists,
   readJsonFile,
-  replaceExtension,
+  removeExtension,
   writeJsonFile,
 } from '../utils/fileUtils';
 import {
@@ -164,7 +164,7 @@ export class PropertiesProvider extends FileProvider {
       this.settings.cCompilerPath = currentConfig.compilerPath;
 
       compilerName = getBasename(compilerName);
-      compilerName = replaceExtension(compilerName, 'exe');
+      compilerName = removeExtension(compilerName, 'exe');
 
       if (compilerName.includes(Compilers.clang)) {
         this.settings.setClang(currentConfig.compilerPath);

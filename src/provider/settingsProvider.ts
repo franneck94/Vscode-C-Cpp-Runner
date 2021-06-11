@@ -7,7 +7,7 @@ import {
   mkdirRecursive,
   pathExists,
   readJsonFile,
-  replaceExtension,
+  removeExtension,
   writeJsonFile,
 } from '../utils/fileUtils';
 import {
@@ -366,10 +366,10 @@ export class SettingsProvider extends CallbackProvider {
     let cppBasename: string = this.cppCompilerPath;
 
     cBasename = getBasename(cBasename);
-    cBasename = replaceExtension(cBasename, 'exe');
+    cBasename = removeExtension(cBasename, 'exe');
 
     cppBasename = getBasename(cppBasename);
-    cppBasename = replaceExtension(cBasename, 'exe');
+    cppBasename = removeExtension(cBasename, 'exe');
 
     if (cBasename) {
       if (cBasename.includes(Compilers.clang)) {

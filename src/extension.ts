@@ -14,13 +14,15 @@ import { LaunchProvider } from './provider/launchProvider';
 import { PropertiesProvider } from './provider/propertiesProvider';
 import { SettingsProvider } from './provider/settingsProvider';
 import { TaskProvider } from './provider/taskProvider';
-import { foldersInDir, isCmakeActive, isMakeActive } from './utils/fileUtils';
+import { foldersInDir } from './utils/fileUtils';
 import * as logger from './utils/logger';
 import { Builds, Tasks } from './utils/types';
 import {
   createStatusBarItem,
   disposeItem,
   getLoggingState,
+  isCmakeActive,
+  isMakeActive,
   setContextValue,
   updateLoggingState,
 } from './utils/vscodeUtils';

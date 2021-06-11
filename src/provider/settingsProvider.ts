@@ -23,6 +23,7 @@ import {
   Makefiles,
   OperatingSystems,
   CompilerSystems,
+  Commands,
 } from '../utils/types';
 import { CallbackProvider } from './callbackProvider';
 
@@ -58,6 +59,7 @@ export class SettingsProvider extends CallbackProvider {
   private _cppCompilerFound: boolean = false;
   private _foundMake: boolean = false;
   private _foundDebugger: boolean = false;
+  private _commands: Commands | undefined;
   // Settings
   private _cCompilerPath: string = SettingsProvider.DEFAULT_C_COMPILER_PATH;
   private _cppCompilerPath: string = SettingsProvider.DEFAULT_CPP_COMPILER_PATH;
@@ -77,11 +79,6 @@ export class SettingsProvider extends CallbackProvider {
     super(workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
 
     this.createVscodeFolder();
-    this.readLocalConfig();
-    if (!this.commandsStored()) {
-      this.getCommands();
-      this.getArchitecture();
-    }
     this.updateSettings();
   }
 
@@ -220,73 +217,86 @@ export class SettingsProvider extends CallbackProvider {
     if (!foundGcc) {
       ({ f: foundGcc, p: pathGcc } = await commandExists(Compilers.gcc));
     }
+    if (!foundGcc) {
+      ({ f: foundClang, p: pathClang } = await commandExists(Compilers.clang));
+    }
+
     if (!foundGpp) {
       ({ f: foundGpp, p: pathGpp } = await commandExists(Compilers.gpp));
     }
+    if (!foundGpp) {
+      ({ f: foundClangpp, p: pathClangpp } = await commandExists(
+        Compilers.clangpp,
+      ));
+    }
+
     if (!foundGDB) {
       ({ f: foundGDB, p: pathGDB } = await commandExists(Debuggers.gdb));
     }
+    if (!foundGDB) {
+      ({ f: foundLLDB, p: pathLLDB } = await commandExists(Debuggers.lldb));
+    }
+
     if (!foundMake) {
       ({ f: foundMake, p: pathMake } = await commandExists(Makefiles.make));
     }
-
-    if (foundGcc && pathGcc) {
-      this.setGcc(pathGcc);
-    } else {
-      if (!foundClang) {
-        ({ f: foundClang, p: pathClang } = await commandExists(
-          Compilers.clang,
-        ));
-      }
-
-      if (foundClang && pathClang) {
-        this.setClang(pathClang);
-      } else {
-        this._cCompiler = undefined;
-      }
-    }
-
-    if (foundGpp && pathGpp) {
-      this.setGpp(pathGpp);
-    } else {
-      if (!foundClangpp) {
-        ({ f: foundClangpp, p: pathClangpp } = await commandExists(
-          Compilers.clangpp,
-        ));
-      }
-
-      if (foundClangpp && pathClangpp) {
-        this.setClangpp(pathClangpp);
-      } else {
-        this._cppCompiler = undefined;
-      }
-    }
-
-    if (foundGDB && pathGDB) {
-      this.setGDB(pathGDB);
-    } else {
-      if (!foundLLDB) {
-        ({ f: foundLLDB, p: pathLLDB } = await commandExists(Debuggers.lldb));
-      }
-
-      if (foundLLDB && pathLLDB) {
-        this.setLLDB(pathLLDB);
-      } else {
-        this._debugger = undefined;
-      }
-    }
-
-    if (foundMake && pathMake) {
-      this.setMake(pathMake);
-    } else if (this._operatingSystem === OperatingSystems.windows) {
+    if (!foundMake && this._operatingSystem === OperatingSystems.windows) {
       ({ f: foundMake, p: pathMake } = await commandExists(
         Makefiles.make_mingw,
       ));
-      if (foundMake && pathMake) {
-        this.setMake(pathMake);
-      } else {
-        this._foundMake = false;
-      }
+    }
+
+    this._commands = {
+      foundGcc,
+      pathGcc,
+      foundGpp,
+      pathGpp,
+      foundClang,
+      pathClang,
+      foundClangpp,
+      pathClangpp,
+      foundGDB,
+      pathGDB,
+      foundLLDB,
+      pathLLDB,
+      foundMake,
+      pathMake,
+    };
+  }
+
+  private setCommands() {
+    if (!this._commands) return;
+
+    if (this._commands.foundGcc && this._commands.pathGcc) {
+      this.setGcc(this._commands.pathGcc);
+    } else if (this._commands.foundClang && this._commands.pathClang) {
+      this.setClang(this._commands.pathClang);
+    } else {
+      this._cCompiler = undefined;
+    }
+
+    if (this._commands.foundGpp && this._commands.pathGpp) {
+      this.setGpp(this._commands.pathGpp);
+    } else if (this._commands.foundClangpp && this._commands.pathClangpp) {
+      this.setClangpp(this._commands.pathClangpp);
+    } else {
+      this._cppCompiler = undefined;
+    }
+
+    if (this._commands.foundGDB && this._commands.pathGDB) {
+      this.setGDB(this._commands.pathGDB);
+    } else if (this._commands.foundLLDB && this._commands.pathLLDB) {
+      this.setLLDB(this._commands.pathLLDB);
+    } else {
+      this._debugger = undefined;
+    }
+
+    if (this._commands.foundMake && this._commands.pathMake) {
+      this.setMake(this._commands.pathMake);
+    } else if (this._commands.foundMake && this._commands.pathMake) {
+      this.setMake(this._commands.pathMake);
+    } else {
+      this._foundMake = false;
     }
   }
 
@@ -298,7 +308,7 @@ export class SettingsProvider extends CallbackProvider {
     this.getSettings();
     if (!this.commandsStored()) {
       this.getCommands();
-      this.getArchitecture();
+      this.setCommands();
     }
     this.getCommandTypes();
     this.getArchitecture();
@@ -446,8 +456,10 @@ export class SettingsProvider extends CallbackProvider {
     this.createVscodeFolder();
     if (!this.commandsStored()) {
       this.getCommands();
-      this.getArchitecture();
+      this.setCommands();
     }
+    this.getCommandTypes();
+    this.getArchitecture();
   }
 
   /**

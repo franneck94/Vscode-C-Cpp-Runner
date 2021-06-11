@@ -23,7 +23,6 @@ export class LaunchProvider extends FileProvider {
     }
 
     if (this.updateCheck()) {
-      // this.settings.getCommands(); // TODO: Needed?
       this.createFileData();
     }
   }

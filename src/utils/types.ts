@@ -24,6 +24,23 @@ export class Task extends vscode.Task {
   execution?: vscode.ShellExecution;
 }
 
+export class Commands {
+  foundGcc: boolean = false;
+  pathGcc: string | undefined;
+  foundGpp: boolean = false;
+  pathGpp: string | undefined;
+  foundClang: boolean = false;
+  pathClang: string | undefined;
+  foundClangpp: boolean = false;
+  pathClangpp: string | undefined;
+  foundGDB: boolean = false;
+  pathGDB: string | undefined;
+  foundLLDB: boolean = false;
+  pathLLDB: string | undefined;
+  foundMake: boolean = false;
+  pathMake: string | undefined;
+}
+
 export enum Languages {
   c = 'C',
   cpp = 'Cpp',

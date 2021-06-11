@@ -21,7 +21,6 @@ export class PropertiesProvider extends FileProvider {
     super(settings, workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
 
     if (this.updateCheck()) {
-      // this.settings.getCommands(); // TODO: Needed?
       this.createFileData();
     }
   }

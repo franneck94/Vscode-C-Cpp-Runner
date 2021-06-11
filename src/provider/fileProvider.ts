@@ -55,6 +55,4 @@ export abstract class FileProvider extends CallbackProvider {
   public deleteCallback() {
     this.createFileData();
   }
-
-  public changeCallback() {}
 }

@@ -23,6 +23,10 @@ export abstract class FileProvider extends CallbackProvider {
     this.templatePath = path.join(templateDirectory, templateFileName);
   }
 
+  protected updateCheck() {
+    return false;
+  }
+
   public createFileData() {
     if (pathExists(this._outputPath)) return;
 

@@ -3,10 +3,11 @@ import * as vscode from 'vscode';
 
 import {
   commandCheck,
-  hasPathSeperators,
+  getBasename,
   mkdirRecursive,
   pathExists,
   readJsonFile,
+  replaceExtension,
   writeJsonFile,
 } from '../utils/fileUtils';
 import {
@@ -286,7 +287,13 @@ export class SettingsProvider extends CallbackProvider {
    */
   public getSettings() {
     this.readLocalConfig();
+    this.readSettings();
+    this.checkSettingsDelete();
+    this.setCommands();
+    this.updateArchitecture();
+  }
 
+  private readSettings() {
     /* Mandatory in settings.json */
     this._cCompilerPath = this.getSettingsValue(
       'cCompilerPath',
@@ -338,10 +345,6 @@ export class SettingsProvider extends CallbackProvider {
       'includePaths',
       SettingsProvider.DEFAULT_INCLUDE_PATHS,
     );
-
-    this.checkSettingsDelete();
-    this.setCommands();
-    this.updateArchitecture();
   }
 
   private getSettingsValue(name: string, defaultValue: any) {
@@ -362,19 +365,11 @@ export class SettingsProvider extends CallbackProvider {
     let cBasename: string = this.cCompilerPath;
     let cppBasename: string = this.cppCompilerPath;
 
-    if (hasPathSeperators(cBasename)) {
-      cBasename = path.basename(cBasename);
-    }
-    if (cBasename.includes('.exe')) {
-      cBasename = cBasename.replace('.exe', '');
-    }
+    cBasename = getBasename(cBasename);
+    cBasename = replaceExtension(cBasename, 'exe');
 
-    if (hasPathSeperators(cppBasename)) {
-      cppBasename = path.basename(cppBasename);
-    }
-    if (cppBasename.includes('.exe')) {
-      cppBasename = cppBasename.replace('.exe', '');
-    }
+    cppBasename = getBasename(cppBasename);
+    cppBasename = replaceExtension(cBasename, 'exe');
 
     if (cBasename) {
       if (cBasename.includes(Compilers.clang)) {
@@ -457,6 +452,9 @@ export class SettingsProvider extends CallbackProvider {
     this.getCommands();
   }
 
+  /**
+   * If settings.json is changed, update c_cpp_properties.json and launch.json.
+   */
   public changeCallback() {
     this.getSettings();
   }

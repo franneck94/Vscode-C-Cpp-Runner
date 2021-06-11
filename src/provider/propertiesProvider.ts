@@ -1,9 +1,9 @@
-import * as path from 'path';
 import {
+  getBasename,
   getLanguage,
-  hasPathSeperators,
   pathExists,
   readJsonFile,
+  replaceExtension,
   writeJsonFile,
 } from '../utils/fileUtils';
 import {
@@ -26,7 +26,15 @@ export class PropertiesProvider extends FileProvider {
   ) {
     super(settings, workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
 
+    if (this.updateCheck()) {
+      // this.settings.getCommands(); // TODO: Needed?
+      this.createFileData();
+    }
+  }
+
+  protected updateCheck() {
     let doUpdate = false;
+
     if (!pathExists(this._outputPath)) {
       doUpdate = true;
     } else {
@@ -40,10 +48,7 @@ export class PropertiesProvider extends FileProvider {
       }
     }
 
-    if (doUpdate) {
-      this.settings.getCommands(); // TODO: Needed?
-      this.createFileData();
-    }
+    return doUpdate;
   }
 
   public writeFileData() {
@@ -141,6 +146,9 @@ export class PropertiesProvider extends FileProvider {
     super._updateFolderData(workspaceFolder);
   }
 
+  /**
+   * If c_cpp_properties.json is changed, update settings.json.
+   */
   public changeCallback() {
     const configJson: JsonConfiguration = readJsonFile(this._outputPath);
 
@@ -155,12 +163,8 @@ export class PropertiesProvider extends FileProvider {
       let compilerName = currentConfig.compilerPath;
       this.settings.cCompilerPath = currentConfig.compilerPath;
 
-      if (hasPathSeperators(compilerName)) {
-        compilerName = path.basename(compilerName);
-      }
-      if (compilerName.includes('.exe')) {
-        compilerName = compilerName.replace('.exe', '');
-      }
+      compilerName = getBasename(compilerName);
+      compilerName = replaceExtension(compilerName, 'exe');
 
       if (compilerName.includes(Compilers.clang)) {
         this.settings.setClang(currentConfig.compilerPath);

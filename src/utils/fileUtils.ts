@@ -282,6 +282,23 @@ export function commandCheck(key: string, jsonData: JsonSettings) {
   return true;
 }
 
-export function hasPathSeperators(path: string) {
-  return path.includes('/') || path.includes('\\');
+export function hasPathSeperators(pathStr: string) {
+  return pathStr.includes('/') || pathStr.includes('\\');
+}
+
+export function replaceExtension(pathStr: string, ext: string) {
+  const extStr = `.${ext}`;
+  if (pathStr.includes(extStr)) {
+    return pathStr.replace(extStr, '');
+  }
+
+  return pathStr;
+}
+
+export function getBasename(pathStr: string) {
+  if (hasPathSeperators(pathStr)) {
+    return path.basename(pathStr);
+  }
+
+  return pathStr;
 }

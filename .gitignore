@@ -3,7 +3,9 @@ dist/
 out/
 build/
 .mypy_cache
+
 **/.vscode/
+.vscode/c_cpp_properties.json
 
 *.vsix
 *.cpuprofile

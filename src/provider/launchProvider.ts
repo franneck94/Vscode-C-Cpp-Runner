@@ -22,7 +22,15 @@ export class LaunchProvider extends FileProvider {
       this.activeFolder = this.workspaceFolder;
     }
 
+    if (this.updateCheck()) {
+      // this.settings.getCommands(); // TODO: Needed?
+      this.createFileData();
+    }
+  }
+
+  protected updateCheck() {
     let doUpdate = false;
+
     if (!pathExists(this._outputPath)) {
       doUpdate = true;
     } else {
@@ -43,10 +51,7 @@ export class LaunchProvider extends FileProvider {
       }
     }
 
-    if (doUpdate) {
-      this.settings.getCommands(); // TODO: Needed?
-      this.createFileData();
-    }
+    return doUpdate;
   }
 
   public writeFileData() {
@@ -120,6 +125,9 @@ export class LaunchProvider extends FileProvider {
     super._updateFolderData(workspaceFolder);
   }
 
+  /**
+   * If launch.json is changed, update settings.json.
+   */
   public changeCallback() {
     const configJsonOutput: JsonConfiguration | undefined = readJsonFile(
       this._outputPath,

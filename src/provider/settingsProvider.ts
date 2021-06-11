@@ -12,7 +12,7 @@ import {
 } from '../utils/fileUtils';
 import {
   commandExists,
-  getArchitecture,
+  getArchitectureCommand,
   getOperatingSystem,
 } from '../utils/systemUtils';
 import {
@@ -76,25 +76,28 @@ export class SettingsProvider extends CallbackProvider {
   constructor(public workspaceFolder: string) {
     super(workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
 
+    this.createVscodeFolder();
     this.readLocalConfig();
-    this.getCommands();
-    this.getSettings();
+    if (!this.commandsStored()) {
+      this.getCommands();
+      this.getArchitecture();
+    }
+    this.updateSettings();
   }
 
-  /**
-   * Check if gcc/g++ or clang/clang++ is in PATH and where it is located.
-   */
-  public async getCommands() {
+  private createVscodeFolder() {
     if (!pathExists(this._vscodeDirectory)) {
       mkdirRecursive(this._vscodeDirectory);
     }
+  }
 
+  private commandsStored() {
     if (pathExists(this._outputPath)) {
       const settingsJson: JsonSettings | undefined = readJsonFile(
         this._outputPath,
       );
 
-      if (!settingsJson) return;
+      if (!settingsJson) return false;
 
       let settingsExist = false;
 
@@ -119,10 +122,17 @@ export class SettingsProvider extends CallbackProvider {
       }
 
       if (settingsExist || (settingsExist && commandsExist)) {
-        return;
+        return true;
       }
     }
 
+    return false;
+  }
+
+  /**
+   * Check if gcc/g++ or clang/clang++ is in PATH and where it is located.
+   */
+  public async getCommands() {
     let foundGcc = false;
     let foundGpp = false;
     let foundGDB = false;
@@ -278,22 +288,23 @@ export class SettingsProvider extends CallbackProvider {
         this._foundMake = false;
       }
     }
-
-    this.updateArchitecture();
   }
 
   /**
    * Read in the current settings.
    */
-  public getSettings() {
+  public updateSettings() {
     this.readLocalConfig();
-    this.readSettings();
-    this.checkSettingsDelete();
-    this.setCommands();
-    this.updateArchitecture();
+    this.getSettings();
+    if (!this.commandsStored()) {
+      this.getCommands();
+      this.getArchitecture();
+    }
+    this.getCommandTypes();
+    this.getArchitecture();
   }
 
-  private readSettings() {
+  private getSettings() {
     /* Mandatory in settings.json */
     this._cCompilerPath = this.getSettingsValue(
       'cCompilerPath',
@@ -361,7 +372,7 @@ export class SettingsProvider extends CallbackProvider {
     return defaultValue;
   }
 
-  private setCommands() {
+  private getCommandTypes() {
     let cBasename: string = this.cCompilerPath;
     let cppBasename: string = this.cppCompilerPath;
 
@@ -419,44 +430,31 @@ export class SettingsProvider extends CallbackProvider {
     writeJsonFile(this._outputPath, settingsJson);
   }
 
-  private updateArchitecture() {
+  private getArchitecture() {
     if (this._cCompiler) {
-      const ret = getArchitecture(this._cCompiler);
+      const ret = getArchitectureCommand(this._cCompiler);
       this._architecure = ret.architecure;
       this._isCygwin = ret.isCygwin;
     } else if (this._cppCompiler) {
-      const ret = getArchitecture(this._cppCompiler);
+      const ret = getArchitectureCommand(this._cppCompiler);
       this._architecure = ret.architecure;
       this._isCygwin = ret.isCygwin;
-    }
-  }
-
-  private checkSettingsDelete() {
-    let settingsJson: JsonSettings | undefined = readJsonFile(this._outputPath);
-
-    if (!settingsJson) return;
-
-    let doUpdate = false;
-
-    if (!settingsJson[`${EXTENSION_NAME}.cCompilerPath`]) doUpdate = true;
-    if (!settingsJson[`${EXTENSION_NAME}.cppCompilerPath`]) doUpdate = true;
-    if (!settingsJson[`${EXTENSION_NAME}.debuggerPath`]) doUpdate = true;
-    if (!settingsJson[`${EXTENSION_NAME}.makePath`]) doUpdate = true;
-
-    if (doUpdate) {
-      this.getCommands();
     }
   }
 
   public deleteCallback() {
-    this.getCommands();
+    this.createVscodeFolder();
+    if (!this.commandsStored()) {
+      this.getCommands();
+      this.getArchitecture();
+    }
   }
 
   /**
    * If settings.json is changed, update c_cpp_properties.json and launch.json.
    */
   public changeCallback() {
-    this.getSettings();
+    this.updateSettings();
   }
 
   public setGcc(pathGcc: string) {

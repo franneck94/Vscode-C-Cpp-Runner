@@ -230,7 +230,7 @@ function initEventListener() {
           logger.log(loggingActive, infoMessage);
           updateLoggingState();
 
-          if (settingsProvider) settingsProvider.getSettings();
+          if (settingsProvider) settingsProvider.updateSettings();
           if (taskProvider) taskProvider.getTasks();
           if (propertiesProvider) propertiesProvider.updateFileContent();
           if (launchProvider) launchProvider.updateFileContent();
@@ -330,7 +330,7 @@ function updateFolderData() {
     }
 
     if (settingsProvider) {
-      settingsProvider.getSettings();
+      settingsProvider.updateSettings();
     }
   }
 

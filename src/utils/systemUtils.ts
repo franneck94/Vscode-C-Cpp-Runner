@@ -33,7 +33,7 @@ export function getOperatingSystem() {
   return operatingSystem;
 }
 
-export function getArchitecture(compiler: Compilers) {
+export function getArchitectureCommand(compiler: Compilers) {
   const command = `${compiler} -dumpmachine`;
   let byteArray: Buffer | undefined;
 

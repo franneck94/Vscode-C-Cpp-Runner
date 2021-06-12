@@ -59,6 +59,7 @@ export class SettingsProvider extends FileProvider {
   private _makeFound: boolean = false;
   private _debuggerFound: boolean = false;
   private _commands: Commands | undefined;
+  private _updatedCommands: boolean = false;
   // Settings
   public cCompilerPath: string = SettingsProvider.DEFAULT_C_COMPILER_PATH;
   public cppCompilerPath: string = SettingsProvider.DEFAULT_CPP_COMPILER_PATH;
@@ -77,7 +78,6 @@ export class SettingsProvider extends FileProvider {
     super(workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
 
     if (this.updateCheck()) {
-      this.updateSettings();
       this.createFileData();
     }
   }
@@ -124,10 +124,89 @@ export class SettingsProvider extends FileProvider {
     return false;
   }
 
-  /**
-   * Check if gcc/g++ or clang/clang++ is in PATH and where it is located.
-   */
+  /********************/
+  /*  MAIN FUNCTIONS  */
+  /********************/
+
+  public writeFileData() {
+    this.readLocalConfig();
+    this.getSettings();
+    if (!this.commandsStored()) {
+      this.getCommands();
+      this.setCommands();
+      this.getCommandTypes();
+      this.getArchitecture();
+    }
+  }
+
+  public deleteCallback() {
+    this.getCommands();
+    this.setCommands();
+    this.getCommandTypes();
+    this.getArchitecture();
+  }
+
+  public changeCallback() {
+    this.writeFileData();
+  }
+
+  private getSettings() {
+    /* Mandatory in settings.json */
+    this.cCompilerPath = this.getSettingsValue(
+      'cCompilerPath',
+      SettingsProvider.DEFAULT_C_COMPILER_PATH,
+    );
+    this.cppCompilerPath = this.getSettingsValue(
+      'cppCompilerPath',
+      SettingsProvider.DEFAULT_CPP_COMPILER_PATH,
+    );
+    this.debuggerPath = this.getSettingsValue(
+      'debuggerPath',
+      SettingsProvider.DEFAULT_DEBUGGER_PATH,
+    );
+    this.makePath = this.getSettingsValue(
+      'makePath',
+      SettingsProvider.DEFAULT_MAKE_PATH,
+    );
+
+    /* Optional in settings.json */
+    this.enableWarnings = this.getSettingsValue(
+      'enableWarnings',
+      SettingsProvider.DEFAULT_ENABLE_WARNINGS,
+    );
+    this.warnings = this.getSettingsValue(
+      'warnings',
+      SettingsProvider.DEFAULT_WARNINGS,
+    );
+    this.warningsAsError = this.getSettingsValue(
+      'warningsAsError',
+      SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS,
+    );
+    this.cStandard = this.getSettingsValue(
+      'cStandard',
+      SettingsProvider.DEFAULT_C_STANDARD,
+    );
+    this.cppStandard = this.getSettingsValue(
+      'cppStandard',
+      SettingsProvider.DEFAULT_CPP_STANDARD,
+    );
+    this.compilerArgs = this.getSettingsValue(
+      'compilerArgs',
+      SettingsProvider.DEFAULT_COMPILER_ARGS,
+    );
+    this.linkerArgs = this.getSettingsValue(
+      'linkerArgs',
+      SettingsProvider.DEFAULT_LINKER_ARGS,
+    );
+    this.includePaths = this.getSettingsValue(
+      'includePaths',
+      SettingsProvider.DEFAULT_INCLUDE_PATHS,
+    );
+  }
+
   public async getCommands() {
+    this._updatedCommands = false;
+
     let foundGcc = false;
     let foundGpp = false;
     let foundGDB = false;
@@ -296,91 +375,13 @@ export class SettingsProvider extends FileProvider {
     } else {
       this._makeFound = false;
     }
-  }
 
-  /**
-   * Read in the current settings.
-   */
-  public updateSettings() {
-    this.readLocalConfig();
-    this.getSettings();
-    if (!this.commandsStored()) {
-      this.getCommands();
-      this.setCommands();
-    }
-    this.getCommandTypes();
-    this.getArchitecture();
-  }
-
-  private getSettings() {
-    /* Mandatory in settings.json */
-    this.cCompilerPath = this.getSettingsValue(
-      'cCompilerPath',
-      SettingsProvider.DEFAULT_C_COMPILER_PATH,
-    );
-    this.cppCompilerPath = this.getSettingsValue(
-      'cppCompilerPath',
-      SettingsProvider.DEFAULT_CPP_COMPILER_PATH,
-    );
-    this.debuggerPath = this.getSettingsValue(
-      'debuggerPath',
-      SettingsProvider.DEFAULT_DEBUGGER_PATH,
-    );
-    this.makePath = this.getSettingsValue(
-      'makePath',
-      SettingsProvider.DEFAULT_MAKE_PATH,
-    );
-
-    /* Optional in settings.json */
-    this.enableWarnings = this.getSettingsValue(
-      'enableWarnings',
-      SettingsProvider.DEFAULT_ENABLE_WARNINGS,
-    );
-    this.warnings = this.getSettingsValue(
-      'warnings',
-      SettingsProvider.DEFAULT_WARNINGS,
-    );
-    this.warningsAsError = this.getSettingsValue(
-      'warningsAsError',
-      SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS,
-    );
-    this.cStandard = this.getSettingsValue(
-      'cStandard',
-      SettingsProvider.DEFAULT_C_STANDARD,
-    );
-    this.cppStandard = this.getSettingsValue(
-      'cppStandard',
-      SettingsProvider.DEFAULT_CPP_STANDARD,
-    );
-    this.compilerArgs = this.getSettingsValue(
-      'compilerArgs',
-      SettingsProvider.DEFAULT_COMPILER_ARGS,
-    );
-    this.linkerArgs = this.getSettingsValue(
-      'linkerArgs',
-      SettingsProvider.DEFAULT_LINKER_ARGS,
-    );
-    this.includePaths = this.getSettingsValue(
-      'includePaths',
-      SettingsProvider.DEFAULT_INCLUDE_PATHS,
-    );
-  }
-
-  private getSettingsValue(name: string, defaultValue: any) {
-    const settingName = `${EXTENSION_NAME}.${name}`;
-
-    if (this._configLocal && this._configLocal[settingName] !== undefined) {
-      return this._configLocal[settingName];
-    }
-
-    if (this._configGlobal.has(name)) {
-      return this._configGlobal.get(name, defaultValue);
-    }
-
-    return defaultValue;
+    this._updatedCommands = true;
   }
 
   private getCommandTypes() {
+    if (!this._updatedCommands) return;
+
     let cBasename: string = this.cCompilerPath;
     let cppBasename: string = this.cppCompilerPath;
 
@@ -411,9 +412,41 @@ export class SettingsProvider extends FileProvider {
     }
   }
 
+  private getArchitecture() {
+    if (!this._updatedCommands) return;
+
+    if (this.cCompiler) {
+      const ret = getArchitectureCommand(this.cCompiler);
+      this.architecure = ret.architecure;
+      this.isCygwin = ret.isCygwin;
+    } else if (this.cppCompiler) {
+      const ret = getArchitectureCommand(this.cppCompiler);
+      this.architecure = ret.architecure;
+      this.isCygwin = ret.isCygwin;
+    }
+  }
+
   public updateFolderData(workspaceFolder: string) {
     super._updateFolderData(workspaceFolder);
     this.readLocalConfig();
+  }
+
+  /********************/
+  /* HELPER FUNCTIONS */
+  /********************/
+
+  private getSettingsValue(name: string, defaultValue: any) {
+    const settingName = `${EXTENSION_NAME}.${name}`;
+
+    if (this._configLocal && this._configLocal[settingName] !== undefined) {
+      return this._configLocal[settingName];
+    }
+
+    if (this._configGlobal.has(name)) {
+      return this._configGlobal.get(name, defaultValue);
+    }
+
+    return defaultValue;
   }
 
   private readLocalConfig() {
@@ -432,34 +465,6 @@ export class SettingsProvider extends FileProvider {
     settingsJson[settingName] = value;
 
     writeJsonFile(this._outputPath, settingsJson);
-  }
-
-  private getArchitecture() {
-    if (this.cCompiler) {
-      const ret = getArchitectureCommand(this.cCompiler);
-      this.architecure = ret.architecure;
-      this.isCygwin = ret.isCygwin;
-    } else if (this.cppCompiler) {
-      const ret = getArchitectureCommand(this.cppCompiler);
-      this.architecure = ret.architecure;
-      this.isCygwin = ret.isCygwin;
-    }
-  }
-
-  public deleteCallback() {
-    if (!this.commandsStored()) {
-      this.getCommands();
-      this.setCommands();
-    }
-    this.getCommandTypes();
-    this.getArchitecture();
-  }
-
-  /**
-   * If settings.json is changed, update c_cpp_properties.json and launch.json.
-   */
-  public changeCallback() {
-    this.updateSettings();
   }
 
   public setGcc(pathGcc: string) {

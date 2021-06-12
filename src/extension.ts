@@ -230,10 +230,10 @@ function initEventListener() {
           logger.log(loggingActive, infoMessage);
           updateLoggingState();
 
-          if (settingsProvider) settingsProvider.updateSettings();
-          if (taskProvider) taskProvider.getTasks();
+          if (settingsProvider) settingsProvider.updateFileContent();
           if (propertiesProvider) propertiesProvider.updateFileContent();
           if (launchProvider) launchProvider.updateFileContent();
+          if (taskProvider) taskProvider.getTasks();
         }
       },
     );
@@ -317,7 +317,7 @@ function updateFolderData() {
   if (workspaceFolder && activeFolder) {
     if (settingsProvider) {
       settingsProvider.updateFolderData(workspaceFolder);
-      settingsProvider.getCommands();
+      settingsProvider.updateFileContent();
     }
 
     if (propertiesProvider) {
@@ -327,10 +327,6 @@ function updateFolderData() {
     if (launchProvider) {
       launchProvider.updateFolderData(workspaceFolder, activeFolder);
       launchProvider.updateFileContent();
-    }
-
-    if (settingsProvider) {
-      settingsProvider.updateSettings();
     }
   }
 

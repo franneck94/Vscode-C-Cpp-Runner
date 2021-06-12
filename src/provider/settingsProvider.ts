@@ -428,7 +428,6 @@ export class SettingsProvider extends FileProvider {
     } else if (this._commands.foundClang && this._commands.pathClang) {
       this.setClang(this._commands.pathClang);
     } else {
-      this.update('cCompilerPath', SettingsProvider.DEFAULT_C_COMPILER_PATH);
       this.cCompiler = undefined;
     }
 
@@ -437,10 +436,6 @@ export class SettingsProvider extends FileProvider {
     } else if (this._commands.foundClangpp && this._commands.pathClangpp) {
       this.setClangpp(this._commands.pathClangpp);
     } else {
-      this.update(
-        'cppCompilerPath',
-        SettingsProvider.DEFAULT_CPP_COMPILER_PATH,
-      );
       this.cppCompiler = undefined;
     }
 
@@ -449,7 +444,6 @@ export class SettingsProvider extends FileProvider {
     } else if (this._commands.foundLLDB && this._commands.pathLLDB) {
       this.setLLDB(this._commands.pathLLDB);
     } else {
-      this.update('debuggerPath', SettingsProvider.DEFAULT_DEBUGGER_PATH);
       this.debugger = undefined;
     }
 
@@ -458,7 +452,6 @@ export class SettingsProvider extends FileProvider {
     } else if (this._commands.foundMake && this._commands.pathMake) {
       this.setMake(this._commands.pathMake);
     } else {
-      this.update('makePath', SettingsProvider.DEFAULT_MAKE_PATH);
       this._makeFound = false;
     }
 
@@ -509,6 +502,9 @@ export class SettingsProvider extends FileProvider {
       const ret = getArchitectureCommand(this.cppCompiler);
       this.architecure = ret.architecure;
       this.isCygwin = ret.isCygwin;
+    } else {
+      this.architecure = Architectures.x64;
+      this.isCygwin = false;
     }
   }
 

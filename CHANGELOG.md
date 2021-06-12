@@ -4,6 +4,10 @@
 
 - **Improvement**: Add exclude pattern (as a setting) for the folder selection menu
 
+## Version 0.16.2: June 12, 2021
+
+- **Bugfix**: Bugfix for configuration triplet
+
 ## Version 0.16.1: June 12, 2021
 
 - **Bugfix**: Several bug fixes for linux/mac

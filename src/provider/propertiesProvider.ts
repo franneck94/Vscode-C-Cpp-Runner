@@ -61,17 +61,10 @@ export class PropertiesProvider extends FileProvider {
       `${this.settings.architecure}`;
 
     const currentConfig = configLocal.configurations[0];
-
-    if (
-      currentConfig.compilerArgs.length === 1 &&
-      currentConfig.compilerArgs[0] === ''
-    ) {
-      currentConfig.compilerArgs = [];
-    }
+    currentConfig.compilerArgs = [];
 
     if (this.settings.warnings) {
       const warnings = this.settings.warnings.split(' ');
-      currentConfig.compilerArgs = [];
       for (let warning of warnings) {
         const compilerArgsSet = new Set(currentConfig.compilerArgs);
         if (!compilerArgsSet.has(warning)) {
@@ -82,7 +75,6 @@ export class PropertiesProvider extends FileProvider {
 
     if (this.settings.compilerArgs) {
       const args = this.settings.compilerArgs.split(' ');
-      currentConfig.compilerArgs = [];
       for (let arg of args) {
         const compilerArgsSet = new Set(currentConfig.compilerArgs);
         if (!compilerArgsSet.has(arg)) {
@@ -137,9 +129,6 @@ export class PropertiesProvider extends FileProvider {
     super._updateFolderData(workspaceFolder);
   }
 
-  /**
-   * If c_cpp_properties.json is changed, update settings.json.
-   */
   public changeCallback() {
     const configLocal: JsonConfiguration | undefined = readJsonFile(
       this._outputPath,

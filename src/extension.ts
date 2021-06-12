@@ -225,11 +225,9 @@ function initEventListener() {
   if (!eventConfigurationDisposable) {
     eventConfigurationDisposable = vscode.workspace.onDidChangeConfiguration(
       (e: vscode.ConfigurationChangeEvent) => {
-        if (e.affectsConfiguration(EXTENSION_NAME)) {
-          const infoMessage = `Configuration change.`;
-          logger.log(loggingActive, infoMessage);
-          updateLoggingState();
+        const isChanged = e.affectsConfiguration(EXTENSION_NAME);
 
+        if (isChanged) {
           if (settingsProvider) settingsProvider.updateFileContent();
           if (propertiesProvider) propertiesProvider.updateFileContent();
           if (launchProvider) launchProvider.updateFileContent();
@@ -318,15 +316,15 @@ function updateFolderData() {
     if (settingsProvider) {
       settingsProvider.updateFolderData(workspaceFolder);
       settingsProvider.updateFileContent();
-    }
 
-    if (propertiesProvider) {
-      propertiesProvider.updateFolderData(workspaceFolder);
-    }
+      if (propertiesProvider) {
+        propertiesProvider.updateFolderData(workspaceFolder);
+      }
 
-    if (launchProvider) {
-      launchProvider.updateFolderData(workspaceFolder, activeFolder);
-      launchProvider.updateFileContent();
+      if (launchProvider) {
+        launchProvider.updateFolderData(workspaceFolder, activeFolder);
+        launchProvider.updateFileContent();
+      }
     }
   }
 

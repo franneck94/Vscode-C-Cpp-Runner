@@ -57,7 +57,7 @@ export class SettingsProvider extends FileProvider {
   private _cppCompilerFound: boolean = false;
   private _makeFound: boolean = false;
   private _debuggerFound: boolean = false;
-  private _commands: Commands | undefined;
+  private _commands: Commands = new Commands();
   private _updatedCommands: boolean = false;
   // Settings
   public cCompilerPath: string = SettingsProvider.DEFAULT_C_COMPILER_PATH;
@@ -142,7 +142,7 @@ export class SettingsProvider extends FileProvider {
   }
 
   public changeCallback() {
-    this.writeFileData();
+    this.getSettings();
   }
 
   public updateFolderData(workspaceFolder: string) {
@@ -222,29 +222,33 @@ export class SettingsProvider extends FileProvider {
   public async getCommands() {
     this._updatedCommands = false;
 
-    let foundGcc = false;
-    let foundGpp = false;
-    let foundGDB = false;
-    let foundMake = false;
-    let foundClang = false;
-    let foundClangpp = false;
-    let foundLLDB = false;
+    this._commands.foundGcc = false;
+    this._commands.foundGpp = false;
+    this._commands.foundGDB = false;
+    this._commands.foundMake = false;
+    this._commands.foundClang = false;
+    this._commands.foundClangpp = false;
+    this._commands.foundLLDB = false;
 
-    let pathGcc: string | undefined;
-    let pathGpp: string | undefined;
-    let pathGDB: string | undefined;
-    let pathMake: string | undefined;
-    let pathClang: string | undefined;
-    let pathClangpp: string | undefined;
-    let pathLLDB: string | undefined;
+    this._commands.pathGcc = undefined;
+    this._commands.pathGpp = undefined;
+    this._commands.pathGDB = undefined;
+    this._commands.pathMake = undefined;
+    this._commands.pathClang = undefined;
+    this._commands.pathClangpp = undefined;
+    this._commands.pathLLDB = undefined;
 
     const env = process.env;
     if (this.operatingSystem === OperatingSystems.windows && env.PATH) {
       const paths = env.PATH.split(';');
       for (let env_path of paths) {
         if (
-          (foundGcc && foundGpp && foundGDB) ||
-          (foundClang && foundClangpp && foundLLDB)
+          (this._commands.foundGcc &&
+            this._commands.foundGpp &&
+            this._commands.foundGDB) ||
+          (this._commands.foundClang &&
+            this._commands.foundClangpp &&
+            this._commands.foundLLDB)
         ) {
           break;
         }
@@ -255,22 +259,25 @@ export class SettingsProvider extends FileProvider {
             lower_path.includes(CompilerSystems.mingw) ||
             lower_path.includes(CompilerSystems.msys2))
         ) {
-          pathGcc = path.join(env_path, Compilers.gcc + '.exe');
-          pathGpp = path.join(env_path, Compilers.gpp + '.exe');
-          pathGDB = path.join(env_path, Debuggers.gdb + '.exe');
-          pathMake = path.join(env_path, Makefiles.make + '.exe');
+          this._commands.pathGcc = path.join(env_path, Compilers.gcc + '.exe');
+          this._commands.pathGpp = path.join(env_path, Compilers.gpp + '.exe');
+          this._commands.pathGDB = path.join(env_path, Debuggers.gdb + '.exe');
+          this._commands.pathMake = path.join(
+            env_path,
+            Makefiles.make + '.exe',
+          );
 
-          if (pathExists(pathGcc)) {
-            foundGcc = true;
+          if (pathExists(this._commands.pathGcc)) {
+            this._commands.foundGcc = true;
           }
-          if (pathExists(pathGpp)) {
-            foundGpp = true;
+          if (pathExists(this._commands.pathGpp)) {
+            this._commands.foundGpp = true;
           }
-          if (pathExists(pathGDB)) {
-            foundGDB = true;
+          if (pathExists(this._commands.pathGDB)) {
+            this._commands.foundGDB = true;
           }
-          if (pathExists(pathMake)) {
-            foundMake = true;
+          if (pathExists(this._commands.pathMake)) {
+            this._commands.foundMake = true;
           } else {
             const altpathMake = path.join(
               env_path,
@@ -278,82 +285,100 @@ export class SettingsProvider extends FileProvider {
             );
 
             if (pathExists(altpathMake)) {
-              foundMake = true;
+              this._commands.foundMake = true;
             }
           }
         } else if (
           lower_path.includes('bin') &&
           lower_path.includes(CompilerSystems.clang)
         ) {
-          pathClang = path.join(env_path, Compilers.clang + '.exe');
-          pathClangpp = path.join(env_path, Compilers.clangpp + '.exe');
-          pathLLDB = path.join(env_path, Debuggers.lldb + '.exe');
-          pathMake = path.join(env_path, Makefiles.make + '.exe');
+          this._commands.pathClang = path.join(
+            env_path,
+            Compilers.clang + '.exe',
+          );
+          this._commands.pathClangpp = path.join(
+            env_path,
+            Compilers.clangpp + '.exe',
+          );
+          this._commands.pathLLDB = path.join(
+            env_path,
+            Debuggers.lldb + '.exe',
+          );
+          this._commands.pathMake = path.join(
+            env_path,
+            Makefiles.make + '.exe',
+          );
 
-          if (pathExists(pathClang)) {
-            foundClang = true;
+          if (pathExists(this._commands.pathClang)) {
+            this._commands.foundClang = true;
           }
-          if (pathExists(pathClangpp)) {
-            foundClangpp = true;
+          if (pathExists(this._commands.pathClangpp)) {
+            this._commands.foundClangpp = true;
           }
-          if (pathExists(pathLLDB)) {
-            foundLLDB = true;
+          if (pathExists(this._commands.pathLLDB)) {
+            this._commands.foundLLDB = true;
           }
-          if (pathExists(pathMake)) {
-            foundMake = true;
+          if (pathExists(this._commands.pathMake)) {
+            this._commands.foundMake = true;
           }
         }
       }
     }
 
-    if (!foundGcc) {
-      ({ f: foundGcc, p: pathGcc } = await commandExists(Compilers.gcc));
+    if (!this._commands.foundGcc) {
+      ({
+        f: this._commands.foundGcc,
+        p: this._commands.pathGcc,
+      } = await commandExists(Compilers.gcc));
     }
-    if (!foundGcc) {
-      ({ f: foundClang, p: pathClang } = await commandExists(Compilers.clang));
-    }
-
-    if (!foundGpp) {
-      ({ f: foundGpp, p: pathGpp } = await commandExists(Compilers.gpp));
-    }
-    if (!foundGpp) {
-      ({ f: foundClangpp, p: pathClangpp } = await commandExists(
-        Compilers.clangpp,
-      ));
+    if (!this._commands.foundGcc) {
+      ({
+        f: this._commands.foundClang,
+        p: this._commands.pathClang,
+      } = await commandExists(Compilers.clang));
     }
 
-    if (!foundGDB) {
-      ({ f: foundGDB, p: pathGDB } = await commandExists(Debuggers.gdb));
+    if (!this._commands.foundGpp) {
+      ({
+        f: this._commands.foundGpp,
+        p: this._commands.pathGpp,
+      } = await commandExists(Compilers.gpp));
     }
-    if (!foundGDB) {
-      ({ f: foundLLDB, p: pathLLDB } = await commandExists(Debuggers.lldb));
-    }
-
-    if (!foundMake) {
-      ({ f: foundMake, p: pathMake } = await commandExists(Makefiles.make));
-    }
-    if (!foundMake && this.operatingSystem === OperatingSystems.windows) {
-      ({ f: foundMake, p: pathMake } = await commandExists(
-        Makefiles.make_mingw,
-      ));
+    if (!this._commands.foundGpp) {
+      ({
+        f: this._commands.foundClangpp,
+        p: this._commands.pathClangpp,
+      } = await commandExists(Compilers.clangpp));
     }
 
-    this._commands = {
-      foundGcc,
-      pathGcc,
-      foundGpp,
-      pathGpp,
-      foundClang,
-      pathClang,
-      foundClangpp,
-      pathClangpp,
-      foundGDB,
-      pathGDB,
-      foundLLDB,
-      pathLLDB,
-      foundMake,
-      pathMake,
-    };
+    if (!this._commands.foundGDB) {
+      ({
+        f: this._commands.foundGDB,
+        p: this._commands.pathGDB,
+      } = await commandExists(Debuggers.gdb));
+    }
+    if (!this._commands.foundGDB) {
+      ({
+        f: this._commands.foundLLDB,
+        p: this._commands.pathLLDB,
+      } = await commandExists(Debuggers.lldb));
+    }
+
+    if (!this._commands.foundMake) {
+      ({
+        f: this._commands.foundMake,
+        p: this._commands.pathMake,
+      } = await commandExists(Makefiles.make));
+    }
+    if (
+      !this._commands.foundMake &&
+      this.operatingSystem === OperatingSystems.windows
+    ) {
+      ({
+        f: this._commands.foundMake,
+        p: this._commands.pathMake,
+      } = await commandExists(Makefiles.make_mingw));
+    }
   }
 
   private setCommands() {
@@ -364,6 +389,7 @@ export class SettingsProvider extends FileProvider {
     } else if (this._commands.foundClang && this._commands.pathClang) {
       this.setClang(this._commands.pathClang);
     } else {
+      this.update('cCompilerPath', SettingsProvider.DEFAULT_C_COMPILER_PATH);
       this.cCompiler = undefined;
     }
 
@@ -372,6 +398,10 @@ export class SettingsProvider extends FileProvider {
     } else if (this._commands.foundClangpp && this._commands.pathClangpp) {
       this.setClangpp(this._commands.pathClangpp);
     } else {
+      this.update(
+        'cppCompilerPath',
+        SettingsProvider.DEFAULT_CPP_COMPILER_PATH,
+      );
       this.cppCompiler = undefined;
     }
 
@@ -380,6 +410,7 @@ export class SettingsProvider extends FileProvider {
     } else if (this._commands.foundLLDB && this._commands.pathLLDB) {
       this.setLLDB(this._commands.pathLLDB);
     } else {
+      this.update('debuggerPath', SettingsProvider.DEFAULT_DEBUGGER_PATH);
       this.debugger = undefined;
     }
 
@@ -388,6 +419,7 @@ export class SettingsProvider extends FileProvider {
     } else if (this._commands.foundMake && this._commands.pathMake) {
       this.setMake(this._commands.pathMake);
     } else {
+      this.update('makePath', SettingsProvider.DEFAULT_MAKE_PATH);
       this._makeFound = false;
     }
 

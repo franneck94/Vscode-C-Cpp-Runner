@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
 export interface JsonSettings {
-  [name: string]: any;
+  [name: string]: string;
 }
 
 export interface JsonConfiguration {

@@ -187,8 +187,6 @@ export class PropertiesProvider extends FileProvider {
     }
 
     const args: Set<string> = new Set(currentConfig.compilerArgs);
-    const argsStr = [...args].join(' ');
-
     const warningArgs = [...args].filter((arg: string) => {
       return arg.includes('-W');
     });
@@ -196,13 +194,15 @@ export class PropertiesProvider extends FileProvider {
       return !arg.includes('-W');
     });
 
+    const argsStr = [...args].join(' ');
     const warningsStr = warningArgs.join(' ');
+    const compilerArgsStr = compilerArgs.join(' ');
+
     if (argsStr !== SettingsProvider.DEFAULT_WARNINGS) {
       this.settings.warnings = warningsStr;
       this.settings.update('warnings', this.settings.warnings);
     }
 
-    const compilerArgsStr = compilerArgs.join(' ');
     if (compilerArgsStr !== SettingsProvider.DEFAULT_COMPILER_ARGS) {
       this.settings.compilerArgs = compilerArgsStr;
       this.settings.update('compilerArgs', this.settings.compilerArgs);

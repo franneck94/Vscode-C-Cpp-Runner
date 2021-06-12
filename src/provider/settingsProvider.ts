@@ -330,12 +330,13 @@ export class SettingsProvider extends FileProvider {
         f: this._commands.foundGcc,
         p: this._commands.pathGcc,
       } = await commandExists(Compilers.gcc));
-    }
-    if (!this._commands.foundGcc) {
-      ({
-        f: this._commands.foundClang,
-        p: this._commands.pathClang,
-      } = await commandExists(Compilers.clang));
+
+      if (!this._commands.foundGcc) {
+        ({
+          f: this._commands.foundClang,
+          p: this._commands.pathClang,
+        } = await commandExists(Compilers.clang));
+      }
     }
 
     if (!this._commands.foundGpp) {
@@ -343,12 +344,13 @@ export class SettingsProvider extends FileProvider {
         f: this._commands.foundGpp,
         p: this._commands.pathGpp,
       } = await commandExists(Compilers.gpp));
-    }
-    if (!this._commands.foundGpp) {
-      ({
-        f: this._commands.foundClangpp,
-        p: this._commands.pathClangpp,
-      } = await commandExists(Compilers.clangpp));
+
+      if (!this._commands.foundGpp) {
+        ({
+          f: this._commands.foundClangpp,
+          p: this._commands.pathClangpp,
+        } = await commandExists(Compilers.clangpp));
+      }
     }
 
     if (!this._commands.foundGDB) {
@@ -356,12 +358,13 @@ export class SettingsProvider extends FileProvider {
         f: this._commands.foundGDB,
         p: this._commands.pathGDB,
       } = await commandExists(Debuggers.gdb));
-    }
-    if (!this._commands.foundGDB) {
-      ({
-        f: this._commands.foundLLDB,
-        p: this._commands.pathLLDB,
-      } = await commandExists(Debuggers.lldb));
+
+      if (!this._commands.foundGDB) {
+        ({
+          f: this._commands.foundLLDB,
+          p: this._commands.pathLLDB,
+        } = await commandExists(Debuggers.lldb));
+      }
     }
 
     if (!this._commands.foundMake) {
@@ -369,21 +372,20 @@ export class SettingsProvider extends FileProvider {
         f: this._commands.foundMake,
         p: this._commands.pathMake,
       } = await commandExists(Makefiles.make));
-    }
-    if (
-      !this._commands.foundMake &&
-      this.operatingSystem === OperatingSystems.windows
-    ) {
-      ({
-        f: this._commands.foundMake,
-        p: this._commands.pathMake,
-      } = await commandExists(Makefiles.make_mingw));
+
+      if (
+        !this._commands.foundMake &&
+        this.operatingSystem === OperatingSystems.windows
+      ) {
+        ({
+          f: this._commands.foundMake,
+          p: this._commands.pathMake,
+        } = await commandExists(Makefiles.make_mingw));
+      }
     }
   }
 
   private setCommands() {
-    if (!this._commands) return;
-
     if (this._commands.foundGcc && this._commands.pathGcc) {
       this.setGcc(this._commands.pathGcc);
     } else if (this._commands.foundClang && this._commands.pathClang) {

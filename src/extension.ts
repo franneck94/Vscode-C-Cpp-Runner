@@ -191,6 +191,9 @@ function initWorkspaceDisposables() {
       () => {
         showStatusBarItems = !showStatusBarItems;
         toggleStatusBarItems();
+
+        const infoMessage = `Called toggleStatusBar.`;
+        logger.log(loggingActive, infoMessage);
       },
     );
     if (extensionContext) {
@@ -213,6 +216,9 @@ function initWorkspaceDisposables() {
         activeFolder = clickedUriItem.fsPath;
         workspaceFolder = workspaceItem.uri.fsPath;
         updateFolderData();
+
+        const infoMessage = `Called folderContextMenu.`;
+        logger.log(loggingActive, infoMessage);
       },
     );
     if (extensionContext) {
@@ -437,6 +443,9 @@ function initArgumentParser() {
       if (taskProvider) {
         taskProvider.updateArguments(argumentsString);
       }
+
+      const infoMessage = `Called args.`;
+      logger.log(loggingActive, infoMessage);
     },
   );
 }

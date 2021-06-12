@@ -4,6 +4,10 @@
 
 - **Improvement**: Add exclude pattern (as a setting) for the folder selection menu
 
+## Version 0.16.1: June 12, 2021
+
+- **Bugfix**: Several bug fixes for linux/mac
+
 ## Version 0.16.0: June 12, 2021
 
 - **Improvement**: Updating c_cpp_properties.json and launch.json do trigger an update for settings.json. Hence, the user can edit any of these files and all other files are updated accordingly.

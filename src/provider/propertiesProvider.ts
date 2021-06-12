@@ -31,9 +31,9 @@ export class PropertiesProvider extends FileProvider {
     if (!pathExists(this._outputPath)) {
       doUpdate = true;
     } else {
-      const configJson: JsonConfiguration = readJsonFile(this._outputPath);
-      if (configJson) {
-        const triplet: string = configJson.configurations[0].name;
+      const configLocal: JsonConfiguration = readJsonFile(this._outputPath);
+      if (configLocal) {
+        const triplet: string = configLocal.configurations[0].name;
 
         if (!triplet.includes(this.settings.operatingSystem)) {
           doUpdate = true;
@@ -45,89 +45,92 @@ export class PropertiesProvider extends FileProvider {
   }
 
   public writeFileData() {
-    let configJson: JsonConfiguration | undefined;
+    let configLocal: JsonConfiguration | undefined;
 
     if (!pathExists(this._outputPath)) {
-      configJson = readJsonFile(this.templatePath);
+      configLocal = readJsonFile(this.templatePath);
     } else {
-      configJson = readJsonFile(this._outputPath);
+      configLocal = readJsonFile(this._outputPath);
     }
 
-    if (!configJson) return;
+    if (!configLocal) return;
 
     const triplet =
       `${this.settings.operatingSystem}-` +
       `${this.settings.cCompiler}-` +
       `${this.settings.architecure}`;
 
-    const config = configJson.configurations[0];
+    const currentConfig = configLocal.configurations[0];
 
-    if (config.compilerArgs.length === 1 && config.compilerArgs[0] === '') {
-      config.compilerArgs = [];
+    if (
+      currentConfig.compilerArgs.length === 1 &&
+      currentConfig.compilerArgs[0] === ''
+    ) {
+      currentConfig.compilerArgs = [];
     }
 
     if (this.settings.warnings) {
       const warnings = this.settings.warnings.split(' ');
-      config.compilerArgs = [];
+      currentConfig.compilerArgs = [];
       for (let warning of warnings) {
-        const compilerArgsSet = new Set(config.compilerArgs);
+        const compilerArgsSet = new Set(currentConfig.compilerArgs);
         if (!compilerArgsSet.has(warning)) {
-          config.compilerArgs.push(warning);
+          currentConfig.compilerArgs.push(warning);
         }
       }
     }
 
     if (this.settings.compilerArgs) {
       const args = this.settings.compilerArgs.split(' ');
-      config.compilerArgs = [];
+      currentConfig.compilerArgs = [];
       for (let arg of args) {
-        const compilerArgsSet = new Set(config.compilerArgs);
+        const compilerArgsSet = new Set(currentConfig.compilerArgs);
         if (!compilerArgsSet.has(arg)) {
-          config.compilerArgs.push(arg);
+          currentConfig.compilerArgs.push(arg);
         }
       }
     }
 
     if (this.settings.includePaths) {
       const paths = this.settings.includePaths.split(' ');
-      config.includePath = [INCLUDE_PATTERN];
+      currentConfig.includePath = [INCLUDE_PATTERN];
       for (let path of paths) {
-        const includePathSet = new Set(config.includePath);
+        const includePathSet = new Set(currentConfig.includePath);
         if (path !== INCLUDE_PATTERN && !includePathSet.has(path)) {
-          config.includePath.push(path);
+          currentConfig.includePath.push(path);
         }
       }
     } else {
-      config.includePath = [INCLUDE_PATTERN];
+      currentConfig.includePath = [INCLUDE_PATTERN];
     }
 
     if (this.settings.cStandard) {
-      config.cStandard = this.settings.cStandard;
+      currentConfig.cStandard = this.settings.cStandard;
     } else {
-      config.cStandard = '${default}';
+      currentConfig.cStandard = '${default}';
     }
 
     if (this.settings.cppStandard) {
-      config.cppStandard = this.settings.cppStandard;
+      currentConfig.cppStandard = this.settings.cppStandard;
     } else {
-      config.cppStandard = '${default}';
+      currentConfig.cppStandard = '${default}';
     }
 
-    config.compilerPath = this.settings.cCompilerPath;
+    currentConfig.compilerPath = this.settings.cCompilerPath;
 
     // Since C/C++ Extension Version 1.4.0 cygwin is a linux triplet
     if (
       this.settings.isCygwin &&
       this.settings.operatingSystem == OperatingSystems.windows
     ) {
-      config.name = triplet.replace('windows', 'windows-cygwin');
-      config.intelliSenseMode = triplet.replace('windows', 'linux');
+      currentConfig.name = triplet.replace('windows', 'windows-cygwin');
+      currentConfig.intelliSenseMode = triplet.replace('windows', 'linux');
     } else {
-      config.name = triplet;
-      config.intelliSenseMode = triplet;
+      currentConfig.name = triplet;
+      currentConfig.intelliSenseMode = triplet;
     }
 
-    writeJsonFile(this._outputPath, configJson);
+    writeJsonFile(this._outputPath, configLocal);
   }
 
   public updateFolderData(workspaceFolder: string) {
@@ -138,11 +141,13 @@ export class PropertiesProvider extends FileProvider {
    * If c_cpp_properties.json is changed, update settings.json.
    */
   public changeCallback() {
-    const configJson: JsonConfiguration = readJsonFile(this._outputPath);
+    const configLocal: JsonConfiguration | undefined = readJsonFile(
+      this._outputPath,
+    );
 
-    if (!configJson) return;
+    if (!configLocal) return;
 
-    const currentConfig = configJson.configurations[0];
+    const currentConfig = configLocal.configurations[0];
 
     if (
       currentConfig.compilerPath != this.settings.cCompilerPath &&

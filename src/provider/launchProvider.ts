@@ -60,63 +60,57 @@ export class LaunchProvider extends FileProvider {
       this.activeFolder = this.workspaceFolder;
     }
 
-    const configJsonTemplate: JsonConfiguration | undefined = readJsonFile(
+    const launchTemplate: JsonConfiguration | undefined = readJsonFile(
       this.templatePath,
     );
 
-    if (!configJsonTemplate) return;
+    if (!launchTemplate) return;
 
-    configJsonTemplate.configurations[0].name = CONFIG_NAME;
+    launchTemplate.configurations[0].name = CONFIG_NAME;
     if (this.settings.debugger) {
-      configJsonTemplate.configurations[0].MIMode = this.settings.debugger;
-      configJsonTemplate.configurations[0].miDebuggerPath = this.settings.debuggerPath;
+      launchTemplate.configurations[0].MIMode = this.settings.debugger;
+      launchTemplate.configurations[0].miDebuggerPath = this.settings.debuggerPath;
 
       /* On Windows with Cygwin the internal console does not work properly. */
       if (
         OperatingSystems.windows === this.settings.operatingSystem &&
         this.settings.isCygwin
       ) {
-        configJsonTemplate.configurations[0].externalConsole = true;
+        launchTemplate.configurations[0].externalConsole = true;
       }
     } else {
-      configJsonTemplate.configurations[0].MIMode =
+      launchTemplate.configurations[0].MIMode =
         SettingsProvider.DEFAULT_DEBUGGER_PATH;
-      configJsonTemplate.configurations[0].miDebuggerPath =
+      launchTemplate.configurations[0].miDebuggerPath =
         SettingsProvider.DEFAULT_DEBUGGER_PATH;
     }
 
-    configJsonTemplate.configurations[0].cwd = this.activeFolder;
+    launchTemplate.configurations[0].cwd = this.activeFolder;
     const debugPath = path.join(this.activeFolder, 'build/Debug/outDebug');
-    configJsonTemplate.configurations[0].program = debugPath;
+    launchTemplate.configurations[0].program = debugPath;
 
-    const configJsonOutput: JsonConfiguration | undefined = readJsonFile(
+    const launchLocal: JsonConfiguration | undefined = readJsonFile(
       this._outputPath,
     );
 
-    if (!configJsonOutput) {
-      writeJsonFile(this._outputPath, configJsonTemplate);
+    if (!launchLocal) {
+      writeJsonFile(this._outputPath, launchTemplate);
       return;
     }
 
-    let configIdx = getLaunchConfigIndex(configJsonOutput, CONFIG_NAME);
+    let configIdx = getLaunchConfigIndex(launchLocal, CONFIG_NAME);
 
     if (configIdx === undefined) {
-      configIdx = configJsonOutput.configurations.length;
+      configIdx = launchLocal.configurations.length;
     }
 
-    if (
-      configJsonOutput &&
-      configJsonOutput.configurations.length === configIdx
-    ) {
-      configJsonOutput.configurations.push(
-        configJsonTemplate.configurations[0],
-      );
+    if (launchLocal && launchLocal.configurations.length === configIdx) {
+      launchLocal.configurations.push(launchTemplate.configurations[0]);
     } else {
-      configJsonOutput.configurations[configIdx] =
-        configJsonTemplate.configurations[0];
+      launchLocal.configurations[configIdx] = launchTemplate.configurations[0];
     }
 
-    writeJsonFile(this._outputPath, configJsonOutput);
+    writeJsonFile(this._outputPath, launchLocal);
   }
 
   public updateFolderData(workspaceFolder: string, activeFolder: string) {
@@ -128,16 +122,16 @@ export class LaunchProvider extends FileProvider {
    * If launch.json is changed, update settings.json.
    */
   public changeCallback() {
-    const configJsonOutput: JsonConfiguration | undefined = readJsonFile(
+    const launchLocal: JsonConfiguration | undefined = readJsonFile(
       this._outputPath,
     );
 
-    if (!configJsonOutput) return;
+    if (!launchLocal) return;
 
-    const configIdx = getLaunchConfigIndex(configJsonOutput, CONFIG_NAME);
+    const configIdx = getLaunchConfigIndex(launchLocal, CONFIG_NAME);
 
     if (configIdx !== undefined) {
-      const currentConfig = configJsonOutput.configurations[configIdx];
+      const currentConfig = launchLocal.configurations[configIdx];
 
       if (currentConfig.miDebuggerPath != this.settings.debuggerPath) {
         this.settings.debuggerPath = currentConfig.miDebuggerPath;

@@ -45,7 +45,6 @@ export class SettingsProvider extends FileProvider {
   static DEFAULT_WARNINGS = '-Wall -Wextra -Wpedantic';
 
   // Workspace data
-  private _configLocal: JsonSettings | undefined;
   private _configGlobal = vscode.workspace.getConfiguration(EXTENSION_NAME);
   // Machine information
   public operatingSystem = getOperatingSystem();
@@ -129,7 +128,6 @@ export class SettingsProvider extends FileProvider {
   /********************/
 
   public writeFileData() {
-    this.readLocalConfig();
     this.getSettings();
     if (!this.commandsStored()) {
       this.getCommands();
@@ -140,65 +138,82 @@ export class SettingsProvider extends FileProvider {
   }
 
   public deleteCallback() {
-    this.getCommands();
-    this.setCommands();
-    this.getCommandTypes();
-    this.getArchitecture();
+    this.writeFileData();
   }
 
   public changeCallback() {
     this.writeFileData();
   }
 
+  public updateFolderData(workspaceFolder: string) {
+    super._updateFolderData(workspaceFolder);
+  }
+
   private getSettings() {
+    const settingsLocal: JsonSettings | undefined = readJsonFile(
+      this._outputPath,
+    );
+
     /* Mandatory in settings.json */
     this.cCompilerPath = this.getSettingsValue(
+      settingsLocal,
       'cCompilerPath',
       SettingsProvider.DEFAULT_C_COMPILER_PATH,
     );
     this.cppCompilerPath = this.getSettingsValue(
+      settingsLocal,
       'cppCompilerPath',
       SettingsProvider.DEFAULT_CPP_COMPILER_PATH,
     );
     this.debuggerPath = this.getSettingsValue(
+      settingsLocal,
       'debuggerPath',
       SettingsProvider.DEFAULT_DEBUGGER_PATH,
     );
     this.makePath = this.getSettingsValue(
+      settingsLocal,
       'makePath',
       SettingsProvider.DEFAULT_MAKE_PATH,
     );
 
     /* Optional in settings.json */
     this.enableWarnings = this.getSettingsValue(
+      settingsLocal,
       'enableWarnings',
       SettingsProvider.DEFAULT_ENABLE_WARNINGS,
     );
     this.warnings = this.getSettingsValue(
+      settingsLocal,
       'warnings',
       SettingsProvider.DEFAULT_WARNINGS,
     );
     this.warningsAsError = this.getSettingsValue(
+      settingsLocal,
       'warningsAsError',
       SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS,
     );
     this.cStandard = this.getSettingsValue(
+      settingsLocal,
       'cStandard',
       SettingsProvider.DEFAULT_C_STANDARD,
     );
     this.cppStandard = this.getSettingsValue(
+      settingsLocal,
       'cppStandard',
       SettingsProvider.DEFAULT_CPP_STANDARD,
     );
     this.compilerArgs = this.getSettingsValue(
+      settingsLocal,
       'compilerArgs',
       SettingsProvider.DEFAULT_COMPILER_ARGS,
     );
     this.linkerArgs = this.getSettingsValue(
+      settingsLocal,
       'linkerArgs',
       SettingsProvider.DEFAULT_LINKER_ARGS,
     );
     this.includePaths = this.getSettingsValue(
+      settingsLocal,
       'includePaths',
       SettingsProvider.DEFAULT_INCLUDE_PATHS,
     );
@@ -426,20 +441,19 @@ export class SettingsProvider extends FileProvider {
     }
   }
 
-  public updateFolderData(workspaceFolder: string) {
-    super._updateFolderData(workspaceFolder);
-    this.readLocalConfig();
-  }
-
   /********************/
   /* HELPER FUNCTIONS */
   /********************/
 
-  private getSettingsValue(name: string, defaultValue: any) {
+  private getSettingsValue(
+    settingsLocal: JsonSettings | undefined,
+    name: string,
+    defaultValue: any,
+  ) {
     const settingName = `${EXTENSION_NAME}.${name}`;
 
-    if (this._configLocal && this._configLocal[settingName] !== undefined) {
-      return this._configLocal[settingName];
+    if (settingsLocal && settingsLocal[settingName] !== undefined) {
+      return settingsLocal[settingName];
     }
 
     if (this._configGlobal.has(name)) {
@@ -447,10 +461,6 @@ export class SettingsProvider extends FileProvider {
     }
 
     return defaultValue;
-  }
-
-  private readLocalConfig() {
-    this._configLocal = readJsonFile(this._outputPath);
   }
 
   public update(key: string, value: any) {

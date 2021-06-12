@@ -29,9 +29,11 @@ export abstract class FileProvider extends CallbackProvider {
     return false;
   }
 
-  public createFileData() {
-    if (pathExists(this._outputPath)) return;
+  public writeFileData() {
+    throw new Error('Not implemented error.');
+  }
 
+  public createFileData() {
     if (!pathExists(this._vscodeDirectory)) {
       mkdirRecursive(this._vscodeDirectory);
     }
@@ -43,8 +45,8 @@ export abstract class FileProvider extends CallbackProvider {
     this.writeFileData();
   }
 
-  public writeFileData() {
-    throw new Error('Not implemented error.');
+  public deleteCallback() {
+    this.createFileData();
   }
 
   protected _updateFolderData(_workspaceFolder: string) {
@@ -52,9 +54,5 @@ export abstract class FileProvider extends CallbackProvider {
     this._vscodeDirectory = path.join(this._workspaceFolder, '.vscode');
     this._outputPath = path.join(this._vscodeDirectory, this.outputFileName);
     this.createFileWatcher();
-  }
-
-  public deleteCallback() {
-    this.createFileData();
   }
 }

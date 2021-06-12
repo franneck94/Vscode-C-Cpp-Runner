@@ -18,7 +18,7 @@ export class PropertiesProvider extends FileProvider {
     protected settings: SettingsProvider,
     public workspaceFolder: string,
   ) {
-    super(settings, workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
+    super(workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
 
     if (this.updateCheck()) {
       this.createFileData();

@@ -16,7 +16,7 @@ export class LaunchProvider extends FileProvider {
     public workspaceFolder: string,
     public activeFolder: string,
   ) {
-    super(settings, workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
+    super(workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
 
     if (!this.activeFolder) {
       this.activeFolder = this.workspaceFolder;

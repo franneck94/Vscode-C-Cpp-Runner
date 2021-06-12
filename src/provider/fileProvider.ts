@@ -3,13 +3,11 @@ import * as path from 'path';
 import { extensionPath } from '../extension';
 import { mkdirRecursive, pathExists } from '../utils/fileUtils';
 import { CallbackProvider } from './callbackProvider';
-import { SettingsProvider } from './settingsProvider';
 
 export abstract class FileProvider extends CallbackProvider {
   protected readonly templatePath: string;
 
   constructor(
-    protected settings: SettingsProvider,
     protected _workspaceFolder: string,
     protected templateFileName: string,
     protected outputFileName: string,
@@ -21,6 +19,10 @@ export abstract class FileProvider extends CallbackProvider {
       'templates',
     );
     this.templatePath = path.join(templateDirectory, templateFileName);
+
+    if (!pathExists(this._vscodeDirectory)) {
+      mkdirRecursive(this._vscodeDirectory);
+    }
   }
 
   protected updateCheck() {

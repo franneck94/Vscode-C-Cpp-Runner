@@ -60,11 +60,7 @@ suite('Utils Test Suite', () => {
 
     test('Test getDirectoriesRecursive', () => {
       const dir = path.dirname(__dirname);
-      const expectedDirs = [
-        path.normalize(
-          'c:\\Users\\Jan\\Documents\\_Coding\\vscode-c-cpp-runner\\dist\\test\\suite',
-        ),
-      ];
+      const expectedDirs = [path.normalize(path.join(dir, 'suite'))];
       const recursiveDirs = fileUtils.getDirectoriesRecursive(dir);
       assert.deepStrictEqual(expectedDirs, recursiveDirs);
     });

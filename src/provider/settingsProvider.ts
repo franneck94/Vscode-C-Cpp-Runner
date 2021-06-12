@@ -86,7 +86,7 @@ export class SettingsProvider extends FileProvider {
 
     if (!pathExists(this._outputPath)) {
       doUpdate = true;
-    } else if (false === this.commandsStored()) {
+    } else if (!this.commandsStored()) {
       doUpdate = true;
     }
 
@@ -241,7 +241,7 @@ export class SettingsProvider extends FileProvider {
     const env = process.env;
     if (this.operatingSystem === OperatingSystems.windows && env.PATH) {
       const paths = env.PATH.split(';');
-      for (let env_path of paths) {
+      for (const env_path of paths) {
         if (
           (this._commands.foundGcc &&
             this._commands.foundGpp &&
@@ -288,26 +288,61 @@ export class SettingsProvider extends FileProvider {
               this._commands.foundMake = true;
             }
           }
-        } else if (
-          lower_path.includes('bin') &&
-          lower_path.includes(CompilerSystems.clang)
+        }
+      }
+    } else if (this.operatingSystem === OperatingSystems.linux && env.PATH) {
+      const paths = env.PATH.split(';');
+      for (const env_path of paths) {
+        if (
+          (this._commands.foundGcc &&
+            this._commands.foundGpp &&
+            this._commands.foundGDB) ||
+          (this._commands.foundClang &&
+            this._commands.foundClangpp &&
+            this._commands.foundLLDB)
         ) {
-          this._commands.pathClang = path.join(
-            env_path,
-            Compilers.clang + '.exe',
-          );
-          this._commands.pathClangpp = path.join(
-            env_path,
-            Compilers.clangpp + '.exe',
-          );
-          this._commands.pathLLDB = path.join(
-            env_path,
-            Debuggers.lldb + '.exe',
-          );
-          this._commands.pathMake = path.join(
-            env_path,
-            Makefiles.make + '.exe',
-          );
+          break;
+        }
+
+        if (env_path.includes('bin')) {
+          this._commands.pathGcc = path.join(env_path, Compilers.gcc);
+          this._commands.pathGpp = path.join(env_path, Compilers.gpp);
+          this._commands.pathGDB = path.join(env_path, Debuggers.gdb);
+          this._commands.pathMake = path.join(env_path, Makefiles.make);
+
+          if (pathExists(this._commands.pathGcc)) {
+            this._commands.foundGcc = true;
+          }
+          if (pathExists(this._commands.pathGpp)) {
+            this._commands.foundGpp = true;
+          }
+          if (pathExists(this._commands.pathGDB)) {
+            this._commands.foundGDB = true;
+          }
+          if (pathExists(this._commands.pathMake)) {
+            this._commands.foundMake = true;
+          }
+        }
+      }
+    } else if (this.operatingSystem === OperatingSystems.mac && env.PATH) {
+      const paths = env.PATH.split(';');
+      for (const env_path of paths) {
+        if (
+          (this._commands.foundGcc &&
+            this._commands.foundGpp &&
+            this._commands.foundGDB) ||
+          (this._commands.foundClang &&
+            this._commands.foundClangpp &&
+            this._commands.foundLLDB)
+        ) {
+          break;
+        }
+
+        if (env_path.includes('bin')) {
+          this._commands.pathClang = path.join(env_path, Compilers.clang);
+          this._commands.pathClangpp = path.join(env_path, Compilers.clangpp);
+          this._commands.pathLLDB = path.join(env_path, Debuggers.lldb);
+          this._commands.pathMake = path.join(env_path, Makefiles.make);
 
           if (pathExists(this._commands.pathClang)) {
             this._commands.foundClang = true;

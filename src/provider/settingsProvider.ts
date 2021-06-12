@@ -131,7 +131,7 @@ export class SettingsProvider extends FileProvider {
     this.getSettings();
     if (!this.commandsStored()) {
       this.getCommands();
-      this.setCommands();
+      // this.setCommands();
       this.getCommandTypes();
       this.getArchitecture();
     }
@@ -418,6 +418,8 @@ export class SettingsProvider extends FileProvider {
         } = await commandExists(Makefiles.make_mingw));
       }
     }
+
+    this.setCommands();
   }
 
   private setCommands() {

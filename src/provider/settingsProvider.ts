@@ -40,6 +40,7 @@ export class SettingsProvider extends FileProvider {
   static DEFAULT_COMPILER_ARGS = '';
   static DEFAULT_LINKER_ARGS = '';
   static DEFAULT_INCLUDE_PATHS = '';
+  static DEFAULT_EXCLUDE_SEARCH = '';
   static DEFAULT_ENABLE_WARNINGS = true;
   static DEFAULT_WARNINGS_AS_ERRORS = false;
   static DEFAULT_WARNINGS = '-Wall -Wextra -Wpedantic';
@@ -68,6 +69,7 @@ export class SettingsProvider extends FileProvider {
   public compilerArgs: string = SettingsProvider.DEFAULT_COMPILER_ARGS;
   public linkerArgs: string = SettingsProvider.DEFAULT_LINKER_ARGS;
   public includePaths: string = SettingsProvider.DEFAULT_INCLUDE_PATHS;
+  public excludeSearch: string = SettingsProvider.DEFAULT_EXCLUDE_SEARCH;
   public enableWarnings: boolean = SettingsProvider.DEFAULT_ENABLE_WARNINGS;
   public warningsAsError: boolean = SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
   public warnings: string = SettingsProvider.DEFAULT_WARNINGS;
@@ -77,6 +79,8 @@ export class SettingsProvider extends FileProvider {
 
     if (this.updateCheck()) {
       this.createFileData();
+    } else {
+      this.getSettings();
     }
   }
 
@@ -215,6 +219,11 @@ export class SettingsProvider extends FileProvider {
       settingsLocal,
       'includePaths',
       SettingsProvider.DEFAULT_INCLUDE_PATHS,
+    );
+    this.excludeSearch = this.getSettingsValue(
+      settingsLocal,
+      'excludeSearch',
+      SettingsProvider.DEFAULT_EXCLUDE_SEARCH,
     );
   }
 

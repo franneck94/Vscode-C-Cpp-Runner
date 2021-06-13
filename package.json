@@ -228,6 +228,15 @@
           "description": "Additional include paths. Seperated by whitespaces.",
           "scope": "resource"
         },
+        "C_Cpp_Runner.excludeSearch": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "description": "List glob patterns to exclude from folder selection.",
+          "scope": "resource"
+        },
         "C_Cpp_Runner.loggingActive": {
           "type": "boolean",
           "default": false,

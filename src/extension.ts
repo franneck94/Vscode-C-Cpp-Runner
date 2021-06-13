@@ -386,7 +386,7 @@ function initFolderStatusBar(context: vscode.ExtensionContext) {
   commandFolderDisposable = vscode.commands.registerCommand(
     commandName,
     async () => {
-      const ret = await folderHandler();
+      const ret = await folderHandler(settingsProvider);
       if (ret && ret.activeFolder && ret.workspaceFolder) {
         activeFolder = ret.activeFolder;
         workspaceFolder = ret.workspaceFolder;

@@ -65,7 +65,7 @@ export class PropertiesProvider extends FileProvider {
 
     if (this.settings.warnings) {
       const warnings = this.settings.warnings.split(' ');
-      for (let warning of warnings) {
+      for (const warning of warnings) {
         const compilerArgsSet = new Set(currentConfig.compilerArgs);
         if (!compilerArgsSet.has(warning)) {
           currentConfig.compilerArgs.push(warning);
@@ -86,7 +86,7 @@ export class PropertiesProvider extends FileProvider {
     if (this.settings.includePaths) {
       const paths = this.settings.includePaths.split(' ');
       currentConfig.includePath = [INCLUDE_PATTERN];
-      for (let path of paths) {
+      for (const path of paths) {
         const includePathSet = new Set(currentConfig.includePath);
         if (path !== INCLUDE_PATTERN && !includePathSet.has(path)) {
           currentConfig.includePath.push(path);
@@ -113,7 +113,7 @@ export class PropertiesProvider extends FileProvider {
     // Since C/C++ Extension Version 1.4.0 cygwin is a linux triplet
     if (
       this.settings.isCygwin &&
-      this.settings.operatingSystem == OperatingSystems.windows
+      this.settings.operatingSystem === OperatingSystems.windows
     ) {
       currentConfig.name = triplet.replace('windows', 'windows-cygwin');
       currentConfig.intelliSenseMode = triplet.replace('windows', 'linux');
@@ -139,8 +139,8 @@ export class PropertiesProvider extends FileProvider {
     const currentConfig = configLocal.configurations[0];
 
     if (
-      currentConfig.compilerPath != this.settings.cCompilerPath &&
-      currentConfig.compilerPath != this.settings.cppCompilerPath
+      currentConfig.compilerPath !== this.settings.cCompilerPath &&
+      currentConfig.compilerPath !== this.settings.cppCompilerPath
     ) {
       let compilerName = currentConfig.compilerPath;
       this.settings.cCompilerPath = currentConfig.compilerPath;
@@ -160,28 +160,24 @@ export class PropertiesProvider extends FileProvider {
     }
 
     if (
-      currentConfig.cStandard != '${default}' &&
-      currentConfig.cStandard != this.settings.cStandard
+      currentConfig.cStandard !== '${default}' &&
+      currentConfig.cStandard !== this.settings.cStandard
     ) {
       this.settings.cStandard = currentConfig.cStandard;
       this.settings.update('cStandard', currentConfig.cStandard);
     }
 
     if (
-      currentConfig.cppStandard != '${default}' &&
-      currentConfig.cppStandard != this.settings.cppStandard
+      currentConfig.cppStandard !== '${default}' &&
+      currentConfig.cppStandard !== this.settings.cppStandard
     ) {
       this.settings.cppStandard = currentConfig.cppStandard;
       this.settings.update('cppStandard', currentConfig.cppStandard);
     }
 
     const args: Set<string> = new Set(currentConfig.compilerArgs);
-    const warningArgs = [...args].filter((arg: string) => {
-      return arg.includes('-W');
-    });
-    const compilerArgs = [...args].filter((arg: string) => {
-      return !arg.includes('-W');
-    });
+    const warningArgs = [...args].filter((arg: string) => arg.includes('-W'));
+    const compilerArgs = [...args].filter((arg: string) => !arg.includes('-W'));
 
     const argsStr = [...args].join(' ');
     const warningsStr = warningArgs.join(' ');
@@ -198,9 +194,9 @@ export class PropertiesProvider extends FileProvider {
     }
 
     const includePaths: Set<string> = new Set(
-      currentConfig.includePath.filter((path: string) => {
-        return path != INCLUDE_PATTERN;
-      }),
+      currentConfig.includePath.filter(
+        (path: string) => path !== INCLUDE_PATTERN,
+      ),
     );
 
     const includeStr = [...includePaths].join(' ');

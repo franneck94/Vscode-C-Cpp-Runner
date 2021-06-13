@@ -133,7 +133,7 @@ export class LaunchProvider extends FileProvider {
     if (configIdx !== undefined) {
       const currentConfig = launchLocal.configurations[configIdx];
 
-      if (currentConfig.miDebuggerPath != this.settings.debuggerPath) {
+      if (currentConfig.miDebuggerPath !== this.settings.debuggerPath) {
         this.settings.debuggerPath = currentConfig.miDebuggerPath;
 
         if (currentConfig.miDebuggerPath.includes(Debuggers.gdb)) {

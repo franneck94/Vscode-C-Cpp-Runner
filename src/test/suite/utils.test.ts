@@ -57,7 +57,7 @@ suite('Utils Test Suite', () => {
       const dir = path.dirname(__dirname);
       const expectedEntrries = ['runTest.js', 'runTest.js.map', 'suite'];
       const readEntries = fileUtils.readDir(dir);
-      if ((readEntries = undefined)) {
+      if (readEntries !== undefined) {
         const entries = readEntries.map((entry) => entry.name);
         assert.deepStrictEqual(expectedEntrries, entries);
       }

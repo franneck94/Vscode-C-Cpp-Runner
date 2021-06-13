@@ -1,8 +1,9 @@
 # C/C++ Runner Change Log
 
-## Planned
+## Version 0.17.0: June 13, 2021
 
-- **Improvement**: Add exclude pattern (as a setting) for the folder selection menu
+- **Improvement**: Added option for glob patterns to exclude from the selected folder search
+- **Bugfix**: Bugfix for configuration triplet
 
 ## Version 0.16.2: June 12, 2021
 

@@ -81,6 +81,8 @@ export class SettingsProvider extends FileProvider {
       this.createFileData();
     } else {
       this.getSettings();
+      this.getCommandTypes();
+      this.getArchitecture();
     }
   }
 

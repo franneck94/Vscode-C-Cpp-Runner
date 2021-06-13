@@ -276,6 +276,7 @@
   "dependencies": {
     "json5": "^2.2.0",
     "lookpath": "^1.2.0",
+    "minimatch": "^3.0.4",
     "ts-loader": "^8.1.0",
     "vsce": "^1.87.1",
     "vscode-test": "^1.5.2"

@@ -1,5 +1,5 @@
 import * as path from 'path';
-import * as glob from 'glob';
+import * as minimatch from 'minimatch';
 import * as vscode from 'vscode';
 import { SettingsProvider } from '../provider/settingsProvider';
 
@@ -30,15 +30,14 @@ export async function folderHandler(
       foldersList.push(text);
     });
 
-    // TODO
     if (settingsProvider) {
       for (const pattern of settingsProvider.excludeSearch) {
-        glob(pattern, {}, (err, foldersList) => {
-          console.log(foldersList);
-          console.log(err);
-        });
+        foldersList = foldersList.filter(
+          (folder) => !minimatch(folder, pattern),
+        );
       }
     }
+
     foldersList = naturalSort(foldersList);
   });
 

@@ -120,23 +120,23 @@ suite('Utils Test Suite', () => {
         fileUtils.filterOnString(names, filterName),
       );
     });
+  });
 
-    suite('systemUtils', () => {
-      test('Test commandExists', async () => {
-        const npm_ret = await commandExists('npm');
-        assert.strictEqual(true, npm_ret.f);
-        assert.strictEqual(true, npm_ret.p?.includes('npm'));
+  suite('systemUtils', () => {
+    test('Test commandExists', async () => {
+      const npm_ret = await commandExists('npm');
+      assert.strictEqual(true, npm_ret.f);
+      assert.strictEqual(true, npm_ret.p?.includes('npm'));
 
-        const none_ret = await commandExists('npmmm');
-        assert.strictEqual(false, none_ret.f);
-        assert.strictEqual(undefined, none_ret.p);
-      });
+      const none_ret = await commandExists('npmmm');
+      assert.strictEqual(false, none_ret.f);
+      assert.strictEqual(undefined, none_ret.p);
+    });
 
-      test('Test getCompilerArchitecture', () => {
-        const arch1 = getCompilerArchitecture(Compilers.clang);
-        assert.strictEqual('x64', arch1.architecure);
-        assert.strictEqual(false, arch1.isCygwin);
-      });
+    test('Test getCompilerArchitecture', () => {
+      const arch1 = getCompilerArchitecture(Compilers.clang);
+      assert.strictEqual('x64', arch1.architecure);
+      assert.strictEqual(false, arch1.isCygwin);
     });
   });
 

@@ -11,7 +11,7 @@ import {
 } from '../utils/fileUtils';
 import {
   commandExists,
-  getArchitectureCommand,
+  getCompilerArchitecture,
   getOperatingSystem,
 } from '../utils/systemUtils';
 import {
@@ -495,11 +495,11 @@ export class SettingsProvider extends FileProvider {
     if (!this._updatedCommands) return;
 
     if (this.cCompiler) {
-      const ret = getArchitectureCommand(this.cCompiler);
+      const ret = getCompilerArchitecture(this.cCompiler);
       this.architecure = ret.architecure;
       this.isCygwin = ret.isCygwin;
     } else if (this.cppCompiler) {
-      const ret = getArchitectureCommand(this.cppCompiler);
+      const ret = getCompilerArchitecture(this.cppCompiler);
       this.architecure = ret.architecure;
       this.isCygwin = ret.isCygwin;
     } else {

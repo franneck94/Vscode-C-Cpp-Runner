@@ -116,17 +116,3 @@ export function isObject(input: any): input is object {
 export function isArray(input: any): input is any[] {
   return input instanceof Array;
 }
-
-export function isOptionalString(input: any): input is string | undefined {
-  return input === undefined || isString(input);
-}
-
-export function isArrayOfString(input: any): input is string[] {
-  return isArray(input) && input.every(isString);
-}
-
-export function isOptionalArrayOfString(
-  input: any,
-): input is string[] | undefined {
-  return input === undefined || isArrayOfString(input);
-}

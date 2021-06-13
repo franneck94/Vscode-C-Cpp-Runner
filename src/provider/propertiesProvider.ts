@@ -75,7 +75,7 @@ export class PropertiesProvider extends FileProvider {
 
     if (this.settings.compilerArgs) {
       const args = this.settings.compilerArgs.split(' ');
-      for (let arg of args) {
+      for (const arg of args) {
         const compilerArgsSet = new Set(currentConfig.compilerArgs);
         if (!compilerArgsSet.has(arg)) {
           currentConfig.compilerArgs.push(arg);

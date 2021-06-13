@@ -123,7 +123,7 @@ export function foldersInDir(dir: fs.PathLike) {
   let folders = fileDirents.filter((folder) => folder.isDirectory());
   folders = folders.filter((folder) => !folder.name.includes('.'));
   folders = folders.filter((folder) => !folder.name.includes('__'));
-  folders = folders.filter((folder) => !(folder.name == 'build'));
+  folders = folders.filter((folder) => !(folder.name === 'build'));
   folders = folders.filter(
     (folder) => !folder.name.includes('CMake'.toLowerCase()),
   );
@@ -171,12 +171,12 @@ export function writeJsonFile(outputFilePath: string, jsonContent: any) {
 }
 
 export function naturalSort(names: string[]) {
-  return names.sort((a, b) => {
-    return a.localeCompare(b, undefined, {
+  return names.sort((a, b) =>
+    a.localeCompare(b, undefined, {
       numeric: true,
       sensitivity: 'base',
-    });
-  });
+    }),
+  );
 }
 
 export function commandCheck(key: string, jsonData: JsonSettings) {

@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import { Builds } from '../utils/types';
 
 export async function modeHandler() {
-  let combinations = [Builds.debug, Builds.release];
+  const combinations = [Builds.debug, Builds.release];
 
   const pickedCombination = await vscode.window.showQuickPick(combinations, {
     placeHolder: 'Select a build mode',

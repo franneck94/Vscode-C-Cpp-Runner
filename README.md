@@ -83,6 +83,7 @@ This file will be used by Microsoft's *C/C++* extension for intellisense. For mo
 - ⚙️ Additional compiler arguments (defaults to None)
 - ⚙️ Additional linker arguments (defaults to None)
 - ⚙️ Additional include paths (defaults to None)
+- ⚙️ Glob pattern to exclude from the folder selection (defaults to '')
 
 ## Important Notes
 

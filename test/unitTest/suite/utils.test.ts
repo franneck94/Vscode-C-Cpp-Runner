@@ -35,10 +35,11 @@ suite('Utils Test Suite', () => {
       let obj = {};
       if (getOperatingSystem() === OperatingSystems.windows) {
         obj = { a: 'c:/' };
-      } else {
+        assert.strictEqual(true, fileUtils.commandCheck('a', obj));
+      } else if (getOperatingSystem() === OperatingSystems.linux) {
         obj = { a: '/home' };
+        assert.strictEqual(true, fileUtils.commandCheck('a', obj));
       }
-      assert.strictEqual(true, fileUtils.commandCheck('a', obj));
     });
 
     test('Test naturalSort', () => {

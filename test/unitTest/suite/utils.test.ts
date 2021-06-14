@@ -143,9 +143,13 @@ suite('Utils Test Suite', () => {
     });
 
     test('Test getCompilerArchitecture', () => {
-      const arch1 = getCompilerArchitecture(Compilers.clang);
-      assert.strictEqual('x64', arch1.architecure);
-      assert.strictEqual(false, arch1.isCygwin);
+      if (getOperatingSystem() !== OperatingSystems.mac) {
+        const arch1 = getCompilerArchitecture(Compilers.clang);
+        assert.strictEqual('x64', arch1.architecure);
+        assert.strictEqual(false, arch1.isCygwin);
+      } else {
+        assert.strictEqual(true, true); // no-op for mac
+      }
     });
   });
 

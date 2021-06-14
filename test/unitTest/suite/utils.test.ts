@@ -6,8 +6,9 @@ import * as fileUtils from '../../../src/utils/fileUtils';
 import {
   commandExists,
   getCompilerArchitecture,
+  getOperatingSystem,
 } from '../../../src/utils/systemUtils';
-import { Compilers } from '../../../src/utils/types';
+import { Compilers, OperatingSystems } from '../../../src/utils/types';
 
 suite('Utils Test Suite', () => {
   vscode.window.showInformationMessage('Start all tests.');
@@ -31,7 +32,12 @@ suite('Utils Test Suite', () => {
     });
 
     test('Test commandCheck', () => {
-      const obj = { a: 'c:/' };
+      let obj = {};
+      if (getOperatingSystem() === OperatingSystems.windows) {
+        obj = { a: 'c:/' };
+      } else {
+        obj = { a: '/home' };
+      }
       assert.strictEqual(true, fileUtils.commandCheck('a', obj));
     });
 

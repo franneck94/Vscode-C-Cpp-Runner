@@ -39,6 +39,8 @@ suite('Utils Test Suite', () => {
       } else if (getOperatingSystem() === OperatingSystems.linux) {
         obj = { a: '/home' };
         assert.strictEqual(true, fileUtils.commandCheck('a', obj));
+      } else {
+        assert.strictEqual(true, true); // no-op for mac
       }
     });
 

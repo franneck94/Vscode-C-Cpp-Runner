@@ -3,6 +3,7 @@ dist/
 out/
 build/
 .mypy_cache
+.vscode-test
 
 **/.vscode/
 .vscode/c_cpp_properties.json

@@ -1,8 +1,7 @@
 # C/C++ Runner Change Log
 
-## Planned for 1.0.0
+## Planned for 0.18.0
 
-- compiler args include paths, warnings setting as array\<string\> instead of a string.
 - Command to reset settings/c_cpp_properties/launch.json
 - Update README for reset commands
 

@@ -2,12 +2,12 @@ import * as assert from 'assert';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import * as fileUtils from '../../utils/fileUtils';
+import * as fileUtils from '../../../src/utils/fileUtils';
 import {
   commandExists,
   getCompilerArchitecture,
-} from '../../utils/systemUtils';
-import { Compilers } from '../../utils/types';
+} from '../../../src/utils/systemUtils';
+import { Compilers } from '../../../src/utils/types';
 
 suite('Utils Test Suite', () => {
   vscode.window.showInformationMessage('Start all tests.');

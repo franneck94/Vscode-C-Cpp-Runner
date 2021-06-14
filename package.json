@@ -240,20 +240,22 @@
         "C_Cpp_Runner.loggingActive": {
           "type": "boolean",
           "default": false,
-          "description": "Whether to enable logging to the output channel or not.",
+          "description": "Whether to enable logging to the distput channel or not.",
           "scope": "resource"
         }
       }
     }
   },
   "scripts": {
-    "vscode:prepublish": "webpack --mode production",
     "webpack": "webpack --mode development",
-    "webpack-dev": "webpack --mode development --watch",
-    "compile": "webpack --mode development",
+    "webpack-watch": "webpack --mode development --watch",
+    "vscode:prepublish": "npm run webpack",
+    "compile": "npm run webpack",
+    "compile-watch": "npm run webpack-watch",
     "watch": "tsc -watch -p ./",
-    "pretest": "tsc -p ./",
-    "test": "node ./dist/test/runTest.js"
+    "pretest": "tsc -p ./ && tsc -p test.tsconfig.json",
+    "unitTests": "npm run pretest && node ./dist/test/unitTests/runTest.js",
+    "integrationTests": "npm run pretest && node ./dist/test/integrationTests/startUp/runTest.js"
   },
   "devDependencies": {
     "@types/glob": "^7.1.3",

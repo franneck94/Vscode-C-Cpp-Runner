@@ -48,17 +48,9 @@ Then you can use the different commands in vscode's command palette:
 
 ![TaskQuickBar](./media/CommandPalette.png)
 
-### Passing Commandline Arguments to the Binary
-
-If you want to pass in command-line arguments for running or debugging the binary, you have to press the key bind `ctrl+shift+a`. Then a message box will appear where you can type the arguments:
-
-![Arguments](./media/arguments.png)
-
-These arguments will be stored in the launch.json config for debugging the binary.
-
-![ArgumentsDebug](./media/argumentsDebug.png)
-
 ## Extension Features
+
+### Configuration
 
 The extension will automatically search for an installed compiler on your computer.  
 If any gcc or clang compiler can be found in the PATH variables it will be stored to the local workspace settings (*".vscode/settings.json"*).  
@@ -69,7 +61,32 @@ Based on the operating system and the compiler, there will be a *c_cpp_propertie
 This file will be used by Microsoft's *C/C++* extension for intellisense. For more information refer to the official [documentation](https://code.visualstudio.com/docs/cpp/c-cpp-properties-schema-reference).  
 ![CCppConfig](./media/CCppConfig.png)  
 
-## Extension Settings
+### Passing Commandline Arguments
+
+If you want to pass in command-line arguments for running or debugging the binary, you have to press the key bind `ctrl+shift+a`. Then a message box will appear where you can type the arguments:
+
+![Arguments](./media/arguments.png)
+
+These arguments will be stored in the launch.json config for debugging the binary.
+
+![ArgumentsDebug](./media/argumentsDebug.png)
+
+### Exclude Folders for Selection
+
+Since the drop-down menu of the folder selection can be very long in a workspace with many (sub-) folders you can add glob patterns to exclude from the search.
+
+With the following glob pattern:
+
+![ExcludePattern](./media/excludePattern.png)
+
+The folder selection would change from left to right.
+
+![ExcludePaths1](./media/excludePaths1.png)
+![ExcludePaths2](./media/excludePaths2.png)
+
+For more information about glob pattern see [here](https://en.wikipedia.org/wiki/Glob_(programming)#Syntax).
+
+### Extension Settings
 
 - ⚙️ C Compiler path (defaults to gcc)
 - ⚙️ C Standard (defaults to the compiler's default)

@@ -1,5 +1,11 @@
 # C/C++ Runner Change Log
 
+## Planned for 1.0.0
+
+- compiler args include paths, warnings setting as array\<string\> instead of a string.
+- Command to reset settings/c_cpp_properties/launch.json
+- Update README for reset commands
+
 ## Version 0.17.0: June 13, 2021
 
 - **Improvement**: Added option for glob patterns to exclude from the selected folder search
@@ -16,7 +22,7 @@
 ## Version 0.16.0: June 12, 2021
 
 - **Improvement**: Updating c_cpp_properties.json and launch.json do trigger an update for settings.json. Hence, the user can edit any of these files and all other files are updated accordingly.
-- **Improvement**: Updated compiler search on windows, to speed-up the process.
+- **Improvement**: Updated compiler search on windows, to speed up the process.
 - **Info**: Added some unit tests. Will be extended in the future.
 - **Bugfix**: Several bug fixes
 

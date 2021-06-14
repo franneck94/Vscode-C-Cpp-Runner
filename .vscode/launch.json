@@ -11,15 +11,15 @@
       "preLaunchTask": "npm: compile"
     },
 		{
-			"name": "Test Extension",
+			"name": "Unit Test Extension",
 			"type": "extensionHost",
 			"request": "launch",
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}",
-				"--extensionTestsPath=${workspaceFolder}/dist/test/suite/index"
+				"--extensionTestsPath=${workspaceFolder}/dist/test/unitTest/suite/index"
 			],
-			"outFiles": ["${workspaceFolder}/dist/test/**/*.js"],
+			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
 			"preLaunchTask": "npm: pretest"
 		}
   ]

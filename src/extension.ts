@@ -266,24 +266,34 @@ function initEventListener() {
   }
 
   if (!eventDeleteFilesDisposable) {
-    vscode.workspace.onDidDeleteFiles((e: vscode.FileDeleteEvent) => {
-      e.files.forEach((file) => {
-        const oldName = file.fsPath;
+    eventDeleteFilesDisposable = vscode.workspace.onDidDeleteFiles(
+      (e: vscode.FileDeleteEvent) => {
+        e.files.forEach((file) => {
+          const oldName = file.fsPath;
 
-        const infoMessage = `Deleting: ${oldName}.`;
-        logger.log(loggingActive, infoMessage);
+          const infoMessage = `Deleting: ${oldName}.`;
+          logger.log(loggingActive, infoMessage);
 
-        if (workspaceFolder && oldName === workspaceFolder) {
-          workspaceFolder = undefined;
-          updateFolderData();
-          updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
-        } else if (activeFolder && oldName === activeFolder) {
-          activeFolder = undefined;
-          updateFolderData();
-          updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
-        }
-      });
-    });
+          if (workspaceFolder && oldName === workspaceFolder) {
+            workspaceFolder = undefined;
+            updateFolderData();
+            updateFolderStatus(
+              folderStatusBar,
+              taskProvider,
+              showStatusBarItems,
+            );
+          } else if (activeFolder && oldName === activeFolder) {
+            activeFolder = undefined;
+            updateFolderData();
+            updateFolderStatus(
+              folderStatusBar,
+              taskProvider,
+              showStatusBarItems,
+            );
+          }
+        });
+      },
+    );
   }
 }
 

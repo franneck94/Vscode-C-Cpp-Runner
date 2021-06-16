@@ -1,9 +1,12 @@
 # C/C++ Runner Change Log
 
-## Planned for 0.18.0
+## Planned for 1.0.0
 
-- Command to reset settings/c_cpp_properties/launch.json
-- Update README for reset commands
+- Following settings will be array of string instead of string:
+  - warnings
+  - includePaths
+  - compilerArgs
+  - linkerArgs
 
 ## Version 0.17.1: June 16, 2021
 

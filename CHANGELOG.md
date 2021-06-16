@@ -5,6 +5,10 @@
 - Command to reset settings/c_cpp_properties/launch.json
 - Update README for reset commands
 
+## Version 0.17.1: June 16, 2021
+
+- **Bugfix**: Bugfix for passing multiple include paths
+
 ## Version 0.17.0: June 13, 2021
 
 - **Improvement**: Added option for glob patterns to exclude from the selected folder search

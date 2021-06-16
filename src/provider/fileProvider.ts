@@ -8,11 +8,11 @@ export abstract class FileProvider extends CallbackProvider {
   protected readonly templatePath: string;
 
   constructor(
-    protected _workspaceFolder: string,
+    workspaceFolder: string,
     protected templateFileName: string,
     protected outputFileName: string,
   ) {
-    super(_workspaceFolder, templateFileName, outputFileName);
+    super(workspaceFolder, templateFileName, outputFileName);
 
     const templateDirectory = path.join(
       extensionPath ? extensionPath : '',

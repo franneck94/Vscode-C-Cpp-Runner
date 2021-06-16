@@ -425,8 +425,6 @@ export class SettingsProvider extends FileProvider {
 
     if (this._commands.foundMake && this._commands.pathMake) {
       this.setMake(this._commands.pathMake);
-    } else if (this._commands.foundMake && this._commands.pathMake) {
-      this.setMake(this._commands.pathMake);
     } else {
       this._makeFound = false;
     }
@@ -440,7 +438,7 @@ export class SettingsProvider extends FileProvider {
     cBasename = removeExtension(cBasename, 'exe');
 
     cppBasename = getBasename(cppBasename);
-    cppBasename = removeExtension(cBasename, 'exe');
+    cppBasename = removeExtension(cppBasename, 'exe');
 
     if (cBasename) {
       if (cBasename.includes(Compilers.clang)) {

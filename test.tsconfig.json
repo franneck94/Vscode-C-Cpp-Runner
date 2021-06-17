@@ -12,6 +12,6 @@
 		"noImplicitUseStrict": true
 	},
 	"include": [
-		"./test/**/*.ts"
+		"./test"
 	]
 }

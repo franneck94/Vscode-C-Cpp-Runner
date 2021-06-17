@@ -36,6 +36,6 @@
 			"sourceMaps": true,
 			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
 			"preLaunchTask": "npm: pretest",
-		},
+		}
   ]
 }

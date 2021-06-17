@@ -255,7 +255,8 @@
     "watch": "tsc -watch -p ./",
     "lint": "eslint src --ext ts",
     "pretest": "tsc -p ./ && tsc -p test.tsconfig.json",
-    "test": "node ./dist/test/unitTest/runTest.js"
+    "unitTest": "node ./dist/test/unitTest/runTest.js",
+		"integrationTest": "node ./dist/test/integrationTest/runTest.js"
   },
   "devDependencies": {
     "@types/glob": "^7.1.3",

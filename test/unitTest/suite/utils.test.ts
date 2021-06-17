@@ -5,10 +5,9 @@ import * as vscode from 'vscode';
 import * as fileUtils from '../../../src/utils/fileUtils';
 import {
   commandExists,
-  getCompilerArchitecture,
   getOperatingSystem,
 } from '../../../src/utils/systemUtils';
-import { Compilers, OperatingSystems } from '../../../src/utils/types';
+import { OperatingSystems } from '../../../src/utils/types';
 
 suite('Utils Test Suite', () => {
   vscode.window.showInformationMessage('Start all tests.');

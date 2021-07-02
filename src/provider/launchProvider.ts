@@ -118,9 +118,6 @@ export class LaunchProvider extends FileProvider {
     super._updateFolderData(workspaceFolder);
   }
 
-  /**
-   * If launch.json is changed, update settings.json.
-   */
   public changeCallback() {
     const launchLocal: JsonConfiguration | undefined = readJsonFile(
       this._outputPath,

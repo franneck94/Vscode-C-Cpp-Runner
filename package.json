@@ -137,8 +137,15 @@
           "scope": "resource"
         },
         "C_Cpp_Runner.warnings": {
-          "type": "string",
-          "default": "-Wall -Wextra -Wpedantic",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "-Wall",
+            "-Wextra",
+            "-Wpedantic"
+          ],
           "description": "Warnings to check by the compiler. Seperated by whitespaces.",
           "scope": "resource"
         },
@@ -211,20 +218,29 @@
           "scope": "resource"
         },
         "C_Cpp_Runner.compilerArgs": {
-          "type": "string",
-          "default": "",
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
           "description": "Additional compiler arguments. Seperated by whitespaces.",
           "scope": "resource"
         },
         "C_Cpp_Runner.linkerArgs": {
-          "type": "string",
-          "default": "",
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
           "description": "Additional linker arguments. Seperated by whitespaces.",
           "scope": "resource"
         },
         "C_Cpp_Runner.includePaths": {
-          "type": "string",
-          "default": "",
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
           "description": "Additional include paths. Seperated by whitespaces.",
           "scope": "resource"
         },
@@ -256,7 +272,7 @@
     "lint": "eslint src --ext ts",
     "pretest": "tsc -p ./ && tsc -p test.tsconfig.json",
     "test": "node ./dist/test/unitTest/runTest.js",
-		"integrationTest": "node ./dist/test/integrationTest/runTest.js"
+    "integrationTest": "node ./dist/test/integrationTest/runTest.js"
   },
   "devDependencies": {
     "@types/glob": "^7.1.3",

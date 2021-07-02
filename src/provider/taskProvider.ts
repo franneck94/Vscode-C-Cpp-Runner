@@ -158,16 +158,20 @@ export class TaskProvider implements vscode.TaskProvider {
 
       // Makefile arguments that can hold multiple values
       if (settings.warnings) {
-        taskJson.args.push(`WARNINGS="${settings.warnings}"`);
+        const warningsStr = settings.warnings.join(' ');
+        taskJson.args.push(`WARNINGS="${warningsStr}"`);
       }
       if (settings.compilerArgs) {
-        taskJson.args.push(`COMPILER_ARGS="${settings.compilerArgs}"`);
+        const compilerArgsStr = settings.compilerArgs.join(' ');
+        taskJson.args.push(`COMPILER_ARGS="${compilerArgsStr}"`);
       }
       if (settings.linkerArgs) {
-        taskJson.args.push(`LINKER_ARGS="${settings.linkerArgs}"`);
+        const linkerArgsStr = settings.linkerArgs.join(' ');
+        taskJson.args.push(`LINKER_ARGS="${linkerArgsStr}"`);
       }
       if (settings.includePaths) {
-        taskJson.args.push(`INCLUDE_PATHS="${settings.includePaths}"`);
+        const includePathsStr = settings.includePaths.join(' ');
+        taskJson.args.push(`INCLUDE_PATHS="${includePathsStr}"`);
       }
     }
 

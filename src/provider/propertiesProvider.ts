@@ -64,8 +64,7 @@ export class PropertiesProvider extends FileProvider {
     currentConfig.compilerArgs = [];
 
     if (this.settings.warnings) {
-      const warnings = this.settings.warnings.split(' ');
-      for (const warning of warnings) {
+      for (const warning of this.settings.warnings) {
         const compilerArgsSet = new Set(currentConfig.compilerArgs);
         if (!compilerArgsSet.has(warning)) {
           currentConfig.compilerArgs.push(warning);
@@ -74,8 +73,7 @@ export class PropertiesProvider extends FileProvider {
     }
 
     if (this.settings.compilerArgs) {
-      const args = this.settings.compilerArgs.split(' ');
-      for (const arg of args) {
+      for (const arg of this.settings.compilerArgs) {
         const compilerArgsSet = new Set(currentConfig.compilerArgs);
         if (!compilerArgsSet.has(arg)) {
           currentConfig.compilerArgs.push(arg);
@@ -84,9 +82,8 @@ export class PropertiesProvider extends FileProvider {
     }
 
     if (this.settings.includePaths) {
-      const paths = this.settings.includePaths.split(' ');
       currentConfig.includePath = [INCLUDE_PATTERN];
-      for (const path of paths) {
+      for (const path of this.settings.includePaths) {
         const includePathSet = new Set(currentConfig.includePath);
         if (path !== INCLUDE_PATTERN && !includePathSet.has(path)) {
           currentConfig.includePath.push(path);
@@ -175,21 +172,18 @@ export class PropertiesProvider extends FileProvider {
       this.settings.update('cppStandard', currentConfig.cppStandard);
     }
 
-    const args: Set<string> = new Set(currentConfig.compilerArgs);
-    const warningArgs = [...args].filter((arg: string) => arg.includes('-W'));
-    const compilerArgs = [...args].filter((arg: string) => !arg.includes('-W'));
+    const argsSet: Set<string> = new Set(currentConfig.compilerArgs);
+    const args: string[] = [...argsSet];
+    const warningArgs = args.filter((arg: string) => arg.includes('-W'));
+    const compilerArgs = args.filter((arg: string) => !arg.includes('-W'));
 
-    const argsStr = [...args].join(' ');
-    const warningsStr = warningArgs.join(' ');
-    const compilerArgsStr = compilerArgs.join(' ');
-
-    if (argsStr !== SettingsProvider.DEFAULT_WARNINGS) {
-      this.settings.warnings = warningsStr;
+    if (args !== SettingsProvider.DEFAULT_WARNINGS) {
+      this.settings.warnings = warningArgs;
       this.settings.update('warnings', this.settings.warnings);
     }
 
-    if (compilerArgsStr !== SettingsProvider.DEFAULT_COMPILER_ARGS) {
-      this.settings.compilerArgs = compilerArgsStr;
+    if (compilerArgs !== SettingsProvider.DEFAULT_COMPILER_ARGS) {
+      this.settings.compilerArgs = compilerArgs;
       this.settings.update('compilerArgs', this.settings.compilerArgs);
     }
 
@@ -199,7 +193,7 @@ export class PropertiesProvider extends FileProvider {
       ),
     );
 
-    const includeStr = [...includePaths].join(' ');
+    const includeStr = [...includePaths];
     if (includeStr !== SettingsProvider.DEFAULT_INCLUDE_PATHS) {
       this.settings.includePaths = includeStr;
       this.settings.update('includePaths', this.settings.includePaths);

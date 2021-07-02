@@ -95,11 +95,11 @@ For more information about glob pattern see [here](https://en.wikipedia.org/wiki
 - ⚙️ Make path (defaults to make)
 - ⚙️ Debugger path (defaults to gdb)
 - ⚙️ To enable warnings (defaults to True)
-- ⚙️ What warnings should be checked by the compiler (defaults to '-Wall -Wextra -Wpedantic')
+- ⚙️ What warnings should be checked by the compiler (defaults to ['-Wall', '-Wextra', '-Wpedantic'])
 - ⚙️ To treat warnings as errors (defaults to False)
-- ⚙️ Additional compiler arguments (defaults to None)
-- ⚙️ Additional linker arguments (defaults to None)
-- ⚙️ Additional include paths (defaults to None)
+- ⚙️ Additional compiler arguments (defaults to [])
+- ⚙️ Additional linker arguments (defaults to [])
+- ⚙️ Additional include paths (defaults to [])
 - ⚙️ Glob pattern to exclude from the folder selection (defaults to '')
 
 ## Important Notes

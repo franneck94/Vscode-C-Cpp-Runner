@@ -37,7 +37,7 @@ export class SettingsProvider extends FileProvider {
   static DEFAULT_MAKE_PATH = 'make';
   static DEFAULT_C_STANDARD = '';
   static DEFAULT_CPP_STANDARD = '';
-  static DEFAULT_EXCLUDE_SEARCH = '';
+  static DEFAULT_EXCLUDE_SEARCH = [];
 
   static DEFAULT_ENABLE_WARNINGS = true;
   static DEFAULT_WARNINGS_AS_ERRORS = false;
@@ -71,7 +71,7 @@ export class SettingsProvider extends FileProvider {
   public compilerArgs: string[] = SettingsProvider.DEFAULT_COMPILER_ARGS;
   public linkerArgs: string[] = SettingsProvider.DEFAULT_LINKER_ARGS;
   public includePaths: string[] = SettingsProvider.DEFAULT_INCLUDE_PATHS;
-  public excludeSearch: string = SettingsProvider.DEFAULT_EXCLUDE_SEARCH;
+  public excludeSearch: string[] = SettingsProvider.DEFAULT_EXCLUDE_SEARCH;
   public enableWarnings: boolean = SettingsProvider.DEFAULT_ENABLE_WARNINGS;
   public warningsAsError: boolean = SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
   public warnings: string[] = SettingsProvider.DEFAULT_WARNINGS;
@@ -430,6 +430,8 @@ export class SettingsProvider extends FileProvider {
     } else {
       this._makeFound = false;
     }
+
+    this.setOtherSettings();
   }
 
   private getCommandTypes() {
@@ -557,5 +559,18 @@ export class SettingsProvider extends FileProvider {
   public setMake(pathMake: string) {
     this.update('makePath', pathMake);
     this._makeFound = true;
+  }
+
+  public setOtherSettings() {
+    this.update('warnings', this.warnings);
+    this.update('compilerArgs', this.compilerArgs);
+    this.update('includePaths', this.includePaths);
+    this.update('linkerArgs', this.linkerArgs);
+
+    this.update('cStandard', this.cStandard);
+    this.update('cppStandard', this.cppStandard);
+    this.update('excludeSearch', this.excludeSearch);
+    this.update('enableWarnings', this.enableWarnings);
+    this.update('warningsAsError', this.warningsAsError);
   }
 }

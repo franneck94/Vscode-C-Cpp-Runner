@@ -53,8 +53,9 @@ Then you can use the different commands in vscode's command palette:
 ### Configuration
 
 The extension will automatically search for an installed compiler on your computer.  
-If any gcc or clang compiler can be found in the PATH variables it will be stored to the local workspace settings (*".vscode/settings.json"*).  
-If you wish to use any other installed compiler, just edit the entries in the local settings.  
+If any GCC or Clang compiler can be found in the PATH variables this will be set as the compiler.  
+All settings will be stored to the local workspace settings (*".vscode/settings.json"*).  
+If you wish to use any other compiler or different setting, just edit the entries in the local settings file.  
 ![FoundCompiler](./media/FoundCompiler.png)  
 
 Based on the operating system and the compiler, there will be a *c_cpp_properties.json* file created in the local *.vscode* folder.  
@@ -100,7 +101,7 @@ For more information about glob pattern see [here](https://en.wikipedia.org/wiki
 - ⚙️ Additional compiler arguments (defaults to [])
 - ⚙️ Additional linker arguments (defaults to [])
 - ⚙️ Additional include paths (defaults to [])
-- ⚙️ Glob pattern to exclude from the folder selection (defaults to '')
+- ⚙️ Glob pattern to exclude from the folder selection (defaults to [])
 
 ## Important Notes
 

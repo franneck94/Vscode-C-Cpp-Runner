@@ -144,12 +144,18 @@ export class TaskProvider implements vscode.TaskProvider {
     if (!cleanTask && !runTask) {
       if (language === Languages.c) {
         taskJson.args.push(`C_COMPILER=${settings.cCompilerPath}`);
-        if (settings.cStandard) {
+        if (
+          settings.cStandard &&
+          settings.cStandard !== SettingsProvider.DEFAULT_C_STANDARD
+        ) {
           taskJson.args.push(`C_STANDARD=${settings.cStandard}`);
         }
       } else {
         taskJson.args.push(`CPP_COMPILER=${settings.cppCompilerPath}`);
-        if (settings.cppStandard) {
+        if (
+          settings.cppStandard &&
+          settings.cppStandard !== SettingsProvider.DEFAULT_CPP_STANDARD
+        ) {
           taskJson.args.push(`CPP_STANDARD=${settings.cppStandard}`);
         }
       }

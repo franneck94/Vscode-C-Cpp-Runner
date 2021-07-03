@@ -43,7 +43,7 @@ After selecting the folder, the icons for building, running, and debugging are s
 
 ### Alternative Usage
 
-If you do not want to see the status bar items you can toggle the visibility with the command `crtl+alt+r`.
+If you do not want to see the status bar items you can toggle the visibility with the command `crtl+alt+r`.  
 Then you can use the different commands in vscode's command palette:
 
 ![TaskQuickBar](./media/CommandPalette.png)
@@ -64,7 +64,8 @@ This file will be used by Microsoft's *C/C++* extension for intellisense. For mo
 
 ### Passing Commandline Arguments
 
-If you want to pass in command-line arguments for running or debugging the binary, you have to press the key bind `ctrl+shift+a`. Then a message box will appear where you can type the arguments:
+If you want to pass in command-line arguments for running or debugging the binary, you have to press the key bind `ctrl+shift+a`.  
+Then a message box will appear where you can type the arguments:
 
 ![Arguments](./media/arguments.png)
 

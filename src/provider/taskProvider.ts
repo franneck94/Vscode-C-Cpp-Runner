@@ -144,12 +144,18 @@ export class TaskProvider implements vscode.TaskProvider {
     if (!cleanTask && !runTask) {
       if (language === Languages.c) {
         taskJson.args.push(`C_COMPILER=${settings.cCompilerPath}`);
-        if (settings.cStandard) {
+        if (
+          settings.cStandard &&
+          settings.cStandard !== SettingsProvider.DEFAULT_C_STANDARD
+        ) {
           taskJson.args.push(`C_STANDARD=${settings.cStandard}`);
         }
       } else {
         taskJson.args.push(`CPP_COMPILER=${settings.cppCompilerPath}`);
-        if (settings.cppStandard) {
+        if (
+          settings.cppStandard &&
+          settings.cppStandard !== SettingsProvider.DEFAULT_CPP_STANDARD
+        ) {
           taskJson.args.push(`CPP_STANDARD=${settings.cppStandard}`);
         }
       }
@@ -157,17 +163,21 @@ export class TaskProvider implements vscode.TaskProvider {
       taskJson.args.push(`WARNINGS_AS_ERRORS=${+settings.warningsAsError}`);
 
       // Makefile arguments that can hold multiple values
-      if (settings.warnings) {
-        taskJson.args.push(`WARNINGS="${settings.warnings}"`);
+      if (settings.warnings && settings.warnings.length > 0) {
+        const warningsStr = settings.warnings.join(' ');
+        taskJson.args.push(`WARNINGS="${warningsStr}"`);
       }
-      if (settings.compilerArgs) {
-        taskJson.args.push(`COMPILER_ARGS="${settings.compilerArgs}"`);
+      if (settings.compilerArgs && settings.compilerArgs.length > 0) {
+        const compilerArgsStr = settings.compilerArgs.join(' ');
+        taskJson.args.push(`COMPILER_ARGS="${compilerArgsStr}"`);
       }
-      if (settings.linkerArgs) {
-        taskJson.args.push(`LINKER_ARGS="${settings.linkerArgs}"`);
+      if (settings.linkerArgs && settings.linkerArgs.length > 0) {
+        const linkerArgsStr = settings.linkerArgs.join(' ');
+        taskJson.args.push(`LINKER_ARGS="${linkerArgsStr}"`);
       }
-      if (settings.includePaths) {
-        taskJson.args.push(`INCLUDE_PATHS="${settings.includePaths}"`);
+      if (settings.includePaths && settings.includePaths.length > 0) {
+        const includePathsStr = settings.includePaths.join(' ');
+        taskJson.args.push(`INCLUDE_PATHS="${includePathsStr}"`);
       }
     }
 

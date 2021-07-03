@@ -43,7 +43,7 @@ After selecting the folder, the icons for building, running, and debugging are s
 
 ### Alternative Usage
 
-If you do not want to see the status bar items you can toggle the visibility with the command `crtl+alt+r`.
+If you do not want to see the status bar items you can toggle the visibility with the command `crtl+alt+r`.  
 Then you can use the different commands in vscode's command palette:
 
 ![TaskQuickBar](./media/CommandPalette.png)
@@ -53,8 +53,9 @@ Then you can use the different commands in vscode's command palette:
 ### Configuration
 
 The extension will automatically search for an installed compiler on your computer.  
-If any gcc or clang compiler can be found in the PATH variables it will be stored to the local workspace settings (*".vscode/settings.json"*).  
-If you wish to use any other installed compiler, just edit the entries in the local settings.  
+If any GCC or Clang compiler can be found in the PATH variables this will be set as the compiler.  
+All settings will be stored to the local workspace settings (*".vscode/settings.json"*).  
+If you wish to use any other compiler or different setting, just edit the entries in the local settings file.  
 ![FoundCompiler](./media/FoundCompiler.png)  
 
 Based on the operating system and the compiler, there will be a *c_cpp_properties.json* file created in the local *.vscode* folder.  
@@ -63,7 +64,8 @@ This file will be used by Microsoft's *C/C++* extension for intellisense. For mo
 
 ### Passing Commandline Arguments
 
-If you want to pass in command-line arguments for running or debugging the binary, you have to press the key bind `ctrl+shift+a`. Then a message box will appear where you can type the arguments:
+If you want to pass in command-line arguments for running or debugging the binary, you have to press the key bind `ctrl+shift+a`.  
+Then a message box will appear where you can type the arguments:
 
 ![Arguments](./media/arguments.png)
 
@@ -95,12 +97,12 @@ For more information about glob pattern see [here](https://en.wikipedia.org/wiki
 - ⚙️ Make path (defaults to make)
 - ⚙️ Debugger path (defaults to gdb)
 - ⚙️ To enable warnings (defaults to True)
-- ⚙️ What warnings should be checked by the compiler (defaults to '-Wall -Wextra -Wpedantic')
+- ⚙️ What warnings should be checked by the compiler (defaults to ['-Wall', '-Wextra', '-Wpedantic'])
 - ⚙️ To treat warnings as errors (defaults to False)
-- ⚙️ Additional compiler arguments (defaults to None)
-- ⚙️ Additional linker arguments (defaults to None)
-- ⚙️ Additional include paths (defaults to None)
-- ⚙️ Glob pattern to exclude from the folder selection (defaults to '')
+- ⚙️ Additional compiler arguments (defaults to [])
+- ⚙️ Additional linker arguments (defaults to [])
+- ⚙️ Additional include paths (defaults to [])
+- ⚙️ Glob pattern to exclude from the folder selection (defaults to [])
 
 ## Important Notes
 

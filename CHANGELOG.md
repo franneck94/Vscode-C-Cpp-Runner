@@ -1,12 +1,34 @@
 # C/C++ Runner Change Log
 
-## Planned for 1.0.0
+## Version 1.0.0: July 3, 2021
 
-- Following settings will be array of string instead of string:
-  - warnings
-  - includePaths
-  - compilerArgs
-  - linkerArgs
+- Following settings are now array of strings instead of strings:
+  - `C_Cpp_runner.warnings`
+  - `C_Cpp_runner.includePaths`
+  - `C_Cpp_runner.compilerArgs`
+  - `C_Cpp_runner.linkerArgs`
+
+So for example previously we used:
+
+```json
+{
+  "C_Cpp_Runner.warnings": "-Wall -Wextra -Wpedantic"
+}
+```
+
+This would now be:
+
+```json
+{
+  "C_Cpp_Runner.warnings": [
+    "-Wall",
+    "-Wextra",
+    "-Wpedantic"
+  ]
+}
+```
+
+- All settings are now stored to the local `.vscode/settings.json` file
 
 ## Version 0.17.1: June 16, 2021
 

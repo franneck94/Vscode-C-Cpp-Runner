@@ -5,7 +5,12 @@ import {
   removeExtension,
   writeJsonFile,
 } from '../utils/fileUtils';
-import { Compilers, JsonConfiguration, OperatingSystems } from '../utils/types';
+import {
+  arrayEquals,
+  Compilers,
+  JsonConfiguration,
+  OperatingSystems,
+} from '../utils/types';
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
 
@@ -177,12 +182,20 @@ export class PropertiesProvider extends FileProvider {
     const warningArgs = args.filter((arg: string) => arg.includes('-W'));
     const compilerArgs = args.filter((arg: string) => !arg.includes('-W'));
 
-    if (args !== SettingsProvider.DEFAULT_WARNINGS) {
+    const warningsEquals = arrayEquals(args, SettingsProvider.DEFAULT_WARNINGS);
+    console.log(SettingsProvider.DEFAULT_WARNINGS);
+
+    if (!warningsEquals) {
       this.settings.warnings = warningArgs;
       this.settings.update('warnings', this.settings.warnings);
     }
 
-    if (compilerArgs !== SettingsProvider.DEFAULT_COMPILER_ARGS) {
+    const compilerArgsEquals = arrayEquals(
+      compilerArgs,
+      SettingsProvider.DEFAULT_COMPILER_ARGS,
+    );
+
+    if (!compilerArgsEquals) {
       this.settings.compilerArgs = compilerArgs;
       this.settings.update('compilerArgs', this.settings.compilerArgs);
     }
@@ -194,7 +207,12 @@ export class PropertiesProvider extends FileProvider {
     );
 
     const includeStr = [...includePaths];
-    if (includeStr !== SettingsProvider.DEFAULT_INCLUDE_PATHS) {
+    const includeStrEquals = arrayEquals(
+      includeStr,
+      SettingsProvider.DEFAULT_INCLUDE_PATHS,
+    );
+
+    if (!includeStrEquals) {
       this.settings.includePaths = includeStr;
       this.settings.update('includePaths', this.settings.includePaths);
     }

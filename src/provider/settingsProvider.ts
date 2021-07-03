@@ -43,9 +43,9 @@ export class SettingsProvider extends FileProvider {
   static DEFAULT_WARNINGS_AS_ERRORS = false;
 
   static DEFAULT_WARNINGS = ['-Wall', '-Wextra', '-Wpedantic'];
-  static DEFAULT_COMPILER_ARGS = [''];
-  static DEFAULT_LINKER_ARGS = [''];
-  static DEFAULT_INCLUDE_PATHS = [''];
+  static DEFAULT_COMPILER_ARGS = [];
+  static DEFAULT_LINKER_ARGS = [];
+  static DEFAULT_INCLUDE_PATHS = [];
 
   // Workspace data
   private _configGlobal = vscode.workspace.getConfiguration(EXTENSION_NAME);

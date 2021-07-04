@@ -113,6 +113,7 @@ For more information about glob pattern see [here](https://en.wikipedia.org/wiki
 - 📁 The folder selection menu will not list:
   - Folder names including '.' (e.g. *.vscode*), '\_\_' (e.g. temp folders) or 'CMake'
   - The folder named *build* since this is the auto generated folder by this extension
+  - The path and file names shall not contain whitespaces since Makefile can not handle this properly.
 
 ### CMake and Makefile Projects
 

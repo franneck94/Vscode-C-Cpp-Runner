@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 1.0.1: July 4, 2021
+
+- Added information message if a path has whitespaces. Makefile can not work with paths/filenames with whitespaces properly.
+
 ## Version 1.0.0: July 3, 2021
 
 - Following settings are now array of strings instead of strings:

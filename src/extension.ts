@@ -401,6 +401,12 @@ function initFolderStatusBar(context: vscode.ExtensionContext) {
         activeFolder = ret.activeFolder;
         workspaceFolder = ret.workspaceFolder;
         updateFolderData();
+
+        if (activeFolder.includes(' ')) {
+          vscode.window.showInformationMessage(
+            'This extension does not support whitespaces in a path name!',
+          );
+        }
       } else {
         const infoMessage = `Folder callback aborted.`;
         logger.log(loggingActive, infoMessage);

@@ -8,8 +8,9 @@ build/
 package-lock.json
 
 **/.vscode/
-!.vscode/
+!/.vscode/
 .vscode/c_cpp_properties.json
 
 *.vsix
 *.cpuprofile
+*.log

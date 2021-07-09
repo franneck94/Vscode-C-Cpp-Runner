@@ -5,7 +5,10 @@ build/
 .mypy_cache
 .vscode-test
 
+package-lock.json
+
 **/.vscode/
+!.vscode/
 .vscode/c_cpp_properties.json
 
 *.vsix

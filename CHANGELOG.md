@@ -1,5 +1,15 @@
 # C/C++ Runner Change Log
 
+## Version 1.1.0 (Planned)
+
+- Drop Makefile and create the commands on the fly
+Reason: Paths with whitespaces are not supported by Makefile.
+Also Unix and MinGW Makefiles do behave differently.
+
+## Version 1.0.2: July 9, 2021
+
+- Fixed bug for compiler search on Linux and Mac
+
 ## Version 1.0.1: July 4, 2021
 
 - Added information message if a path has whitespaces. Makefile can not work with paths/filenames with whitespaces properly.
@@ -99,7 +109,7 @@ This would now be:
 
 ## Version 0.11.0: May 04, 2021
 
-- **Improvement**: The settings are now read/saved correctly in a use case with multiple workspaces.  
+- **Improvement**: The settings are now read/saved correctly in a use case with multiple workspaces.
 A multi-workspace setting is now fully compatible with the extension.
 - **Bugfix**: External console is now set to false for Mac due to debugging issues.
 - **Bugfix**: In a multi-root workspace use-case the cmake detection is now working properly.

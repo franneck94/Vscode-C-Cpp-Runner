@@ -302,7 +302,12 @@ export class SettingsProvider extends FileProvider {
 
     const env = process.env;
     if (env.PATH) {
-      const paths = env.PATH.split(';');
+      let paths: string[] = [];
+      if (this.operatingSystem === OperatingSystems.windows) {
+        paths = env.PATH.split(';');
+      } else {
+        paths = env.PATH.split(':');
+      }
       for (const env_path of paths) {
         if (
           (this._commands.foundGcc &&

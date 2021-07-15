@@ -2,7 +2,7 @@
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
   "description": "🚀 Compile, run and debug single or multiple C/C++ files with ease. 🚀",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "publisher": "franneck94",
   "license": "MIT",
   "icon": "icon.png",
@@ -257,6 +257,12 @@
           "type": "boolean",
           "default": false,
           "description": "Whether to enable logging to the distput channel or not.",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.experimentalExecution": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to enable experimental execution (no Makefile execution).",
           "scope": "resource"
         }
       }

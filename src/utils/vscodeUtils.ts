@@ -55,6 +55,12 @@ export function updateLoggingState() {
   }
 }
 
+export function getExperimentalExecutionState() {
+  return vscode.workspace
+    .getConfiguration('C_Cpp_Runner')
+    .get('experimentalExecution', false);
+}
+
 export function getLoggingState() {
   if (extensionState) {
     return <boolean>extensionState.get('loggingActive');

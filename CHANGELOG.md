@@ -2,9 +2,7 @@
 
 ## Version 1.1.0 (Planned)
 
-- Drop Makefile and create the commands on the fly
-Reason: Paths with whitespaces are not supported by Makefile.
-Also Unix and MinGW Makefiles do behave differently.
+- Added experimental setting to run compiler commands without Makefile.
 
 ## Version 1.0.2: July 9, 2021
 

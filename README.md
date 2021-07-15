@@ -18,13 +18,14 @@ You do not need to know about any compiler and Makefile commands. 😎
 
 ## Install the Software Requirements (optional)
 
-- 🖥️ Windows: Recommended to install gcc/g++, gdb and make via [Cygwin](https://www.cygwin.com/). Alternatives to this are [MinGW](http://mingw-w64.org/doku.php) and [MSYS2](https://www.msys2.org/).
+- 🖥️ Windows: Highly recommended to install gcc/g++, gdb and make via [Cygwin](https://www.cygwin.com/). Alternatives to this are [MinGW](http://mingw-w64.org/doku.php) or MinGW via [MSYS2](https://www.msys2.org/).
 - 🖥️ Linux: Recommended to install gcc/g++, gdb and make via a package manager (e.g. `apt` for Debian derivates).
 - 🖥️ MacOS: Recommended to install clang/clang++, lldb and make via [xcode-tools](https://developer.apple.com/xcode/features/). An alternative is installing the llvm toolchain with [brew](https://apple.stackexchange.com/a/362837).
 
 ## How to use
 
 1️⃣ The first step is to select the folder that contains the C/C++ files you want to compile, run or debug.  
+For requirements on path and file names see [here](#Constraints-on-Files-and-Folders).  
 You can select the folder by the quick pick menu from the status bar.  
 ![TaskStatusBar](./media/FolderStatusBar.png)  
 Besides that, you can also select a folder by right-clicking in the context menu.  
@@ -113,7 +114,8 @@ For more information about glob pattern see [here](https://en.wikipedia.org/wiki
 - 📁 The folder selection menu will not list:
   - Folder names including '.' (e.g. *.vscode*), '\_\_' (e.g. temp folders) or 'CMake'
   - The folder named *build* since this is the auto generated folder by this extension
-  - The path and file names shall not contain whitespaces since Makefile can not handle this properly.
+- The path and file names shall not contain whitespaces since Makefile can not handle this properly.
+- The path and file names shall only contain utf8 characters.
 
 ### CMake and Makefile Projects
 

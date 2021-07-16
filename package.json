@@ -256,13 +256,13 @@
         "C_Cpp_Runner.loggingActive": {
           "type": "boolean",
           "default": false,
-          "description": "Whether to enable logging to the distput channel or not.",
+          "description": "Whether to enable logging to the distput channel or not (Reload required).",
           "scope": "resource"
         },
         "C_Cpp_Runner.experimentalExecution": {
           "type": "boolean",
           "default": false,
-          "description": "Whether to enable experimental execution (no Makefile execution).",
+          "description": "Whether to enable experimental compilation without Makefile (Reload required).",
           "scope": "resource"
         }
       }

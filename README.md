@@ -76,7 +76,7 @@ These arguments will be stored in the launch.json config for debugging the binar
 
 ### Exclude Folders for Selection
 
-Since the drop-down menu of the folder selection can be very long in a workspace with many (sub-) folders you can add glob patterns to exclude from the search.
+Since the drop-down menu of the folder selection can be very long in a workspace with many sub-folders you can add glob patterns to exclude from the search.
 
 With the following glob pattern:
 
@@ -114,12 +114,13 @@ For more information about glob pattern see [here](https://en.wikipedia.org/wiki
 - 📁 The folder selection menu will not list:
   - Folder names including '.' (e.g. *.vscode*), '\_\_' (e.g. temp folders) or 'CMake'
   - The folder named *build* since this is the auto generated folder by this extension
-- The path and file names shall not contain whitespaces since Makefile can not handle this properly.
-- The path and file names shall only contain utf8 characters.
+- 📝 The path and file names shall not contain whitespaces since Makefile can not handle this properly.
+- 📝 The path and file names shall only contain ASCII or UTF-8 characters.
 
 ### CMake and Makefile Projects
 
-This extension does not start whenever the CMake or Make extension by Microsoft is active in the current workspace folder.
+This extension does not start whenever the CMake or Make extension by Microsoft is active in the current workspace folder.  
+This means if there is a CMakeLists.txt or a Makefile in the workspace root directory, this extension is not active.  
 This prevents an overloaded status bar with a lot of icons.  
 However, the user can trigger the start-up of this extension by pressing `ctrl+alt+r`.
 

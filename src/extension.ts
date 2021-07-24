@@ -1,14 +1,15 @@
 import * as vscode from 'vscode';
 
+import { cleanTask, executeTask, runTask } from './executor/betterMakefile';
 import { folderHandler } from './handler/folderHandler';
 import { modeHandler } from './handler/modeHandler';
 import {
-  updateBuildStatus,
-  updateCleanStatus,
-  updateDebugStatus,
-  updateFolderStatus,
-  updateModeStatus,
-  updateRunStatus,
+	updateBuildStatus,
+	updateCleanStatus,
+	updateDebugStatus,
+	updateFolderStatus,
+	updateModeStatus,
+	updateRunStatus,
 } from './items/statusBarItems';
 import { LaunchProvider } from './provider/launchProvider';
 import { PropertiesProvider } from './provider/propertiesProvider';
@@ -18,13 +19,14 @@ import { foldersInDir } from './utils/fileUtils';
 import * as logger from './utils/logger';
 import { Builds, Tasks } from './utils/types';
 import {
-  createStatusBarItem,
-  disposeItem,
-  getLoggingState,
-  isCmakeActive,
-  isMakeActive,
-  setContextValue,
-  updateLoggingState,
+	createStatusBarItem,
+	disposeItem,
+	getExperimentalExecutionState,
+	getLoggingState,
+	isCmakeActive,
+	isMakeActive,
+	setContextValue,
+	updateLoggingState,
 } from './utils/vscodeUtils';
 
 let folderContextMenuDisposable: vscode.Disposable | undefined;
@@ -66,6 +68,7 @@ export let extensionContext: vscode.ExtensionContext | undefined;
 export let extensionState: vscode.Memento | undefined;
 export let extensionPath: string | undefined;
 export let loggingActive: boolean = false;
+export let experimentalExecutionEnabled: boolean = false;
 
 export function activate(context: vscode.ExtensionContext) {
   if (
@@ -80,6 +83,7 @@ export function activate(context: vscode.ExtensionContext) {
   extensionState = context.workspaceState;
   updateLoggingState();
   loggingActive = getLoggingState();
+  experimentalExecutionEnabled = getExperimentalExecutionState();
 
   if (vscode.workspace.workspaceFolders.length === 1) {
     workspaceFolder = vscode.workspace.workspaceFolders[0].uri.fsPath;
@@ -501,7 +505,12 @@ function initBuildStatusBar(context: vscode.ExtensionContext) {
             projectFolder,
           );
         }
-        await vscode.tasks.executeTask(task);
+
+        if (experimentalExecutionEnabled && settingsProvider && activeFolder) {
+          await executeTask(task, settingsProvider, activeFolder, buildMode);
+        } else {
+          await vscode.tasks.executeTask(task);
+        }
       }
     });
   });
@@ -545,7 +554,16 @@ function initRunStatusBar(context: vscode.ExtensionContext) {
           );
         }
 
-        await vscode.tasks.executeTask(task);
+        if (experimentalExecutionEnabled && settingsProvider && activeFolder) {
+          await runTask(
+            task,
+            activeFolder,
+            buildMode,
+            settingsProvider.operatingSystem,
+          );
+        } else {
+          await vscode.tasks.executeTask(task);
+        }
       }
     });
   });
@@ -607,7 +625,17 @@ function initCleanStatusBar(context: vscode.ExtensionContext) {
             projectFolder,
           );
         }
-        await vscode.tasks.executeTask(task);
+
+        if (experimentalExecutionEnabled && settingsProvider && activeFolder) {
+          await cleanTask(
+            task,
+            activeFolder,
+            buildMode,
+            settingsProvider.operatingSystem,
+          );
+        } else {
+          await vscode.tasks.executeTask(task);
+        }
       }
     });
   });

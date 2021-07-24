@@ -1,10 +1,12 @@
 # C/C++ Runner Change Log
 
-## Version 1.1.0 (Planned)
+## Version 1.1.1: Planned
 
-- Drop Makefile and create the commands on the fly
-Reason: Paths with whitespaces are not supported by Makefile.
-Also Unix and MinGW Makefiles do behave differently.
+- Extend the experimental setting
+
+## Version 1.1.0: July 24, 2021
+
+- Added experimental setting to run compiler commands without Makefile
 
 ## Version 1.0.2: July 9, 2021
 

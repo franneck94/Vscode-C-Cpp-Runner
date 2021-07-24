@@ -2,27 +2,27 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import {
-  commandCheck,
-  getBasename,
-  pathExists,
-  readJsonFile,
-  removeExtension,
-  writeJsonFile,
+	commandCheck,
+	getBasename,
+	pathExists,
+	readJsonFile,
+	removeExtension,
+	writeJsonFile,
 } from '../utils/fileUtils';
 import {
-  commandExists,
-  getCompilerArchitecture,
-  getOperatingSystem,
+	commandExists,
+	getCompilerArchitecture,
+	getOperatingSystem,
 } from '../utils/systemUtils';
 import {
-  Architectures,
-  Compilers,
-  Debuggers,
-  JsonSettings,
-  Makefiles,
-  OperatingSystems,
-  CompilerSystems,
-  Commands,
+	Architectures,
+	Commands,
+	Compilers,
+	CompilerSystems,
+	Debuggers,
+	JsonSettings,
+	Makefiles,
+	OperatingSystems,
 } from '../utils/types';
 import { FileProvider } from './fileProvider';
 

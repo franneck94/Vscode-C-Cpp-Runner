@@ -1,8 +1,12 @@
 # C/C++ Runner Change Log
 
-## Version 1.1.0 (Planned)
+## Version 1.1.1: Planned
 
-- Added experimental setting to run compiler commands without Makefile.
+- Extend the experimental setting
+
+## Version 1.1.0: July 24, 2021
+
+- Added experimental setting to run compiler commands without Makefile
 
 ## Version 1.0.2: July 9, 2021
 

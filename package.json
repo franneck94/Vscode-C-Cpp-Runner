@@ -146,7 +146,7 @@
             "-Wextra",
             "-Wpedantic"
           ],
-          "description": "Warnings to check by the compiler. Seperated by whitespaces.",
+          "description": "Warnings to check by the compiler. Separated by whitespaces.",
           "scope": "resource"
         },
         "C_Cpp_Runner.warningsAsError": {
@@ -223,7 +223,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Additional compiler arguments. Seperated by whitespaces.",
+          "description": "Additional compiler arguments. Separated by whitespaces.",
           "scope": "resource"
         },
         "C_Cpp_Runner.linkerArgs": {
@@ -232,7 +232,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Additional linker arguments. Seperated by whitespaces.",
+          "description": "Additional linker arguments. Separated by whitespaces.",
           "scope": "resource"
         },
         "C_Cpp_Runner.includePaths": {
@@ -241,7 +241,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Additional include paths. Seperated by whitespaces.",
+          "description": "Additional include paths. Separated by whitespaces.",
           "scope": "resource"
         },
         "C_Cpp_Runner.excludeSearch": {

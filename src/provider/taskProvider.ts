@@ -15,6 +15,7 @@ import {
 	JsonInnerTask,
 	JsonTask,
 	Languages,
+	OperatingSystems,
 	Task,
 	Tasks,
 } from '../utils/types';
@@ -139,7 +140,11 @@ export class TaskProvider implements vscode.TaskProvider {
 
     // Makefile arguments that hold single values
     taskJson.args.push(`COMPILATION_MODE=${this.buildMode}`);
-    taskJson.args.push(`EXECUTABLE_NAME=out${this.buildMode}`);
+    if (this._settingsProvider.operatingSystem === OperatingSystems.windows) {
+      taskJson.args.push(`EXECUTABLE_NAME=out${this.buildMode}.exe`);
+    } else {
+      taskJson.args.push(`EXECUTABLE_NAME=out${this.buildMode}`);
+    }
     taskJson.args.push(`LANGUAGE_MODE=${language}`);
 
     if (!isCleanTask && !isRunTask) {

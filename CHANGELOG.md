@@ -4,9 +4,9 @@
 
 - Extend the experimental setting
 
-## Version 1.1.1: Planned
+## Version 1.1.1: July 26, 2021
 
-- Creating and deleting build folder is now executed by extension code and not anymore by the Makefile
+- Creating and deleting build folder is now executed by the extension code and not anymore by the Makefile
 
 ## Version 1.1.0: July 24, 2021
 

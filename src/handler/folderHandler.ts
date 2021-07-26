@@ -1,12 +1,12 @@
-import * as path from 'path';
 import * as minimatch from 'minimatch';
+import * as path from 'path';
 import * as vscode from 'vscode';
-import { SettingsProvider } from '../provider/settingsProvider';
 
+import { SettingsProvider } from '../provider/settingsProvider';
 import {
-  getDirectoriesRecursive,
-  naturalSort,
-  replaceBackslashes,
+	getDirectoriesRecursive,
+	naturalSort,
+	replaceBackslashes,
 } from '../utils/fileUtils';
 
 export async function folderHandler(
@@ -41,14 +41,14 @@ export async function folderHandler(
     foldersList = naturalSort(foldersList);
   });
 
-  const pickedFolderStr = await vscode.window.showQuickPick(foldersList, {
+  const activeFolderStr = await vscode.window.showQuickPick(foldersList, {
     placeHolder: 'Select folder to init the C/C++ Runner extension.',
   });
   let activeFolder: string | undefined;
   let workspaceFolder: string | undefined;
 
-  if (pickedFolderStr) {
-    const folderSplit = pickedFolderStr.split('/');
+  if (activeFolderStr) {
+    const folderSplit = activeFolderStr.split('/');
     const workspaceName = folderSplit[0];
     workspacesFolders.forEach((folder) => {
       if (folder.name === workspaceName) {

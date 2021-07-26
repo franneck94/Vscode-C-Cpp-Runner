@@ -1,8 +1,12 @@
 # C/C++ Runner Change Log
 
-## Version 1.1.1: Planned
+## Version 1.2.0: Planned
 
 - Extend the experimental setting
+
+## Version 1.1.1: Planned
+
+- Creating and deleting build folder is now executed by extension code and not anymore by the Makefile
 
 ## Version 1.1.0: July 24, 2021
 

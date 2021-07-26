@@ -18,7 +18,7 @@ import {
 	Task,
 } from '../utils/types';
 
-export async function executeTask(
+export async function executeBuildTask(
   task: Task,
   settingsProvider: SettingsProvider,
   activeFolder: string,
@@ -27,14 +27,21 @@ export async function executeTask(
   const language = getLanguage(activeFolder);
 
   const files = filesInDir(activeFolder);
-  const buildDir = path.join(activeFolder, `build/${buildMode}/`);
+  const buildDir = path.join(activeFolder, 'build');
+  const modeDir = path.join(buildDir, `${buildMode}`);
+
+  if (!pathExists(modeDir)) {
+    mkdirRecursive(modeDir);
+  }
+
   let executableName: string;
   if (settingsProvider.operatingSystem === OperatingSystems.windows) {
-    executableName = `${buildMode}Main.exe`;
+    executableName = `out${buildMode}.exe`;
   } else {
-    executableName = `${buildMode}Main`;
+    executableName = `out${buildMode}`;
   }
-  const executablePath = path.join(buildDir, executableName);
+
+  const executablePath = path.join(modeDir, executableName);
 
   let compiler: string | Compilers | undefined;
   let standard: string | undefined;
@@ -96,10 +103,7 @@ export async function executeTask(
 
     const fileBaseName = path.parse(file).name;
     const filePath = path.join(activeFolder, file);
-    const objectFilePath = path.join(buildDir, fileBaseName + '.o');
-    if (!pathExists(buildDir)) {
-      mkdirRecursive(buildDir);
-    }
+    const objectFilePath = path.join(modeDir, fileBaseName + '.o');
 
     objectFiles.push(objectFilePath);
 
@@ -122,45 +126,34 @@ export async function executeTask(
   }
 }
 
-export async function runTask(
+export async function executeRunTask(
   task: Task,
   activeFolder: string,
   buildMode: Builds,
+  argumentsString: string,
   operatingSystem: OperatingSystems,
 ) {
-  const buildDir = path.join(activeFolder, `build/${buildMode}/`);
+  const buildDir = path.join(activeFolder, 'build');
+  const modeDir = path.join(buildDir, `${buildMode}`);
+  if (!pathExists(modeDir)) return;
+
   let executableName: string;
   if (operatingSystem === OperatingSystems.windows) {
-    executableName = `${buildMode}Main.exe`;
+    executableName = `out${buildMode}.exe`;
   } else {
-    executableName = `${buildMode}Main`;
+    executableName = `./out${buildMode}`;
   }
-  const executablePath = path.join(buildDir, executableName);
+
+  if (argumentsString) {
+    executableName += argumentsString;
+  }
+
+  const executablePath = path.join(modeDir, executableName);
+
+  if (!pathExists(executablePath)) return;
 
   if (task && task.execution) {
     const commandLine = `${executablePath}`;
-    task.execution.commandLine = commandLine;
-    await vscode.tasks.executeTask(task);
-  }
-}
-
-export async function cleanTask(
-  task: Task,
-  activeFolder: string,
-  buildMode: Builds,
-  operatingSystem: OperatingSystems,
-) {
-  const buildDir = path.join(activeFolder, `build/${buildMode}/`);
-
-  let rmCommand: string;
-  if (operatingSystem === OperatingSystems.windows) {
-    rmCommand = `del `;
-  } else {
-    rmCommand = `rm -r`;
-  }
-
-  if (task && task.execution) {
-    const commandLine = `${rmCommand} ${buildDir}`;
     task.execution.commandLine = commandLine;
     await vscode.tasks.executeTask(task);
   }

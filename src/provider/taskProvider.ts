@@ -3,19 +3,20 @@ import * as vscode from 'vscode';
 
 import { extensionPath } from '../extension';
 import {
-  getLanguage,
-  readJsonFile,
-  writeJsonFile,
-  replaceBackslashes,
+	getLanguage,
+	pathExists,
+	readJsonFile,
+	replaceBackslashes,
+	writeJsonFile,
 } from '../utils/fileUtils';
 import {
-  Builds,
-  JsonConfiguration,
-  JsonInnerTask,
-  JsonTask,
-  Languages,
-  Task,
-  Tasks,
+	Builds,
+	JsonConfiguration,
+	JsonInnerTask,
+	JsonTask,
+	Languages,
+	Task,
+	Tasks,
 } from '../utils/types';
 import { getLaunchConfigIndex } from '../utils/vscodeUtils';
 import { SettingsProvider } from './settingsProvider';
@@ -31,7 +32,7 @@ export class TaskProvider implements vscode.TaskProvider {
   constructor(
     private readonly _settingsProvider: SettingsProvider,
     private _workspaceFolder: string | undefined,
-    private _pickedFolder: string | undefined,
+    private _activeFolder: string | undefined,
     private _buildMode: Builds,
     private _argumentsString: string | undefined,
   ) {
@@ -133,15 +134,15 @@ export class TaskProvider implements vscode.TaskProvider {
     taskJson.command = settings.makePath;
     taskJson.args[1] = `--file=${this._makefileFile}`;
 
+    const isCleanTask = taskJson.label.includes(Tasks.clean);
+    const isRunTask = taskJson.label.includes(Tasks.run);
+
     // Makefile arguments that hold single values
     taskJson.args.push(`COMPILATION_MODE=${this.buildMode}`);
     taskJson.args.push(`EXECUTABLE_NAME=out${this.buildMode}`);
     taskJson.args.push(`LANGUAGE_MODE=${language}`);
 
-    const cleanTask = taskJson.label.includes(Tasks.clean);
-    const runTask = taskJson.label.includes(Tasks.run);
-
-    if (!cleanTask && !runTask) {
+    if (!isCleanTask && !isRunTask) {
       if (language === Languages.c) {
         taskJson.args.push(`C_COMPILER=${settings.cCompilerPath}`);
         if (
@@ -181,7 +182,7 @@ export class TaskProvider implements vscode.TaskProvider {
       }
     }
 
-    if (runTask) {
+    if (isRunTask) {
       if (this.argumentsString) {
         taskJson.args.push(`ARGUMENTS=${this.argumentsString}`);
       }
@@ -300,6 +301,7 @@ export class TaskProvider implements vscode.TaskProvider {
   }
 
   public async runDebugTask() {
+    if (!this._activeFolder) return;
     if (!this.workspaceFolder) return;
 
     const uriWorkspaceFolder = vscode.Uri.file(this.workspaceFolder);
@@ -318,6 +320,9 @@ export class TaskProvider implements vscode.TaskProvider {
 
     if (configIdx === undefined) return;
 
+    const buildPath = path.join(this._activeFolder, 'build', this.buildMode);
+    if (!pathExists(buildPath)) return;
+
     await vscode.debug.startDebugging(
       folder,
       configJson.configurations[configIdx],
@@ -333,11 +338,11 @@ export class TaskProvider implements vscode.TaskProvider {
   }
 
   public get activeFolder() {
-    return this._pickedFolder;
+    return this._activeFolder;
   }
 
   public set activeFolder(value: string | undefined) {
-    this._pickedFolder = value;
+    this._activeFolder = value;
   }
 
   public get workspaceFolder() {

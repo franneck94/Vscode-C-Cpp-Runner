@@ -1,6 +1,7 @@
+import * as path from 'path';
 import * as vscode from 'vscode';
 
-import { cleanTask, executeTask, runTask } from './executor/betterMakefile';
+import { executeBuildTask, executeRunTask } from './executor/betterMakefile';
 import { folderHandler } from './handler/folderHandler';
 import { modeHandler } from './handler/modeHandler';
 import {
@@ -15,7 +16,12 @@ import { LaunchProvider } from './provider/launchProvider';
 import { PropertiesProvider } from './provider/propertiesProvider';
 import { SettingsProvider } from './provider/settingsProvider';
 import { TaskProvider } from './provider/taskProvider';
-import { foldersInDir } from './utils/fileUtils';
+import {
+	foldersInDir,
+	mkdirRecursive,
+	pathExists,
+	rmdirRecursive,
+} from './utils/fileUtils';
 import * as logger from './utils/logger';
 import { Builds, Tasks } from './utils/types';
 import {
@@ -476,44 +482,64 @@ function initBuildStatusBar(context: vscode.ExtensionContext) {
   updateBuildStatus(buildStatusBar, showStatusBarItems, activeFolder);
 
   const commandName = `${EXTENSION_NAME}.build`;
-  commandBuildDisposable = vscode.commands.registerCommand(commandName, () => {
-    if (
-      !taskProvider ||
-      !taskProvider.tasks ||
-      !taskProvider.workspaceFolder ||
-      !taskProvider.activeFolder
-    ) {
-      const infoMessage = `buildCallback: No Folder or Tasks defined.`;
-      logger.log(loggingActive, infoMessage);
-      return;
-    }
-
-    taskProvider.getTasks();
-
-    const projectFolder = taskProvider.getProjectFolder();
-    if (!projectFolder) return;
-
-    taskProvider.tasks.forEach(async (task) => {
-      if (task.name.includes(Tasks.build)) {
-        if (
-          task.execution &&
-          task.execution instanceof vscode.ShellExecution &&
-          task.execution.commandLine
-        ) {
-          task.execution.commandLine = task.execution.commandLine.replace(
-            'FILE_DIR',
-            projectFolder,
-          );
-        }
-
-        if (experimentalExecutionEnabled && settingsProvider && activeFolder) {
-          await executeTask(task, settingsProvider, activeFolder, buildMode);
-        } else {
-          await vscode.tasks.executeTask(task);
-        }
+  commandBuildDisposable = vscode.commands.registerCommand(
+    commandName,
+    async () => {
+      if (
+        !taskProvider ||
+        !taskProvider.tasks ||
+        !taskProvider.workspaceFolder ||
+        !taskProvider.activeFolder
+      ) {
+        const infoMessage = `buildCallback: No Folder or Tasks defined.`;
+        logger.log(loggingActive, infoMessage);
+        return;
       }
-    });
-  });
+
+      taskProvider.getTasks();
+
+      const projectFolder = taskProvider.getProjectFolder();
+      if (!projectFolder) return;
+
+      let buildTask: any;
+      taskProvider.tasks.forEach(async (task) => {
+        if (task.name.includes(`${Tasks.build}: `)) {
+          buildTask = task;
+        }
+      });
+
+      if (!buildTask) return;
+
+      if (
+        buildTask.execution &&
+        buildTask.execution instanceof vscode.ShellExecution &&
+        buildTask.execution.commandLine
+      ) {
+        buildTask.execution.commandLine = buildTask.execution.commandLine.replace(
+          'FILE_DIR',
+          projectFolder,
+        );
+      }
+
+      if (!activeFolder) return;
+      const buildDir = path.join(activeFolder, 'build');
+      const modeDir = path.join(buildDir, `${buildMode}`);
+      if (!pathExists(modeDir)) {
+        mkdirRecursive(modeDir);
+      }
+
+      if (experimentalExecutionEnabled && settingsProvider && activeFolder) {
+        await executeBuildTask(
+          buildTask,
+          settingsProvider,
+          activeFolder,
+          buildMode,
+        );
+      } else {
+        await vscode.tasks.executeTask(buildTask);
+      }
+    },
+  );
   buildStatusBar.command = commandName;
   context.subscriptions.push(commandBuildDisposable);
 }
@@ -524,49 +550,69 @@ function initRunStatusBar(context: vscode.ExtensionContext) {
   updateRunStatus(runStatusBar, showStatusBarItems, activeFolder);
 
   const commandName = `${EXTENSION_NAME}.run`;
-  commandRunDisposable = vscode.commands.registerCommand(commandName, () => {
-    if (
-      !taskProvider ||
-      !taskProvider.tasks ||
-      !taskProvider.workspaceFolder ||
-      !taskProvider.activeFolder
-    ) {
-      const infoMessage = `runCallback: No Folder or Tasks defined.`;
-      logger.log(loggingActive, infoMessage);
-      return;
-    }
-
-    taskProvider.getTasks();
-
-    const projectFolder = taskProvider.getProjectFolder();
-    if (!projectFolder) return;
-
-    taskProvider.tasks.forEach(async (task) => {
-      if (task.name.includes(`${Tasks.run}: `)) {
-        if (
-          task.execution &&
-          task.execution instanceof vscode.ShellExecution &&
-          task.execution.commandLine
-        ) {
-          task.execution.commandLine = task.execution.commandLine.replace(
-            'FILE_DIR',
-            projectFolder,
-          );
-        }
-
-        if (experimentalExecutionEnabled && settingsProvider && activeFolder) {
-          await runTask(
-            task,
-            activeFolder,
-            buildMode,
-            settingsProvider.operatingSystem,
-          );
-        } else {
-          await vscode.tasks.executeTask(task);
-        }
+  commandRunDisposable = vscode.commands.registerCommand(
+    commandName,
+    async () => {
+      if (
+        !taskProvider ||
+        !taskProvider.tasks ||
+        !taskProvider.workspaceFolder ||
+        !taskProvider.activeFolder
+      ) {
+        const infoMessage = `runCallback: No Folder or Tasks defined.`;
+        logger.log(loggingActive, infoMessage);
+        return;
       }
-    });
-  });
+
+      taskProvider.getTasks();
+
+      const projectFolder = taskProvider.getProjectFolder();
+      if (!projectFolder) return;
+
+      let runTask: any;
+      taskProvider.tasks.forEach(async (task) => {
+        if (task.name.includes(`${Tasks.run}: `)) {
+          runTask = task;
+        }
+      });
+
+      if (!runTask) return;
+
+      if (
+        runTask.execution &&
+        runTask.execution instanceof vscode.ShellExecution &&
+        runTask.execution.commandLine
+      ) {
+        runTask.execution.commandLine = runTask.execution.commandLine.replace(
+          'FILE_DIR',
+          projectFolder,
+        );
+      }
+
+      if (!activeFolder) return;
+      const buildDir = path.join(activeFolder, 'build');
+      const modeDir = path.join(buildDir, `${buildMode}`);
+      if (!pathExists(modeDir)) return;
+
+      if (
+        experimentalExecutionEnabled &&
+        settingsProvider &&
+        activeFolder &&
+        argumentsString
+      ) {
+        await executeRunTask(
+          runTask,
+          activeFolder,
+          buildMode,
+          argumentsString,
+          settingsProvider.operatingSystem,
+        );
+      } else {
+        await vscode.tasks.executeTask(runTask);
+      }
+    },
+  );
+
   runStatusBar.command = commandName;
   context.subscriptions.push(commandRunDisposable);
 }
@@ -596,49 +642,41 @@ function initCleanStatusBar(context: vscode.ExtensionContext) {
   updateCleanStatus(cleanStatusBar, showStatusBarItems, activeFolder);
 
   const commandName = `${EXTENSION_NAME}.clean`;
-  commandCleanDisposable = vscode.commands.registerCommand(commandName, () => {
-    if (
-      !taskProvider ||
-      !taskProvider.tasks ||
-      !taskProvider.workspaceFolder ||
-      !taskProvider.activeFolder
-    ) {
-      const infoMessage = `cleanCallback: No Folder or Tasks defined.`;
-      logger.log(loggingActive, infoMessage);
-      return;
-    }
-
-    taskProvider.getTasks();
-
-    const projectFolder = taskProvider.getProjectFolder();
-    if (!projectFolder) return;
-
-    taskProvider.tasks.forEach(async (task) => {
-      if (task.name.includes(Tasks.clean)) {
-        if (
-          task.execution &&
-          task.execution instanceof vscode.ShellExecution &&
-          task.execution.commandLine
-        ) {
-          task.execution.commandLine = task.execution.commandLine.replace(
-            'FILE_DIR',
-            projectFolder,
-          );
-        }
-
-        if (experimentalExecutionEnabled && settingsProvider && activeFolder) {
-          await cleanTask(
-            task,
-            activeFolder,
-            buildMode,
-            settingsProvider.operatingSystem,
-          );
-        } else {
-          await vscode.tasks.executeTask(task);
-        }
+  commandCleanDisposable = vscode.commands.registerCommand(
+    commandName,
+    async () => {
+      if (activeFolder && taskProvider) {
+      } else {
+        const infoMessage = `cleanCallback: No Folder or TasksProvider defined.`;
+        logger.log(loggingActive, infoMessage);
+        return;
       }
-    });
-  });
+
+      if (!taskProvider || !taskProvider.tasks) return;
+
+      const cleanTaskIndex = 2;
+      const cleanTask = taskProvider.tasks[cleanTaskIndex];
+
+      if (!cleanTask) return;
+
+      if (
+        cleanTask.execution &&
+        cleanTask.execution instanceof vscode.ShellExecution &&
+        cleanTask.execution.commandLine
+      ) {
+        cleanTask.execution.commandLine = 'echo Cleaning...';
+      }
+
+      if (!activeFolder) return;
+
+      const buildPath = path.join(activeFolder, 'build', buildMode);
+      if (pathExists(buildPath)) {
+        rmdirRecursive(buildPath);
+      }
+
+      await vscode.tasks.executeTask(cleanTask);
+    },
+  );
   cleanStatusBar.command = commandName;
   context.subscriptions.push(commandCleanDisposable);
 }

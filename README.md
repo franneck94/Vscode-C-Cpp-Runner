@@ -104,6 +104,7 @@ For more information about glob pattern see [here](https://en.wikipedia.org/wiki
 - ⚙️ Additional linker arguments (defaults to [])
 - ⚙️ Additional include paths (defaults to [])
 - ⚙️ Glob pattern to exclude from the folder selection (defaults to [])
+- ⚙️ Experimental: Run compiler commands without Makefile (defaults to False)
 
 ## Important Notes
 

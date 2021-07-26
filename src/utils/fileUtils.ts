@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as JSON5 from 'json5';
 import * as path from 'path';
+
 import { loggingActive } from '../extension';
 import * as logger from './logger';
 import { JsonSettings, Languages } from './types';
@@ -14,6 +15,15 @@ export function mkdirRecursive(dir: string) {
     fs.mkdirSync(dir, { recursive: true });
   } catch (err) {
     const errorMessage = `mkdirRecursive: ${err}`;
+    logger.log(loggingActive, errorMessage);
+  }
+}
+
+export function rmdirRecursive(dir: string) {
+  try {
+    fs.rmdirSync(dir, { recursive: true });
+  } catch (err) {
+    const errorMessage = `rmdirSync: ${err}`;
     logger.log(loggingActive, errorMessage);
   }
 }

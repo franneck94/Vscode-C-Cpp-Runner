@@ -2,5 +2,5 @@
 
 void testFunc()
 {
-    printf("Test succeeded.");
+    printf("Test succeeded.\n");
 }

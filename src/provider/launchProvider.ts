@@ -1,7 +1,12 @@
 import * as path from 'path';
 
 import { pathExists, readJsonFile, writeJsonFile } from '../utils/fileUtils';
-import { Debuggers, JsonConfiguration, OperatingSystems } from '../utils/types';
+import {
+	Builds,
+	Debuggers,
+	JsonConfiguration,
+	OperatingSystems,
+} from '../utils/types';
 import { getLaunchConfigIndex } from '../utils/vscodeUtils';
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
@@ -11,6 +16,8 @@ const OUTPUT_FILENAME = 'launch.json';
 const CONFIG_NAME = 'C/C++ Runner: Debug Session';
 
 export class LaunchProvider extends FileProvider {
+  public buildMode: Builds = Builds.debug;
+
   constructor(
     protected settings: SettingsProvider,
     public workspaceFolder: string,
@@ -86,7 +93,10 @@ export class LaunchProvider extends FileProvider {
     }
 
     launchTemplate.configurations[0].cwd = this.activeFolder;
-    const debugPath = path.join(this.activeFolder, 'build/Debug/outDebug');
+    const debugPath = path.join(
+      this.activeFolder,
+      `build/${this.buildMode}/out${this.buildMode}`,
+    );
     launchTemplate.configurations[0].program = debugPath;
 
     const launchLocal: JsonConfiguration | undefined = readJsonFile(
@@ -116,6 +126,10 @@ export class LaunchProvider extends FileProvider {
   public updateFolderData(workspaceFolder: string, activeFolder: string) {
     this.activeFolder = activeFolder;
     super._updateFolderData(workspaceFolder);
+  }
+
+  public updateModeData(buildMode: Builds) {
+    this.buildMode = buildMode;
   }
 
   public changeCallback() {

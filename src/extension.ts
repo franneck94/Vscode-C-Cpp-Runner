@@ -1,7 +1,9 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import { executeBuildTask, executeRunTask } from './executor/betterMakefile';
+import { executeBuildTask } from './executor/builder';
+import { runDebugger } from './executor/debugger';
+import { executeRunTask } from './executor/runner';
 import { folderHandler } from './handler/folderHandler';
 import { modeHandler } from './handler/modeHandler';
 import {
@@ -20,10 +22,11 @@ import {
 	foldersInDir,
 	mkdirRecursive,
 	pathExists,
+	replaceBackslashes,
 	rmdirRecursive,
 } from './utils/fileUtils';
 import * as logger from './utils/logger';
-import { Builds, Tasks } from './utils/types';
+import { Builds } from './utils/types';
 import {
 	createStatusBarItem,
 	disposeItem,
@@ -333,9 +336,7 @@ function updateFolderData() {
   if (taskProvider) {
     taskProvider.updateFolderData(workspaceFolder, activeFolder);
     taskProvider.updateArguments(argumentsString);
-    if (buildMode) {
-      taskProvider.updateModeData(buildMode);
-    }
+    taskProvider.updateModeData(buildMode);
   }
 
   if (workspaceFolder && activeFolder) {
@@ -349,6 +350,7 @@ function updateFolderData() {
 
       if (launchProvider) {
         launchProvider.updateFolderData(workspaceFolder, activeFolder);
+        launchProvider.updateModeData(buildMode);
         launchProvider.updateFileContent();
       }
     }
@@ -448,6 +450,13 @@ function initModeStatusBar(context: vscode.ExtensionContext) {
           activeFolder,
           buildMode,
         );
+
+        if (!taskProvider) return;
+        taskProvider.updateModeData(buildMode);
+
+        if (!launchProvider) return;
+        launchProvider.updateModeData(buildMode);
+        launchProvider.updateFileContent();
       } else {
         const infoMessage = `Mode callback aborted.`;
         logger.log(loggingActive, infoMessage);
@@ -485,13 +494,8 @@ function initBuildStatusBar(context: vscode.ExtensionContext) {
   commandBuildDisposable = vscode.commands.registerCommand(
     commandName,
     async () => {
-      if (
-        !taskProvider ||
-        !taskProvider.tasks ||
-        !taskProvider.workspaceFolder ||
-        !taskProvider.activeFolder
-      ) {
-        const infoMessage = `buildCallback: No Folder or Tasks defined.`;
+      if (!taskProvider || !taskProvider.tasks) {
+        const infoMessage = `buildCallback failed`;
         logger.log(loggingActive, infoMessage);
         return;
       }
@@ -501,34 +505,34 @@ function initBuildStatusBar(context: vscode.ExtensionContext) {
       const projectFolder = taskProvider.getProjectFolder();
       if (!projectFolder) return;
 
-      let buildTask: any;
-      taskProvider.tasks.forEach(async (task) => {
-        if (task.name.includes(`${Tasks.build}: `)) {
-          buildTask = task;
-        }
-      });
+      const buildTaskIndex = 0;
+      const buildTask = taskProvider.tasks[buildTaskIndex];
 
       if (!buildTask) return;
 
       if (
-        buildTask.execution &&
-        buildTask.execution instanceof vscode.ShellExecution &&
-        buildTask.execution.commandLine
+        !buildTask.execution ||
+        !(buildTask.execution instanceof vscode.ShellExecution) ||
+        !buildTask.execution.commandLine
       ) {
-        buildTask.execution.commandLine = buildTask.execution.commandLine.replace(
-          'FILE_DIR',
-          projectFolder,
-        );
+        return;
       }
+
+      buildTask.execution.commandLine = buildTask.execution.commandLine.replace(
+        'FILE_DIR',
+        projectFolder,
+      );
 
       if (!activeFolder) return;
+
       const buildDir = path.join(activeFolder, 'build');
       const modeDir = path.join(buildDir, `${buildMode}`);
-      if (!pathExists(modeDir)) {
-        mkdirRecursive(modeDir);
-      }
 
-      if (experimentalExecutionEnabled && settingsProvider && activeFolder) {
+      if (!pathExists(modeDir)) mkdirRecursive(modeDir);
+
+      if (!settingsProvider) return;
+
+      if (experimentalExecutionEnabled) {
         await executeBuildTask(
           buildTask,
           settingsProvider,
@@ -553,13 +557,8 @@ function initRunStatusBar(context: vscode.ExtensionContext) {
   commandRunDisposable = vscode.commands.registerCommand(
     commandName,
     async () => {
-      if (
-        !taskProvider ||
-        !taskProvider.tasks ||
-        !taskProvider.workspaceFolder ||
-        !taskProvider.activeFolder
-      ) {
-        const infoMessage = `runCallback: No Folder or Tasks defined.`;
+      if (!taskProvider || !taskProvider.tasks) {
+        const infoMessage = `runCallback failed`;
         logger.log(loggingActive, infoMessage);
         return;
       }
@@ -569,37 +568,36 @@ function initRunStatusBar(context: vscode.ExtensionContext) {
       const projectFolder = taskProvider.getProjectFolder();
       if (!projectFolder) return;
 
-      let runTask: any;
-      taskProvider.tasks.forEach(async (task) => {
-        if (task.name.includes(`${Tasks.run}: `)) {
-          runTask = task;
-        }
-      });
+      const runTaskIndex = 1;
+      const runTask = taskProvider.tasks[runTaskIndex];
 
       if (!runTask) return;
 
       if (
-        runTask.execution &&
-        runTask.execution instanceof vscode.ShellExecution &&
-        runTask.execution.commandLine
+        !runTask.execution ||
+        !(runTask.execution instanceof vscode.ShellExecution) ||
+        !runTask.execution.commandLine
       ) {
-        runTask.execution.commandLine = runTask.execution.commandLine.replace(
-          'FILE_DIR',
-          projectFolder,
-        );
+        return;
       }
 
+      runTask.execution.commandLine = runTask.execution.commandLine.replace(
+        'FILE_DIR',
+        projectFolder,
+      );
+
       if (!activeFolder) return;
+
       const buildDir = path.join(activeFolder, 'build');
       const modeDir = path.join(buildDir, `${buildMode}`);
+
       if (!pathExists(modeDir)) return;
 
-      if (
-        experimentalExecutionEnabled &&
-        settingsProvider &&
-        activeFolder &&
-        argumentsString
-      ) {
+      if (!settingsProvider) {
+        return;
+      }
+
+      if (experimentalExecutionEnabled) {
         await executeRunTask(
           runTask,
           activeFolder,
@@ -625,12 +623,12 @@ function initDebugStatusBar(context: vscode.ExtensionContext) {
   const commandName = `${EXTENSION_NAME}.debug`;
   commandDebugDisposable = vscode.commands.registerCommand(commandName, () => {
     if (!activeFolder || !workspaceFolder) {
-      const infoMessage = `debugCallback: No Workspace or Folder picked.`;
+      const infoMessage = `debugCallback failed`;
       logger.log(loggingActive, infoMessage);
       return;
     }
 
-    if (taskProvider) taskProvider.runDebugTask();
+    if (taskProvider) runDebugger(activeFolder, workspaceFolder, buildMode);
   });
   debugStatusBar.command = commandName;
   context.subscriptions.push(commandDebugDisposable);
@@ -647,7 +645,7 @@ function initCleanStatusBar(context: vscode.ExtensionContext) {
     async () => {
       if (activeFolder && taskProvider) {
       } else {
-        const infoMessage = `cleanCallback: No Folder or TasksProvider defined.`;
+        const infoMessage = `cleanCallback failed`;
         logger.log(loggingActive, infoMessage);
         return;
       }
@@ -659,21 +657,26 @@ function initCleanStatusBar(context: vscode.ExtensionContext) {
 
       if (!cleanTask) return;
 
+      if (!activeFolder || !workspaceFolder) return;
+
+      const buildDir = path.join(activeFolder, 'build');
+      const modeDir = path.join(buildDir, `${buildMode}`);
+
       if (
-        cleanTask.execution &&
-        cleanTask.execution instanceof vscode.ShellExecution &&
-        cleanTask.execution.commandLine
+        !cleanTask.execution ||
+        !(cleanTask.execution instanceof vscode.ShellExecution) ||
+        !cleanTask.execution.commandLine
       ) {
-        cleanTask.execution.commandLine = 'echo Cleaning...';
+        return;
       }
 
-      if (!activeFolder) return;
+      let relativeModeDir = modeDir.replace(workspaceFolder, '');
+      relativeModeDir = replaceBackslashes(relativeModeDir);
+      cleanTask.execution.commandLine = `echo Cleaning ${relativeModeDir}...`;
 
-      const buildPath = path.join(activeFolder, 'build', buildMode);
-      if (pathExists(buildPath)) {
-        rmdirRecursive(buildPath);
-      }
+      if (!pathExists(modeDir)) return;
 
+      rmdirRecursive(modeDir);
       await vscode.tasks.executeTask(cleanTask);
     },
   );

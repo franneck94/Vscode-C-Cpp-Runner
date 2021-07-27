@@ -4,7 +4,6 @@ import * as vscode from 'vscode';
 import { extensionPath } from '../extension';
 import {
 	getLanguage,
-	pathExists,
 	readJsonFile,
 	replaceBackslashes,
 	writeJsonFile,
@@ -135,7 +134,6 @@ export class TaskProvider implements vscode.TaskProvider {
     taskJson.command = settings.makePath;
     taskJson.args[1] = `--file=${this._makefileFile}`;
 
-    const isCleanTask = taskJson.label.includes(Tasks.clean);
     const isRunTask = taskJson.label.includes(Tasks.run);
 
     // Makefile arguments that hold single values
@@ -147,7 +145,7 @@ export class TaskProvider implements vscode.TaskProvider {
     }
     taskJson.args.push(`LANGUAGE_MODE=${language}`);
 
-    if (!isCleanTask && !isRunTask) {
+    if (!isRunTask) {
       if (language === Languages.c) {
         taskJson.args.push(`C_COMPILER=${settings.cCompilerPath}`);
         if (
@@ -303,35 +301,6 @@ export class TaskProvider implements vscode.TaskProvider {
     );
 
     this.tasks.push(task);
-  }
-
-  public async runDebugTask() {
-    if (!this._activeFolder) return;
-    if (!this.workspaceFolder) return;
-
-    const uriWorkspaceFolder = vscode.Uri.file(this.workspaceFolder);
-    const folder = vscode.workspace.getWorkspaceFolder(uriWorkspaceFolder);
-    const launchPath = path.join(
-      this.workspaceFolder,
-      '.vscode',
-      'launch.json',
-    );
-
-    const configJson: JsonConfiguration | undefined = readJsonFile(launchPath);
-
-    if (!configJson) return;
-
-    const configIdx = getLaunchConfigIndex(configJson, CONFIG_NAME);
-
-    if (configIdx === undefined) return;
-
-    const buildPath = path.join(this._activeFolder, 'build', this.buildMode);
-    if (!pathExists(buildPath)) return;
-
-    await vscode.debug.startDebugging(
-      folder,
-      configJson.configurations[configIdx],
-    );
   }
 
   public get buildMode() {

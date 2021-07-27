@@ -7,6 +7,7 @@
 ## Version 1.1.2: July 26, 2021
 
 - Updated run task for windows such that the executable name has .exe file extension, since this is needed for MinGW
+- Fixed bug that debugging the release build was not possible
 
 ## Version 1.1.1: July 26, 2021
 

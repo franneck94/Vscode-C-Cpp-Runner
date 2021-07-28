@@ -122,6 +122,7 @@ export function isCmakeActive() {
 
 export function isMakeActive() {
   let makeActive = false;
+  let makeInVscode = false;
 
   const workspaceFodlers = vscode.workspace.workspaceFolders;
   const makeExtensionName = 'makefile';
@@ -156,6 +157,7 @@ export function isMakeActive() {
 
         if (pathExists(makefilePath)) {
           makeActive = true;
+          makeInVscode = true;
         }
       }
     });
@@ -170,5 +172,5 @@ export function isMakeActive() {
     }
   }
 
-  return makeActive;
+  return { makeActive, makeInVscode };
 }

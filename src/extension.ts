@@ -103,14 +103,19 @@ export function activate(context: vscode.ExtensionContext) {
   const cmakeActive = isCmakeActive();
   if (cmakeActive) {
     showStatusBarItems = false;
-    const infoMessage = `CMake Project found. Deactivating extension.`;
+    const infoMessage = `CMake Project found. UI disabled.`;
     logger.log(loggingActive, infoMessage);
   }
 
-  const makeActive = isMakeActive();
-  if (makeActive) {
+  const { makeActive, makeInVscode } = isMakeActive();
+
+  if (makeInVscode) {
+    const infoMessage = `Makefile found. Exiting extension.`;
+    logger.log(loggingActive, infoMessage);
+    return;
+  } else if (makeActive) {
     showStatusBarItems = false;
-    const infoMessage = `Makefile found. Deactivating extension.`;
+    const infoMessage = `Makefile found. UI disabled.`;
     logger.log(loggingActive, infoMessage);
   }
 

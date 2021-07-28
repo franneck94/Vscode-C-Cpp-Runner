@@ -112,8 +112,11 @@ export function activate(context: vscode.ExtensionContext) {
   if (makeInVscode) {
     const infoMessage = `Makefile found. Exiting extension.`;
     logger.log(loggingActive, infoMessage);
+    deactivate();
     return;
-  } else if (makeActive) {
+  }
+
+  if (makeActive) {
     showStatusBarItems = false;
     const infoMessage = `Makefile found. UI disabled.`;
     logger.log(loggingActive, infoMessage);

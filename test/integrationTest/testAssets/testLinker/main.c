@@ -8,6 +8,8 @@ void *print_message_function(void *ptr)
     char *message;
     message = (char *)ptr;
     printf("%s \n", message);
+
+    return (void *)0;
 }
 
 int main()

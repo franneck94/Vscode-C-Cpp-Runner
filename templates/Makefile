@@ -127,12 +127,13 @@ build: $(BUILD_DIR)/$(EXECUTABLE_NAME)
 #############
 
 ifneq ($(LINKER_ARGS), "")
-$(BUILD_DIR)/$(EXECUTABLE_NAME): $(OBJECTS)
-	$(COMPILER_CALL) $^ -o $(LINKER_ARGS) $@
+EXE_GENERATION = $(LINKER_ARGS) -o
 else
+EXE_GENERATION = -o
+endif
+
 $(BUILD_DIR)/$(EXECUTABLE_NAME): $(OBJECTS)
-	$(COMPILER_CALL) $^ -o $@
-endif()
+	$(COMPILER_CALL) $^ $(EXE_GENERATION) $@
 
 execute:
 	./$(BUILD_DIR)/$(EXECUTABLE_NAME) $(ARGUMENTS)

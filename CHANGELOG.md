@@ -4,13 +4,18 @@
 
 - Extend the experimental setting
 
+## Version 1.1.4: August 15, 2021
+
+- Fixed problem with Linker Args
+- Updated README
+
 ## Version 1.1.3: July 27, 2021
 
 - Fixed problem with Makefile in .vscode folder (regarding my Udemy Courses setup)
 
 ## Version 1.1.2: July 26, 2021
 
-- Updated run task for windows such that the executable name has .exe file extension, since this is needed for MinGW
+- Updated run task for windows such that the executable name has .exe file extension since this is needed for MinGW
 - Fixed bug that debugging the release build was not possible
 
 ## Version 1.1.1: July 26, 2021

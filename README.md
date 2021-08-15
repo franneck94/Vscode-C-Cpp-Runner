@@ -101,8 +101,8 @@ For more information about glob pattern see [here](https://en.wikipedia.org/wiki
 - ⚙️ What warnings should be checked by the compiler (defaults to ['-Wall', '-Wextra', '-Wpedantic'])
 - ⚙️ To treat warnings as errors (defaults to False)
 - ⚙️ Additional compiler arguments (defaults to [])
-- ⚙️ Additional linker arguments (defaults to [])
-- ⚙️ Additional include paths (defaults to [])
+- ⚙️ Additional linker arguments (defaults to []). It is expected to prefix the arguments with the appropiate flags (e.g. -l or -L)
+- ⚙️ Additional include paths (defaults to []) It is **not** (!) expected to prefix the arguments with the appropiate **-I** flag
 - ⚙️ Glob pattern to exclude from the folder selection (defaults to [])
 - ⚙️ Experimental: Run compiler commands without Makefile (defaults to False)
 

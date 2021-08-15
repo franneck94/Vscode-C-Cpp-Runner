@@ -27,30 +27,20 @@ COMPILER_ARGS ?= ""
 LINKER_ARGS ?= ""
 INCLUDE_PATHS ?= ""
 
+BUILD_DIR = build/$(COMPILATION_MODE)
+
 # Run/Debug arguments
 ARGUMENTS ?= ""
 
 # Internal variable
 VERBOSE = 0
 
-#######################
-## OS DEPENDENT VARS ##
-#######################
-ifeq '$(findstring ;,$(PATH))' ';'
- detected_OS := Windows
-else
- detected_OS := $(shell uname 2>/dev/null || echo Unknown)
-endif
-
-ifeq ($(detected_OS), Windows)
-BUILD_DIR = build\$(COMPILATION_MODE)
-else
-BUILD_DIR = build/$(COMPILATION_MODE)
-endif
-
 ifeq ($(VERBOSE), 1)
-$(info Detected OS: $(detected_OS))
-$(info BUILD PATH: $(BUILD_DIR))
+$(info C_COMPILER: $(C_COMPILER))
+$(info CPP_STANDARD: $(CPP_STANDARD))
+$(info LANGUAGE_MODE: $(LANGUAGE_MODE))
+$(info EXECUTABLE_NAME MODE: $(EXECUTABLE_NAME))
+$(info BUILD_PATH: $(BUILD_DIR))
 endif
 
 ########################
@@ -87,11 +77,6 @@ C_COMPILER_FLAGS := $(C_COMPILER_FLAGS) $(INCLUDE_PATHS_APP)
 CPP_COMPILER_FLAGS := $(CPP_COMPILER_FLAGS) $(INCLUDE_PATHS_APP)
 endif
 
-ifneq ($(LINKER_ARGS), "")
-C_COMPILER_FLAGS := $(C_COMPILER_FLAGS) $(LINKER_ARGS)
-CPP_COMPILER_FLAGS := $(CPP_COMPILER_FLAGS) $(LINKER_ARGS)
-endif
-
 ifeq ($(ENABLE_WARNINGS), 1)
 ifneq ($(WARNINGS), "")
 C_COMPILER_FLAGS := $(C_COMPILER_FLAGS) $(WARNINGS)
@@ -112,14 +97,14 @@ CPP_COMPILER_CALL := $(CPP_COMPILER) $(CPP_COMPILER_FLAGS)
 C_SRCS := $(wildcard *.c)
 C_OBJECTS := $(patsubst %.c, $(BUILD_DIR)/%.o, $(C_SRCS))
 
-CPP_SRCS := $(wildcard *.cpp)
-CPP_OBJECTS := $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(CPP_SRCS))
+CC_SRCS := $(wildcard *.cc)
+CC_OBJECTS := $(patsubst %.cc, $(BUILD_DIR)/%.o, $(CC_SRCS))
 
 CXX_SRCS := $(wildcard *.cxx)
 CXX_OBJECTS := $(patsubst %.cxx, $(BUILD_DIR)/%.o, $(CXX_SRCS))
 
-CC_SRCS := $(wildcard *.cc)
-CC_OBJECTS := $(patsubst %.cc, $(BUILD_DIR)/%.o, $(CC_SRCS))
+CPP_SRCS := $(wildcard *.cpp)
+CPP_OBJECTS := $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(CPP_SRCS))
 
 ####################
 ## LANGUAGE MODE  ##
@@ -141,8 +126,14 @@ build: $(BUILD_DIR)/$(EXECUTABLE_NAME)
 ## TARGETS ##
 #############
 
+ifneq ($(LINKER_ARGS), "")
+EXE_GENERATION = $(LINKER_ARGS) -o
+else
+EXE_GENERATION = -o
+endif
+
 $(BUILD_DIR)/$(EXECUTABLE_NAME): $(OBJECTS)
-	$(COMPILER_CALL) $^ -o $@
+	$(COMPILER_CALL) $^ $(EXE_GENERATION) $@
 
 execute:
 	./$(BUILD_DIR)/$(EXECUTABLE_NAME) $(ARGUMENTS)
@@ -151,16 +142,16 @@ execute:
 ## PATTERNS ##
 ##############
 $(BUILD_DIR)/%.o : %.c
-	$(C_COMPILER_CALL) -c $< -o $@
+	$(COMPILER_CALL) -c $< -o $@
 
 $(BUILD_DIR)/%.o : %.cpp
-	$(CPP_COMPILER_CALL) -c $< -o $@
+	$(COMPILER_CALL) -c $< -o $@
 
 $(BUILD_DIR)/%.o : %.cc
-	$(CPP_COMPILER_CALL) -c $< -o $@
+	$(COMPILER_CALL) -c $< -o $@
 
 $(BUILD_DIR)/%.o : %.cxx
-	$(CPP_COMPILER_CALL) -c $< -o $@
+	$(COMPILER_CALL) -c $< -o $@
 
 ###########
 ## PHONY ##

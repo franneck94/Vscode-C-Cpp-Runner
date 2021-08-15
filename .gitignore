@@ -7,9 +7,13 @@ build/
 
 package-lock.json
 
-.vscode/
-!/.vscode/
-.vscode/c_cpp_properties.json
+**/.vscode/tasks.json
+**/.vscode/launch.json
+**/.vscode/c_cpp_properties.json
+**/.vscode/settings.json
+
+!.vscode/tasks.json
+!.vscode/launch.json
 
 *.vsix
 *.cpuprofile

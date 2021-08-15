@@ -43,26 +43,14 @@ else
 endif
 
 ifeq ($(detected_OS), Windows)
-RM_FUNC = del /s /q
-MKDIR_FUNC = mkdir
 BUILD_DIR = build\$(COMPILATION_MODE)
-CLEAN_PATH = $(BUILD_DIR)\*.o
-MKDIR_PATH = $(BUILD_DIR)
 else
-RM_FUNC = rm -f
-MKDIR_FUNC = mkdir -p
 BUILD_DIR = build/$(COMPILATION_MODE)
-CLEAN_PATH = $(BUILD_DIR)/*.o
-MKDIR_PATH = $(BUILD_DIR)
 endif
 
 ifeq ($(VERBOSE), 1)
 $(info Detected OS: $(detected_OS))
 $(info BUILD PATH: $(BUILD_DIR))
-$(info RM: $(RM_FUNC))
-$(info CLEAN PATH: $(CLEAN_PATH))
-$(info MKDIR: $(MKDIR_FUNC))
-$(info MKDIR PATH: $(MKDIR_PATH))
 endif
 
 ########################
@@ -145,15 +133,9 @@ OBJECTS := $(CPP_OBJECTS) $(CC_OBJECTS) $(CXX_OBJECTS)
 endif
 
 ####################
-## HELPER TARGETS ##
-####################
-$(BUILD_DIR):
-	$(MKDIR_FUNC) $(MKDIR_PATH)
-
-####################
 ## PSEUDO TARGETS ##
 ####################
-build: $(BUILD_DIR) | $(BUILD_DIR)/$(EXECUTABLE_NAME)
+build: $(BUILD_DIR)/$(EXECUTABLE_NAME)
 
 #############
 ## TARGETS ##
@@ -164,9 +146,6 @@ $(BUILD_DIR)/$(EXECUTABLE_NAME): $(OBJECTS)
 
 execute:
 	./$(BUILD_DIR)/$(EXECUTABLE_NAME) $(ARGUMENTS)
-
-clean:
-	$(RM_FUNC) $(CLEAN_PATH)
 
 ##############
 ## PATTERNS ##
@@ -186,4 +165,4 @@ $(BUILD_DIR)/%.o : %.cxx
 ###########
 ## PHONY ##
 ###########
-.PHONY: clean build execute
+.PHONY: build execute

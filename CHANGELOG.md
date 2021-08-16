@@ -4,6 +4,10 @@
 
 - Extend the experimental setting
 
+## Version 1.1.5: August 16, 2021
+
+- Fixed problem with empty arguments for executing the binary on windows with mingw compiler
+
 ## Version 1.1.4: August 15, 2021
 
 - Fixed problem with Linker Args

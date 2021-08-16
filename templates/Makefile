@@ -135,8 +135,14 @@ endif
 $(BUILD_DIR)/$(EXECUTABLE_NAME): $(OBJECTS)
 	$(COMPILER_CALL) $^ $(EXE_GENERATION) $@
 
+ifneq ($(ARGUMENTS), "")
+EXE_CALL = ./$(BUILD_DIR)/$(EXECUTABLE_NAME) $(ARGUMENTS)
+else
+EXE_CALL = ./$(BUILD_DIR)/$(EXECUTABLE_NAME)
+endif
+
 execute:
-	./$(BUILD_DIR)/$(EXECUTABLE_NAME) $(ARGUMENTS)
+	$(EXE_CALL)
 
 ##############
 ## PATTERNS ##

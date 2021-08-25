@@ -13,7 +13,14 @@
       "internalConsoleOptions": "openOnSessionStart",
       "MIMode": "",
       "miDebuggerPath": "",
-      "externalConsole": false
+      "externalConsole": false,
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
     }
   ]
 }

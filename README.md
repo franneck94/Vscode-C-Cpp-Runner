@@ -18,7 +18,7 @@ You do not need to know about any compiler and Makefile commands. 😎
 
 ## Install the Software Requirements (optional)
 
-- 🖥️ Windows: Highly recommended to install gcc/g++, gdb and make via [Cygwin](https://www.cygwin.com/). Alternatives to this is MinGW via [MSYS2](https://www.msys2.org/).
+- 🖥️ Windows: Highly recommended to install gcc/g++, gdb and make via [Cygwin](https://www.cygwin.com/). An alternative to this is MinGW via [MSYS2](https://www.msys2.org/).
 - 🖥️ Linux: Recommended to install gcc/g++, gdb and make via a package manager (e.g. `apt` for Debian derivates).
 - 🖥️ MacOS: Recommended to install clang/clang++, lldb and make via [xcode-tools](https://developer.apple.com/xcode/features/). An alternative is installing the llvm toolchain with [brew](https://apple.stackexchange.com/a/362837).
 
@@ -53,8 +53,8 @@ Then you can use the different commands in vscode's command palette:
 ### Configuration
 
 The extension will automatically search for an installed compiler on your computer.  
-For linux and mac it searches in */bin/* and */usr/bin/*, and on windows it searches for *cygwin*, *mingw* and *msys2* in the PATH.  
-All settings will be stored to the local workspace settings (*".vscode/settings.json"*).  
+For linux and mac it searches in */bin/* and */usr/bin/*, and on windows it searches for *cygwin*, *mingw*, and *msys2* in the PATH.  
+All settings will be stored in the local workspace settings (*".vscode/settings.json"*).  
 If you wish to use any other compiler or different setting, just edit the entries in the local settings file.  
 ![FoundCompiler](./media/FoundCompiler.png)  
 
@@ -100,8 +100,8 @@ For more information about glob pattern see [here](https://en.wikipedia.org/wiki
 - ⚙️ What warnings should be checked by the compiler (defaults to ['-Wall', '-Wextra', '-Wpedantic'])
 - ⚙️ To treat warnings as errors (defaults to False)
 - ⚙️ Additional compiler arguments (defaults to [])
-- ⚙️ Additional linker arguments (defaults to []). It is expected to prefix the arguments with the appropiate flags (e.g. -l or -L)
-- ⚙️ Additional include paths (defaults to []) It is **not** (!) expected to prefix the arguments with the appropiate **-I** flag
+- ⚙️ Additional linker arguments (defaults to []). It is expected to prefix the arguments with the appropriate flags (e.g. -l or -L)
+- ⚙️ Additional include paths (defaults to []) It is **not** (!) expected to prefix the arguments with the appropriate **-I** flag
 - ⚙️ Glob pattern to exclude from the folder selection (defaults to [])
 - ⚙️ Experimental: Run compiler commands without Makefile (defaults to False)
 

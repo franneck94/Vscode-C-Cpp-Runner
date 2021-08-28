@@ -4,6 +4,7 @@
 
 - **Improvement**: Update gcc/clang search logic, to only search in */usr/* and */usr/bin/* on linux, and only in paths containing cygwin, mingw or msys on windows
 - **Improvement**: If the build path contains whitespaces or non-extended ascii chars the extension's experimental code runner is used instead of Makefile
+- **Bugfix**: Fixed using incorrect compiler path in experimental setting
 
 ## Version 1.2.0: August 25, 2021
 

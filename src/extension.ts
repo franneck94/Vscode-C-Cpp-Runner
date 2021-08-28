@@ -540,7 +540,15 @@ function initBuildStatusBar(context: vscode.ExtensionContext) {
 
       if (!settingsProvider) return;
 
-      if (experimentalExecutionEnabled) {
+      const hasNoneExtendedAsciiChars = [...buildDir].some(
+        (char) => char.charCodeAt(0) > 255,
+      );
+
+      if (
+        experimentalExecutionEnabled ||
+        buildDir.includes(' ') ||
+        hasNoneExtendedAsciiChars
+      ) {
         await executeBuildTask(
           buildTask,
           settingsProvider,
@@ -605,7 +613,15 @@ function initRunStatusBar(context: vscode.ExtensionContext) {
         return;
       }
 
-      if (experimentalExecutionEnabled) {
+      const hasNoneExtendedAsciiChars = [...buildDir].some(
+        (char) => char.charCodeAt(0) > 255,
+      );
+
+      if (
+        experimentalExecutionEnabled ||
+        buildDir.includes(' ') ||
+        hasNoneExtendedAsciiChars
+      ) {
         await executeRunTask(
           runTask,
           activeFolder,

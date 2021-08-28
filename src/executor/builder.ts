@@ -10,13 +10,7 @@ import {
 	mkdirRecursive,
 	pathExists,
 } from '../utils/fileUtils';
-import {
-	Builds,
-	Compilers,
-	Languages,
-	OperatingSystems,
-	Task,
-} from '../utils/types';
+import { Builds, Languages, OperatingSystems, Task } from '../utils/types';
 
 export async function executeBuildTask(
   task: Task,
@@ -43,14 +37,14 @@ export async function executeBuildTask(
 
   const executablePath = path.join(modeDir, executableName);
 
-  let compiler: string | Compilers | undefined;
+  let compiler: string | undefined;
   let standard: string | undefined;
 
   if (language === Languages.cpp) {
-    compiler = settingsProvider.cppCompiler;
+    compiler = settingsProvider.cppCompilerPath;
     standard = settingsProvider.cppStandard;
   } else {
-    compiler = settingsProvider.cCompiler;
+    compiler = settingsProvider.cCompilerPath;
     standard = settingsProvider.cStandard;
   }
 

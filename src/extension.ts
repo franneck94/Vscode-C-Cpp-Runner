@@ -540,7 +540,7 @@ function initBuildStatusBar(context: vscode.ExtensionContext) {
 
       if (!settingsProvider) return;
 
-      if (experimentalExecutionEnabled) {
+      if (experimentalExecutionEnabled || buildDir.includes(' ')) {
         await executeBuildTask(
           buildTask,
           settingsProvider,
@@ -605,7 +605,7 @@ function initRunStatusBar(context: vscode.ExtensionContext) {
         return;
       }
 
-      if (experimentalExecutionEnabled) {
+      if (experimentalExecutionEnabled || buildDir.includes(' ')) {
         await executeRunTask(
           runTask,
           activeFolder,

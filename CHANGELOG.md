@@ -1,46 +1,51 @@
 # C/C++ Runner Change Log
 
-## Version 1.2.0: Planned
+## Version 1.3.0: August 28, 2021
 
-- Extend the experimental setting
+- **Improvement**: Update gcc/clang search logic, to only search in /usr/ and /usr/bin/ on linux, and only in paths containing cygwin, mingw or msys on windows
+- **Improvement**: If the build path contains whitespaces the extension's experimental code runner is used instead of Makefile
+
+## Version 1.2.0: August 25, 2021
+
+- **Feature**: Added pretty print for gdb in debug (launch) configuration
 
 ## Version 1.1.5: August 16, 2021
 
-- Fixed problem with empty arguments for executing the binary on windows with mingw compiler
+- **Bugfix**: Fixed problem with empty arguments for executing the binary on windows with mingw compiler
 
 ## Version 1.1.4: August 15, 2021
 
-- Fixed problem with Linker Args
-- Updated README
+- **Bugfix**: Fixed problem with Linker Args
+- **Info**: Updated README
 
 ## Version 1.1.3: July 27, 2021
 
-- Fixed problem with Makefile in .vscode folder (regarding my Udemy Courses setup)
+- **Bugfix**: Fixed problem with Makefile in .vscode folder (regarding my Udemy Courses setup)
 
 ## Version 1.1.2: July 26, 2021
 
-- Updated run task for windows such that the executable name has .exe file extension since this is needed for MinGW
-- Fixed bug that debugging the release build was not possible
+- **Bugfix**: Updated run task for windows such that the executable name has .exe file extension since this is needed for MinGW
+- **Bugfix**: Fixed bug that debugging the release build was not possible
 
 ## Version 1.1.1: July 26, 2021
 
-- Creating and deleting build folder is now executed by the extension code and not anymore by the Makefile
+- **Improvement**: Creating and deleting build folder is now executed by the extension code and not anymore by the Makefile
 
 ## Version 1.1.0: July 24, 2021
 
-- Added experimental setting to run compiler commands without Makefile
+- **Feature**: Added experimental setting to run compiler commands without Makefile
 
 ## Version 1.0.2: July 9, 2021
 
-- Fixed bug for compiler search on Linux and Mac
+- **Bugfix**: Fixed bug for compiler search on Linux and Mac
 
 ## Version 1.0.1: July 4, 2021
 
-- Added information message if a path has whitespaces. Makefile can not work with paths/filenames with whitespaces properly.
+- **Info**: Added information message if a path has whitespaces. Makefile can not work with paths/filenames with whitespaces properly.
 
 ## Version 1.0.0: July 3, 2021
 
-- Following settings are now array of strings instead of strings:
+- **Improvement**: Following settings are now array of strings instead of strings:
   - `C_Cpp_runner.warnings`
   - `C_Cpp_runner.includePaths`
   - `C_Cpp_runner.compilerArgs`

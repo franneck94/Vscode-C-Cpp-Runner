@@ -9,6 +9,10 @@
 
 - **Feature**: Added pretty print for gdb in debug (launch) configuration
 
+## Version 1.2.0: August 25, 2021
+
+- Added pretty print for gdb in debug (launch) configuration
+
 ## Version 1.1.5: August 16, 2021
 
 - **Bugfix**: Fixed problem with empty arguments for executing the binary on windows with mingw compiler

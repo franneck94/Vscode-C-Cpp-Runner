@@ -114,8 +114,8 @@ For more information about glob pattern see [here](https://en.wikipedia.org/wiki
 - 📁 The folder selection menu will not list:
   - Folder names including '.' (e.g. *.vscode*), '\_\_' (e.g. temp folders) or 'CMake'
   - The folder named *build* since this is the auto generated folder by this extension
-- 📝 Path and file names containing whitespaces will use the extension's experimental code runner and not Makefile.
-- 📝 Path and file names containing non ASCII characters will use the extension's experimental code runner and not Makefile.
+- 📝 Paths containing whitespaces or non-extended ASCII characters will use the extension's experimental code runner and not Makefile.
+- 📝 It is forbidden to use spaces in filenames because Makefile cannot handle this properly
 
 ### CMake and Makefile Projects
 

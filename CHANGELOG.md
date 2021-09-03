@@ -1,5 +1,11 @@
 # C/C++ Runner Change Log
 
+## Version 1.4.0
+
+- Add reset option for settings and properties file
+- Add build mode: RelWithDebInfo (-O2 -g -DNDEBUG), MinSizeRel (-Os -DNDEBUG)
+- If workspace is opened with existing c_cpp_properties file but this extension was not initialized yet in the workspace, use the settings from the properties file
+
 ## Version 1.3.0: August 28, 2021
 
 - **Improvement**: Update gcc/clang search logic, to only search in */usr/* and */usr/bin/* on linux, and only in paths containing cygwin, mingw or msys on windows

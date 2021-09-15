@@ -30,18 +30,20 @@ import { Builds } from './utils/types';
 import {
 	createStatusBarItem,
 	disposeItem,
+	getActivationState,
 	getExperimentalExecutionState,
 	getLoggingState,
-	isCmakeActive,
-	isMakeActive,
+	isCmakeProject,
+	isCourseProject,
 	setContextValue,
+	updateActivationState,
 	updateLoggingState,
 } from './utils/vscodeUtils';
 
 let folderContextMenuDisposable: vscode.Disposable | undefined;
 let taskProviderDisposable: vscode.Disposable | undefined;
 let commandHandlerDisposable: vscode.Disposable | undefined;
-let toggleStatusBarDisposable: vscode.Disposable | undefined;
+let toggleExtensionStateDisposable: vscode.Disposable | undefined;
 let commandFolderDisposable: vscode.Disposable | undefined;
 let commandModeDisposable: vscode.Disposable | undefined;
 let commandBuildDisposable: vscode.Disposable | undefined;
@@ -70,6 +72,7 @@ let workspaceFolder: string | undefined;
 let activeFolder: string | undefined;
 let buildMode: Builds = Builds.debug;
 let showStatusBarItems: boolean = true;
+let createExtensionFiles: boolean = true;
 
 const EXTENSION_NAME = 'C_Cpp_Runner';
 
@@ -87,40 +90,36 @@ export function activate(context: vscode.ExtensionContext) {
     return;
   }
 
+  if (vscode.workspace.workspaceFolders.length === 1) {
+    workspaceFolder = vscode.workspace.workspaceFolders[0].uri.fsPath;
+  }
+
+  setContextValue(`${EXTENSION_NAME}:activatedExtension`, true);
+  updateActivationState(true);
+
+  const courseMakefileFound = isCourseProject();
+
+  if (courseMakefileFound) {
+    const infoMessage = `Course Makefile found. Exiting extension.`;
+    logger.log(loggingActive, infoMessage);
+    deactivate();
+    return;
+  }
+
+  const cmakeFileFound = isCmakeProject();
+  if (cmakeFileFound) {
+    showStatusBarItems = false;
+    createExtensionFiles = false;
+    const infoMessage = `CMake Project found. UI disabled.`;
+    logger.log(loggingActive, infoMessage);
+  }
+
   extensionContext = context;
   extensionPath = context.extensionPath;
   extensionState = context.workspaceState;
   updateLoggingState();
   loggingActive = getLoggingState();
   experimentalExecutionEnabled = getExperimentalExecutionState();
-
-  if (vscode.workspace.workspaceFolders.length === 1) {
-    workspaceFolder = vscode.workspace.workspaceFolders[0].uri.fsPath;
-  }
-
-  setContextValue(`${EXTENSION_NAME}:activatedExtension`, true);
-
-  const cmakeActive = isCmakeActive();
-  if (cmakeActive) {
-    showStatusBarItems = false;
-    const infoMessage = `CMake Project found. UI disabled.`;
-    logger.log(loggingActive, infoMessage);
-  }
-
-  const { makeActive, makeInVscode } = isMakeActive();
-
-  if (makeInVscode) {
-    const infoMessage = `Makefile found. Exiting extension.`;
-    logger.log(loggingActive, infoMessage);
-    deactivate();
-    return;
-  }
-
-  if (makeActive) {
-    showStatusBarItems = false;
-    const infoMessage = `Makefile found. UI disabled.`;
-    logger.log(loggingActive, infoMessage);
-  }
 
   initFolderStatusBar(context);
   initModeStatusBar(context);
@@ -137,11 +136,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {
   setContextValue(`${EXTENSION_NAME}:activatedExtension`, false);
+  updateActivationState(false);
 
   disposeItem(folderContextMenuDisposable);
   disposeItem(taskProviderDisposable);
   disposeItem(commandHandlerDisposable);
-  disposeItem(toggleStatusBarDisposable);
+  disposeItem(toggleExtensionStateDisposable);
   disposeItem(folderStatusBar);
   disposeItem(modeStatusBar);
   disposeItem(buildStatusBar);
@@ -161,20 +161,19 @@ export function deactivate() {
 }
 
 function initWorkspaceProvider() {
-  if (!workspaceFolder) return;
+  if (!workspaceFolder || !createExtensionFiles || !activeFolder) return;
 
   if (!settingsProvider) {
-    settingsProvider = new SettingsProvider(workspaceFolder);
+    settingsProvider = new SettingsProvider(workspaceFolder, activeFolder);
   }
 
   if (!propertiesProvider) {
     propertiesProvider = new PropertiesProvider(
       settingsProvider,
       workspaceFolder,
+      activeFolder,
     );
   }
-
-  if (!activeFolder) return;
 
   if (!launchProvider) {
     launchProvider = new LaunchProvider(
@@ -206,19 +205,43 @@ function initWorkspaceDisposables() {
     }
   }
 
-  if (!toggleStatusBarDisposable) {
-    toggleStatusBarDisposable = vscode.commands.registerCommand(
-      `${EXTENSION_NAME}.toggleStatusBar`,
+  if (!toggleExtensionStateDisposable) {
+    toggleExtensionStateDisposable = vscode.commands.registerCommand(
+      `${EXTENSION_NAME}.toggleExtensionState`,
       () => {
         showStatusBarItems = !showStatusBarItems;
         toggleStatusBarItems();
+        createExtensionFiles = !createExtensionFiles;
+        if (createExtensionFiles) {
+          initWorkspaceProvider();
+          initWorkspaceDisposables();
+          if (settingsProvider) settingsProvider.createFileData();
+          if (propertiesProvider) propertiesProvider.createFileData();
+        }
 
-        const infoMessage = `Called toggleStatusBar.`;
+        const extensionIsDisabled =
+          !showStatusBarItems && !createExtensionFiles;
+
+        if (extensionIsDisabled) {
+          setContextValue(
+            `${EXTENSION_NAME}:activatedExtension`,
+            !extensionIsDisabled,
+          );
+          updateActivationState(!extensionIsDisabled);
+        } else {
+          setContextValue(
+            `${EXTENSION_NAME}:activatedExtension`,
+            !extensionIsDisabled,
+          );
+          updateActivationState(!extensionIsDisabled);
+        }
+
+        const infoMessage = `Called toggleExtensionState.`;
         logger.log(loggingActive, infoMessage);
       },
     );
     if (extensionContext) {
-      extensionContext.subscriptions.push(toggleStatusBarDisposable);
+      extensionContext.subscriptions.push(toggleExtensionStateDisposable);
     }
   }
 
@@ -253,8 +276,9 @@ function initEventListener() {
     eventConfigurationDisposable = vscode.workspace.onDidChangeConfiguration(
       (e: vscode.ConfigurationChangeEvent) => {
         const isChanged = e.affectsConfiguration(EXTENSION_NAME);
+        const extensionIsActive = getActivationState();
 
-        if (isChanged) {
+        if (isChanged && extensionIsActive) {
           if (settingsProvider) settingsProvider.updateFileContent();
           if (propertiesProvider) propertiesProvider.updateFileContent();
           if (launchProvider) launchProvider.updateFileContent();
@@ -267,6 +291,9 @@ function initEventListener() {
   if (!eventRenameFilesDisposable) {
     eventRenameFilesDisposable = vscode.workspace.onDidRenameFiles(
       (e: vscode.FileRenameEvent) => {
+        const extensionIsActive = getActivationState();
+        if (!extensionIsActive) return;
+
         e.files.forEach((file) => {
           const oldName = file.oldUri.fsPath;
           const newName = file.newUri.fsPath;
@@ -289,6 +316,9 @@ function initEventListener() {
   if (!eventDeleteFilesDisposable) {
     eventDeleteFilesDisposable = vscode.workspace.onDidDeleteFiles(
       (e: vscode.FileDeleteEvent) => {
+        const extensionIsActive = getActivationState();
+        if (!extensionIsActive) return;
+
         e.files.forEach((file) => {
           const oldName = file.fsPath;
 
@@ -421,12 +451,6 @@ function initFolderStatusBar(context: vscode.ExtensionContext) {
         activeFolder = ret.activeFolder;
         workspaceFolder = ret.workspaceFolder;
         updateFolderData();
-
-        if (activeFolder.includes(' ')) {
-          vscode.window.showInformationMessage(
-            'This extension does not support whitespaces in a path name!',
-          );
-        }
       } else {
         const infoMessage = `Folder callback aborted.`;
         logger.log(loggingActive, infoMessage);
@@ -667,21 +691,20 @@ function initCleanStatusBar(context: vscode.ExtensionContext) {
   commandCleanDisposable = vscode.commands.registerCommand(
     commandName,
     async () => {
-      if (activeFolder && taskProvider) {
-      } else {
+      if (
+        !taskProvider ||
+        !taskProvider.tasks ||
+        !activeFolder ||
+        !workspaceFolder
+      ) {
         const infoMessage = `cleanCallback failed`;
         logger.log(loggingActive, infoMessage);
         return;
       }
-
-      if (!taskProvider || !taskProvider.tasks) return;
-
       const cleanTaskIndex = 2;
       const cleanTask = taskProvider.tasks[cleanTaskIndex];
 
       if (!cleanTask) return;
-
-      if (!activeFolder || !workspaceFolder) return;
 
       const buildDir = path.join(activeFolder, 'build');
       const modeDir = path.join(buildDir, `${buildMode}`);

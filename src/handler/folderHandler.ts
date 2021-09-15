@@ -1,9 +1,9 @@
-import * as minimatch from 'minimatch';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
 import { SettingsProvider } from '../provider/settingsProvider';
 import {
+	excludePatternFromList,
 	getDirectoriesRecursive,
 	naturalSort,
 	replaceBackslashes,
@@ -31,11 +31,10 @@ export async function folderHandler(
     });
 
     if (settingsProvider) {
-      for (const pattern of settingsProvider.excludeSearch) {
-        foldersList = foldersList.filter(
-          (folder) => !minimatch(folder, pattern),
-        );
-      }
+      foldersList = excludePatternFromList(
+        settingsProvider.excludeSearch,
+        foldersList,
+      );
     }
 
     foldersList = naturalSort(foldersList);

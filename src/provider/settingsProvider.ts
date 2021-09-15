@@ -24,6 +24,7 @@ import {
 	Makefiles,
 	OperatingSystems,
 } from '../utils/types';
+import { getActivationState } from '../utils/vscodeUtils';
 import { FileProvider } from './fileProvider';
 
 const TEMPLATE_FILENAME = 'settings_template.json';
@@ -76,12 +77,12 @@ export class SettingsProvider extends FileProvider {
   public warningsAsError: boolean = SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
   public warnings: string[] = SettingsProvider.DEFAULT_WARNINGS;
 
-  constructor(public workspaceFolder: string) {
+  constructor(public workspaceFolder: string, public activeFolder: string) {
     super(workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
 
-    if (this.updateCheck()) {
+    if (this.updateCheck() && activeFolder) {
       this.createFileData();
-    } else {
+    } else if (activeFolder) {
       this.getSettings();
       this.getCommandTypes();
       this.getArchitecture();
@@ -145,7 +146,8 @@ export class SettingsProvider extends FileProvider {
   }
 
   public deleteCallback() {
-    this.writeFileData();
+    const extensionIsActive = getActivationState();
+    if (extensionIsActive) this.writeFileData();
   }
 
   public changeCallback() {

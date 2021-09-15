@@ -1,9 +1,9 @@
 import {
-  getBasename,
-  pathExists,
-  readJsonFile,
-  removeExtension,
-  writeJsonFile,
+	getBasename,
+	pathExists,
+	readJsonFile,
+	removeExtension,
+	writeJsonFile,
 } from '../utils/fileUtils';
 import { Compilers, JsonConfiguration, OperatingSystems } from '../utils/types';
 import { FileProvider } from './fileProvider';
@@ -17,10 +17,11 @@ export class PropertiesProvider extends FileProvider {
   constructor(
     protected settings: SettingsProvider,
     public workspaceFolder: string,
+    public activeFolder: string | undefined,
   ) {
     super(workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
 
-    if (this.updateCheck()) {
+    if (this.updateCheck() && activeFolder) {
       this.createFileData();
     }
   }

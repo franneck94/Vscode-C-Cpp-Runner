@@ -1,10 +1,15 @@
 # C/C++ Runner Change Log
 
-## Version 1.4.0
+## Planned
 
 - Add reset option for settings and properties file
 - Add build mode: RelWithDebInfo (-O2 -g -DNDEBUG), MinSizeRel (-Os -DNDEBUG)
 - If workspace is opened with existing c_cpp_properties file but this extension was not initialized yet in the workspace, use the settings from the properties file
+
+## Version 1.4.0: September 16, 2021
+
+- **Improvement**: Updated activation/deactivation logic with the previously called keybinding *toggleStatusBar* which is now called *toggleExtensionState*. By this command, you can de-/activate the extension for the current workspace. If the extension is deactivated, the setting/properties/launch files won't be re-created on delete.
+- **Improvement**: In a workspace with multiple sub-directories, and hence the active folder is not selected on start-up, the settings and properties files are created once the active folder is selected. This speeds up the start-up time for vscode with this extension activated and makes no difference in the usage of this extension.
 
 ## Version 1.3.0: August 28, 2021
 

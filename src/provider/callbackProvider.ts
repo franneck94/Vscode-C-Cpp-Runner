@@ -1,6 +1,8 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
+import { getActivationState } from '../utils/vscodeUtils';
+
 export abstract class CallbackProvider {
   protected _outputPath: string;
   protected _vscodeDirectory: string;
@@ -12,7 +14,6 @@ export abstract class CallbackProvider {
     protected templateFileName: string,
     protected outputFileName: string,
   ) {
-    this._workspaceFolder = _workspaceFolder;
     this._vscodeDirectory = path.join(this._workspaceFolder, '.vscode');
     this._outputPath = path.join(this._vscodeDirectory, outputFileName);
     this.createFileWatcher();
@@ -41,7 +42,8 @@ export abstract class CallbackProvider {
     this._fileWatcherOnDelete.onDidDelete((e: vscode.Uri) => {
       const pathName = e.fsPath;
       if (pathName === this._vscodeDirectory || pathName === this._outputPath) {
-        this.deleteCallback();
+        const extensionIsActive = getActivationState();
+        if (extensionIsActive) this.deleteCallback();
       }
     });
 

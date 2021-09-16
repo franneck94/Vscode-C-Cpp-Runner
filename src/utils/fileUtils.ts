@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as JSON5 from 'json5';
+import * as minimatch from 'minimatch';
 import * as path from 'path';
 
 import { loggingActive } from '../extension';
@@ -123,6 +124,17 @@ export function filesInDir(dir: string) {
     .map((file) => file.name);
 
   return files;
+}
+
+export function excludePatternFromList(
+  excludeSearch: string[],
+  foldersList: string[],
+) {
+  for (const pattern of excludeSearch) {
+    foldersList = foldersList.filter((folder) => !minimatch(folder, pattern));
+  }
+
+  return foldersList;
 }
 
 export function foldersInDir(dir: fs.PathLike) {

@@ -43,8 +43,7 @@ After selecting the folder, the icons for building, running, and debugging are s
 
 ### Alternative Usage
 
-If you do not want to see the status bar items you can toggle the visibility with the command `crtl+alt+r`.  
-Then you can use the different commands in vscode's command palette:
+Cou can use the different commands also from vscode's command palette:
 
 ![TaskQuickBar](./media/CommandPalette.png)
 

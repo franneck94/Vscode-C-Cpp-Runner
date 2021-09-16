@@ -2,7 +2,7 @@
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
   "description": "🚀 Compile, run and debug single or multiple C/C++ files with ease. 🚀",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "publisher": "franneck94",
   "license": "MIT",
   "icon": "icon.png",
@@ -92,9 +92,8 @@
         "when": "C_Cpp_Runner:activatedExtension"
       },
       {
-        "command": "C_Cpp_Runner.toggleStatusBar",
-        "title": "Toggle status bar icons",
-        "when": "C_Cpp_Runner:activatedExtension"
+        "command": "C_Cpp_Runner.toggleExtensionState",
+        "title": "Activate/Deactivate the extension"
       },
       {
         "command": "C_Cpp_Runner.args",
@@ -105,10 +104,9 @@
     ],
     "keybindings": [
       {
-        "command": "C_Cpp_Runner.toggleStatusBar",
+        "command": "C_Cpp_Runner.toggleExtensionState",
         "key": "ctrl+alt+r",
-        "mac": "ctrl+alt+r",
-        "when": "C_Cpp_Runner:activatedExtension"
+        "mac": "ctrl+alt+r"
       },
       {
         "command": "C_Cpp_Runner.args",

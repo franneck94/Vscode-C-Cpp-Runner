@@ -2,6 +2,7 @@ import * as path from 'path';
 
 import { extensionPath } from '../extension';
 import { mkdirRecursive, pathExists } from '../utils/fileUtils';
+import { getActivationState } from '../utils/vscodeUtils';
 import { CallbackProvider } from './callbackProvider';
 
 export abstract class FileProvider extends CallbackProvider {
@@ -46,7 +47,8 @@ export abstract class FileProvider extends CallbackProvider {
   }
 
   public deleteCallback() {
-    this.createFileData();
+    const extensionIsActive = getActivationState();
+    if (extensionIsActive) this.createFileData();
   }
 
   protected _updateFolderData(_workspaceFolder: string) {

@@ -282,7 +282,9 @@ export class TaskProvider implements vscode.TaskProvider {
       path.basename(this.workspaceFolder),
     );
     let label = `Debug: ${this.activeFolder}`;
-    label = label.replace(label.split(': ')[1], folder);
+    const splitted = label.split(': ');
+    if (!splitted[1]) return;
+    label = label.replace(splitted[1], folder);
     label = replaceBackslashes(label);
     const definition = {
       type: 'shell',

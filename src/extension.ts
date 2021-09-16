@@ -301,10 +301,10 @@ function initConfigurationChangeDisposable() {
       const extensionIsActive = getActivationState();
 
       if (isChanged && extensionIsActive) {
-        if (settingsProvider) settingsProvider.updateFileContent();
-        if (propertiesProvider) propertiesProvider.updateFileContent();
-        if (launchProvider) launchProvider.updateFileContent();
-        if (taskProvider) taskProvider.getTasks();
+        settingsProvider?.updateFileContent();
+        propertiesProvider?.updateFileContent();
+        launchProvider?.updateFileContent();
+        taskProvider?.getTasks();
       }
     },
   );
@@ -373,19 +373,19 @@ function initFileDeleteDisposable() {
 
 function toggleStatusBarItems() {
   if (showStatusBarItems) {
-    if (folderStatusBar) folderStatusBar.show();
-    if (modeStatusBar && activeFolder) modeStatusBar.show();
-    if (buildStatusBar && activeFolder) buildStatusBar.show();
-    if (runStatusBar && activeFolder) runStatusBar.show();
-    if (debugStatusBar && activeFolder) debugStatusBar.show();
-    if (cleanStatusBar && activeFolder) cleanStatusBar.show();
+    folderStatusBar?.show();
+    modeStatusBar?.show();
+    buildStatusBar?.show();
+    runStatusBar?.show();
+    debugStatusBar?.show();
+    cleanStatusBar?.show();
   } else {
-    if (folderStatusBar) folderStatusBar.hide();
-    if (modeStatusBar) modeStatusBar.hide();
-    if (buildStatusBar) buildStatusBar.hide();
-    if (runStatusBar) runStatusBar.hide();
-    if (debugStatusBar) debugStatusBar.hide();
-    if (cleanStatusBar) cleanStatusBar.hide();
+    folderStatusBar?.hide();
+    modeStatusBar?.hide();
+    buildStatusBar?.hide();
+    runStatusBar?.hide();
+    debugStatusBar?.hide();
+    cleanStatusBar?.hide();
   }
 }
 
@@ -441,8 +441,6 @@ function updateFolderData() {
     updateDebugStatus(debugStatusBar, showStatusBarItems, activeFolder);
   }
 }
-
-// INIT STATUS BAR
 
 function initFolderStatusBar() {
   if (folderStatusBar) return;
@@ -563,9 +561,9 @@ function initReset() {
 
       settingsProvider.reset();
 
-      if (!taskProvider) return;
-
-      taskProvider.getTasks();
+      propertiesProvider?.updateFileContent();
+      taskProvider?.getTasks();
+      launchProvider?.updateFileContent();
     },
   );
 

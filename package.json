@@ -89,16 +89,19 @@
       {
         "command": "C_Cpp_Runner.folderContextMenu",
         "title": "Select folder from context menu",
-        "when": "C_Cpp_Runner:activatedExtension"
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
       },
       {
         "command": "C_Cpp_Runner.resetLocalSettings",
-        "title": "Reset the local settings and properties",
-        "when": "C_Cpp_Runner:activatedExtension"
+        "title": "Reset local settings",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
       },
       {
         "command": "C_Cpp_Runner.toggleExtensionState",
-        "title": "Activate/Deactivate the extension"
+        "title": "Activate/Deactivate the extension",
+        "category": "C/C++ Runner"
       },
       {
         "command": "C_Cpp_Runner.args",

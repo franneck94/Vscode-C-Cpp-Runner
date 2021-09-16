@@ -3,7 +3,6 @@
 ## Planned
 
 - Add reset option for settings and properties file
-- Add build mode: RelWithDebInfo (-O2 -g -DNDEBUG), MinSizeRel (-Os -DNDEBUG)
 - If workspace is opened with existing c_cpp_properties file but this extension was not initialized yet in the workspace, use the settings from the properties file
 
 ## Version 1.4.0: September 16, 2021

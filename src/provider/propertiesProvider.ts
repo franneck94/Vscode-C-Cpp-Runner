@@ -21,7 +21,9 @@ export class PropertiesProvider extends FileProvider {
   ) {
     super(workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
 
-    if (this.updateCheck() && activeFolder) {
+    const updateRequired = this.updateCheck();
+
+    if (updateRequired && activeFolder) {
       this.createFileData();
     }
   }

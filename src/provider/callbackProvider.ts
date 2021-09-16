@@ -16,6 +16,7 @@ export abstract class CallbackProvider {
   ) {
     this._vscodeDirectory = path.join(this._workspaceFolder, '.vscode');
     this._outputPath = path.join(this._vscodeDirectory, outputFileName);
+
     this.createFileWatcher();
   }
 
@@ -57,11 +58,7 @@ export abstract class CallbackProvider {
     return;
   }
 
-  public deleteCallback() {
-    throw new Error('Not implemented error.');
-  }
+  public abstract deleteCallback(): void;
 
-  public changeCallback() {
-    throw new Error('Not implemented error.');
-  }
+  public abstract changeCallback(): void;
 }

@@ -80,7 +80,9 @@ export class SettingsProvider extends FileProvider {
   constructor(public workspaceFolder: string, public activeFolder: string) {
     super(workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
 
-    if (this.updateCheck() && activeFolder) {
+    const updateRequired = this.updateCheck();
+
+    if (updateRequired && activeFolder) {
       this.createFileData();
     } else if (activeFolder) {
       this.getSettings();
@@ -89,7 +91,7 @@ export class SettingsProvider extends FileProvider {
     }
   }
 
-  protected updateCheck() {
+  protected override updateCheck() {
     let doUpdate = false;
 
     if (!pathExists(this._outputPath)) {
@@ -145,7 +147,7 @@ export class SettingsProvider extends FileProvider {
     }
   }
 
-  public deleteCallback() {
+  public override deleteCallback() {
     const extensionIsActive = getActivationState();
     if (extensionIsActive) this.writeFileData();
   }
@@ -303,12 +305,12 @@ export class SettingsProvider extends FileProvider {
     this._commands = new Commands();
 
     const env = process.env;
-    if (env.PATH) {
+    if (env['PATH']) {
       let paths: string[] = [];
       if (this.operatingSystem === OperatingSystems.windows) {
-        paths = env.PATH.split(';');
+        paths = env['PATH'].split(';');
       } else {
-        paths = env.PATH.split(':');
+        paths = env['PATH'].split(':');
       }
       for (const envPath of paths) {
         if (
@@ -524,6 +526,32 @@ export class SettingsProvider extends FileProvider {
       this.architecure = Architectures.x64;
       this.isCygwin = false;
     }
+  }
+
+  public reset() {
+    /* Mandatory in settings.json */
+    this.cCompilerPath = SettingsProvider.DEFAULT_C_COMPILER_PATH;
+    this.cppCompilerPath = SettingsProvider.DEFAULT_CPP_COMPILER_PATH;
+    this.debuggerPath = SettingsProvider.DEFAULT_DEBUGGER_PATH;
+    this.makePath = SettingsProvider.DEFAULT_MAKE_PATH;
+
+    /* Optional in settings.json */
+    this.enableWarnings = SettingsProvider.DEFAULT_ENABLE_WARNINGS;
+    this.warnings = SettingsProvider.DEFAULT_WARNINGS;
+    this.warningsAsError = SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
+    this.cStandard = SettingsProvider.DEFAULT_C_STANDARD;
+    this.cppStandard = SettingsProvider.DEFAULT_CPP_STANDARD;
+    this.compilerArgs = SettingsProvider.DEFAULT_COMPILER_ARGS;
+    this.linkerArgs = SettingsProvider.DEFAULT_LINKER_ARGS;
+    this.includePaths = SettingsProvider.DEFAULT_INCLUDE_PATHS;
+    this.excludeSearch = SettingsProvider.DEFAULT_EXCLUDE_SEARCH;
+
+    /* Write default settings to file */
+    this.setGcc(this.cCompilerPath);
+    this.setGpp(this.cppCompilerPath);
+    this.setGDB(this.debuggerPath);
+    this.setMake(this.makePath);
+    this.setOtherSettings();
   }
 
   /********************/

@@ -10,8 +10,8 @@ export abstract class FileProvider extends CallbackProvider {
 
   constructor(
     workspaceFolder: string,
-    protected templateFileName: string,
-    protected outputFileName: string,
+    templateFileName: string,
+    outputFileName: string,
   ) {
     super(workspaceFolder, templateFileName, outputFileName);
 
@@ -26,13 +26,9 @@ export abstract class FileProvider extends CallbackProvider {
     }
   }
 
-  protected updateCheck() {
-    return false;
-  }
+  protected abstract updateCheck(): boolean;
 
-  public writeFileData() {
-    throw new Error('Not implemented error.');
-  }
+  public abstract writeFileData(): void;
 
   public createFileData() {
     if (!pathExists(this._vscodeDirectory)) {
@@ -46,7 +42,7 @@ export abstract class FileProvider extends CallbackProvider {
     this.writeFileData();
   }
 
-  public deleteCallback() {
+  public override deleteCallback() {
     const extensionIsActive = getActivationState();
     if (extensionIsActive) this.createFileData();
   }

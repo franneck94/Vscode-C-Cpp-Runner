@@ -9,9 +9,7 @@ const STATUS_BAR_ALIGN = vscode.StatusBarAlignment.Left;
 const STATUS_BAR_PRIORITY = 50;
 
 export function disposeItem(disposableItem: vscode.Disposable | undefined) {
-  if (disposableItem) {
-    disposableItem.dispose();
-  }
+  disposableItem?.dispose();
 }
 
 export function createStatusBarItem() {
@@ -45,20 +43,16 @@ export function getLaunchConfigIndex(
 }
 
 export function updateLoggingState() {
-  if (extensionState) {
-    extensionState.update(
-      'loggingActive',
-      vscode.workspace
-        .getConfiguration('C_Cpp_Runner')
-        .get('loggingActive', false),
-    );
-  }
+  extensionState?.update(
+    'loggingActive',
+    vscode.workspace
+      .getConfiguration('C_Cpp_Runner')
+      .get('loggingActive', false),
+  );
 }
 
 export function updateActivationState(newState: boolean) {
-  if (extensionState) {
-    extensionState.update('activatedExtension', newState);
-  }
+  extensionState?.update('activatedExtension', newState);
 }
 
 export function getExperimentalExecutionState() {

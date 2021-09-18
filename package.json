@@ -2,7 +2,7 @@
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
   "description": "🚀 Compile, run and debug single or multiple C/C++ files with ease. 🚀",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "publisher": "franneck94",
   "license": "MIT",
   "icon": "icon.png",
@@ -11,7 +11,7 @@
     "theme": "dark"
   },
   "engines": {
-    "vscode": "^1.57.0"
+    "vscode": "^1.58.0"
   },
   "categories": [
     "Programming Languages",
@@ -89,12 +89,19 @@
       {
         "command": "C_Cpp_Runner.folderContextMenu",
         "title": "Select folder from context menu",
-        "when": "C_Cpp_Runner:activatedExtension"
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
       },
       {
-        "command": "C_Cpp_Runner.toggleStatusBar",
-        "title": "Toggle status bar icons",
-        "when": "C_Cpp_Runner:activatedExtension"
+        "command": "C_Cpp_Runner.resetLocalSettings",
+        "title": "Reset local settings",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
+      },
+      {
+        "command": "C_Cpp_Runner.toggleExtensionState",
+        "title": "Activate/Deactivate the extension",
+        "category": "C/C++ Runner"
       },
       {
         "command": "C_Cpp_Runner.args",
@@ -105,10 +112,9 @@
     ],
     "keybindings": [
       {
-        "command": "C_Cpp_Runner.toggleStatusBar",
+        "command": "C_Cpp_Runner.toggleExtensionState",
         "key": "ctrl+alt+r",
-        "mac": "ctrl+alt+r",
-        "when": "C_Cpp_Runner:activatedExtension"
+        "mac": "ctrl+alt+r"
       },
       {
         "command": "C_Cpp_Runner.args",

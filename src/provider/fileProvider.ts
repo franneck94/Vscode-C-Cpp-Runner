@@ -2,6 +2,7 @@ import * as path from 'path';
 
 import { extensionPath } from '../extension';
 import { mkdirRecursive, pathExists } from '../utils/fileUtils';
+import { getActivationState } from '../utils/vscodeUtils';
 import { CallbackProvider } from './callbackProvider';
 
 export abstract class FileProvider extends CallbackProvider {
@@ -9,8 +10,8 @@ export abstract class FileProvider extends CallbackProvider {
 
   constructor(
     workspaceFolder: string,
-    protected templateFileName: string,
-    protected outputFileName: string,
+    templateFileName: string,
+    outputFileName: string,
   ) {
     super(workspaceFolder, templateFileName, outputFileName);
 
@@ -25,13 +26,9 @@ export abstract class FileProvider extends CallbackProvider {
     }
   }
 
-  protected updateCheck() {
-    return false;
-  }
+  protected abstract updateCheck(): boolean;
 
-  public writeFileData() {
-    throw new Error('Not implemented error.');
-  }
+  public abstract writeFileData(): void;
 
   public createFileData() {
     if (!pathExists(this._vscodeDirectory)) {
@@ -45,8 +42,9 @@ export abstract class FileProvider extends CallbackProvider {
     this.writeFileData();
   }
 
-  public deleteCallback() {
-    this.createFileData();
+  public override deleteCallback() {
+    const extensionIsActive = getActivationState();
+    if (extensionIsActive) this.createFileData();
   }
 
   protected _updateFolderData(_workspaceFolder: string) {

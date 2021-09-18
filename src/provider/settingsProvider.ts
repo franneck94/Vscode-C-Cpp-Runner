@@ -24,11 +24,13 @@ import {
 	Makefiles,
 	OperatingSystems,
 } from '../utils/types';
+import { getActivationState } from '../utils/vscodeUtils';
 import { FileProvider } from './fileProvider';
 
 const TEMPLATE_FILENAME = 'settings_template.json';
 const OUTPUT_FILENAME = 'settings.json';
 const EXTENSION_NAME = 'C_Cpp_Runner';
+const TERMINAL_WINDOWS_NAME = 'terminal.integrated.defaultProfile';
 
 export class SettingsProvider extends FileProvider {
   static DEFAULT_C_COMPILER_PATH = 'gcc';
@@ -49,7 +51,10 @@ export class SettingsProvider extends FileProvider {
 
   // Workspace data
   private _configGlobal = vscode.workspace.getConfiguration(EXTENSION_NAME);
+  private _configTerminalGlobal = vscode.workspace.getConfiguration(TERMINAL_WINDOWS_NAME).get('windows', 'Default');
   // Machine information
+  private _isMinGW: boolean = false;
+  private _isPowershellTerminal: boolean = false;
   public operatingSystem = getOperatingSystem();
   public architecure: Architectures | undefined;
   public isCygwin: boolean = false;
@@ -76,19 +81,21 @@ export class SettingsProvider extends FileProvider {
   public warningsAsError: boolean = SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
   public warnings: string[] = SettingsProvider.DEFAULT_WARNINGS;
 
-  constructor(public workspaceFolder: string) {
+  constructor(public workspaceFolder: string, public activeFolder: string) {
     super(workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
 
-    if (this.updateCheck()) {
+    const updateRequired = this.updateCheck();
+
+    if (updateRequired && activeFolder) {
       this.createFileData();
-    } else {
+    } else if (activeFolder) {
       this.getSettings();
       this.getCommandTypes();
       this.getArchitecture();
     }
   }
 
-  protected updateCheck() {
+  protected override updateCheck() {
     let doUpdate = false;
 
     if (!pathExists(this._outputPath)) {
@@ -144,8 +151,9 @@ export class SettingsProvider extends FileProvider {
     }
   }
 
-  public deleteCallback() {
-    this.writeFileData();
+  public override deleteCallback() {
+    const extensionIsActive = getActivationState();
+    if (extensionIsActive) this.writeFileData();
   }
 
   public changeCallback() {
@@ -301,12 +309,12 @@ export class SettingsProvider extends FileProvider {
     this._commands = new Commands();
 
     const env = process.env;
-    if (env.PATH) {
+    if (env['PATH']) {
       let paths: string[] = [];
       if (this.operatingSystem === OperatingSystems.windows) {
-        paths = env.PATH.split(';');
+        paths = env['PATH'].split(';');
       } else {
-        paths = env.PATH.split(':');
+        paths = env['PATH'].split(':');
       }
       for (const envPath of paths) {
         if (
@@ -511,17 +519,50 @@ export class SettingsProvider extends FileProvider {
 
   private getArchitecture() {
     if (this.cCompiler) {
-      const ret = getCompilerArchitecture(this.cCompiler);
+      const ret = getCompilerArchitecture(this.cCompilerPath);
       this.architecure = ret.architecure;
       this.isCygwin = ret.isCygwin;
     } else if (this.cppCompiler) {
-      const ret = getCompilerArchitecture(this.cppCompiler);
+      const ret = getCompilerArchitecture(this.cppCompilerPath);
       this.architecure = ret.architecure;
       this.isCygwin = ret.isCygwin;
     } else {
       this.architecure = Architectures.x64;
       this.isCygwin = false;
     }
+
+    if (this.operatingSystem === OperatingSystems.windows) {
+      if (!this.isCygwin) this._isMinGW = true;
+
+      const defaultTerminal = this._configTerminalGlobal;
+      this._isPowershellTerminal = (defaultTerminal === null || defaultTerminal === 'PowerShell');
+    }
+  }
+
+  public reset() {
+    /* Mandatory in settings.json */
+    this.cCompilerPath = SettingsProvider.DEFAULT_C_COMPILER_PATH;
+    this.cppCompilerPath = SettingsProvider.DEFAULT_CPP_COMPILER_PATH;
+    this.debuggerPath = SettingsProvider.DEFAULT_DEBUGGER_PATH;
+    this.makePath = SettingsProvider.DEFAULT_MAKE_PATH;
+
+    /* Optional in settings.json */
+    this.enableWarnings = SettingsProvider.DEFAULT_ENABLE_WARNINGS;
+    this.warnings = SettingsProvider.DEFAULT_WARNINGS;
+    this.warningsAsError = SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
+    this.cStandard = SettingsProvider.DEFAULT_C_STANDARD;
+    this.cppStandard = SettingsProvider.DEFAULT_CPP_STANDARD;
+    this.compilerArgs = SettingsProvider.DEFAULT_COMPILER_ARGS;
+    this.linkerArgs = SettingsProvider.DEFAULT_LINKER_ARGS;
+    this.includePaths = SettingsProvider.DEFAULT_INCLUDE_PATHS;
+    this.excludeSearch = SettingsProvider.DEFAULT_EXCLUDE_SEARCH;
+
+    /* Write default settings to file */
+    this.setGcc(this.cCompilerPath);
+    this.setGpp(this.cppCompilerPath);
+    this.setGDB(this.debuggerPath);
+    this.setMake(this.makePath);
+    this.setOtherSettings();
   }
 
   /********************/
@@ -603,6 +644,14 @@ export class SettingsProvider extends FileProvider {
   public setMake(pathMake: string) {
     this.update('makePath', pathMake);
     this._makeFound = true;
+  }
+
+  public get isMinGW() {
+    return this._isMinGW;
+  }
+
+  public get isPowershellTerminal() {
+    return this._isPowershellTerminal;
   }
 
   public setOtherSettings() {

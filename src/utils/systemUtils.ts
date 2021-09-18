@@ -2,7 +2,7 @@ import { execSync } from 'child_process';
 import { lookpath } from 'lookpath';
 import { platform } from 'os';
 
-import { Architectures, Compilers, OperatingSystems } from './types';
+import { Architectures, OperatingSystems } from './types';
 
 export async function commandExists(command: string) {
   let commandPath = await lookpath(command);
@@ -33,7 +33,7 @@ export function getOperatingSystem() {
   return operatingSystem;
 }
 
-export function getCompilerArchitecture(compiler: Compilers) {
+export function getCompilerArchitecture(compiler: string) {
   const command = `${compiler} -dumpmachine`;
   let byteArray: Buffer | undefined;
 

@@ -18,6 +18,8 @@ export async function executeBuildTask(
   activeFolder: string,
   buildMode: Builds,
 ) {
+  const appendSymbol = '&&';
+
   const language = getLanguage(activeFolder);
 
   const files = filesInDir(activeFolder);
@@ -85,9 +87,14 @@ export async function executeBuildTask(
   }
 
   let commandLine: string = '';
+
   const objectFiles: string[] = [];
 
+  let idx = -1;
+
   for (const file of files) {
+    idx++;
+
     const fileExtension = path.parse(file).ext;
     if (language === Languages.c && !isCSourceFile(fileExtension)) {
       continue;
@@ -103,19 +110,21 @@ export async function executeBuildTask(
 
     const fullFileArgs = `-c ${filePath} -o ${objectFilePath}`;
 
-    if (commandLine.length === 0) {
+    if (idx === 0) {
       commandLine += `${compiler} ${fullCompilerArgs} ${fullFileArgs}`;
     } else {
-      commandLine += ` && ${compiler} ${fullCompilerArgs} ${fullFileArgs}`;
+      commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullFileArgs}`;
     }
   }
 
   // Exe task
   const objectFilesStr = objectFiles.join(' ');
   const fullObjectFileArgs = `${objectFilesStr} -o ${executablePath}`;
-  if (task && task.execution) {
-    commandLine += ` && ${compiler} ${fullCompilerArgs} ${fullObjectFileArgs}`;
-    task.execution.commandLine = commandLine;
-    await vscode.tasks.executeTask(task);
-  }
+
+  if (!task || !task.execution) return;
+
+  commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullObjectFileArgs}`;
+
+  task.execution.commandLine = commandLine;
+  await vscode.tasks.executeTask(task);
 }

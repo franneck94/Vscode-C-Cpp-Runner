@@ -30,25 +30,28 @@ import { Builds } from './utils/types';
 import {
 	createStatusBarItem,
 	disposeItem,
+	getActivationState,
 	getExperimentalExecutionState,
 	getLoggingState,
-	isCmakeActive,
-	isMakeActive,
+	isCmakeProject,
+	isCourseProject,
 	setContextValue,
+	updateActivationState,
 	updateLoggingState,
 } from './utils/vscodeUtils';
 
 let folderContextMenuDisposable: vscode.Disposable | undefined;
-let taskProviderDisposable: vscode.Disposable | undefined;
+let taskProviderDisposable: Readonly<vscode.Disposable | undefined>;
 let commandHandlerDisposable: vscode.Disposable | undefined;
-let toggleStatusBarDisposable: vscode.Disposable | undefined;
+let commandToggleStateDisposable: vscode.Disposable | undefined;
 let commandFolderDisposable: vscode.Disposable | undefined;
 let commandModeDisposable: vscode.Disposable | undefined;
 let commandBuildDisposable: vscode.Disposable | undefined;
 let commandRunDisposable: vscode.Disposable | undefined;
 let commandDebugDisposable: vscode.Disposable | undefined;
 let commandCleanDisposable: vscode.Disposable | undefined;
-let commandArgumentParser: vscode.Disposable | undefined;
+let commandArgumentDisposable: vscode.Disposable | undefined;
+let commandResetDisposable: vscode.Disposable | undefined;
 let eventConfigurationDisposable: vscode.Disposable | undefined;
 let eventRenameFilesDisposable: vscode.Disposable | undefined;
 let eventDeleteFilesDisposable: vscode.Disposable | undefined;
@@ -70,6 +73,7 @@ let workspaceFolder: string | undefined;
 let activeFolder: string | undefined;
 let buildMode: Builds = Builds.debug;
 let showStatusBarItems: boolean = true;
+let createExtensionFiles: boolean = true;
 
 const EXTENSION_NAME = 'C_Cpp_Runner';
 
@@ -87,49 +91,50 @@ export function activate(context: vscode.ExtensionContext) {
     return;
   }
 
+  if (
+    !vscode.workspace.workspaceFolders[0] ||
+    !vscode.workspace.workspaceFolders[0].uri
+  ) {
+    return;
+  }
+
+  if (vscode.workspace.workspaceFolders.length === 1) {
+    workspaceFolder = vscode.workspace.workspaceFolders[0].uri.fsPath;
+  }
+
+  const courseMakefileFound = isCourseProject();
+
+  if (courseMakefileFound) {
+    const infoMessage = `Course Makefile found. Exiting extension.`;
+    logger.log(loggingActive, infoMessage);
+    deactivate();
+    return;
+  }
+
+  const cmakeFileFound = isCmakeProject();
+  if (cmakeFileFound) {
+    showStatusBarItems = false;
+    createExtensionFiles = false;
+    const infoMessage = `CMake Project found. UI disabled.`;
+    logger.log(loggingActive, infoMessage);
+  }
+
   extensionContext = context;
   extensionPath = context.extensionPath;
   extensionState = context.workspaceState;
   updateLoggingState();
   loggingActive = getLoggingState();
   experimentalExecutionEnabled = getExperimentalExecutionState();
-
-  if (vscode.workspace.workspaceFolders.length === 1) {
-    workspaceFolder = vscode.workspace.workspaceFolders[0].uri.fsPath;
-  }
-
   setContextValue(`${EXTENSION_NAME}:activatedExtension`, true);
+  updateActivationState(true);
 
-  const cmakeActive = isCmakeActive();
-  if (cmakeActive) {
-    showStatusBarItems = false;
-    const infoMessage = `CMake Project found. UI disabled.`;
-    logger.log(loggingActive, infoMessage);
-  }
+  initFolderStatusBar();
+  initModeStatusBar();
+  initBuildStatusBar();
+  initRunStatusBar();
+  initDebugStatusBar();
+  initCleanStatusBar();
 
-  const { makeActive, makeInVscode } = isMakeActive();
-
-  if (makeInVscode) {
-    const infoMessage = `Makefile found. Exiting extension.`;
-    logger.log(loggingActive, infoMessage);
-    deactivate();
-    return;
-  }
-
-  if (makeActive) {
-    showStatusBarItems = false;
-    const infoMessage = `Makefile found. UI disabled.`;
-    logger.log(loggingActive, infoMessage);
-  }
-
-  initFolderStatusBar(context);
-  initModeStatusBar(context);
-  initBuildStatusBar(context);
-  initRunStatusBar(context);
-  initDebugStatusBar(context);
-  initCleanStatusBar(context);
-
-  initArgumentParser();
   initWorkspaceProvider();
   initWorkspaceDisposables();
   initEventListener();
@@ -137,44 +142,45 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {
   setContextValue(`${EXTENSION_NAME}:activatedExtension`, false);
+  updateActivationState(false);
 
-  disposeItem(folderContextMenuDisposable);
-  disposeItem(taskProviderDisposable);
-  disposeItem(commandHandlerDisposable);
-  disposeItem(toggleStatusBarDisposable);
   disposeItem(folderStatusBar);
   disposeItem(modeStatusBar);
   disposeItem(buildStatusBar);
   disposeItem(runStatusBar);
   disposeItem(debugStatusBar);
   disposeItem(cleanStatusBar);
+  disposeItem(taskProviderDisposable);
+  disposeItem(folderContextMenuDisposable);
+  disposeItem(commandHandlerDisposable);
+  disposeItem(commandToggleStateDisposable);
   disposeItem(commandFolderDisposable);
   disposeItem(commandModeDisposable);
   disposeItem(commandBuildDisposable);
   disposeItem(commandRunDisposable);
   disposeItem(commandDebugDisposable);
   disposeItem(commandCleanDisposable);
-  disposeItem(commandArgumentParser);
+  disposeItem(commandArgumentDisposable);
+  disposeItem(commandResetDisposable);
   disposeItem(eventConfigurationDisposable);
   disposeItem(eventDeleteFilesDisposable);
   disposeItem(eventRenameFilesDisposable);
 }
 
 function initWorkspaceProvider() {
-  if (!workspaceFolder) return;
+  if (!workspaceFolder || !createExtensionFiles || !activeFolder) return;
 
   if (!settingsProvider) {
-    settingsProvider = new SettingsProvider(workspaceFolder);
+    settingsProvider = new SettingsProvider(workspaceFolder, activeFolder);
   }
 
   if (!propertiesProvider) {
     propertiesProvider = new PropertiesProvider(
       settingsProvider,
       workspaceFolder,
+      activeFolder,
     );
   }
-
-  if (!activeFolder) return;
 
   if (!launchProvider) {
     launchProvider = new LaunchProvider(
@@ -196,143 +202,189 @@ function initWorkspaceProvider() {
 }
 
 function initWorkspaceDisposables() {
-  if (taskProvider && !taskProviderDisposable) {
-    taskProviderDisposable = vscode.tasks.registerTaskProvider(
-      EXTENSION_NAME,
-      taskProvider,
-    );
-    if (extensionContext) {
-      extensionContext.subscriptions.push(taskProviderDisposable);
-    }
-  }
+  initTaskProviderDisposable();
+  initArgumentParser();
+  initContextMenuDisposable();
+  initReset();
+  initToggleDisposable();
+}
 
-  if (!toggleStatusBarDisposable) {
-    toggleStatusBarDisposable = vscode.commands.registerCommand(
-      `${EXTENSION_NAME}.toggleStatusBar`,
-      () => {
-        showStatusBarItems = !showStatusBarItems;
-        toggleStatusBarItems();
+function initTaskProviderDisposable() {
+  if (!taskProvider || taskProviderDisposable) return;
 
-        const infoMessage = `Called toggleStatusBar.`;
-        logger.log(loggingActive, infoMessage);
-      },
-    );
-    if (extensionContext) {
-      extensionContext.subscriptions.push(toggleStatusBarDisposable);
-    }
-  }
+  taskProviderDisposable = vscode.tasks.registerTaskProvider(
+    EXTENSION_NAME,
+    taskProvider,
+  );
 
-  if (!folderContextMenuDisposable) {
-    folderContextMenuDisposable = vscode.commands.registerCommand(
-      `${EXTENSION_NAME}.folderContextMenu`,
-      async (clickedUriItem: vscode.Uri, selectedUriItems: vscode.Uri[]) => {
-        if (selectedUriItems.length > 1) return;
+  extensionContext?.subscriptions.push(taskProviderDisposable);
+}
 
-        const workspaceItem = vscode.workspace.getWorkspaceFolder(
-          clickedUriItem,
+function initToggleDisposable() {
+  if (commandToggleStateDisposable) return;
+
+  commandToggleStateDisposable = vscode.commands.registerCommand(
+    `${EXTENSION_NAME}.toggleExtensionState`,
+    () => {
+      showStatusBarItems = !showStatusBarItems;
+      toggleStatusBarItems();
+      createExtensionFiles = !createExtensionFiles;
+      if (createExtensionFiles) {
+        initWorkspaceProvider();
+        initWorkspaceDisposables();
+
+        settingsProvider?.createFileData();
+        propertiesProvider?.createFileData();
+      }
+
+      const extensionIsDisabled = !showStatusBarItems && !createExtensionFiles;
+
+      if (extensionIsDisabled) {
+        setContextValue(
+          `${EXTENSION_NAME}:activatedExtension`,
+          !extensionIsDisabled,
         );
+        updateActivationState(!extensionIsDisabled);
+      } else {
+        setContextValue(
+          `${EXTENSION_NAME}:activatedExtension`,
+          !extensionIsDisabled,
+        );
+        updateActivationState(!extensionIsDisabled);
+      }
 
-        if (!workspaceItem) return;
+      const infoMessage = `Called toggleExtensionState.`;
+      logger.log(loggingActive, infoMessage);
+    },
+  );
 
-        activeFolder = clickedUriItem.fsPath;
-        workspaceFolder = workspaceItem.uri.fsPath;
-        updateFolderData();
+  extensionContext?.subscriptions.push(commandToggleStateDisposable);
+}
 
-        const infoMessage = `Called folderContextMenu.`;
-        logger.log(loggingActive, infoMessage);
-      },
-    );
-    if (extensionContext) {
-      extensionContext.subscriptions.push(folderContextMenuDisposable);
-    }
-  }
+function initContextMenuDisposable() {
+  if (folderContextMenuDisposable) return;
+
+  folderContextMenuDisposable = vscode.commands.registerCommand(
+    `${EXTENSION_NAME}.folderContextMenu`,
+    async (clickedUriItem: vscode.Uri, selectedUriItems: vscode.Uri[]) => {
+      if (selectedUriItems.length > 1) return;
+
+      const workspaceItem = vscode.workspace.getWorkspaceFolder(clickedUriItem);
+
+      if (!workspaceItem) return;
+
+      activeFolder = clickedUriItem.fsPath;
+      workspaceFolder = workspaceItem.uri.fsPath;
+      updateFolderData();
+
+      const infoMessage = `Called folderContextMenu.`;
+      logger.log(loggingActive, infoMessage);
+    },
+  );
+
+  extensionContext?.subscriptions.push(folderContextMenuDisposable);
 }
 
 function initEventListener() {
-  if (!eventConfigurationDisposable) {
-    eventConfigurationDisposable = vscode.workspace.onDidChangeConfiguration(
-      (e: vscode.ConfigurationChangeEvent) => {
-        const isChanged = e.affectsConfiguration(EXTENSION_NAME);
+  initConfigurationChangeDisposable();
+  initFileRenameDisposable();
+  initFileDeleteDisposable();
+}
 
-        if (isChanged) {
-          if (settingsProvider) settingsProvider.updateFileContent();
-          if (propertiesProvider) propertiesProvider.updateFileContent();
-          if (launchProvider) launchProvider.updateFileContent();
-          if (taskProvider) taskProvider.getTasks();
+function initConfigurationChangeDisposable() {
+  if (eventConfigurationDisposable) return;
+
+  eventConfigurationDisposable = vscode.workspace.onDidChangeConfiguration(
+    (e: vscode.ConfigurationChangeEvent) => {
+      const isChanged = e.affectsConfiguration(EXTENSION_NAME);
+      const extensionIsActive = getActivationState();
+
+      if (isChanged && extensionIsActive) {
+        settingsProvider?.updateFileContent();
+        propertiesProvider?.updateFileContent();
+        launchProvider?.updateFileContent();
+        taskProvider?.getTasks();
+      }
+    },
+  );
+
+  extensionContext?.subscriptions.push(eventConfigurationDisposable);
+}
+
+function initFileRenameDisposable() {
+  if (eventRenameFilesDisposable) return;
+
+  eventRenameFilesDisposable = vscode.workspace.onDidRenameFiles(
+    (e: vscode.FileRenameEvent) => {
+      const extensionIsActive = getActivationState();
+      if (!extensionIsActive) return;
+
+      e.files.forEach((file) => {
+        const oldName = file.oldUri.fsPath;
+        const newName = file.newUri.fsPath;
+
+        const infoMessage = `Renaming: ${oldName} -> ${newName}.`;
+        logger.log(loggingActive, infoMessage);
+
+        if (workspaceFolder && oldName === workspaceFolder) {
+          workspaceFolder = newName;
+          updateFolderData();
+        } else if (activeFolder && oldName === activeFolder) {
+          activeFolder = newName;
+          updateFolderData();
         }
-      },
-    );
-  }
+      });
+    },
+  );
 
-  if (!eventRenameFilesDisposable) {
-    eventRenameFilesDisposable = vscode.workspace.onDidRenameFiles(
-      (e: vscode.FileRenameEvent) => {
-        e.files.forEach((file) => {
-          const oldName = file.oldUri.fsPath;
-          const newName = file.newUri.fsPath;
+  extensionContext?.subscriptions.push(eventRenameFilesDisposable);
+}
 
-          const infoMessage = `Renaming: ${oldName} -> ${newName}.`;
-          logger.log(loggingActive, infoMessage);
+function initFileDeleteDisposable() {
+  if (!eventDeleteFilesDisposable) return;
 
-          if (workspaceFolder && oldName === workspaceFolder) {
-            workspaceFolder = newName;
-            updateFolderData();
-          } else if (activeFolder && oldName === activeFolder) {
-            activeFolder = newName;
-            updateFolderData();
-          }
-        });
-      },
-    );
-  }
+  eventDeleteFilesDisposable = vscode.workspace.onDidDeleteFiles(
+    (e: vscode.FileDeleteEvent) => {
+      const extensionIsActive = getActivationState();
+      if (!extensionIsActive) return;
 
-  if (!eventDeleteFilesDisposable) {
-    eventDeleteFilesDisposable = vscode.workspace.onDidDeleteFiles(
-      (e: vscode.FileDeleteEvent) => {
-        e.files.forEach((file) => {
-          const oldName = file.fsPath;
+      e.files.forEach((file) => {
+        const oldName = file.fsPath;
 
-          const infoMessage = `Deleting: ${oldName}.`;
-          logger.log(loggingActive, infoMessage);
+        const infoMessage = `Deleting: ${oldName}.`;
+        logger.log(loggingActive, infoMessage);
 
-          if (workspaceFolder && oldName === workspaceFolder) {
-            workspaceFolder = undefined;
-            updateFolderData();
-            updateFolderStatus(
-              folderStatusBar,
-              taskProvider,
-              showStatusBarItems,
-            );
-          } else if (activeFolder && oldName === activeFolder) {
-            activeFolder = undefined;
-            updateFolderData();
-            updateFolderStatus(
-              folderStatusBar,
-              taskProvider,
-              showStatusBarItems,
-            );
-          }
-        });
-      },
-    );
-  }
+        if (workspaceFolder && oldName === workspaceFolder) {
+          workspaceFolder = undefined;
+          updateFolderData();
+          updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+        } else if (activeFolder && oldName === activeFolder) {
+          activeFolder = undefined;
+          updateFolderData();
+          updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+        }
+      });
+    },
+  );
+
+  extensionContext?.subscriptions.push(eventDeleteFilesDisposable);
 }
 
 function toggleStatusBarItems() {
   if (showStatusBarItems) {
-    if (folderStatusBar) folderStatusBar.show();
-    if (modeStatusBar && activeFolder) modeStatusBar.show();
-    if (buildStatusBar && activeFolder) buildStatusBar.show();
-    if (runStatusBar && activeFolder) runStatusBar.show();
-    if (debugStatusBar && activeFolder) debugStatusBar.show();
-    if (cleanStatusBar && activeFolder) cleanStatusBar.show();
+    folderStatusBar?.show();
+    modeStatusBar?.show();
+    buildStatusBar?.show();
+    runStatusBar?.show();
+    debugStatusBar?.show();
+    cleanStatusBar?.show();
   } else {
-    if (folderStatusBar) folderStatusBar.hide();
-    if (modeStatusBar) modeStatusBar.hide();
-    if (buildStatusBar) buildStatusBar.hide();
-    if (runStatusBar) runStatusBar.hide();
-    if (debugStatusBar) debugStatusBar.hide();
-    if (cleanStatusBar) cleanStatusBar.hide();
+    folderStatusBar?.hide();
+    modeStatusBar?.hide();
+    buildStatusBar?.hide();
+    runStatusBar?.hide();
+    debugStatusBar?.hide();
+    cleanStatusBar?.hide();
   }
 }
 
@@ -389,15 +441,17 @@ function updateFolderData() {
   }
 }
 
-// INIT STATUS BAR
+function initFolderStatusBar() {
+  if (folderStatusBar) return;
 
-function initFolderStatusBar(context: vscode.ExtensionContext) {
   folderStatusBar = createStatusBarItem();
-  context.subscriptions.push(folderStatusBar);
+  extensionContext?.subscriptions.push(folderStatusBar);
 
   const workspaceFolders = vscode.workspace.workspaceFolders;
   if (workspaceFolders) {
     if (workspaceFolders.length === 1) {
+      if (!workspaceFolders[0] || !workspaceFolders[0].uri.fsPath) return;
+
       const workspaceFolderFs = workspaceFolders[0].uri.fsPath;
       const folders = foldersInDir(workspaceFolderFs);
       if (folders.length === 0) {
@@ -412,6 +466,8 @@ function initFolderStatusBar(context: vscode.ExtensionContext) {
     }
   }
 
+  if (commandFolderDisposable) return;
+
   const commandName = `${EXTENSION_NAME}.folder`;
   commandFolderDisposable = vscode.commands.registerCommand(
     commandName,
@@ -421,25 +477,22 @@ function initFolderStatusBar(context: vscode.ExtensionContext) {
         activeFolder = ret.activeFolder;
         workspaceFolder = ret.workspaceFolder;
         updateFolderData();
-
-        if (activeFolder.includes(' ')) {
-          vscode.window.showInformationMessage(
-            'This extension does not support whitespaces in a path name!',
-          );
-        }
       } else {
         const infoMessage = `Folder callback aborted.`;
         logger.log(loggingActive, infoMessage);
       }
     },
   );
+
   folderStatusBar.command = commandName;
-  context.subscriptions.push(commandFolderDisposable);
+  extensionContext?.subscriptions.push(commandFolderDisposable);
 }
 
-function initModeStatusBar(context: vscode.ExtensionContext) {
+function initModeStatusBar() {
+  if (modeStatusBar) return;
+
   modeStatusBar = createStatusBarItem();
-  context.subscriptions.push(modeStatusBar);
+  extensionContext?.subscriptions.push(modeStatusBar);
   updateModeStatus(modeStatusBar, showStatusBarItems, activeFolder, buildMode);
 
   const commandName = `${EXTENSION_NAME}.mode`;
@@ -471,14 +524,17 @@ function initModeStatusBar(context: vscode.ExtensionContext) {
       }
     },
   );
+
   modeStatusBar.command = commandName;
-  context.subscriptions.push(commandModeDisposable);
+  extensionContext?.subscriptions.push(commandModeDisposable);
 }
 
 function initArgumentParser() {
+  if (commandResetDisposable) return;
+
   const commandName = `${EXTENSION_NAME}.args`;
 
-  commandArgumentParser = vscode.commands.registerCommand(
+  commandResetDisposable = vscode.commands.registerCommand(
     commandName,
     async () => {
       argumentsString = await vscode.window.showInputBox();
@@ -486,16 +542,38 @@ function initArgumentParser() {
       if (taskProvider) {
         taskProvider.updateArguments(argumentsString);
       }
-
-      const infoMessage = `Called args.`;
-      logger.log(loggingActive, infoMessage);
     },
   );
+
+  extensionContext?.subscriptions.push(commandResetDisposable);
 }
 
-function initBuildStatusBar(context: vscode.ExtensionContext) {
+function initReset() {
+  if (commandArgumentDisposable) return;
+
+  const commandName = `${EXTENSION_NAME}.resetLocalSettings`;
+
+  commandArgumentDisposable = vscode.commands.registerCommand(
+    commandName,
+    async () => {
+      if (!settingsProvider) return;
+
+      settingsProvider.reset();
+
+      propertiesProvider?.updateFileContent();
+      taskProvider?.getTasks();
+      launchProvider?.updateFileContent();
+    },
+  );
+
+  extensionContext?.subscriptions.push(commandArgumentDisposable);
+}
+
+function initBuildStatusBar() {
+  if (buildStatusBar) return;
+
   buildStatusBar = createStatusBarItem();
-  context.subscriptions.push(buildStatusBar);
+  extensionContext?.subscriptions.push(buildStatusBar);
   updateBuildStatus(buildStatusBar, showStatusBarItems, activeFolder);
 
   const commandName = `${EXTENSION_NAME}.build`;
@@ -544,11 +622,12 @@ function initBuildStatusBar(context: vscode.ExtensionContext) {
         (char) => char.charCodeAt(0) > 255,
       );
 
-      if (
+      const nonMakefileCommand =
         experimentalExecutionEnabled ||
         buildDir.includes(' ') ||
-        hasNoneExtendedAsciiChars
-      ) {
+        hasNoneExtendedAsciiChars;
+
+      if (nonMakefileCommand) {
         await executeBuildTask(
           buildTask,
           settingsProvider,
@@ -561,12 +640,14 @@ function initBuildStatusBar(context: vscode.ExtensionContext) {
     },
   );
   buildStatusBar.command = commandName;
-  context.subscriptions.push(commandBuildDisposable);
+  extensionContext?.subscriptions.push(commandBuildDisposable);
 }
 
-function initRunStatusBar(context: vscode.ExtensionContext) {
+function initRunStatusBar() {
+  if (runStatusBar) return;
+
   runStatusBar = createStatusBarItem();
-  context.subscriptions.push(runStatusBar);
+  extensionContext?.subscriptions.push(runStatusBar);
   updateRunStatus(runStatusBar, showStatusBarItems, activeFolder);
 
   const commandName = `${EXTENSION_NAME}.run`;
@@ -617,11 +698,12 @@ function initRunStatusBar(context: vscode.ExtensionContext) {
         (char) => char.charCodeAt(0) > 255,
       );
 
-      if (
+      const nonMakefileCommand =
         experimentalExecutionEnabled ||
         buildDir.includes(' ') ||
-        hasNoneExtendedAsciiChars
-      ) {
+        hasNoneExtendedAsciiChars;
+
+      if (nonMakefileCommand) {
         await executeRunTask(
           runTask,
           activeFolder,
@@ -636,12 +718,14 @@ function initRunStatusBar(context: vscode.ExtensionContext) {
   );
 
   runStatusBar.command = commandName;
-  context.subscriptions.push(commandRunDisposable);
+  extensionContext?.subscriptions.push(commandRunDisposable);
 }
 
-function initDebugStatusBar(context: vscode.ExtensionContext) {
+function initDebugStatusBar() {
+  if (debugStatusBar) return;
+
   debugStatusBar = createStatusBarItem();
-  context.subscriptions.push(debugStatusBar);
+  extensionContext?.subscriptions.push(debugStatusBar);
   updateDebugStatus(debugStatusBar, showStatusBarItems, activeFolder);
 
   const commandName = `${EXTENSION_NAME}.debug`;
@@ -654,34 +738,36 @@ function initDebugStatusBar(context: vscode.ExtensionContext) {
 
     if (taskProvider) runDebugger(activeFolder, workspaceFolder, buildMode);
   });
+
   debugStatusBar.command = commandName;
-  context.subscriptions.push(commandDebugDisposable);
+  extensionContext?.subscriptions.push(commandDebugDisposable);
 }
 
-function initCleanStatusBar(context: vscode.ExtensionContext) {
+function initCleanStatusBar() {
+  if (cleanStatusBar) return;
+
   cleanStatusBar = createStatusBarItem();
-  context.subscriptions.push(cleanStatusBar);
+  extensionContext?.subscriptions.push(cleanStatusBar);
   updateCleanStatus(cleanStatusBar, showStatusBarItems, activeFolder);
 
   const commandName = `${EXTENSION_NAME}.clean`;
   commandCleanDisposable = vscode.commands.registerCommand(
     commandName,
     async () => {
-      if (activeFolder && taskProvider) {
-      } else {
+      if (
+        !taskProvider ||
+        !taskProvider.tasks ||
+        !activeFolder ||
+        !workspaceFolder
+      ) {
         const infoMessage = `cleanCallback failed`;
         logger.log(loggingActive, infoMessage);
         return;
       }
-
-      if (!taskProvider || !taskProvider.tasks) return;
-
       const cleanTaskIndex = 2;
       const cleanTask = taskProvider.tasks[cleanTaskIndex];
 
       if (!cleanTask) return;
-
-      if (!activeFolder || !workspaceFolder) return;
 
       const buildDir = path.join(activeFolder, 'build');
       const modeDir = path.join(buildDir, `${buildMode}`);
@@ -704,6 +790,7 @@ function initCleanStatusBar(context: vscode.ExtensionContext) {
       await vscode.tasks.executeTask(cleanTask);
     },
   );
+
   cleanStatusBar.command = commandName;
-  context.subscriptions.push(commandCleanDisposable);
+  extensionContext?.subscriptions.push(commandCleanDisposable);
 }

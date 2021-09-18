@@ -29,7 +29,9 @@ export class LaunchProvider extends FileProvider {
       this.activeFolder = this.workspaceFolder;
     }
 
-    if (this.updateCheck()) {
+    const updateRequired = this.updateCheck();
+
+    if (updateRequired) {
       this.createFileData();
     }
   }

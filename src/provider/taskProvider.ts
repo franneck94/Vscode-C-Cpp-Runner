@@ -96,7 +96,21 @@ export class TaskProvider implements vscode.TaskProvider {
       };
       const problemMatcher = '$gcc';
       const scope = vscode.TaskScope.Workspace;
-      const execution = new vscode.ShellExecution(shellCommand);
+      let execution: vscode.ShellExecution;
+
+      if (
+        this._settingsProvider.operatingSystem === OperatingSystems.windows &&
+        this._settingsProvider.isPowershellTerminal
+      ) {
+        const shellOptions: vscode.ShellExecutionOptions = {
+          executable: 'C:/Windows/System32/cmd.exe',
+          shellArgs: ['/d', '/c'],
+        };
+        execution = new vscode.ShellExecution(shellCommand, shellOptions);
+      } else {
+        execution = new vscode.ShellExecution(shellCommand);
+      }
+
       const task = new Task(
         definition,
         scope,
@@ -282,7 +296,9 @@ export class TaskProvider implements vscode.TaskProvider {
       path.basename(this.workspaceFolder),
     );
     let label = `Debug: ${this.activeFolder}`;
-    label = label.replace(label.split(': ')[1], folder);
+    const splitted = label.split(': ');
+    if (!splitted[1]) return;
+    label = label.replace(splitted[1], folder);
     label = replaceBackslashes(label);
     const definition = {
       type: 'shell',

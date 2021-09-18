@@ -43,8 +43,7 @@ After selecting the folder, the icons for building, running, and debugging are s
 
 ### Alternative Usage
 
-If you do not want to see the status bar items you can toggle the visibility with the command `crtl+alt+r`.  
-Then you can use the different commands in vscode's command palette:
+Cou can use the different commands also from vscode's command palette:
 
 ![TaskQuickBar](./media/CommandPalette.png)
 
@@ -99,9 +98,9 @@ For more information about glob pattern see [here](https://en.wikipedia.org/wiki
 - ⚙️ To enable warnings (defaults to True)
 - ⚙️ What warnings should be checked by the compiler (defaults to ['-Wall', '-Wextra', '-Wpedantic'])
 - ⚙️ To treat warnings as errors (defaults to False)
-- ⚙️ Additional compiler arguments (defaults to [])
-- ⚙️ Additional linker arguments (defaults to []). It is expected to prefix the arguments with the appropriate flags (e.g. -l or -L)
-- ⚙️ Additional include paths (defaults to []) It is **not** (!) expected to prefix the arguments with the appropriate **-I** flag
+- ⚙️ Additional compiler arguments (defaults to [] e.g. **-flto**)
+- ⚙️ Additional linker arguments (defaults to [] e.g. **-lpthread**). It **is** expected to prefix the arguments with the appropriate flags (e.g. -l or -L)
+- ⚙️ Additional include paths (defaults to [] e.g. **path/to/headers/**) It is **not** (!) expected to prefix the arguments with the **-I** flag
 - ⚙️ Glob pattern to exclude from the folder selection (defaults to [])
 - ⚙️ Experimental: Run compiler commands without Makefile (defaults to False)
 

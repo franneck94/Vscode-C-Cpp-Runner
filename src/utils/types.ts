@@ -21,7 +21,7 @@ export interface JsonTask {
 }
 
 export class Task extends vscode.Task {
-  execution?: vscode.ShellExecution;
+  override execution?: vscode.ShellExecution;
 }
 
 export class Commands {
@@ -91,37 +91,4 @@ export enum Tasks {
   run = 'Run',
   clean = 'Clean',
   debug = 'Debug',
-}
-
-export function isUri(input: any): input is vscode.Uri {
-  return input && input instanceof vscode.Uri;
-}
-
-export function isString(input: any): input is string {
-  return typeof input === 'string';
-}
-
-export function isNumber(input: any): input is number {
-  return typeof input === 'number';
-}
-
-export function isBoolean(input: any): input is boolean {
-  return typeof input === 'boolean';
-}
-
-export function isObject(input: any): input is object {
-  return typeof input === 'object';
-}
-
-export function isArray(input: any): input is any[] {
-  return input instanceof Array;
-}
-
-export function arrayEquals(a: any[], b: any[]) {
-  return (
-    Array.isArray(a) &&
-    Array.isArray(b) &&
-    a.length === b.length &&
-    a.every((val, index) => val === b[index])
-  );
 }

@@ -9,9 +9,7 @@ const STATUS_BAR_ALIGN = vscode.StatusBarAlignment.Left;
 const STATUS_BAR_PRIORITY = 50;
 
 export function disposeItem(disposableItem: vscode.Disposable | undefined) {
-  if (disposableItem) {
-    disposableItem.dispose();
-  }
+  disposableItem?.dispose();
 }
 
 export function createStatusBarItem() {
@@ -21,7 +19,7 @@ export function createStatusBarItem() {
   );
 }
 
-export function setContextValue(key: string, value: any): Thenable<void> {
+export function setContextValue(key: string, value: any) {
   return vscode.commands.executeCommand('setContext', key, value);
 }
 
@@ -45,14 +43,16 @@ export function getLaunchConfigIndex(
 }
 
 export function updateLoggingState() {
-  if (extensionState) {
-    extensionState.update(
-      'loggingActive',
-      vscode.workspace
-        .getConfiguration('C_Cpp_Runner')
-        .get('loggingActive', false),
-    );
-  }
+  extensionState?.update(
+    'loggingActive',
+    vscode.workspace
+      .getConfiguration('C_Cpp_Runner')
+      .get('loggingActive', false),
+  );
+}
+
+export function updateActivationState(newState: boolean) {
+  extensionState?.update('activatedExtension', newState);
 }
 
 export function getExperimentalExecutionState() {
@@ -63,14 +63,23 @@ export function getExperimentalExecutionState() {
 
 export function getLoggingState() {
   if (extensionState) {
-    return <boolean>extensionState.get('loggingActive');
+    const loggingActive = <boolean>extensionState.get('loggingActive');
+    return loggingActive;
   }
 
   return false;
 }
 
-export function isCmakeActive() {
-  let cmakeActive = false;
+export function getActivationState() {
+  if (extensionState) {
+    return <boolean>extensionState.get('activatedExtension');
+  }
+
+  return false;
+}
+
+export function isCmakeProject() {
+  let cmakeFileFound = false;
 
   const workspaceFodlers = vscode.workspace.workspaceFolders;
   const cmakeExtensionName = 'cmake';
@@ -78,11 +87,11 @@ export function isCmakeActive() {
 
   if (workspaceFodlers) {
     workspaceFodlers.forEach((folder) => {
-      if (!cmakeActive) {
+      if (!cmakeFileFound) {
         const files = filesInDir(folder.uri.fsPath);
         files.forEach((file) => {
           if (file.toLowerCase() === 'CMakeLists.txt'.toLowerCase()) {
-            cmakeActive = true;
+            cmakeFileFound = true;
           }
         });
 
@@ -101,76 +110,38 @@ export function isCmakeActive() {
             configLocal &&
             configLocal[`${cmakeExtensionName}.${cmakeSettingName}`]
           ) {
-            cmakeActive = true;
+            cmakeFileFound = true;
           }
         }
       }
     });
   }
 
-  if (!cmakeActive) {
+  if (!cmakeFileFound) {
     const config = vscode.workspace.getConfiguration(cmakeExtensionName);
     const cmakeSetting = config.get(cmakeSettingName);
 
     if (cmakeSetting && cmakeSetting !== '${workspaceFolder}') {
-      cmakeActive = true;
+      cmakeFileFound = true;
     }
   }
 
-  return cmakeActive;
+  return cmakeFileFound;
 }
 
-export function isMakeActive() {
-  let makeActive = false;
-  let makeInVscode = false;
-
+export function isCourseProject() {
   const workspaceFodlers = vscode.workspace.workspaceFolders;
-  const makeExtensionName = 'makefile';
-  const makeSettingName = 'makefilePath';
 
   if (workspaceFodlers) {
     workspaceFodlers.forEach((folder) => {
-      if (!makeActive) {
-        const files = filesInDir(folder.uri.fsPath);
-        files.forEach((file) => {
-          if (file.toLowerCase() === 'Makefile'.toLowerCase()) {
-            makeActive = true;
-          }
-        });
+      const vscodePath = path.join(folder.uri.fsPath, '.vscode');
+      const makefilePath = path.join(vscodePath, 'Makefile');
 
-        const vscodePath = path.join(folder.uri.fsPath, '.vscode');
-        const makefilePath = path.join(vscodePath, 'Makefile');
-        const settingsPath = path.join(vscodePath, 'settings.json');
-
-        if (pathExists(settingsPath)) {
-          const configLocal: JsonSettings | undefined = readJsonFile(
-            settingsPath,
-          );
-
-          if (
-            configLocal &&
-            configLocal[`${makeExtensionName}.${makeSettingName}`]
-          ) {
-            makeActive = true;
-          }
-        }
-
-        if (pathExists(makefilePath)) {
-          makeActive = true;
-          makeInVscode = true;
-        }
+      if (pathExists(makefilePath)) {
+        return true;
       }
     });
   }
 
-  if (!makeActive) {
-    const config = vscode.workspace.getConfiguration(makeExtensionName);
-    const makeSetting = config.get(makeSettingName);
-
-    if (makeSetting) {
-      makeActive = true;
-    }
-  }
-
-  return { makeActive, makeInVscode };
+  return false;
 }

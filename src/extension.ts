@@ -102,9 +102,6 @@ export function activate(context: vscode.ExtensionContext) {
     workspaceFolder = vscode.workspace.workspaceFolders[0].uri.fsPath;
   }
 
-  setContextValue(`${EXTENSION_NAME}:activatedExtension`, true);
-  updateActivationState(true);
-
   const courseMakefileFound = isCourseProject();
 
   if (courseMakefileFound) {
@@ -128,6 +125,8 @@ export function activate(context: vscode.ExtensionContext) {
   updateLoggingState();
   loggingActive = getLoggingState();
   experimentalExecutionEnabled = getExperimentalExecutionState();
+  setContextValue(`${EXTENSION_NAME}:activatedExtension`, true);
+  updateActivationState(true);
 
   initFolderStatusBar();
   initModeStatusBar();
@@ -623,11 +622,12 @@ function initBuildStatusBar() {
         (char) => char.charCodeAt(0) > 255,
       );
 
-      if (
+      const nonMakefileCommand =
         experimentalExecutionEnabled ||
         buildDir.includes(' ') ||
-        hasNoneExtendedAsciiChars
-      ) {
+        hasNoneExtendedAsciiChars;
+
+      if (nonMakefileCommand) {
         await executeBuildTask(
           buildTask,
           settingsProvider,
@@ -698,11 +698,12 @@ function initRunStatusBar() {
         (char) => char.charCodeAt(0) > 255,
       );
 
-      if (
+      const nonMakefileCommand =
         experimentalExecutionEnabled ||
         buildDir.includes(' ') ||
-        hasNoneExtendedAsciiChars
-      ) {
+        hasNoneExtendedAsciiChars;
+
+      if (nonMakefileCommand) {
         await executeRunTask(
           runTask,
           activeFolder,

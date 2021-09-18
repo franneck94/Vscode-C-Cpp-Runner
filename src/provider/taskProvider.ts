@@ -96,7 +96,21 @@ export class TaskProvider implements vscode.TaskProvider {
       };
       const problemMatcher = '$gcc';
       const scope = vscode.TaskScope.Workspace;
-      const execution = new vscode.ShellExecution(shellCommand);
+      let execution: vscode.ShellExecution;
+
+      if (
+        this._settingsProvider.operatingSystem === OperatingSystems.windows &&
+        this._settingsProvider.isPowershellTerminal
+      ) {
+        const shellOptions: vscode.ShellExecutionOptions = {
+          executable: 'C:/Windows/System32/cmd.exe',
+          shellArgs: ['/d', '/c'],
+        };
+        execution = new vscode.ShellExecution(shellCommand, shellOptions);
+      } else {
+        execution = new vscode.ShellExecution(shellCommand);
+      }
+
       const task = new Task(
         definition,
         scope,

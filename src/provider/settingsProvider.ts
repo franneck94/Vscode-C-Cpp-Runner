@@ -30,6 +30,7 @@ import { FileProvider } from './fileProvider';
 const TEMPLATE_FILENAME = 'settings_template.json';
 const OUTPUT_FILENAME = 'settings.json';
 const EXTENSION_NAME = 'C_Cpp_Runner';
+const TERMINAL_WINDOWS_NAME = 'terminal.integrated.defaultProfile';
 
 export class SettingsProvider extends FileProvider {
   static DEFAULT_C_COMPILER_PATH = 'gcc';
@@ -50,7 +51,10 @@ export class SettingsProvider extends FileProvider {
 
   // Workspace data
   private _configGlobal = vscode.workspace.getConfiguration(EXTENSION_NAME);
+  private _configTerminalGlobal = vscode.workspace.getConfiguration(TERMINAL_WINDOWS_NAME).get('windows', 'Default');
   // Machine information
+  private _isMinGW: boolean = false;
+  private _isPowershellTerminal: boolean = false;
   public operatingSystem = getOperatingSystem();
   public architecure: Architectures | undefined;
   public isCygwin: boolean = false;
@@ -515,16 +519,23 @@ export class SettingsProvider extends FileProvider {
 
   private getArchitecture() {
     if (this.cCompiler) {
-      const ret = getCompilerArchitecture(this.cCompiler);
+      const ret = getCompilerArchitecture(this.cCompilerPath);
       this.architecure = ret.architecure;
       this.isCygwin = ret.isCygwin;
     } else if (this.cppCompiler) {
-      const ret = getCompilerArchitecture(this.cppCompiler);
+      const ret = getCompilerArchitecture(this.cppCompilerPath);
       this.architecure = ret.architecure;
       this.isCygwin = ret.isCygwin;
     } else {
       this.architecure = Architectures.x64;
       this.isCygwin = false;
+    }
+
+    if (this.operatingSystem === OperatingSystems.windows) {
+      if (!this.isCygwin) this._isMinGW = true;
+
+      const defaultTerminal = this._configTerminalGlobal;
+      this._isPowershellTerminal = (defaultTerminal === null || defaultTerminal === 'PowerShell');
     }
   }
 
@@ -633,6 +644,14 @@ export class SettingsProvider extends FileProvider {
   public setMake(pathMake: string) {
     this.update('makePath', pathMake);
     this._makeFound = true;
+  }
+
+  public get isMinGW() {
+    return this._isMinGW;
+  }
+
+  public get isPowershellTerminal() {
+    return this._isPowershellTerminal;
   }
 
   public setOtherSettings() {

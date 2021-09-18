@@ -3,12 +3,14 @@
 ## Planned
 
 - If the workspace is opened with existing c_cpp_properties file but this extension was not initialized yet in the workspace, use the settings from the properties file
+- For Windows MinGW user, the experimental settings (compiling without Makefile) is now the standard.
 
-## Version 1.4.0: September 16, 2021
+## Version 1.4.0: September 18, 2021
 
 - **Improvement**: Updated activation/deactivation logic with the previously called keybinding *toggleStatusBar* which is now called *toggleExtensionState*. By this command, you can de-/activate the extension for the current workspace. If the extension is deactivated, the setting/properties/launch files won't be re-created on delete.
 - **Improvement**: In a workspace with multiple sub-directories, and hence the active folder is not selected on start-up, the settings and properties files are created once the active folder is selected. This speeds up the start-up time for vscode with this extension activated and makes no difference in the usage of this extension.
-- **Improvement**: - Added command to reset local settings and properties file
+- **Improvement**: Added command to reset local settings and properties file
+- **Bugfix**: Fixed issue for Windows PowerShell users with the experimental setting. Now the CMD is also used to execute the tasks even if the PowerShell is the default terminal.
 
 ## Version 1.3.0: August 28, 2021
 

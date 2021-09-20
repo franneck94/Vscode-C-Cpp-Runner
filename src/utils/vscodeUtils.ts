@@ -131,6 +131,7 @@ export function isCmakeProject() {
 
 export function isCourseProject() {
   const workspaceFodlers = vscode.workspace.workspaceFolders;
+  let foundMakefile = false;
 
   if (workspaceFodlers) {
     workspaceFodlers.forEach((folder) => {
@@ -138,10 +139,10 @@ export function isCourseProject() {
       const makefilePath = path.join(vscodePath, 'Makefile');
 
       if (pathExists(makefilePath)) {
-        return true;
+        foundMakefile = true;
       }
     });
   }
 
-  return false;
+  return foundMakefile;
 }

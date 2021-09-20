@@ -103,19 +103,12 @@ export function activate(context: vscode.ExtensionContext) {
   }
 
   const courseMakefileFound = isCourseProject();
-
-  if (courseMakefileFound) {
-    const infoMessage = `Course Makefile found. Exiting extension.`;
-    logger.log(loggingActive, infoMessage);
-    deactivate();
-    return;
-  }
-
   const cmakeFileFound = isCmakeProject();
-  if (cmakeFileFound) {
+
+  if (cmakeFileFound || courseMakefileFound) {
     showStatusBarItems = false;
     createExtensionFiles = false;
-    const infoMessage = `CMake Project found. UI disabled.`;
+    const infoMessage = `CMake/Make Project found. UI disabled.`;
     logger.log(loggingActive, infoMessage);
   }
 

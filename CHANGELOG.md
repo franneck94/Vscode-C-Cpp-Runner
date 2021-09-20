@@ -5,6 +5,10 @@
 - If the workspace is opened with existing c_cpp_properties file but this extension was not initialized yet in the workspace, use the settings from the properties file
 - For Windows MinGW user, the experimental settings (compiling without Makefile) is now the standard.
 
+## Version 1.4.1: September 20, 2021
+
+- **Bugfix**: Fixed big for deactivation event with Makefile projects.
+
 ## Version 1.4.0: September 18, 2021
 
 - **Improvement**: Updated activation/deactivation logic with the previously called keybinding *toggleStatusBar* which is now called *toggleExtensionState*. By this command, you can de-/activate the extension for the current workspace. If the extension is deactivated, the setting/properties/launch files won't be re-created on delete.

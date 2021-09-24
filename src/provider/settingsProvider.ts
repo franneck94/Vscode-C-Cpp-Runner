@@ -590,9 +590,7 @@ export class SettingsProvider extends FileProvider {
   public update(key: string, value: any) {
     let settingsJson: JsonSettings | undefined = readJsonFile(this._outputPath);
 
-    if (!settingsJson) {
-      settingsJson = {};
-    }
+    if (!settingsJson) settingsJson = {};
 
     const settingName = `${EXTENSION_NAME}.${key}`;
 
@@ -646,14 +644,6 @@ export class SettingsProvider extends FileProvider {
     this._makeFound = true;
   }
 
-  public get isMinGW() {
-    return this._isMinGW;
-  }
-
-  public get isPowershellTerminal() {
-    return this._isPowershellTerminal;
-  }
-
   public setOtherSettings() {
     this.update('warnings', this.warnings);
     this.update('compilerArgs', this.compilerArgs);
@@ -665,5 +655,13 @@ export class SettingsProvider extends FileProvider {
     this.update('excludeSearch', this.excludeSearch);
     this.update('enableWarnings', this.enableWarnings);
     this.update('warningsAsError', this.warningsAsError);
+  }
+
+  public get isMinGW() {
+    return this._isMinGW;
+  }
+
+  public get isPowershellTerminal() {
+    return this._isPowershellTerminal;
   }
 }

@@ -115,7 +115,8 @@
             "check-separator",
             "check-preblock",
             "check-type"
-          ]
+          ],
+          "max-len": ["error", { "code": 80 }]
         }
       }
     ]

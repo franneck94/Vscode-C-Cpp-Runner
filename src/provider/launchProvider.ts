@@ -94,6 +94,18 @@ export class LaunchProvider extends FileProvider {
         SettingsProvider.DEFAULT_DEBUGGER_PATH;
     }
 
+    if (OperatingSystems.mac === this.settings.operatingSystem) {
+      launchTemplate.configurations[0].stopAtEntry = true;
+      launchTemplate.configurations[0].externalConsole = true;
+
+      if (launchTemplate.configurations[0].setupCommands) {
+        delete launchTemplate.configurations[0].setupCommands;
+      }
+      if (launchTemplate.configurations[0].miDebuggerPath) {
+        delete launchTemplate.configurations[0].miDebuggerPath;
+      }
+    }
+
     launchTemplate.configurations[0].cwd = this.activeFolder;
     const debugPath = path.join(
       this.activeFolder,

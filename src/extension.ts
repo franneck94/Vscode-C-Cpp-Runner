@@ -19,6 +19,7 @@ import { PropertiesProvider } from './provider/propertiesProvider';
 import { SettingsProvider } from './provider/settingsProvider';
 import { TaskProvider } from './provider/taskProvider';
 import {
+	filesInDir,
 	foldersInDir,
 	mkdirRecursive,
 	pathExists,
@@ -615,12 +616,22 @@ function initBuildStatusBar() {
         (char) => char.charCodeAt(0) > 255,
       );
 
+      const filesToBuild = filesInDir(activeFolder);
+
+      const hasSpaceInFilename = [...filesToBuild].some((filename) =>
+        filename.includes(' '),
+      );
+
+      const anySpace =
+        buildDir.includes(' ') ||
+        extensionPath?.includes(' ') ||
+        hasSpaceInFilename;
+
       const nonUnixMakefileCommand =
         experimentalExecutionEnabled ||
-        buildDir.includes(' ') ||
         hasNoneExtendedAsciiChars ||
         settingsProvider.isMinGW ||
-        extensionPath?.includes(' ');
+        anySpace;
 
       if (nonUnixMakefileCommand) {
         await executeBuildTask(
@@ -693,12 +704,22 @@ function initRunStatusBar() {
         (char) => char.charCodeAt(0) > 255,
       );
 
+      const filesToBuild = filesInDir(activeFolder);
+
+      const hasSpaceInFilename = [...filesToBuild].some((filename) =>
+        filename.includes(' '),
+      );
+
+      const anySpace =
+        buildDir.includes(' ') ||
+        extensionPath?.includes(' ') ||
+        hasSpaceInFilename;
+
       const nonUnixMakefileCommand =
         experimentalExecutionEnabled ||
-        buildDir.includes(' ') ||
         hasNoneExtendedAsciiChars ||
         settingsProvider.isMinGW ||
-        extensionPath?.includes(' ');
+        anySpace;
 
       if (nonUnixMakefileCommand) {
         await executeRunTask(

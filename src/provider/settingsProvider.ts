@@ -84,27 +84,49 @@ export class SettingsProvider extends FileProvider {
   constructor(public workspaceFolder: string, public activeFolder: string) {
     super(workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
 
-    const updateRequired = this.updateCheck();
+    const settingsMissing = this.updateCheck();
+    const propertiesMissing = this.checkProperties();
 
-    if (updateRequired && activeFolder) {
+    if (settingsMissing && propertiesMissing && activeFolder) {
       this.createFileData();
-    } else if (activeFolder) {
+      return;
+    }
+
+    if (settingsMissing && !propertiesMissing && activeFolder) {
+      this.getSettingsFromProperties();
+      this.storeCommands();
+      return;
+    }
+
+    if (activeFolder) {
       this.getSettings();
       this.getCommandTypes();
       this.getArchitecture();
+      return;
     }
   }
 
   protected override updateCheck() {
-    let doUpdate = false;
+    let settingsMissing = false;
 
     if (!pathExists(this._outputPath)) {
-      doUpdate = true;
+      settingsMissing = true;
     } else if (!this.commandsStored()) {
-      doUpdate = true;
+      settingsMissing = true;
     }
 
-    return doUpdate;
+    return settingsMissing;
+  }
+
+  private checkProperties() {
+    let propertiesMissing = false;
+
+    const propertiesPath = path.join(this._vscodeDirectory, 'c_cpp_properties.json');
+    if (!pathExists(propertiesPath)) {
+      propertiesMissing = true;
+    }
+
+    return propertiesMissing;
   }
 
   private commandsStored() {
@@ -143,12 +165,16 @@ export class SettingsProvider extends FileProvider {
 
   public writeFileData() {
     this.getSettings();
-    if (!this.commandsStored()) {
-      this.getCommands();
-      this.setCommands();
-      this.getCommandTypes();
-      this.getArchitecture();
-    }
+    this.storeCommands();
+  }
+
+  private storeCommands() {
+    if (this.commandsStored()) return;
+
+    this.getCommands();
+    this.setCommands();
+    this.getCommandTypes();
+    this.getArchitecture();
   }
 
   public override deleteCallback() {
@@ -237,6 +263,75 @@ export class SettingsProvider extends FileProvider {
       'excludeSearch',
       SettingsProvider.DEFAULT_EXCLUDE_SEARCH,
     );
+  }
+
+  private getSettingsFromProperties() {
+    const propertiesPath = path.join(this._vscodeDirectory, 'c_cpp_properties.json');
+    const properties: JsonSettings | undefined = readJsonFile(
+      propertiesPath,
+    ).configurations[0];
+
+    if (!properties) return;
+
+    /* Mandatory in settings.json */
+    this.cCompilerPath = this.getPropertiesValue(properties, 'compilerPath', SettingsProvider.DEFAULT_C_COMPILER_PATH);
+
+    const rootDirCompiler = path.dirname(this.cCompilerPath);
+    const programSuffix = this.operatingSystem === OperatingSystems.windows ? '.exe' : '';
+    const isClang = path.basename(this.cCompilerPath).toLowerCase().includes('clang');
+    const isMingw = rootDirCompiler.toLowerCase().includes("mingw");
+
+    let cppCompilerPath: string;
+    let debuggerPath: string;
+    let makePath: string;
+
+    if (isClang) {
+      cppCompilerPath = 'clang++' + programSuffix;
+      debuggerPath = 'lldb' + programSuffix;
+      makePath = 'make' + programSuffix;
+    } else {
+      cppCompilerPath = 'g++' + programSuffix;
+      debuggerPath = 'gdb' + programSuffix;
+
+      if (isMingw) {
+        makePath = 'mingw32-make' + programSuffix;
+
+      } else {
+        makePath = 'make' + programSuffix;
+      }
+    }
+
+    this.cppCompilerPath = path.join(rootDirCompiler, cppCompilerPath);
+    this.debuggerPath = path.join(rootDirCompiler, debuggerPath);
+    this.makePath = path.join(rootDirCompiler, makePath);
+
+    /* Optional in settings.json */
+    const _cStandard = this.getPropertiesValue(
+      properties,
+      'cStandard',
+      SettingsProvider.DEFAULT_C_STANDARD,
+    );
+    const _cppStandard = this.getPropertiesValue(
+      properties,
+      'cppStandard',
+      SettingsProvider.DEFAULT_CPP_STANDARD,
+    );
+    const _includePaths = this.getPropertiesValue(
+      properties,
+      'includePath',
+      SettingsProvider.DEFAULT_INCLUDE_PATHS,
+    );
+
+    this.cStandard = _cStandard !== '${default}' ? _cStandard : SettingsProvider.DEFAULT_C_STANDARD;
+    this.cppStandard = _cppStandard !== '${default}' ? _cppStandard : SettingsProvider.DEFAULT_CPP_STANDARD;
+    this.includePaths = _includePaths !==  ['${workspaceFolder}/**'] ? _includePaths : SettingsProvider.DEFAULT_INCLUDE_PATHS;
+
+    this.enableWarnings = SettingsProvider.DEFAULT_ENABLE_WARNINGS;
+    this.warnings = SettingsProvider.DEFAULT_WARNINGS;
+    this.warningsAsError = SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
+    this.compilerArgs = SettingsProvider.DEFAULT_COMPILER_ARGS;
+    this.linkerArgs = SettingsProvider.DEFAULT_LINKER_ARGS;
+    this.excludeSearch = SettingsProvider.DEFAULT_EXCLUDE_SEARCH;
   }
 
   public getCommands() {
@@ -582,6 +677,18 @@ export class SettingsProvider extends FileProvider {
 
     if (this._configGlobal.has(name)) {
       return this._configGlobal.get(name, defaultValue);
+    }
+
+    return defaultValue;
+  }
+
+  private getPropertiesValue(
+    properties: JsonSettings | undefined,
+    name: string,
+    defaultValue: any,
+  ) {
+    if (properties && properties[name] !== undefined) {
+      return properties[name];
     }
 
     return defaultValue;

@@ -51,7 +51,9 @@ export class SettingsProvider extends FileProvider {
 
   // Workspace data
   private _configGlobal = vscode.workspace.getConfiguration(EXTENSION_NAME);
-  private _configTerminalGlobal = vscode.workspace.getConfiguration(TERMINAL_WINDOWS_NAME).get('windows', 'Default');
+  private _configTerminalGlobal = vscode.workspace
+    .getConfiguration(TERMINAL_WINDOWS_NAME)
+    .get('windows', 'Default');
   // Machine information
   private _isMinGW: boolean = false;
   private _isPowershellTerminal: boolean = false;
@@ -106,7 +108,7 @@ export class SettingsProvider extends FileProvider {
     }
   }
 
-  protected override updateCheck() {
+  protected updateCheck() {
     let settingsMissing = false;
 
     if (!pathExists(this._outputPath)) {
@@ -121,7 +123,10 @@ export class SettingsProvider extends FileProvider {
   private checkProperties() {
     let propertiesMissing = false;
 
-    const propertiesPath = path.join(this._vscodeDirectory, 'c_cpp_properties.json');
+    const propertiesPath = path.join(
+      this._vscodeDirectory,
+      'c_cpp_properties.json',
+    );
     if (!pathExists(propertiesPath)) {
       propertiesMissing = true;
     }
@@ -177,7 +182,7 @@ export class SettingsProvider extends FileProvider {
     this.getArchitecture();
   }
 
-  public override deleteCallback() {
+  public deleteCallback() {
     const extensionIsActive = getActivationState();
     if (extensionIsActive) this.writeFileData();
   }
@@ -266,20 +271,30 @@ export class SettingsProvider extends FileProvider {
   }
 
   private getSettingsFromProperties() {
-    const propertiesPath = path.join(this._vscodeDirectory, 'c_cpp_properties.json');
-    const properties: JsonSettings | undefined = readJsonFile(
-      propertiesPath,
-    ).configurations[0];
+    const propertiesPath = path.join(
+      this._vscodeDirectory,
+      'c_cpp_properties.json',
+    );
+    const properties: JsonSettings | undefined = readJsonFile(propertiesPath)
+      .configurations[0];
 
     if (!properties) return;
 
     /* Mandatory in settings.json */
-    this.cCompilerPath = this.getPropertiesValue(properties, 'compilerPath', SettingsProvider.DEFAULT_C_COMPILER_PATH);
+    this.cCompilerPath = this.getPropertiesValue(
+      properties,
+      'compilerPath',
+      SettingsProvider.DEFAULT_C_COMPILER_PATH,
+    );
 
     const rootDirCompiler = path.dirname(this.cCompilerPath);
-    const programSuffix = this.operatingSystem === OperatingSystems.windows ? '.exe' : '';
-    const isClang = path.basename(this.cCompilerPath).toLowerCase().includes('clang');
-    const isMingw = rootDirCompiler.toLowerCase().includes("mingw");
+    const programSuffix =
+      this.operatingSystem === OperatingSystems.windows ? '.exe' : '';
+    const isClang = path
+      .basename(this.cCompilerPath)
+      .toLowerCase()
+      .includes('clang');
+    const isMingw = rootDirCompiler.toLowerCase().includes('mingw');
 
     let cppCompilerPath: string;
     let debuggerPath: string;
@@ -295,7 +310,6 @@ export class SettingsProvider extends FileProvider {
 
       if (isMingw) {
         makePath = 'mingw32-make' + programSuffix;
-
       } else {
         makePath = 'make' + programSuffix;
       }
@@ -322,9 +336,18 @@ export class SettingsProvider extends FileProvider {
       SettingsProvider.DEFAULT_INCLUDE_PATHS,
     );
 
-    this.cStandard = _cStandard !== '${default}' ? _cStandard : SettingsProvider.DEFAULT_C_STANDARD;
-    this.cppStandard = _cppStandard !== '${default}' ? _cppStandard : SettingsProvider.DEFAULT_CPP_STANDARD;
-    this.includePaths = _includePaths !==  ['${workspaceFolder}/**'] ? _includePaths : SettingsProvider.DEFAULT_INCLUDE_PATHS;
+    this.cStandard =
+      _cStandard !== '${default}'
+        ? _cStandard
+        : SettingsProvider.DEFAULT_C_STANDARD;
+    this.cppStandard =
+      _cppStandard !== '${default}'
+        ? _cppStandard
+        : SettingsProvider.DEFAULT_CPP_STANDARD;
+    this.includePaths =
+      _includePaths !== ['${workspaceFolder}/**']
+        ? _includePaths
+        : SettingsProvider.DEFAULT_INCLUDE_PATHS;
 
     this.enableWarnings = SettingsProvider.DEFAULT_ENABLE_WARNINGS;
     this.warnings = SettingsProvider.DEFAULT_WARNINGS;
@@ -630,7 +653,8 @@ export class SettingsProvider extends FileProvider {
       if (!this.isCygwin) this._isMinGW = true;
 
       const defaultTerminal = this._configTerminalGlobal;
-      this._isPowershellTerminal = (defaultTerminal === null || defaultTerminal === 'PowerShell');
+      this._isPowershellTerminal =
+        defaultTerminal === null || defaultTerminal === 'PowerShell';
     }
   }
 

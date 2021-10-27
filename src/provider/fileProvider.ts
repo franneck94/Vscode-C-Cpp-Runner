@@ -42,7 +42,7 @@ export abstract class FileProvider extends CallbackProvider {
     this.writeFileData();
   }
 
-  public override deleteCallback() {
+  public deleteCallback() {
     const extensionIsActive = getActivationState();
     if (extensionIsActive) this.createFileData();
   }

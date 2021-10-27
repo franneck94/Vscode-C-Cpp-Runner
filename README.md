@@ -118,7 +118,7 @@ For more information about glob pattern see [here](https://en.wikipedia.org/wiki
 
 This extension does not start whenever there is a CMakeLists.txt or a Makefile in the workspace root directory.  
 This prevents an overloaded status bar with a lot of icons due to Microsoft's CMake/Make extensions.  
-However, the user can trigger the start-up of this extension by pressing `ctrl+alt+r`.
+However, the user can trigger the start-up of this extension by pressing `ctrl+alt+t`.
 
 ## Release Notes
 

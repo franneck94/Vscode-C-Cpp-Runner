@@ -11,6 +11,12 @@
   - MinGW (e.g. MSYS2) users
   - Space in the username
   - Any space in the filenames of the active folder
+- **Info**: Toggle extension keybind command is changed from **ctrl+alt+r** to **ctrl+alt+t**
+- **Info**: Commandline arguments keybind command is changed from **ctrl+shift+a** to **ctrl+alt+a**
+- **Improvement**: Added following commands for single C/C++ files:
+  - Build single file (**ctrl+alt+b**) - **b** for build
+  - Run single file (**ctrl+alt+r**) - **r** for run
+  - Debug single file (**ctrl+alt+d**) - **d** for debug
 
 ## Version 1.4.2: October 25, 2021
 

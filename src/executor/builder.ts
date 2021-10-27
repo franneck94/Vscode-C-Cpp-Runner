@@ -17,12 +17,22 @@ export async function executeBuildTask(
   settingsProvider: SettingsProvider,
   activeFolder: string,
   buildMode: Builds,
+  singleFileBuild: boolean,
 ) {
   const appendSymbol = '&&';
 
   const language = getLanguage(activeFolder);
 
-  const files = filesInDir(activeFolder);
+  let files: string[];
+  if (!singleFileBuild) {
+    files = filesInDir(activeFolder);
+  } else {
+    const currentFile = vscode.window.activeTextEditor?.document.fileName;
+    if (!currentFile) return;
+
+    files = [currentFile];
+  }
+
   const buildDir = path.join(activeFolder, 'build');
   const modeDir = path.join(buildDir, `${buildMode}`);
 

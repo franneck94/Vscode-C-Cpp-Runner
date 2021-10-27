@@ -108,18 +108,54 @@
         "title": "Commandline Arguments",
         "when": "C_Cpp_Runner:activatedExtension",
         "category": "C/C++ Runner"
+      },
+      {
+        "command": "C_Cpp_Runner.buildSingleFile",
+        "title": "Build Single File",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
+      },
+      {
+        "command": "C_Cpp_Runner.runSingleFile",
+        "title": "Run Single File",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
+      },
+      {
+        "command": "C_Cpp_Runner.debugSingleFile",
+        "title": "Debug Single File",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
       }
     ],
     "keybindings": [
       {
         "command": "C_Cpp_Runner.toggleExtensionState",
+        "key": "ctrl+alt+t",
+        "mac": "ctrl+alt+t"
+      },
+      {
+        "command": "C_Cpp_Runner.buildSingleFile",
+        "key": "ctrl+alt+b",
+        "mac": "ctrl+alt+b",
+        "when": "C_Cpp_Runner:activatedExtension"
+      },
+      {
+        "command": "C_Cpp_Runner.runSingleFile",
         "key": "ctrl+alt+r",
-        "mac": "ctrl+alt+r"
+        "mac": "ctrl+alt+r",
+        "when": "C_Cpp_Runner:activatedExtension"
+      },
+      {
+        "command": "C_Cpp_Runner.debugSingleFile",
+        "key": "ctrl+alt+d",
+        "mac": "ctrl+alt+d",
+        "when": "C_Cpp_Runner:activatedExtension"
       },
       {
         "command": "C_Cpp_Runner.args",
-        "key": "ctrl+shift+a",
-        "mac": "ctrl+shift+a",
+        "key": "ctrl+alt+a",
+        "mac": "ctrl+alt+a",
         "when": "C_Cpp_Runner:activatedExtension"
       }
     ],

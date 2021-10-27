@@ -49,6 +49,9 @@ let commandFolderDisposable: vscode.Disposable | undefined;
 let commandModeDisposable: vscode.Disposable | undefined;
 let commandBuildDisposable: vscode.Disposable | undefined;
 let commandRunDisposable: vscode.Disposable | undefined;
+let commandBuildSingleFileDisposable: vscode.Disposable | undefined;
+let commandRunSingleFileDisposable: vscode.Disposable | undefined;
+let commandDebugSingleFileDisposable: vscode.Disposable | undefined;
 let commandDebugDisposable: vscode.Disposable | undefined;
 let commandCleanDisposable: vscode.Disposable | undefined;
 let commandArgumentDisposable: vscode.Disposable | undefined;
@@ -129,6 +132,10 @@ export function activate(context: vscode.ExtensionContext) {
   initDebugStatusBar();
   initCleanStatusBar();
 
+  initBuildSingleFile();
+  initRunSingleFile();
+  initDebugSingleFile();
+
   initWorkspaceProvider();
   initWorkspaceDisposables();
   initEventListener();
@@ -152,6 +159,9 @@ export function deactivate() {
   disposeItem(commandModeDisposable);
   disposeItem(commandBuildDisposable);
   disposeItem(commandRunDisposable);
+  disposeItem(commandBuildSingleFileDisposable);
+  disposeItem(commandRunSingleFileDisposable);
+  disposeItem(commandDebugSingleFileDisposable);
   disposeItem(commandDebugDisposable);
   disposeItem(commandCleanDisposable);
   disposeItem(commandArgumentDisposable);
@@ -573,77 +583,7 @@ function initBuildStatusBar() {
   const commandName = `${EXTENSION_NAME}.build`;
   commandBuildDisposable = vscode.commands.registerCommand(
     commandName,
-    async () => {
-      if (!taskProvider || !taskProvider.tasks) {
-        const infoMessage = `buildCallback failed`;
-        logger.log(loggingActive, infoMessage);
-        return;
-      }
-
-      taskProvider.getTasks();
-
-      const projectFolder = taskProvider.getProjectFolder();
-      if (!projectFolder) return;
-
-      const buildTaskIndex = 0;
-      const buildTask = taskProvider.tasks[buildTaskIndex];
-
-      if (!buildTask) return;
-
-      if (
-        !buildTask.execution ||
-        !(buildTask.execution instanceof vscode.ShellExecution) ||
-        !buildTask.execution.commandLine
-      ) {
-        return;
-      }
-
-      buildTask.execution.commandLine = buildTask.execution.commandLine.replace(
-        'FILE_DIR',
-        projectFolder,
-      );
-
-      if (!activeFolder) return;
-
-      const buildDir = path.join(activeFolder, 'build');
-      const modeDir = path.join(buildDir, `${buildMode}`);
-
-      if (!pathExists(modeDir)) mkdirRecursive(modeDir);
-
-      if (!settingsProvider) return;
-
-      const hasNoneExtendedAsciiChars = [...buildDir].some(
-        (char) => char.charCodeAt(0) > 255,
-      );
-
-      const filesToBuild = filesInDir(activeFolder);
-
-      const hasSpaceInFilename = [...filesToBuild].some((filename) =>
-        filename.includes(' '),
-      );
-
-      const anySpace =
-        buildDir.includes(' ') ||
-        extensionPath?.includes(' ') ||
-        hasSpaceInFilename;
-
-      const nonUnixMakefileCommand =
-        experimentalExecutionEnabled ||
-        hasNoneExtendedAsciiChars ||
-        settingsProvider.isMinGW ||
-        anySpace;
-
-      if (nonUnixMakefileCommand) {
-        await executeBuildTask(
-          buildTask,
-          settingsProvider,
-          activeFolder,
-          buildMode,
-        );
-      } else {
-        await vscode.tasks.executeTask(buildTask);
-      }
-    },
+    async () => buildTaskCallback(false),
   );
   buildStatusBar.command = commandName;
   extensionContext?.subscriptions.push(commandBuildDisposable);
@@ -659,80 +599,7 @@ function initRunStatusBar() {
   const commandName = `${EXTENSION_NAME}.run`;
   commandRunDisposable = vscode.commands.registerCommand(
     commandName,
-    async () => {
-      if (!taskProvider || !taskProvider.tasks) {
-        const infoMessage = `runCallback failed`;
-        logger.log(loggingActive, infoMessage);
-        return;
-      }
-
-      taskProvider.getTasks();
-
-      const projectFolder = taskProvider.getProjectFolder();
-      if (!projectFolder) return;
-
-      const runTaskIndex = 1;
-      const runTask = taskProvider.tasks[runTaskIndex];
-
-      if (!runTask) return;
-
-      if (
-        !runTask.execution ||
-        !(runTask.execution instanceof vscode.ShellExecution) ||
-        !runTask.execution.commandLine
-      ) {
-        return;
-      }
-
-      runTask.execution.commandLine = runTask.execution.commandLine.replace(
-        'FILE_DIR',
-        projectFolder,
-      );
-
-      if (!activeFolder) return;
-
-      const buildDir = path.join(activeFolder, 'build');
-      const modeDir = path.join(buildDir, `${buildMode}`);
-
-      if (!pathExists(modeDir)) return;
-
-      if (!settingsProvider) {
-        return;
-      }
-
-      const hasNoneExtendedAsciiChars = [...buildDir].some(
-        (char) => char.charCodeAt(0) > 255,
-      );
-
-      const filesToBuild = filesInDir(activeFolder);
-
-      const hasSpaceInFilename = [...filesToBuild].some((filename) =>
-        filename.includes(' '),
-      );
-
-      const anySpace =
-        buildDir.includes(' ') ||
-        extensionPath?.includes(' ') ||
-        hasSpaceInFilename;
-
-      const nonUnixMakefileCommand =
-        experimentalExecutionEnabled ||
-        hasNoneExtendedAsciiChars ||
-        settingsProvider.isMinGW ||
-        anySpace;
-
-      if (nonUnixMakefileCommand) {
-        await executeRunTask(
-          runTask,
-          activeFolder,
-          buildMode,
-          argumentsString,
-          settingsProvider.operatingSystem,
-        );
-      } else {
-        await vscode.tasks.executeTask(runTask);
-      }
-    },
+    async () => runTaskCallback(),
   );
 
   runStatusBar.command = commandName;
@@ -747,15 +614,9 @@ function initDebugStatusBar() {
   updateDebugStatus(debugStatusBar, showStatusBarItems, activeFolder);
 
   const commandName = `${EXTENSION_NAME}.debug`;
-  commandDebugDisposable = vscode.commands.registerCommand(commandName, () => {
-    if (!activeFolder || !workspaceFolder) {
-      const infoMessage = `debugCallback failed`;
-      logger.log(loggingActive, infoMessage);
-      return;
-    }
-
-    if (taskProvider) runDebugger(activeFolder, workspaceFolder, buildMode);
-  });
+  commandDebugDisposable = vscode.commands.registerCommand(commandName, () =>
+    debugTaskCallback(),
+  );
 
   debugStatusBar.command = commandName;
   extensionContext?.subscriptions.push(commandDebugDisposable);
@@ -811,4 +672,189 @@ function initCleanStatusBar() {
 
   cleanStatusBar.command = commandName;
   extensionContext?.subscriptions.push(commandCleanDisposable);
+}
+
+function initBuildSingleFile() {
+  const commandName = `${EXTENSION_NAME}.buildSingleFile`;
+  commandBuildSingleFileDisposable = vscode.commands.registerCommand(
+    commandName,
+    async () => buildTaskCallback(true),
+  );
+  extensionContext?.subscriptions.push(commandBuildSingleFileDisposable);
+}
+
+function initRunSingleFile() {
+  const commandName = `${EXTENSION_NAME}.runSingleFile`;
+  commandRunSingleFileDisposable = vscode.commands.registerCommand(
+    commandName,
+    async () => runTaskCallback(),
+  );
+  extensionContext?.subscriptions.push(commandRunSingleFileDisposable);
+}
+
+function initDebugSingleFile() {
+  const commandName = `${EXTENSION_NAME}.debug`;
+  commandDebugSingleFileDisposable = vscode.commands.registerCommand(
+    commandName,
+    () => debugTaskCallback(),
+  );
+  extensionContext?.subscriptions.push(commandDebugSingleFileDisposable);
+}
+
+async function buildTaskCallback(singleFileBuild: boolean) {
+  if (!taskProvider || !taskProvider.tasks) {
+    const infoMessage = `buildCallback failed`;
+    logger.log(loggingActive, infoMessage);
+    return;
+  }
+
+  taskProvider.getTasks();
+
+  const projectFolder = taskProvider.getProjectFolder();
+  if (!projectFolder) return;
+
+  const buildTaskIndex = 0;
+  const buildTask = taskProvider.tasks[buildTaskIndex];
+
+  if (!buildTask) return;
+
+  if (
+    !buildTask.execution ||
+    !(buildTask.execution instanceof vscode.ShellExecution) ||
+    !buildTask.execution.commandLine
+  ) {
+    return;
+  }
+
+  buildTask.execution.commandLine = buildTask.execution.commandLine.replace(
+    'FILE_DIR',
+    projectFolder,
+  );
+
+  if (!activeFolder) return;
+
+  const buildDir = path.join(activeFolder, 'build');
+  const modeDir = path.join(buildDir, `${buildMode}`);
+
+  if (!pathExists(modeDir)) mkdirRecursive(modeDir);
+
+  if (!settingsProvider) return;
+
+  const hasNoneExtendedAsciiChars = [...buildDir].some(
+    (char) => char.charCodeAt(0) > 255,
+  );
+
+  const filesToBuild = filesInDir(activeFolder);
+
+  const hasSpaceInFilename = [...filesToBuild].some((filename) =>
+    filename.includes(' '),
+  );
+
+  const anySpace =
+    buildDir.includes(' ') ||
+    extensionPath?.includes(' ') ||
+    hasSpaceInFilename;
+
+  const nonUnixMakefileCommand =
+    experimentalExecutionEnabled ||
+    hasNoneExtendedAsciiChars ||
+    settingsProvider.isMinGW ||
+    anySpace;
+
+  if (nonUnixMakefileCommand) {
+    await executeBuildTask(
+      buildTask,
+      settingsProvider,
+      activeFolder,
+      buildMode,
+      singleFileBuild,
+    );
+  } else {
+    await vscode.tasks.executeTask(buildTask);
+  }
+}
+
+async function runTaskCallback() {
+  if (!taskProvider || !taskProvider.tasks) {
+    const infoMessage = `runCallback failed`;
+    logger.log(loggingActive, infoMessage);
+    return;
+  }
+
+  taskProvider.getTasks();
+
+  const projectFolder = taskProvider.getProjectFolder();
+  if (!projectFolder) return;
+
+  const runTaskIndex = 1;
+  const runTask = taskProvider.tasks[runTaskIndex];
+
+  if (!runTask) return;
+
+  if (
+    !runTask.execution ||
+    !(runTask.execution instanceof vscode.ShellExecution) ||
+    !runTask.execution.commandLine
+  ) {
+    return;
+  }
+
+  runTask.execution.commandLine = runTask.execution.commandLine.replace(
+    'FILE_DIR',
+    projectFolder,
+  );
+
+  if (!activeFolder) return;
+
+  const buildDir = path.join(activeFolder, 'build');
+  const modeDir = path.join(buildDir, `${buildMode}`);
+
+  if (!pathExists(modeDir)) return;
+
+  if (!settingsProvider) {
+    return;
+  }
+
+  const hasNoneExtendedAsciiChars = [...buildDir].some(
+    (char) => char.charCodeAt(0) > 255,
+  );
+
+  const filesToBuild = filesInDir(activeFolder);
+
+  const hasSpaceInFilename = [...filesToBuild].some((filename) =>
+    filename.includes(' '),
+  );
+
+  const anySpace =
+    buildDir.includes(' ') ||
+    extensionPath?.includes(' ') ||
+    hasSpaceInFilename;
+
+  const nonUnixMakefileCommand =
+    experimentalExecutionEnabled ||
+    hasNoneExtendedAsciiChars ||
+    settingsProvider.isMinGW ||
+    anySpace;
+
+  if (nonUnixMakefileCommand) {
+    await executeRunTask(
+      runTask,
+      activeFolder,
+      buildMode,
+      argumentsString,
+      settingsProvider.operatingSystem,
+    );
+  } else {
+    await vscode.tasks.executeTask(runTask);
+  }
+}
+
+function debugTaskCallback() {
+  if (!activeFolder || !workspaceFolder) {
+    const infoMessage = `debugCallback failed`;
+    logger.log(loggingActive, infoMessage);
+    return;
+  }
+
+  if (taskProvider) runDebugger(activeFolder, workspaceFolder, buildMode);
 }

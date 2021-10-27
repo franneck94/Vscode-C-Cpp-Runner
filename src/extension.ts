@@ -615,12 +615,14 @@ function initBuildStatusBar() {
         (char) => char.charCodeAt(0) > 255,
       );
 
-      const nonMakefileCommand =
+      const nonUnixMakefileCommand =
         experimentalExecutionEnabled ||
         buildDir.includes(' ') ||
-        hasNoneExtendedAsciiChars;
+        hasNoneExtendedAsciiChars ||
+        settingsProvider.isMinGW ||
+        extensionPath?.includes(' ');
 
-      if (nonMakefileCommand) {
+      if (nonUnixMakefileCommand) {
         await executeBuildTask(
           buildTask,
           settingsProvider,
@@ -691,12 +693,14 @@ function initRunStatusBar() {
         (char) => char.charCodeAt(0) > 255,
       );
 
-      const nonMakefileCommand =
+      const nonUnixMakefileCommand =
         experimentalExecutionEnabled ||
         buildDir.includes(' ') ||
-        hasNoneExtendedAsciiChars;
+        hasNoneExtendedAsciiChars ||
+        settingsProvider.isMinGW ||
+        extensionPath?.includes(' ');
 
-      if (nonMakefileCommand) {
+      if (nonUnixMakefileCommand) {
         await executeRunTask(
           runTask,
           activeFolder,

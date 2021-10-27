@@ -2,9 +2,13 @@
 
 ## Planned
 
-- If the workspace is opened with existing c_cpp_properties file but this extension was not initialized yet in the workspace, use the settings from the properties file
-- For Windows MinGW user, the experimental settings (compiling without Makefile) is now the standard
 - Add shortcut to compile, run, debug single file
+
+## Version 1.5.0: October 27, 2021
+
+- **Improvement**: If the workspace is opened with an existing c_cpp_properties file but no settings.json file, the settings from the properties file are now used for initialization
+- **Info**: For Windows MinGW (e.g. MSYS2) users, the experimental setting (compiling without Makefile) is now the standard due to several issues in the past
+- **Info**: For Windows users with an space in their username, the experimental setting (compiling without Makefile) is now the standard due to several issues in the past
 
 ## Version 1.4.2: October 25, 2021
 

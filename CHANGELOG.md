@@ -2,9 +2,21 @@
 
 ## Planned
 
-- If the workspace is opened with existing c_cpp_properties file but this extension was not initialized yet in the workspace, use the settings from the properties file
-- For Windows MinGW user, the experimental settings (compiling without Makefile) is now the standard
 - Add shortcut to compile, run, debug single file
+
+## Version 1.5.0: October 27, 2021
+
+- **Improvement**: If the workspace is opened with an existing c_cpp_properties file but no settings.json file, the settings from the properties file are now used for initialization
+- **Info**: For Windows users with one of the following conditions, the experimental setting (compiling without Makefile) is now the standard due to several issues in the past:
+  - MinGW (e.g. MSYS2) users
+  - Space in the username
+  - Any space in the filenames of the active folder
+- **Info**: Toggle extension keybind command is changed from **ctrl+alt+r** to **ctrl+alt+t**
+- **Info**: Commandline arguments keybind command is changed from **ctrl+shift+a** to **ctrl+alt+a**
+- **Improvement**: Added following commands for single C/C++ files:
+  - Build single file (**ctrl+alt+b**) - **b** for build
+  - Run single file (**ctrl+alt+r**) - **r** for run
+  - Debug single file (**ctrl+alt+d**) - **d** for debug
 
 ## Version 1.4.2: October 25, 2021
 

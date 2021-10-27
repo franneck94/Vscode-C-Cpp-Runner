@@ -4,7 +4,7 @@
 
 This extension provides tasks to compile, run and debug your C/C++ code.  
 It does not only compile single C/C++ files but also multiple files.  
-You do not need to know about any compiler and Makefile commands. 😎
+You do not need to know about any compiler commands. 😎
 
 ## Example
 
@@ -111,17 +111,14 @@ For more information about glob pattern see [here](https://en.wikipedia.org/wiki
 - 📝 Allowed file extensions for headers: \*.h, \*.hpp, \*.hh, \*.hxx
 - 📝 Allowed file extensions for sources: \*.c, \*.cpp, \*.cc, \*.cxx
 - 📁 The folder selection menu will not list:
-  - Folder names including '.' (e.g. *.vscode*), '\_\_' (e.g. temp folders) or 'CMake'
+  - Folder names **including** '.' (e.g. *.vscode*), '\_\_' (e.g. temp folders) or 'CMake'
   - The folder named *build* since this is the auto generated folder by this extension
-- 📝 Paths containing whitespaces or non-extended ASCII characters will use the extension's experimental code runner and not Makefile.
-- 📝 It is forbidden to use spaces in filenames because Makefile cannot handle this properly
 
 ### CMake and Makefile Projects
 
-This extension does not start whenever the CMake or Make extension by Microsoft is active in the current workspace folder.  
-This means if there is a CMakeLists.txt or a Makefile in the workspace root directory, this extension is not active.  
-This prevents an overloaded status bar with a lot of icons.  
-However, the user can trigger the start-up of this extension by pressing `ctrl+alt+r`.
+This extension does not start whenever there is a CMakeLists.txt or a Makefile in the workspace root directory.  
+This prevents an overloaded status bar with a lot of icons due to Microsoft's CMake/Make extensions.  
+However, the user can trigger the start-up of this extension by pressing `ctrl+alt+t`.
 
 ## Release Notes
 

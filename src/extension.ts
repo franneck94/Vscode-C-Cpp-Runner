@@ -599,7 +599,7 @@ function initRunStatusBar() {
   const commandName = `${EXTENSION_NAME}.run`;
   commandRunDisposable = vscode.commands.registerCommand(
     commandName,
-    async () => runTaskCallback(),
+    async () => runTaskCallback(false),
   );
 
   runStatusBar.command = commandName;
@@ -687,13 +687,13 @@ function initRunSingleFile() {
   const commandName = `${EXTENSION_NAME}.runSingleFile`;
   commandRunSingleFileDisposable = vscode.commands.registerCommand(
     commandName,
-    async () => runTaskCallback(),
+    async () => runTaskCallback(true),
   );
   extensionContext?.subscriptions.push(commandRunSingleFileDisposable);
 }
 
 function initDebugSingleFile() {
-  const commandName = `${EXTENSION_NAME}.debug`;
+  const commandName = `${EXTENSION_NAME}.debugSingleFile`;
   commandDebugSingleFileDisposable = vscode.commands.registerCommand(
     commandName,
     () => debugTaskCallback(),
@@ -759,7 +759,8 @@ async function buildTaskCallback(singleFileBuild: boolean) {
     experimentalExecutionEnabled ||
     hasNoneExtendedAsciiChars ||
     settingsProvider.isMinGW ||
-    anySpace;
+    anySpace ||
+    singleFileBuild;
 
   if (nonUnixMakefileCommand) {
     await executeBuildTask(
@@ -774,7 +775,7 @@ async function buildTaskCallback(singleFileBuild: boolean) {
   }
 }
 
-async function runTaskCallback() {
+async function runTaskCallback(singleFileBuild: boolean) {
   if (!taskProvider || !taskProvider.tasks) {
     const infoMessage = `runCallback failed`;
     logger.log(loggingActive, infoMessage);
@@ -834,7 +835,8 @@ async function runTaskCallback() {
     experimentalExecutionEnabled ||
     hasNoneExtendedAsciiChars ||
     settingsProvider.isMinGW ||
-    anySpace;
+    anySpace ||
+    singleFileBuild;
 
   if (nonUnixMakefileCommand) {
     await executeRunTask(

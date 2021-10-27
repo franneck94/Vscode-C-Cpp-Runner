@@ -30,7 +30,7 @@ export async function executeBuildTask(
     const currentFile = vscode.window.activeTextEditor?.document.fileName;
     if (!currentFile) return;
 
-    files = [currentFile];
+    files = [path.basename(currentFile)];
   }
 
   const buildDir = path.join(activeFolder, 'build');

@@ -22,17 +22,16 @@ export async function executeRunTask(
     executableName = `./out${buildMode}`;
   }
 
+  let executableCall = path.join(modeDir, executableName);
+
+  if (!pathExists(executableCall)) return;
+
   if (argumentsString) {
-    executableName += argumentsString;
+    executableCall += ` ${argumentsString}`;
   }
 
-  const executablePath = path.join(modeDir, executableName);
-
-  if (!pathExists(executablePath)) return;
-
   if (task && task.execution) {
-    const commandLine = `${executablePath}`;
-    task.execution.commandLine = commandLine;
+    task.execution.commandLine = executableCall;
     await vscode.tasks.executeTask(task);
   }
 }

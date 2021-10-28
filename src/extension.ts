@@ -677,8 +677,12 @@ function initCleanStatusBar() {
 function initProviderBasedOnSingleFile() {
   const currentFile = vscode.window.activeTextEditor?.document.fileName;
   if (!currentFile) return;
-  activeFolder = path.dirname(currentFile);
-  initWorkspaceProvider();
+  const currentFolder = path.dirname(currentFile);
+  if (activeFolder !== currentFolder) {
+    activeFolder = currentFolder;
+    initWorkspaceProvider();
+    updateFolderData();
+  }
 }
 
 function initBuildSingleFile() {
@@ -686,7 +690,7 @@ function initBuildSingleFile() {
   commandBuildSingleFileDisposable = vscode.commands.registerCommand(
     commandName,
     async () => {
-      if (!activeFolder) initProviderBasedOnSingleFile();
+      initProviderBasedOnSingleFile();
       buildTaskCallback(true);
     },
   );
@@ -698,7 +702,7 @@ function initRunSingleFile() {
   commandRunSingleFileDisposable = vscode.commands.registerCommand(
     commandName,
     async () => {
-      if (!activeFolder) initProviderBasedOnSingleFile();
+      initProviderBasedOnSingleFile();
       runTaskCallback(true);
     },
   );
@@ -710,7 +714,7 @@ function initDebugSingleFile() {
   commandDebugSingleFileDisposable = vscode.commands.registerCommand(
     commandName,
     () => {
-      if (!activeFolder) initProviderBasedOnSingleFile();
+      initProviderBasedOnSingleFile();
       debugTaskCallback();
     },
   );

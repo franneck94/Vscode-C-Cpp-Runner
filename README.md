@@ -22,16 +22,16 @@ You do not need to know about any compiler commands. 😎
 - 🖥️ Linux: Recommended to install gcc/g++, gdb and make via a package manager (e.g. `apt` for Debian derivates).
 - 🖥️ MacOS: Recommended to install clang/clang++, lldb and make via [xcode-tools](https://developer.apple.com/xcode/features/). An alternative is installing the llvm toolchain with [brew](https://apple.stackexchange.com/a/362837).
 
-## How to use
+## How to use: Compile all files in a folder
 
-1️⃣ The first step is to select the folder that contains the C/C++ files you want to compile, run or debug.  
+1️⃣ Select the folder that contains the C/C++ files.  
 You can select the folder by the quick pick menu from the status bar.  
 ![TaskStatusBar](./media/FolderStatusBar.png)  
 Besides that, you can also select a folder by right-clicking in the context menu.  
 After selecting the folder, the icons for building, running, and debugging are shown.  
-2️⃣ The second step is to select either debug or release mode for building the binary (debug is the default case).  
+2️⃣ Select either debug or release mode for building the binary (debug is the default case).  
 ![TaskStatusBar](./media/ModeStatusBar.png)  
-3️⃣ The third step is to execute the extension's tasks.  
+3️⃣ Now you can build/run/debug the binary.  
 ![TaskStatusBar](./media/TaskStatusBar.png)
 
 - ⚙️ Build: This task will compile all C/C++ files in the selected folder and will link them into a binary.
@@ -41,11 +41,13 @@ After selecting the folder, the icons for building, running, and debugging are s
 
 *This task is a no-op if the build task was not executed previously.
 
-### Alternative Usage
+## How to use: Compile a single file
 
-Cou can use the different commands also from vscode's command palette:
-
-![TaskQuickBar](./media/CommandPalette.png)
+1️⃣ Open the C/C++ file you want to compile (build).  
+2️⃣ Select either debug or release mode for building the binary (debug is the default case).  
+3️⃣ To build the binary press **ctrl+alt+b**.  
+4️⃣ To run the binary press **ctrl+alt+r**.  
+5️⃣ To debug the binary press **ctrl+alt+d**.  
 
 ## Extension Features
 

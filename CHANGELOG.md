@@ -2,7 +2,8 @@
 
 ## Planned
 
-- Add shortcut to compile, run, debug single file
+- Remove experimental execution setting, it is stable now
+- Currently the single file commands only work if any activate folder is selected
 
 ## Version 1.5.0: October 27, 2021
 

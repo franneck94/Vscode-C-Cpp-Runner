@@ -674,11 +674,21 @@ function initCleanStatusBar() {
   extensionContext?.subscriptions.push(commandCleanDisposable);
 }
 
+function initProviderBasedOnSingleFile() {
+  const currentFile = vscode.window.activeTextEditor?.document.fileName;
+  if (!currentFile) return;
+  activeFolder = path.dirname(currentFile);
+  initWorkspaceProvider();
+}
+
 function initBuildSingleFile() {
   const commandName = `${EXTENSION_NAME}.buildSingleFile`;
   commandBuildSingleFileDisposable = vscode.commands.registerCommand(
     commandName,
-    async () => buildTaskCallback(true),
+    async () => {
+      if (!activeFolder) initProviderBasedOnSingleFile();
+      buildTaskCallback(true);
+    },
   );
   extensionContext?.subscriptions.push(commandBuildSingleFileDisposable);
 }
@@ -687,7 +697,10 @@ function initRunSingleFile() {
   const commandName = `${EXTENSION_NAME}.runSingleFile`;
   commandRunSingleFileDisposable = vscode.commands.registerCommand(
     commandName,
-    async () => runTaskCallback(true),
+    async () => {
+      if (!activeFolder) initProviderBasedOnSingleFile();
+      runTaskCallback(true);
+    },
   );
   extensionContext?.subscriptions.push(commandRunSingleFileDisposable);
 }
@@ -696,7 +709,10 @@ function initDebugSingleFile() {
   const commandName = `${EXTENSION_NAME}.debugSingleFile`;
   commandDebugSingleFileDisposable = vscode.commands.registerCommand(
     commandName,
-    () => debugTaskCallback(),
+    () => {
+      if (!activeFolder) initProviderBasedOnSingleFile();
+      debugTaskCallback();
+    },
   );
   extensionContext?.subscriptions.push(commandDebugSingleFileDisposable);
 }

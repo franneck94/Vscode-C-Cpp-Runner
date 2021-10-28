@@ -3,7 +3,10 @@
 ## Planned
 
 - Remove experimental execution setting, it is stable now
-- Currently the single file commands only work if any activate folder is selected
+
+## Version 1.5.1: October 22, 2021
+
+- **Bugfix**: Fixed bug where single file tasks can't be executed when no active folder was selected
 
 ## Version 1.5.0: October 27, 2021
 

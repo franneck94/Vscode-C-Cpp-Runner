@@ -1,10 +1,15 @@
 # C/C++ Runner Change Log
 
-## Planned
+## Planned 2.0.0
 
-- Remove experimental execution setting, it is stable now
+- Remove experimental execution setting, it is stable now => Remove usage of Makefile
 
-## Version 1.5.1: October 22, 2021
+## Version 1.5.2: October 28, 2021
+
+- **Bugfix**: For a single file task the command line arguments are now passed into the executable call
+- **Bugfix**: For single-file task the active folder is now updated
+
+## Version 1.5.1: October 28, 2021
 
 - **Bugfix**: Fixed bug where single file tasks can't be executed when no active folder was selected
 

@@ -70,7 +70,6 @@ export async function executeBuildTask(
     warnings += ' -Werror';
   }
   const includePaths = settingsProvider.includePaths;
-  const includes = includePaths.join(' -I ');
   const compilerArgs = settingsProvider.compilerArgs;
   const linkerArgs = settingsProvider.linkerArgs;
 
@@ -86,14 +85,14 @@ export async function executeBuildTask(
   } else {
     fullCompilerArgs += ' -O3 -DNDEBUG';
   }
-  if (compilerArgs) {
-    fullCompilerArgs += compilerArgs;
+  if (compilerArgs && compilerArgs.length > 0) {
+    fullCompilerArgs += ' ' + compilerArgs.join(' ');
   }
-  if (linkerArgs) {
-    fullCompilerArgs += linkerArgs;
+  if (linkerArgs && linkerArgs.length > 0) {
+    fullCompilerArgs += ' ' + linkerArgs.join(' ');
   }
-  if (includes) {
-    fullCompilerArgs += includes;
+  if (includePaths && includePaths.length > 0) {
+    fullCompilerArgs += ' -I' + includePaths.join(' -I');
   }
 
   let commandLine: string = '';

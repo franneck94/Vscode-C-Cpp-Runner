@@ -4,10 +4,14 @@
 
 - Remove experimental execution setting, it is stable now => Remove usage of Makefile
 
+## Version 1.5.3: November 09, 2021
+
+- **Bugfix**: For a single file task the Compiler, Linker, and Include args are now correctly handled
+
 ## Version 1.5.2: October 28, 2021
 
 - **Bugfix**: For a single file task the command line arguments are now passed into the executable call
-- **Bugfix**: For single-file task the active folder is now updated
+- **Bugfix**: For single-file tasks the active folder is now updated
 
 ## Version 1.5.1: October 28, 2021
 
@@ -37,7 +41,7 @@
 
 ## Version 1.4.0: September 18, 2021
 
-- **Improvement**: Updated activation/deactivation logic with the previously called keybinding *toggleStatusBar* which is now called *toggleExtensionState*. By this command, you can de-/activate the extension for the current workspace. If the extension is deactivated, the setting/properties/launch files won't be re-created on delete.
+- **Improvement**: Updated activation/deactivation logic with the previously called keybinding *toggle status bar* which is now called *toggleExtensionState*. By this command, you can de-/activate the extension for the current workspace. If the extension is deactivated, the setting/properties/launch files won't be re-created on delete.
 - **Improvement**: In a workspace with multiple sub-directories, and hence the active folder is not selected on start-up, the settings and properties files are created once the active folder is selected. This speeds up the start-up time for vscode with this extension activated and makes no difference in the usage of this extension.
 - **Improvement**: Added command to reset local settings and properties file
 - **Bugfix**: Fixed issue for Windows PowerShell users with the experimental setting. Now the CMD is also used to execute the tasks even if the PowerShell is the default terminal.

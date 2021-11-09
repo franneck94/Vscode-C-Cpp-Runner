@@ -18,9 +18,15 @@ You do not need to know about any compiler commands. 😎
 
 ## Install the Software Requirements (optional)
 
-- 🖥️ Windows: Highly recommended to install gcc/g++, gdb and make via [Cygwin](https://www.cygwin.com/). An alternative to this is MinGW via [MSYS2](https://www.msys2.org/).
-- 🖥️ Linux: Recommended to install gcc/g++, gdb and make via a package manager (e.g. `apt` for Debian derivates).
-- 🖥️ MacOS: Recommended to install clang/clang++, lldb and make via [xcode-tools](https://developer.apple.com/xcode/features/). An alternative is installing the llvm toolchain with [brew](https://apple.stackexchange.com/a/362837).
+- 🖥️ Windows:
+  - Highly recommended to install gcc/g++, gdb and make via [Cygwin](https://www.cygwin.com/).  
+  - One alternative is MinGW via [MSYS2](https://www.msys2.org/).  
+  - Another alternative is a Linux Distro via [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install).
+- 🖥️ Linux:
+  - Recommended to install gcc/g++, gdb and make via a package manager (e.g. `apt` for Debian derivates).
+- 🖥️ MacOS:
+  - Recommended to install clang/clang++, lldb and make via [xcode-tools](https://developer.apple.com/xcode/features/).
+  - An alternative is installing the llvm toolchain with [brew](https://apple.stackexchange.com/a/362837).
 
 ## How to use: Compile all files in a folder
 
@@ -28,7 +34,6 @@ You do not need to know about any compiler commands. 😎
 You can select the folder by the quick pick menu from the status bar.  
 ![TaskStatusBar](./media/FolderStatusBar.png)  
 Besides that, you can also select a folder by right-clicking in the context menu.  
-After selecting the folder, the icons for building, running, and debugging are shown.  
 2️⃣ Select either debug or release mode for building the binary (debug is the default case).  
 ![TaskStatusBar](./media/ModeStatusBar.png)  
 3️⃣ Now you can build/run/debug the binary.  
@@ -54,7 +59,7 @@ After selecting the folder, the icons for building, running, and debugging are s
 ### Configuration
 
 The extension will automatically search for an installed compiler on your computer.  
-For linux and mac it searches in */bin/* and */usr/bin/*, and on windows it searches for *cygwin*, *mingw*, and *msys2* in the PATH.  
+For linux and mac it searches in */usr/bin/*, and on windows it searches for *cygwin*, *mingw*, and *msys2* in the PATH.  
 All settings will be stored in the local workspace settings (*".vscode/settings.json"*).  
 If you wish to use any other compiler or different setting, just edit the entries in the local settings file.  
 ![FoundCompiler](./media/FoundCompiler.png)  
@@ -101,10 +106,11 @@ For more information about glob pattern see [here](https://en.wikipedia.org/wiki
 - ⚙️ What warnings should be checked by the compiler (defaults to ['-Wall', '-Wextra', '-Wpedantic'])
 - ⚙️ To treat warnings as errors (defaults to False)
 - ⚙️ Additional compiler arguments (defaults to [] e.g. **-flto**)
-- ⚙️ Additional linker arguments (defaults to [] e.g. **-lpthread**). It **is** expected to prefix the arguments with the appropriate flags (e.g. -l or -L)
-- ⚙️ Additional include paths (defaults to [] e.g. **path/to/headers/**) It is **not** (!) expected to prefix the arguments with the **-I** flag
+- ⚙️ Additional linker arguments (defaults to [] e.g. **-lpthread**).
+  - Note: It **is** expected to prefix the arguments with the appropriate flags (e.g. -l or -L)
+- ⚙️ Additional include paths (defaults to [] e.g. **path/to/headers/**)
+  - Note: It is **not** (!) expected to prefix the arguments with the **-I** flag
 - ⚙️ Glob pattern to exclude from the folder selection (defaults to [])
-- ⚙️ Experimental: Run compiler commands without Makefile (defaults to False)
 
 ## Important Notes
 

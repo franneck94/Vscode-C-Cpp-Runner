@@ -86,16 +86,17 @@ export class SettingsProvider extends FileProvider {
   constructor(public workspaceFolder: string, public activeFolder: string) {
     super(workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
 
+    const settingsFileMissing = this.checkSettingsFile();
     const settingsMissing = this.updateCheck();
-    const propertiesMissing = this.checkProperties();
+    const propertiesFileMissing = this.checkPropertiesFile();
 
-    if (settingsMissing && propertiesMissing && activeFolder) {
+    if (settingsMissing && propertiesFileMissing && activeFolder) {
       this.createFileData();
       return;
     }
 
-    if (settingsMissing && !propertiesMissing && activeFolder) {
-      this.getSettingsFromProperties();
+    if (settingsMissing && !propertiesFileMissing && activeFolder) {
+      this.getSettingsFromProperties(settingsFileMissing);
       this.storeCommands();
       return;
     }
@@ -120,18 +121,29 @@ export class SettingsProvider extends FileProvider {
     return settingsMissing;
   }
 
-  private checkProperties() {
-    let propertiesMissing = false;
+  private checkPropertiesFile() {
+    let propertiesFileMissing = false;
 
     const propertiesPath = path.join(
       this._vscodeDirectory,
       'c_cpp_properties.json',
     );
     if (!pathExists(propertiesPath)) {
-      propertiesMissing = true;
+      propertiesFileMissing = true;
     }
 
-    return propertiesMissing;
+    return propertiesFileMissing;
+  }
+
+  private checkSettingsFile() {
+    let settingsFileMissing = false;
+
+    const settingsPath = path.join(this._vscodeDirectory, 'settings.json');
+    if (!pathExists(settingsPath)) {
+      settingsFileMissing = true;
+    }
+
+    return settingsFileMissing;
   }
 
   private commandsStored() {
@@ -200,7 +212,11 @@ export class SettingsProvider extends FileProvider {
       this._outputPath,
     );
 
-    /* Mandatory in settings.json */
+    this.getMandatorySettings(settingsLocal);
+    this.getOptionalSettings(settingsLocal);
+  }
+
+  private getMandatorySettings(settingsLocal: JsonSettings | undefined) {
     this.cCompilerPath = this.getSettingsValue(
       settingsLocal,
       'cCompilerPath',
@@ -221,8 +237,9 @@ export class SettingsProvider extends FileProvider {
       'makePath',
       SettingsProvider.DEFAULT_MAKE_PATH,
     );
+  }
 
-    /* Optional in settings.json */
+  private getOptionalSettings(settingsLocal: JsonSettings | undefined) {
     this.enableWarnings = this.getSettingsValue(
       settingsLocal,
       'enableWarnings',
@@ -270,7 +287,7 @@ export class SettingsProvider extends FileProvider {
     );
   }
 
-  private getSettingsFromProperties() {
+  private getSettingsFromProperties(settingsFileMissing: boolean) {
     const propertiesPath = path.join(
       this._vscodeDirectory,
       'c_cpp_properties.json',
@@ -349,12 +366,20 @@ export class SettingsProvider extends FileProvider {
         ? _includePaths
         : SettingsProvider.DEFAULT_INCLUDE_PATHS;
 
-    this.enableWarnings = SettingsProvider.DEFAULT_ENABLE_WARNINGS;
-    this.warnings = SettingsProvider.DEFAULT_WARNINGS;
-    this.warningsAsError = SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
-    this.compilerArgs = SettingsProvider.DEFAULT_COMPILER_ARGS;
-    this.linkerArgs = SettingsProvider.DEFAULT_LINKER_ARGS;
-    this.excludeSearch = SettingsProvider.DEFAULT_EXCLUDE_SEARCH;
+    if (settingsFileMissing) {
+      this.enableWarnings = SettingsProvider.DEFAULT_ENABLE_WARNINGS;
+      this.warnings = SettingsProvider.DEFAULT_WARNINGS;
+      this.warningsAsError = SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
+      this.compilerArgs = SettingsProvider.DEFAULT_COMPILER_ARGS;
+      this.linkerArgs = SettingsProvider.DEFAULT_LINKER_ARGS;
+      this.excludeSearch = SettingsProvider.DEFAULT_EXCLUDE_SEARCH;
+    } else {
+      const settingsLocal: JsonSettings | undefined = readJsonFile(
+        this._outputPath,
+      );
+
+      this.getOptionalSettings(settingsLocal);
+    }
   }
 
   public getCommands() {

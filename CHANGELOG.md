@@ -4,6 +4,10 @@
 
 - Remove experimental execution setting, it is stable now => Remove usage of Makefile
 
+## Version 1.5.4: November 10, 2021
+
+- **Bugfix**: Bugfix for settings detection based on c_cpp_properties.json file when there is no local settings.json file present
+
 ## Version 1.5.3: November 09, 2021
 
 - **Bugfix**: For a single file task the Compiler, Linker, and Include args are now correctly handled

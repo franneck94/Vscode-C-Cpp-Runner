@@ -7,6 +7,7 @@ import {
 	pathExists,
 	readJsonFile,
 	removeExtension,
+	replaceBackslashes,
 	writeJsonFile,
 } from '../utils/fileUtils';
 import {
@@ -755,48 +756,56 @@ export class SettingsProvider extends FileProvider {
     writeJsonFile(this._outputPath, settingsJson);
   }
 
+  private updatebasedOnEnv(settingsName: string, settingsValue: string) {
+    if (this.operatingSystem === OperatingSystems.windows) {
+      this.update(settingsName, replaceBackslashes(settingsValue));
+    } else {
+      this.update(settingsName, settingsValue);
+    }
+  }
+
   /********************/
   /*      SETTER      */
   /********************/
 
   public setGcc(pathGcc: string) {
-    this.update('cCompilerPath', pathGcc);
+    this.updatebasedOnEnv('cCompilerPath', pathGcc);
     this.cCompiler = Compilers.gcc;
     this._cCompilerFound = true;
   }
 
   public setClang(pathClang: string) {
-    this.update('cCompilerPath', pathClang);
+    this.updatebasedOnEnv('cCompilerPath', pathClang);
     this.cCompiler = Compilers.clang;
     this._cCompilerFound = true;
   }
 
   public setGpp(pathGpp: string) {
-    this.update('cppCompilerPath', pathGpp);
+    this.updatebasedOnEnv('cppCompilerPath', pathGpp);
     this.cppCompiler = Compilers.gpp;
     this._cppCompilerFound = true;
   }
 
   public setClangpp(pathClangpp: string) {
-    this.update('cppCompilerPath', pathClangpp);
+    this.updatebasedOnEnv('cppCompilerPath', pathClangpp);
     this.cppCompiler = Compilers.clangpp;
     this._cppCompilerFound = true;
   }
 
   public setLLDB(pathLLDB: string) {
-    this.update('debuggerPath', pathLLDB);
+    this.updatebasedOnEnv('debuggerPath', pathLLDB);
     this.debugger = Debuggers.lldb;
     this._debuggerFound = true;
   }
 
   public setGDB(pathGDB: string) {
-    this.update('debuggerPath', pathGDB);
+    this.updatebasedOnEnv('debuggerPath', pathGDB);
     this.debugger = Debuggers.gdb;
     this._debuggerFound = true;
   }
 
   public setMake(pathMake: string) {
-    this.update('makePath', pathMake);
+    this.updatebasedOnEnv('makePath', pathMake);
     this._makeFound = true;
   }
 

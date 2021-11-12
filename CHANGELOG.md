@@ -4,6 +4,10 @@
 
 - Remove experimental execution setting, it is stable now => Remove usage of Makefile
 
+## Version 1.5.5: November 12, 2021
+
+- **Info**: For Windows users the paths to the compiler tools are now stored with single slashed "/" instead of double back slashes "\\\\" due to issues with the properties handler of Microsoft's C/C++ extension
+
 ## Version 1.5.4: November 10, 2021
 
 - **Bugfix**: Bugfix for settings detection based on c_cpp_properties.json file when there is no local settings.json file present

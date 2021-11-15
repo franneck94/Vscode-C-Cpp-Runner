@@ -161,7 +161,7 @@ export class SettingsProvider extends FileProvider {
 
       if (
         this._cCompilerFound &&
-        this._cppCompilerFound
+        this._cppCompilerFound &&
         this._debuggerFound
       ) {
         return true;

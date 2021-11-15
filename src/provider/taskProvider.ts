@@ -3,7 +3,6 @@ import * as vscode from 'vscode';
 
 import { extensionPath } from '../extension';
 import {
-	getLanguage,
 	readJsonFile,
 	replaceBackslashes,
 	writeJsonFile,
@@ -11,12 +10,9 @@ import {
 import {
 	Builds,
 	JsonConfiguration,
-	JsonInnerTask,
 	JsonTask,
-	Languages,
 	OperatingSystems,
 	Task,
-	Tasks,
 } from '../utils/types';
 import { getLaunchConfigIndex } from '../utils/vscodeUtils';
 import { SettingsProvider } from './settingsProvider';
@@ -55,16 +51,14 @@ export class TaskProvider implements vscode.TaskProvider {
   public getTasks() {
     if (!this.activeFolder) return [];
 
-    const language = getLanguage(this.activeFolder);
-
-    this.setTasksDefinition(language);
+    this.setTasksDefinition();
 
     if (!this.tasks) return [];
 
     return this.tasks;
   }
 
-  private setTasksDefinition(language: Languages) {
+  private setTasksDefinition() {
     const taskType = 'shell';
     const configJson: JsonTask = readJsonFile(this._tasksFile);
 
@@ -83,8 +77,6 @@ export class TaskProvider implements vscode.TaskProvider {
           continue;
         }
       }
-
-      this.updateTaskBasedOnSettings(taskJson, language);
 
       const shellCommand = `${taskJson.command} ${taskJson.args.join(' ')}`;
 
@@ -123,84 +115,6 @@ export class TaskProvider implements vscode.TaskProvider {
     this.addDebugTask();
 
     return this.tasks;
-  }
-
-  private updateTaskBasedOnSettings(
-    taskJson: JsonInnerTask,
-    language: Languages,
-  ) {
-    if (!this.workspaceFolder || !this.activeFolder) return;
-
-    const settings = this._settingsProvider;
-    const activeFolder = this.activeFolder;
-    const workspaceFolder = this.workspaceFolder;
-    const folder = activeFolder.replace(
-      workspaceFolder,
-      path.basename(workspaceFolder),
-    );
-    taskJson.label = taskJson.label.replace(
-      taskJson.label.split(': ')[1],
-      folder,
-    );
-    taskJson.label = replaceBackslashes(taskJson.label);
-    taskJson.args[1] = `--file=todo`;
-
-    const isRunTask = taskJson.label.includes(Tasks.run);
-
-    // Makefile arguments that hold single values
-    taskJson.args.push(`COMPILATION_MODE=${this.buildMode}`);
-    if (this._settingsProvider.operatingSystem === OperatingSystems.windows) {
-      taskJson.args.push(`EXECUTABLE_NAME=out${this.buildMode}.exe`);
-    } else {
-      taskJson.args.push(`EXECUTABLE_NAME=out${this.buildMode}`);
-    }
-    taskJson.args.push(`LANGUAGE_MODE=${language}`);
-
-    if (!isRunTask) {
-      if (language === Languages.c) {
-        taskJson.args.push(`C_COMPILER=${settings.cCompilerPath}`);
-        if (
-          settings.cStandard &&
-          settings.cStandard !== SettingsProvider.DEFAULT_C_STANDARD
-        ) {
-          taskJson.args.push(`C_STANDARD=${settings.cStandard}`);
-        }
-      } else {
-        taskJson.args.push(`CPP_COMPILER=${settings.cppCompilerPath}`);
-        if (
-          settings.cppStandard &&
-          settings.cppStandard !== SettingsProvider.DEFAULT_CPP_STANDARD
-        ) {
-          taskJson.args.push(`CPP_STANDARD=${settings.cppStandard}`);
-        }
-      }
-      taskJson.args.push(`ENABLE_WARNINGS=${+settings.enableWarnings}`);
-      taskJson.args.push(`WARNINGS_AS_ERRORS=${+settings.warningsAsError}`);
-
-      // Makefile arguments that can hold multiple values
-      if (settings.warnings && settings.warnings.length > 0) {
-        const warningsStr = settings.warnings.join(' ');
-        taskJson.args.push(`WARNINGS="${warningsStr}"`);
-      }
-      if (settings.compilerArgs && settings.compilerArgs.length > 0) {
-        const compilerArgsStr = settings.compilerArgs.join(' ');
-        taskJson.args.push(`COMPILER_ARGS="${compilerArgsStr}"`);
-      }
-      if (settings.linkerArgs && settings.linkerArgs.length > 0) {
-        const linkerArgsStr = settings.linkerArgs.join(' ');
-        taskJson.args.push(`LINKER_ARGS="${linkerArgsStr}"`);
-      }
-      if (settings.includePaths && settings.includePaths.length > 0) {
-        const includePathsStr = settings.includePaths.join(' ');
-        taskJson.args.push(`INCLUDE_PATHS="${includePathsStr}"`);
-      }
-    }
-
-    if (isRunTask) {
-      if (this.argumentsString) {
-        taskJson.args.push(`ARGUMENTS=${this.argumentsString}`);
-      }
-    }
   }
 
   public updateModeData(buildMode: Builds) {

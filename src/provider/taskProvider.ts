@@ -29,7 +29,6 @@ export class TaskProvider implements vscode.TaskProvider {
     private _workspaceFolder: string | undefined,
     private _activeFolder: string | undefined,
     private _buildMode: Builds,
-    private _argumentsString: string | undefined,
   ) {
     const templateDirectory = path.join(
       extensionPath ? extensionPath : '',
@@ -121,36 +120,6 @@ export class TaskProvider implements vscode.TaskProvider {
     this.buildMode = buildMode;
   }
 
-  public updateArguments(argumentsString: string | undefined) {
-    this.argumentsString = argumentsString;
-
-    if (this.workspaceFolder) {
-      const launchPath = path.join(
-        this.workspaceFolder,
-        '.vscode',
-        'launch.json',
-      );
-
-      const configJson: JsonConfiguration | undefined = readJsonFile(
-        launchPath,
-      );
-
-      if (!configJson) return;
-
-      const configIdx = getLaunchConfigIndex(configJson, CONFIG_NAME);
-
-      if (configIdx === undefined) return;
-
-      if (this.argumentsString) {
-        configJson.configurations[configIdx].args.push(this.argumentsString);
-      } else {
-        configJson.configurations[configIdx].args = [];
-      }
-
-      writeJsonFile(launchPath, configJson);
-    }
-  }
-
   public updateFolderData(
     workspaceFolder: string | undefined,
     activeFolder: string | undefined,
@@ -182,8 +151,6 @@ export class TaskProvider implements vscode.TaskProvider {
         writeJsonFile(launchPath, configJson);
       }
     }
-
-    this.argumentsString = undefined;
   }
 
   public getProjectFolder() {
@@ -252,13 +219,5 @@ export class TaskProvider implements vscode.TaskProvider {
 
   public set workspaceFolder(value: string | undefined) {
     this._workspaceFolder = value;
-  }
-
-  public get argumentsString() {
-    return this._argumentsString;
-  }
-
-  public set argumentsString(value: string | undefined) {
-    this._argumentsString = value;
   }
 }

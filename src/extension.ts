@@ -199,7 +199,6 @@ function initWorkspaceProvider() {
       workspaceFolder,
       activeFolder,
       buildMode,
-      argumentsString,
     );
   }
 }
@@ -398,7 +397,6 @@ function updateFolderData() {
 
   if (taskProvider) {
     taskProvider.updateFolderData(workspaceFolder, activeFolder);
-    taskProvider.updateArguments(argumentsString);
     taskProvider.updateModeData(buildMode);
   }
 
@@ -541,10 +539,6 @@ function initArgumentParser() {
     commandName,
     async () => {
       argumentsString = await vscode.window.showInputBox();
-
-      if (taskProvider) {
-        taskProvider.updateArguments(argumentsString);
-      }
     },
   );
 

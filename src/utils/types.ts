@@ -37,8 +37,6 @@ export class Commands {
   pathGDB: string | undefined;
   foundLLDB: boolean = false;
   pathLLDB: string | undefined;
-  foundMake: boolean = false;
-  pathMake: string | undefined;
 }
 
 export enum Languages {
@@ -56,11 +54,6 @@ export enum Compilers {
 export enum Debuggers {
   lldb = 'lldb',
   gdb = 'gdb',
-}
-
-export enum Makefiles {
-  make = 'make',
-  make_mingw = 'mingw32-make',
 }
 
 export enum CompilerSystems {

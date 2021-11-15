@@ -22,7 +22,6 @@ import {
 	CompilerSystems,
 	Debuggers,
 	JsonSettings,
-	Makefiles,
 	OperatingSystems,
 } from '../utils/types';
 import { getActivationState } from '../utils/vscodeUtils';
@@ -37,7 +36,6 @@ export class SettingsProvider extends FileProvider {
   static DEFAULT_C_COMPILER_PATH = 'gcc';
   static DEFAULT_CPP_COMPILER_PATH = 'g++';
   static DEFAULT_DEBUGGER_PATH = 'gdb';
-  static DEFAULT_MAKE_PATH = 'make';
   static DEFAULT_C_STANDARD = '';
   static DEFAULT_CPP_STANDARD = '';
   static DEFAULT_EXCLUDE_SEARCH = [];
@@ -66,14 +64,12 @@ export class SettingsProvider extends FileProvider {
   public debugger: Debuggers | undefined;
   private _cCompilerFound: boolean = false;
   private _cppCompilerFound: boolean = false;
-  private _makeFound: boolean = false;
   private _debuggerFound: boolean = false;
   private _commands: Commands = new Commands();
   // Settings
   public cCompilerPath: string = SettingsProvider.DEFAULT_C_COMPILER_PATH;
   public cppCompilerPath: string = SettingsProvider.DEFAULT_CPP_COMPILER_PATH;
   public debuggerPath: string = SettingsProvider.DEFAULT_DEBUGGER_PATH;
-  public makePath: string = SettingsProvider.DEFAULT_MAKE_PATH;
   public cStandard: string = SettingsProvider.DEFAULT_C_STANDARD;
   public cppStandard: string = SettingsProvider.DEFAULT_CPP_STANDARD;
   public compilerArgs: string[] = SettingsProvider.DEFAULT_COMPILER_ARGS;
@@ -158,16 +154,14 @@ export class SettingsProvider extends FileProvider {
       if (
         commandCheck(`${EXTENSION_NAME}.cCompilerPath`, settingsJson) &&
         commandCheck(`${EXTENSION_NAME}.cppCompilerPath`, settingsJson) &&
-        commandCheck(`${EXTENSION_NAME}.debuggerPath`, settingsJson) &&
-        commandCheck(`${EXTENSION_NAME}.makePath`, settingsJson)
+        commandCheck(`${EXTENSION_NAME}.debuggerPath`, settingsJson)
       ) {
         return true;
       }
 
       if (
         this._cCompilerFound &&
-        this._cppCompilerFound &&
-        this._makeFound &&
+        this._cppCompilerFound
         this._debuggerFound
       ) {
         return true;
@@ -232,11 +226,6 @@ export class SettingsProvider extends FileProvider {
       settingsLocal,
       'debuggerPath',
       SettingsProvider.DEFAULT_DEBUGGER_PATH,
-    );
-    this.makePath = this.getSettingsValue(
-      settingsLocal,
-      'makePath',
-      SettingsProvider.DEFAULT_MAKE_PATH,
     );
   }
 
@@ -319,30 +308,20 @@ export class SettingsProvider extends FileProvider {
       .basename(this.cCompilerPath)
       .toLowerCase()
       .includes('clang');
-    const isMingw = rootDirCompiler.toLowerCase().includes('mingw');
 
     let cppCompilerPath: string;
     let debuggerPath: string;
-    let makePath: string;
 
     if (isClang) {
       cppCompilerPath = 'clang++' + programSuffix;
       debuggerPath = 'lldb' + programSuffix;
-      makePath = 'make' + programSuffix;
     } else {
       cppCompilerPath = 'g++' + programSuffix;
       debuggerPath = 'gdb' + programSuffix;
-
-      if (isMingw) {
-        makePath = 'mingw32-make' + programSuffix;
-      } else {
-        makePath = 'make' + programSuffix;
-      }
     }
 
     this.cppCompilerPath = path.join(rootDirCompiler, cppCompilerPath);
     this.debuggerPath = path.join(rootDirCompiler, debuggerPath);
-    this.makePath = path.join(rootDirCompiler, makePath);
 
     /* Optional in settings.json */
     const _cStandard = this.getPropertiesValue(
@@ -437,23 +416,6 @@ export class SettingsProvider extends FileProvider {
         } = await commandExists(Debuggers.lldb));
       }
     }
-
-    if (!this._commands.foundMake) {
-      ({
-        f: this._commands.foundMake,
-        p: this._commands.pathMake,
-      } = await commandExists(Makefiles.make));
-
-      if (
-        !this._commands.foundMake &&
-        this.operatingSystem === OperatingSystems.windows
-      ) {
-        ({
-          f: this._commands.foundMake,
-          p: this._commands.pathMake,
-        } = await commandExists(Makefiles.make_mingw));
-      }
-    }
   }
 
   private searchPathVariables() {
@@ -540,7 +502,6 @@ export class SettingsProvider extends FileProvider {
       this._commands.pathGcc = path.join(envPath, Compilers.gcc + '.exe');
       this._commands.pathGpp = path.join(envPath, Compilers.gpp + '.exe');
       this._commands.pathGDB = path.join(envPath, Debuggers.gdb + '.exe');
-      this._commands.pathMake = path.join(envPath, Makefiles.make + '.exe');
 
       if (pathExists(this._commands.pathGcc)) {
         this._commands.foundGcc = true;
@@ -551,15 +512,6 @@ export class SettingsProvider extends FileProvider {
       if (pathExists(this._commands.pathGDB)) {
         this._commands.foundGDB = true;
       }
-      if (pathExists(this._commands.pathMake)) {
-        this._commands.foundMake = true;
-      } else {
-        const altPathMake = path.join(envPath, Makefiles.make_mingw + '.exe');
-
-        if (pathExists(altPathMake)) {
-          this._commands.foundMake = true;
-        }
-      }
     }
   }
 
@@ -567,7 +519,6 @@ export class SettingsProvider extends FileProvider {
     this._commands.pathGcc = path.join(envPath, Compilers.gcc);
     this._commands.pathGpp = path.join(envPath, Compilers.gpp);
     this._commands.pathGDB = path.join(envPath, Debuggers.gdb);
-    this._commands.pathMake = path.join(envPath, Makefiles.make);
 
     if (pathExists(this._commands.pathGcc)) {
       this._commands.foundGcc = true;
@@ -578,16 +529,12 @@ export class SettingsProvider extends FileProvider {
     if (pathExists(this._commands.pathGDB)) {
       this._commands.foundGDB = true;
     }
-    if (pathExists(this._commands.pathMake)) {
-      this._commands.foundMake = true;
-    }
   }
 
   private searchPathVariablesMac(envPath: string) {
     this._commands.pathClang = path.join(envPath, Compilers.clang);
     this._commands.pathClangpp = path.join(envPath, Compilers.clangpp);
     this._commands.pathLLDB = path.join(envPath, Debuggers.lldb);
-    this._commands.pathMake = path.join(envPath, Makefiles.make);
 
     if (pathExists(this._commands.pathClang)) {
       this._commands.foundClang = true;
@@ -597,9 +544,6 @@ export class SettingsProvider extends FileProvider {
     }
     if (pathExists(this._commands.pathLLDB)) {
       this._commands.foundLLDB = true;
-    }
-    if (pathExists(this._commands.pathMake)) {
-      this._commands.foundMake = true;
     }
   }
 
@@ -626,12 +570,6 @@ export class SettingsProvider extends FileProvider {
       this.setLLDB(this._commands.pathLLDB);
     } else {
       this.debugger = undefined;
-    }
-
-    if (this._commands.foundMake && this._commands.pathMake) {
-      this.setMake(this._commands.pathMake);
-    } else {
-      this._makeFound = false;
     }
 
     this.setOtherSettings();
@@ -696,7 +634,6 @@ export class SettingsProvider extends FileProvider {
     this.cCompilerPath = SettingsProvider.DEFAULT_C_COMPILER_PATH;
     this.cppCompilerPath = SettingsProvider.DEFAULT_CPP_COMPILER_PATH;
     this.debuggerPath = SettingsProvider.DEFAULT_DEBUGGER_PATH;
-    this.makePath = SettingsProvider.DEFAULT_MAKE_PATH;
 
     /* Optional in settings.json */
     this.enableWarnings = SettingsProvider.DEFAULT_ENABLE_WARNINGS;
@@ -713,7 +650,6 @@ export class SettingsProvider extends FileProvider {
     this.setGcc(this.cCompilerPath);
     this.setGpp(this.cppCompilerPath);
     this.setGDB(this.debuggerPath);
-    this.setMake(this.makePath);
     this.setOtherSettings();
   }
 
@@ -816,11 +752,6 @@ export class SettingsProvider extends FileProvider {
     this.updatebasedOnEnv('debuggerPath', pathGDB);
     this.debugger = Debuggers.gdb;
     this._debuggerFound = true;
-  }
-
-  public setMake(pathMake: string) {
-    this.updatebasedOnEnv('makePath', pathMake);
-    this._makeFound = true;
   }
 
   public setOtherSettings() {

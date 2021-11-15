@@ -26,7 +26,6 @@ const CONFIG_NAME = 'C/C++ Runner: Debug Session';
 
 export class TaskProvider implements vscode.TaskProvider {
   private readonly _tasksFile: string;
-  private readonly _makefileFile: string;
   public tasks: Task[] | undefined;
 
   constructor(
@@ -41,7 +40,6 @@ export class TaskProvider implements vscode.TaskProvider {
       'templates',
     );
     this._tasksFile = path.join(templateDirectory, 'tasks_template.json');
-    this._makefileFile = path.join(templateDirectory, 'Makefile');
 
     this.getTasks();
   }
@@ -145,8 +143,7 @@ export class TaskProvider implements vscode.TaskProvider {
       folder,
     );
     taskJson.label = replaceBackslashes(taskJson.label);
-    taskJson.command = settings.makePath;
-    taskJson.args[1] = `--file=${this._makefileFile}`;
+    taskJson.args[1] = `--file=todo`;
 
     const isRunTask = taskJson.label.includes(Tasks.run);
 

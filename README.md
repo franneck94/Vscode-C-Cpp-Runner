@@ -2,7 +2,7 @@
 
 🚀 Compile, run and debug single or multiple C/C++ files with ease. 🚀
 
-This extension provides tasks to compile, run and debug your C/C++ code.  
+This extension provides an easy interface to compile, run and debug your C/C++ code.  
 It does not only compile single C/C++ files but also multiple files.  
 You do not need to know about any compiler commands. 😎
 
@@ -12,20 +12,19 @@ You do not need to know about any compiler commands. 😎
 
 ## Software Requirements
 
-- 🔧 Microsoft's C/C++ VSCode Extension (will be installed automatically)
-- 🔧 For C code: gcc/clang, gdb/lldb and make
-- 🔧 For C++ code: g++/clang++, gdb/lldb and make
+- 🔧 For C code: gcc and gdb or clang and lldb
+- 🔧 For C++ code: g++ and gdb or clang++ and lldb
 
 ## Install the Software Requirements (optional)
 
 - 🖥️ Windows:
-  - Highly recommended to install gcc/g++, gdb and make via [Cygwin](https://www.cygwin.com/).  
-  - One alternative is MinGW via [MSYS2](https://www.msys2.org/).  
-  - Another alternative is a Linux Distro via [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install).
+  - Highly recommended to install gcc, g++ and gdb via [Cygwin](https://www.cygwin.com/).  
+  - One alternative is a Linux Distro via [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install).
+  - Another alternative is MinGW via [MSYS2](https://www.msys2.org/).  
 - 🖥️ Linux:
-  - Recommended to install gcc/g++, gdb and make via a package manager (e.g. `apt` for Debian derivates).
+  - Recommended to install gcc, g++ and gdb via a package manager (e.g. `apt`).
 - 🖥️ MacOS:
-  - Recommended to install clang/clang++, lldb and make via [xcode-tools](https://developer.apple.com/xcode/features/).
+  - Recommended to install clang, clang++ and lldb via [xcode-tools](https://developer.apple.com/xcode/features/).
   - An alternative is installing the llvm toolchain with [brew](https://apple.stackexchange.com/a/362837).
 
 ## How to use: Compile all files in a folder
@@ -100,7 +99,6 @@ For more information about glob pattern see [here](https://en.wikipedia.org/wiki
 - ⚙️ C Standard (defaults to the compiler's default)
 - ⚙️ C++ Compiler path (defaults to g++)
 - ⚙️ C++ Standard (defaults to the compiler's default)
-- ⚙️ Make path (defaults to make)
 - ⚙️ Debugger path (defaults to gdb)
 - ⚙️ To enable warnings (defaults to True)
 - ⚙️ What warnings should be checked by the compiler (defaults to ['-Wall', '-Wextra', '-Wpedantic'])

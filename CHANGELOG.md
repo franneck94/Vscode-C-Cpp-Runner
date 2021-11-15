@@ -2,10 +2,13 @@
 
 ## Planned 2.0.0
 
-- Remove experimental execution setting, it is stable now => Remove usage of Makefile
-- Test CMD and PowerShell behaviour on Windows
 - Gat architecture (m1) on Mac
   - If it is M1 chip (ARM64) then an other debug target is used
+
+## Version 2.0.0: November 15, 2021
+
+- Makefile is not used anymore and hence it is no dependency, instead all commands are directly executed with VSCode's task API
+- Added C++23 Standard to **C_Cpp_Runner.cppStandard** setting
 
 ## Version 1.5.5: November 12, 2021
 

@@ -3,6 +3,9 @@
 ## Planned 2.0.0
 
 - Remove experimental execution setting, it is stable now => Remove usage of Makefile
+- Test CMD and PowerShell behaviour on Windows
+- Gat architecture (m1) on Mac
+  - If it is M1 chip (ARM64) then an other debug target is used
 
 ## Version 1.5.5: November 12, 2021
 

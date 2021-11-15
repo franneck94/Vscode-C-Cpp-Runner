@@ -73,6 +73,10 @@ export async function executeBuildTask(
   const compilerArgs = settingsProvider.compilerArgs;
   const linkerArgs = settingsProvider.linkerArgs;
 
+  if (!includePaths.includes(activeFolder)) {
+    includePaths.push(activeFolder);
+  }
+
   let fullCompilerArgs = '';
   if (warnings) {
     fullCompilerArgs += `${warnings}`;
@@ -102,14 +106,14 @@ export async function executeBuildTask(
   let idx = -1;
 
   for (const file of files) {
-    idx++;
-
     const fileExtension = path.parse(file).ext;
     if (language === Languages.c && !isCSourceFile(fileExtension)) {
       continue;
     } else if (language === Languages.cpp && !isCppSourceFile(fileExtension)) {
       continue;
     }
+
+    idx++;
 
     const fileBaseName = path.parse(file).name;
     const filePath = path.join(activeFolder, file);

@@ -1,12 +1,17 @@
 # C/C++ Runner Change Log
 
-## Planned 2.0.0
+## Version 2.0.0: November 16, 2021
 
-- Remove experimental execution setting, it is stable now => Remove usage of Makefile
+- Makefile is not used anymore and hence it is no dependency, instead all commands are directly executed with VSCode's task API
+- **Info**: Added C++23 Standard to **C_Cpp_Runner.cppStandard** setting
+- **Improvement**: Added shortcut for active folder selection **ctrl+alt+f**
+- **Improvement**: Added shortcut for build mode selection **ctrl+alt+g**
+- **Info**: Added **vadimcn.vscode-lldb** as an extension dependency since this will be used for debugging on Mac with M1 chip
+- **Info**: Updated debug target on MacOS with an ARM chip
 
 ## Version 1.5.5: November 12, 2021
 
-- **Info**: For Windows users the paths to the compiler tools are now stored with single slashed "/" instead of double back slashes "\\\\" due to issues with the properties handler of Microsoft's C/C++ extension
+- **Info**: For Windows users, the paths to the compiler tools are now stored with single slashed "/" instead of double backslashes "\\\\" due to issues with the properties handler of Microsoft's C/C++ extension
 
 ## Version 1.5.4: November 10, 2021
 
@@ -19,7 +24,7 @@
 ## Version 1.5.2: October 28, 2021
 
 - **Bugfix**: For a single file task the command line arguments are now passed into the executable call
-- **Bugfix**: For single-file tasks the active folder is now updated
+- **Bugfix**: For single-file tasks, the active folder is now updated
 
 ## Version 1.5.1: October 28, 2021
 
@@ -56,7 +61,7 @@
 
 ## Version 1.3.0: August 28, 2021
 
-- **Improvement**: Update gcc/clang search logic, to only search in */usr/* and */usr/bin/* on linux, and only in paths containing cygwin, mingw, or msys on windows
+- **Improvement**: Update gcc/clang search logic, to only search in */usr/* and */usr/bin/* on Linux, and only in paths containing Cygwin, mingw, or msys on windows
 - **Improvement**: If the build path contains whitespaces or non-extended ASCII chars the extension's experimental code runner is used instead of Makefile
 - **Bugfix**: Fixed using incorrect compiler path in the experimental setting
 
@@ -143,7 +148,7 @@ This would now be:
 
 ## Version 0.16.1: June 12, 2021
 
-- **Bugfix**: Several bug fixes for linux/mac
+- **Bugfix**: Several bug fixes for Linux/mac
 
 ## Version 0.16.0: June 12, 2021
 

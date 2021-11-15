@@ -37,8 +37,6 @@ export class Commands {
   pathGDB: string | undefined;
   foundLLDB: boolean = false;
   pathLLDB: string | undefined;
-  foundMake: boolean = false;
-  pathMake: string | undefined;
 }
 
 export enum Languages {
@@ -58,11 +56,6 @@ export enum Debuggers {
   gdb = 'gdb',
 }
 
-export enum Makefiles {
-  make = 'make',
-  make_mingw = 'mingw32-make',
-}
-
 export enum CompilerSystems {
   cygwin = 'cygwin',
   mingw = 'mingw',
@@ -79,6 +72,7 @@ export enum OperatingSystems {
 export enum Architectures {
   x86 = 'x86',
   x64 = 'x64',
+  ARM64 = 'ARM64'
 }
 
 export enum Builds {

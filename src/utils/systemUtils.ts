@@ -49,6 +49,8 @@ export function getCompilerArchitecture(compiler: string) {
 
   if (str.includes('64')) {
     architecure = Architectures.x64;
+  } else if (str.toLowerCase().includes('arm')) {
+    architecure = Architectures.ARM64;
   }
 
   if (str.includes('cygwin')) {

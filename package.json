@@ -2,7 +2,7 @@
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
   "description": "🚀 Compile, run and debug single or multiple C/C++ files with ease. 🚀",
-  "version": "1.5.5",
+  "version": "2.0.0",
   "publisher": "franneck94",
   "license": "MIT",
   "icon": "icon.png",
@@ -135,6 +135,18 @@
         "mac": "ctrl+alt+t"
       },
       {
+        "command": "C_Cpp_Runner.folder",
+        "key": "ctrl+alt+f",
+        "mac": "ctrl+alt+f",
+        "when": "C_Cpp_Runner:activatedExtension"
+      },
+      {
+        "command": "C_Cpp_Runner.mode",
+        "key": "ctrl+alt+g",
+        "mac": "ctrl+alt+g",
+        "when": "C_Cpp_Runner:activatedExtension"
+      },
+      {
         "command": "C_Cpp_Runner.buildSingleFile",
         "key": "ctrl+alt+b",
         "mac": "ctrl+alt+b",
@@ -215,12 +227,6 @@
           "description": "The path to the debugger (either gdb or lldb).",
           "scope": "resource"
         },
-        "C_Cpp_Runner.makePath": {
-          "type": "string",
-          "default": "make",
-          "description": "The path to the make installation.",
-          "scope": "resource"
-        },
         "C_Cpp_Runner.cStandard": {
           "type": "string",
           "enum": [
@@ -248,12 +254,14 @@
             "c++14",
             "c++17",
             "c++20",
+            "c++23",
             "gnu++98",
             "gnu++03",
             "gnu++11",
             "gnu++14",
             "gnu++17",
-            "gnu++20"
+            "gnu++20",
+            "gnu++23"
           ],
           "default": "",
           "description": "C++ Standard for the C++ Compiler.",
@@ -300,12 +308,6 @@
           "default": false,
           "description": "Whether to enable logging to the distput channel or not (Reload required).",
           "scope": "resource"
-        },
-        "C_Cpp_Runner.experimentalExecution": {
-          "type": "boolean",
-          "default": false,
-          "description": "Whether to enable experimental compilation without Makefile (Reload required).",
-          "scope": "resource"
         }
       }
     }
@@ -351,6 +353,7 @@
     "yarn": "^1.22.10"
   },
   "extensionDependencies": [
-    "ms-vscode.cpptools"
+    "ms-vscode.cpptools",
+    "vadimcn.vscode-lldb"
   ]
 }

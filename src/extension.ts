@@ -19,7 +19,6 @@ import { PropertiesProvider } from './provider/propertiesProvider';
 import { SettingsProvider } from './provider/settingsProvider';
 import { TaskProvider } from './provider/taskProvider';
 import {
-	filesInDir,
 	foldersInDir,
 	mkdirRecursive,
 	pathExists,
@@ -32,7 +31,6 @@ import {
 	createStatusBarItem,
 	disposeItem,
 	getActivationState,
-	getExperimentalExecutionState,
 	getLoggingState,
 	isCmakeProject,
 	isCourseProject,
@@ -85,7 +83,6 @@ export let extensionContext: vscode.ExtensionContext | undefined;
 export let extensionState: vscode.Memento | undefined;
 export let extensionPath: string | undefined;
 export let loggingActive: boolean = false;
-export let experimentalExecutionEnabled: boolean = false;
 
 export function activate(context: vscode.ExtensionContext) {
   if (
@@ -121,7 +118,6 @@ export function activate(context: vscode.ExtensionContext) {
   extensionState = context.workspaceState;
   updateLoggingState();
   loggingActive = getLoggingState();
-  experimentalExecutionEnabled = getExperimentalExecutionState();
   setContextValue(`${EXTENSION_NAME}:activatedExtension`, true);
   updateActivationState(true);
 
@@ -200,7 +196,6 @@ function initWorkspaceProvider() {
       workspaceFolder,
       activeFolder,
       buildMode,
-      argumentsString,
     );
   }
 }
@@ -399,7 +394,6 @@ function updateFolderData() {
 
   if (taskProvider) {
     taskProvider.updateFolderData(workspaceFolder, activeFolder);
-    taskProvider.updateArguments(argumentsString);
     taskProvider.updateModeData(buildMode);
   }
 
@@ -542,10 +536,6 @@ function initArgumentParser() {
     commandName,
     async () => {
       argumentsString = await vscode.window.showInputBox();
-
-      if (taskProvider) {
-        taskProvider.updateArguments(argumentsString);
-      }
     },
   );
 
@@ -599,7 +589,7 @@ function initRunStatusBar() {
   const commandName = `${EXTENSION_NAME}.run`;
   commandRunDisposable = vscode.commands.registerCommand(
     commandName,
-    async () => runTaskCallback(false),
+    async () => runTaskCallback(),
   );
 
   runStatusBar.command = commandName;
@@ -703,7 +693,7 @@ function initRunSingleFile() {
     commandName,
     async () => {
       initProviderBasedOnSingleFile();
-      runTaskCallback(true);
+      runTaskCallback();
     },
   );
   extensionContext?.subscriptions.push(commandRunSingleFileDisposable);
@@ -760,42 +750,16 @@ async function buildTaskCallback(singleFileBuild: boolean) {
 
   if (!settingsProvider) return;
 
-  const hasNoneExtendedAsciiChars = [...buildDir].some(
-    (char) => char.charCodeAt(0) > 255,
+  await executeBuildTask(
+    buildTask,
+    settingsProvider,
+    activeFolder,
+    buildMode,
+    singleFileBuild,
   );
-
-  const filesToBuild = filesInDir(activeFolder);
-
-  const hasSpaceInFilename = [...filesToBuild].some((filename) =>
-    filename.includes(' '),
-  );
-
-  const anySpace =
-    buildDir.includes(' ') ||
-    extensionPath?.includes(' ') ||
-    hasSpaceInFilename;
-
-  const nonUnixMakefileCommand =
-    experimentalExecutionEnabled ||
-    hasNoneExtendedAsciiChars ||
-    settingsProvider.isMinGW ||
-    anySpace ||
-    singleFileBuild;
-
-  if (nonUnixMakefileCommand) {
-    await executeBuildTask(
-      buildTask,
-      settingsProvider,
-      activeFolder,
-      buildMode,
-      singleFileBuild,
-    );
-  } else {
-    await vscode.tasks.executeTask(buildTask);
-  }
 }
 
-async function runTaskCallback(singleFileBuild: boolean) {
+async function runTaskCallback() {
   if (!taskProvider || !taskProvider.tasks) {
     const infoMessage = `runCallback failed`;
     logger.log(loggingActive, infoMessage);
@@ -836,39 +800,13 @@ async function runTaskCallback(singleFileBuild: boolean) {
     return;
   }
 
-  const hasNoneExtendedAsciiChars = [...buildDir].some(
-    (char) => char.charCodeAt(0) > 255,
+  await executeRunTask(
+    runTask,
+    activeFolder,
+    buildMode,
+    argumentsString,
+    settingsProvider.operatingSystem,
   );
-
-  const filesToBuild = filesInDir(activeFolder);
-
-  const hasSpaceInFilename = [...filesToBuild].some((filename) =>
-    filename.includes(' '),
-  );
-
-  const anySpace =
-    buildDir.includes(' ') ||
-    extensionPath?.includes(' ') ||
-    hasSpaceInFilename;
-
-  const nonUnixMakefileCommand =
-    experimentalExecutionEnabled ||
-    hasNoneExtendedAsciiChars ||
-    settingsProvider.isMinGW ||
-    anySpace ||
-    singleFileBuild;
-
-  if (nonUnixMakefileCommand) {
-    await executeRunTask(
-      runTask,
-      activeFolder,
-      buildMode,
-      argumentsString,
-      settingsProvider.operatingSystem,
-    );
-  } else {
-    await vscode.tasks.executeTask(runTask);
-  }
 }
 
 function debugTaskCallback() {

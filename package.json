@@ -142,8 +142,8 @@
       },
       {
         "command": "C_Cpp_Runner.mode",
-        "key": "ctrl+alt+m",
-        "mac": "ctrl+alt+m",
+        "key": "ctrl+alt+g",
+        "mac": "ctrl+alt+g",
         "when": "C_Cpp_Runner:activatedExtension"
       },
       {

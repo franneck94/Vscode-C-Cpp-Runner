@@ -2,6 +2,7 @@ import * as path from 'path';
 
 import { pathExists, readJsonFile, writeJsonFile } from '../utils/fileUtils';
 import {
+	Architectures,
 	Builds,
 	Debuggers,
 	JsonConfiguration,
@@ -103,6 +104,10 @@ export class LaunchProvider extends FileProvider {
       }
       if (launchTemplate.configurations[0].miDebuggerPath) {
         delete launchTemplate.configurations[0].miDebuggerPath;
+      }
+
+      if (this.settings.architecure === Architectures.ARM64) {
+        launchTemplate.configurations[0].type = 'lldb';
       }
     }
 

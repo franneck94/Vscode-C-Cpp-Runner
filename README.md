@@ -58,7 +58,7 @@ Besides that, you can also select a folder by right-clicking in the context menu
 ### Configuration
 
 The extension will automatically search for an installed compiler on your computer.  
-For linux and mac it searches in */usr/bin/*, and on windows it searches for *cygwin*, *mingw*, and *msys2* in the PATH.  
+For Linux and mac, it searches in */usr/bin/*, and on windows, it searches for *Cygwin*, *mingw*, and *msys2* in the PATH.  
 All settings will be stored in the local workspace settings (*".vscode/settings.json"*).  
 If you wish to use any other compiler or different setting, just edit the entries in the local settings file.  
 ![FoundCompiler](./media/FoundCompiler.png)  
@@ -80,9 +80,9 @@ These arguments will be stored in the launch.json config for debugging the binar
 
 ### Exclude Folders for Selection
 
-Since the drop-down menu of the folder selection can be very long in a workspace with many sub-folders you can add glob patterns to exclude from the search.
+You can add glob patterns to exclude folders from the search to shorten the list.
 
-With the following glob pattern:
+For example with the following glob pattern:
 
 ![ExcludePattern](./media/excludePattern.png)
 

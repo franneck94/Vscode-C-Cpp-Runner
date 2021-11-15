@@ -7,7 +7,7 @@
 - **Improvement**: Added shortcut for active folder selection **ctrl+alt+f**
 - **Improvement**: Added shortcut for build mode selection **ctrl+alt+g**
 - **Info**: Added **vadimcn.vscode-lldb** as an extension dependency since this will be used for debugging on Mac with M1 chip
-- **Info**: On MacOS with an ARM chip, the lldb extension is now used for debugging
+- **Info**: Updated debug target on MacOS with an ARM chip
 
 ## Version 1.5.5: November 12, 2021
 

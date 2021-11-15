@@ -135,6 +135,18 @@
         "mac": "ctrl+alt+t"
       },
       {
+        "command": "C_Cpp_Runner.folder",
+        "key": "ctrl+alt+f",
+        "mac": "ctrl+alt+f",
+        "when": "C_Cpp_Runner:activatedExtension"
+      },
+      {
+        "command": "C_Cpp_Runner.mode",
+        "key": "ctrl+alt+m",
+        "mac": "ctrl+alt+m",
+        "when": "C_Cpp_Runner:activatedExtension"
+      },
+      {
         "command": "C_Cpp_Runner.buildSingleFile",
         "key": "ctrl+alt+b",
         "mac": "ctrl+alt+b",
@@ -341,6 +353,7 @@
     "yarn": "^1.22.10"
   },
   "extensionDependencies": [
-    "ms-vscode.cpptools"
+    "ms-vscode.cpptools",
+    "vadimcn.vscode-lldb"
   ]
 }

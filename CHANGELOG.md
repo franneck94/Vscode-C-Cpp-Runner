@@ -9,6 +9,9 @@
 
 - Makefile is not used anymore and hence it is no dependency, instead all commands are directly executed with VSCode's task API
 - Added C++23 Standard to **C_Cpp_Runner.cppStandard** setting
+- Added shortcut for active folder selection **ctrl+alt+f**
+- Added shortcut for build mode selection **ctrl+alt+m**
+- Added **vadimcn.vscode-lldb** as an extension dependency since this will be used for debugging on Mac with M1 chip
 
 ## Version 1.5.5: November 12, 2021
 

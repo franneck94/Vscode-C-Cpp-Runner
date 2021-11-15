@@ -599,7 +599,7 @@ function initRunStatusBar() {
   const commandName = `${EXTENSION_NAME}.run`;
   commandRunDisposable = vscode.commands.registerCommand(
     commandName,
-    async () => runTaskCallback(false),
+    async () => runTaskCallback(),
   );
 
   runStatusBar.command = commandName;
@@ -703,7 +703,7 @@ function initRunSingleFile() {
     commandName,
     async () => {
       initProviderBasedOnSingleFile();
-      runTaskCallback(true);
+      runTaskCallback();
     },
   );
   extensionContext?.subscriptions.push(commandRunSingleFileDisposable);
@@ -760,42 +760,38 @@ async function buildTaskCallback(singleFileBuild: boolean) {
 
   if (!settingsProvider) return;
 
-  const hasNoneExtendedAsciiChars = [...buildDir].some(
-    (char) => char.charCodeAt(0) > 255,
+  // const hasNoneExtendedAsciiChars = [...buildDir].some(
+  //   (char) => char.charCodeAt(0) > 255,
+  // );
+
+  // const filesToBuild = filesInDir(activeFolder);
+
+  // const hasSpaceInFilename = [...filesToBuild].some((filename) =>
+  //   filename.includes(' '),
+  // );
+
+  // const anySpace =
+  //   buildDir.includes(' ') ||
+  //   extensionPath?.includes(' ') ||
+  //   hasSpaceInFilename;
+
+  // const nonUnixMakefileCommand =
+  //   experimentalExecutionEnabled ||
+  //   hasNoneExtendedAsciiChars ||
+  //   settingsProvider.isMinGW ||
+  //   anySpace ||
+  //   singleFileBuild;
+
+  await executeBuildTask(
+    buildTask,
+    settingsProvider,
+    activeFolder,
+    buildMode,
+    singleFileBuild,
   );
-
-  const filesToBuild = filesInDir(activeFolder);
-
-  const hasSpaceInFilename = [...filesToBuild].some((filename) =>
-    filename.includes(' '),
-  );
-
-  const anySpace =
-    buildDir.includes(' ') ||
-    extensionPath?.includes(' ') ||
-    hasSpaceInFilename;
-
-  const nonUnixMakefileCommand =
-    experimentalExecutionEnabled ||
-    hasNoneExtendedAsciiChars ||
-    settingsProvider.isMinGW ||
-    anySpace ||
-    singleFileBuild;
-
-  if (nonUnixMakefileCommand) {
-    await executeBuildTask(
-      buildTask,
-      settingsProvider,
-      activeFolder,
-      buildMode,
-      singleFileBuild,
-    );
-  } else {
-    await vscode.tasks.executeTask(buildTask);
-  }
 }
 
-async function runTaskCallback(singleFileBuild: boolean) {
+async function runTaskCallback() {
   if (!taskProvider || !taskProvider.tasks) {
     const infoMessage = `runCallback failed`;
     logger.log(loggingActive, infoMessage);
@@ -836,39 +832,34 @@ async function runTaskCallback(singleFileBuild: boolean) {
     return;
   }
 
-  const hasNoneExtendedAsciiChars = [...buildDir].some(
-    (char) => char.charCodeAt(0) > 255,
+  // const hasNoneExtendedAsciiChars = [...buildDir].some(
+  //   (char) => char.charCodeAt(0) > 255,
+  // );
+
+  // const filesToBuild = filesInDir(activeFolder);
+
+  // const hasSpaceInFilename = [...filesToBuild].some((filename) =>
+  //   filename.includes(' '),
+  // );
+
+  // const anySpace =
+  //   buildDir.includes(' ') ||
+  //   extensionPath?.includes(' ') ||
+  //   hasSpaceInFilename;
+
+  // const nonUnixMakefileCommand =
+  //   experimentalExecutionEnabled ||
+  //   hasNoneExtendedAsciiChars ||
+  //   settingsProvider.isMinGW ||
+  //   anySpace;
+
+  await executeRunTask(
+    runTask,
+    activeFolder,
+    buildMode,
+    argumentsString,
+    settingsProvider.operatingSystem,
   );
-
-  const filesToBuild = filesInDir(activeFolder);
-
-  const hasSpaceInFilename = [...filesToBuild].some((filename) =>
-    filename.includes(' '),
-  );
-
-  const anySpace =
-    buildDir.includes(' ') ||
-    extensionPath?.includes(' ') ||
-    hasSpaceInFilename;
-
-  const nonUnixMakefileCommand =
-    experimentalExecutionEnabled ||
-    hasNoneExtendedAsciiChars ||
-    settingsProvider.isMinGW ||
-    anySpace ||
-    singleFileBuild;
-
-  if (nonUnixMakefileCommand) {
-    await executeRunTask(
-      runTask,
-      activeFolder,
-      buildMode,
-      argumentsString,
-      settingsProvider.operatingSystem,
-    );
-  } else {
-    await vscode.tasks.executeTask(runTask);
-  }
 }
 
 function debugTaskCallback() {

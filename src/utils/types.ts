@@ -79,6 +79,7 @@ export enum OperatingSystems {
 export enum Architectures {
   x86 = 'x86',
   x64 = 'x64',
+  ARM64 = 'ARM64'
 }
 
 export enum Builds {

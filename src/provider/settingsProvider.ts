@@ -52,7 +52,7 @@ export class SettingsProvider extends FileProvider {
 
   // Workspace data
   private _configGlobal = vscode.workspace.getConfiguration(EXTENSION_NAME);
-  private _configTerminalGlobal = vscode.workspace
+  private _configTerminal = vscode.workspace
     .getConfiguration(TERMINAL_WINDOWS_NAME)
     .get('windows', 'Default');
   // Machine information
@@ -285,6 +285,13 @@ export class SettingsProvider extends FileProvider {
       settingsLocal,
       'excludeSearch',
       SettingsProvider.DEFAULT_EXCLUDE_SEARCH,
+    );
+
+    this._configTerminal = this.getSettingsValue(
+      settingsLocal,
+      'terminal.integrated.defaultProfile.windows',
+      this._configTerminal,
+      false,
     );
   }
 
@@ -678,7 +685,7 @@ export class SettingsProvider extends FileProvider {
     if (this.operatingSystem === OperatingSystems.windows) {
       if (!this.isCygwin) this._isMinGW = true;
 
-      const defaultTerminal = this._configTerminalGlobal;
+      const defaultTerminal = this._configTerminal;
       this._isPowershellTerminal =
         defaultTerminal === null || defaultTerminal === 'PowerShell';
     }
@@ -718,8 +725,15 @@ export class SettingsProvider extends FileProvider {
     settingsLocal: JsonSettings | undefined,
     name: string,
     defaultValue: any,
+    isExtensionSetting: boolean = true,
   ) {
-    const settingName = `${EXTENSION_NAME}.${name}`;
+    let settingName: string;
+
+    if (isExtensionSetting) {
+      settingName = `${EXTENSION_NAME}.${name}`;
+    } else {
+      settingName = `${name}`;
+    }
 
     if (settingsLocal && settingsLocal[settingName] !== undefined) {
       return settingsLocal[settingName];

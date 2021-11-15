@@ -31,7 +31,6 @@ import {
 	createStatusBarItem,
 	disposeItem,
 	getActivationState,
-	getExperimentalExecutionState,
 	getLoggingState,
 	isCmakeProject,
 	isCourseProject,
@@ -84,7 +83,6 @@ export let extensionContext: vscode.ExtensionContext | undefined;
 export let extensionState: vscode.Memento | undefined;
 export let extensionPath: string | undefined;
 export let loggingActive: boolean = false;
-export let experimentalExecutionEnabled: boolean = false;
 
 export function activate(context: vscode.ExtensionContext) {
   if (
@@ -120,7 +118,6 @@ export function activate(context: vscode.ExtensionContext) {
   extensionState = context.workspaceState;
   updateLoggingState();
   loggingActive = getLoggingState();
-  experimentalExecutionEnabled = getExperimentalExecutionState();
   setContextValue(`${EXTENSION_NAME}:activatedExtension`, true);
   updateActivationState(true);
 

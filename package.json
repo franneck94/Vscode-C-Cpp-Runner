@@ -215,12 +215,6 @@
           "description": "The path to the debugger (either gdb or lldb).",
           "scope": "resource"
         },
-        "C_Cpp_Runner.makePath": {
-          "type": "string",
-          "default": "make",
-          "description": "The path to the make installation.",
-          "scope": "resource"
-        },
         "C_Cpp_Runner.cStandard": {
           "type": "string",
           "enum": [
@@ -301,12 +295,6 @@
           "type": "boolean",
           "default": false,
           "description": "Whether to enable logging to the distput channel or not (Reload required).",
-          "scope": "resource"
-        },
-        "C_Cpp_Runner.experimentalExecution": {
-          "type": "boolean",
-          "default": false,
-          "description": "Whether to enable experimental compilation without Makefile (Reload required).",
           "scope": "resource"
         }
       }

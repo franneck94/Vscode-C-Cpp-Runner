@@ -4,14 +4,14 @@
     {
       "label": "Build: Folder",
       "type": "shell",
-      "command": ["make"],
-      "args": ["build", "--file=Makefile", "--directory=FILE_DIR"]
+      "command": [],
+      "args": []
     },
     {
       "label": "Run: Program",
       "type": "shell",
-      "command": ["make"],
-      "args": ["execute", "--file=Makefile", "--directory=FILE_DIR", "--quiet"],
+      "command": [],
+      "args": [],
       "group": {
         "kind": "build",
         "isDefault": true
@@ -21,8 +21,8 @@
     {
       "label": "Clean: Objects",
       "type": "shell",
-      "command": ["make"],
-      "args": ["clean", "--file=Makefile", "--directory=FILE_DIR", "--quiet"],
+      "command": [],
+      "args": [],
       "group": {
         "kind": "build",
         "isDefault": true

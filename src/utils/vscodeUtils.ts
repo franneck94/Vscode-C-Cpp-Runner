@@ -55,12 +55,6 @@ export function updateActivationState(newState: boolean) {
   extensionState?.update('activatedExtension', newState);
 }
 
-export function getExperimentalExecutionState() {
-  return vscode.workspace
-    .getConfiguration('C_Cpp_Runner')
-    .get('experimentalExecution', false);
-}
-
 export function getLoggingState() {
   if (extensionState) {
     const loggingActive = <boolean>extensionState.get('loggingActive');

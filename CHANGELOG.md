@@ -1,8 +1,12 @@
 # C/C++ Runner Change Log
 
+## Version 2.0.1: November 17, 2021
+
+**Regression Bugfix**: Fixed issue for handling whitespaces in paths
+
 ## Version 2.0.0: November 16, 2021
 
-- Makefile is not used anymore and hence it is no dependency, instead all commands are directly executed with VSCode's task API
+- **Info**: Makefile is not used anymore and hence it is no dependency, instead all commands are directly executed with VSCode's task API
 - **Info**: Added C++23 Standard to **C_Cpp_Runner.cppStandard** setting
 - **Improvement**: Added shortcut for active folder selection **ctrl+alt+f**
 - **Improvement**: Added shortcut for build mode selection **ctrl+alt+g**

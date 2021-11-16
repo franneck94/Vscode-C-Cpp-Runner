@@ -26,9 +26,17 @@ export async function executeRunTask(
     executableRelativePath = `./${path.join(modeDir, executableName)}`;
   }
 
-  let executableCall = `cd ${activeFolder} && ${executableRelativePath}`;
-
   if (!pathExists(path.join(activeFolder, executableRelativePath))) return;
+
+  let executableCall: string = '';
+  const activeFolderHasSpace = activeFolder.includes(' ');
+  const executableRelativePathHasSpace = executableRelativePath.includes(' ');
+
+  if (activeFolderHasSpace || executableRelativePathHasSpace) {
+    executableCall = `cd "${activeFolder}" && "${executableRelativePath}"`;
+  } else {
+    executableCall = `cd ${activeFolder} && ${executableRelativePath}`;
+  }
 
   if (argumentsString) {
     executableCall += ` ${argumentsString}`;

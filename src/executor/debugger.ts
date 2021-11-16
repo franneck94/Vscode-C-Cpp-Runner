@@ -29,6 +29,7 @@ export async function runDebugger(
 
   const buildDir = path.join(activeFolder, 'build');
   const modeDir = path.join(buildDir, `${buildMode}`);
+
   if (!pathExists(modeDir)) return;
 
   await vscode.debug.startDebugging(

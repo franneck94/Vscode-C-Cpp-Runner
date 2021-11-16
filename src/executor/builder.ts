@@ -7,6 +7,7 @@ import {
 	getLanguage,
 	isCppSourceFile,
 	isCSourceFile,
+	isSourceFile,
 	mkdirRecursive,
 	pathExists,
 } from '../utils/fileUtils';
@@ -29,6 +30,9 @@ export async function executeBuildTask(
   } else {
     const currentFile = vscode.window.activeTextEditor?.document.fileName;
     if (!currentFile) return;
+
+    const isSource = isSourceFile(path.extname(currentFile));
+    if (!isSource) return;
 
     files = [path.basename(currentFile)];
   }
@@ -96,7 +100,15 @@ export async function executeBuildTask(
     fullCompilerArgs += ' ' + linkerArgs.join(' ');
   }
   if (includePaths && includePaths.length > 0) {
-    fullCompilerArgs += ' -I' + includePaths.join(' -I');
+    for (const includePath of includePaths) {
+      const hasSpace = includePath.includes(' ');
+
+      if (hasSpace) {
+        fullCompilerArgs += ` -I"${includePath}"`;
+      } else {
+        fullCompilerArgs += ` -I${includePath}`;
+      }
+    }
   }
 
   let commandLine: string = '';
@@ -107,6 +119,7 @@ export async function executeBuildTask(
 
   for (const file of files) {
     const fileExtension = path.parse(file).ext;
+
     if (language === Languages.c && !isCSourceFile(fileExtension)) {
       continue;
     } else if (language === Languages.cpp && !isCppSourceFile(fileExtension)) {
@@ -121,7 +134,13 @@ export async function executeBuildTask(
 
     objectFiles.push(objectFilePath);
 
-    const fullFileArgs = `-c ${filePath} -o ${objectFilePath}`;
+    const hasSpace = filePath.includes(' ');
+    let fullFileArgs;
+    if (hasSpace) {
+      fullFileArgs = `-c "${filePath}" -o "${objectFilePath}"`;
+    } else {
+      fullFileArgs = `-c ${filePath} -o ${objectFilePath}`;
+    }
 
     if (idx === 0) {
       commandLine += `${compiler} ${fullCompilerArgs} ${fullFileArgs}`;
@@ -131,8 +150,26 @@ export async function executeBuildTask(
   }
 
   // Exe task
-  const objectFilesStr = objectFiles.join(' ');
-  const fullObjectFileArgs = `${objectFilesStr} -o ${executablePath}`;
+  let objectFilesStr: string = '';
+  for (const objectfile of objectFiles) {
+    const hasSpace = objectfile.includes(' ');
+
+    if (hasSpace) {
+      objectFilesStr += ` "${objectfile}"`;
+    } else {
+      objectFilesStr += ` ${objectfile}`;
+    }
+  }
+
+  if (objectFilesStr === '') return;
+
+  const executablePathHasSpace = executablePath.includes(' ');
+  let fullObjectFileArgs: string = '';
+  if (executablePathHasSpace) {
+    fullObjectFileArgs = `${objectFilesStr} -o "${executablePath}"`;
+  } else {
+    fullObjectFileArgs = `${objectFilesStr} -o ${executablePath}`;
+  }
 
   if (!task || !task.execution) return;
 

@@ -1,6 +1,10 @@
 # C/C++ Runner Change Log
 
-## Version 2.0.2: November 17, 2021
+## Version 2.0.3: November 22, 2021
+
+**Regression Bugfix**: Fixed issue with cmd arguments
+
+## Version 2.0.2: November 22, 2021
 
 **Bugfix**: Fixed issue for ARM64 Mac user
 

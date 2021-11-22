@@ -409,6 +409,7 @@ function updateFolderData() {
       if (launchProvider) {
         launchProvider.updateFolderData(workspaceFolder, activeFolder);
         launchProvider.updateModeData(buildMode);
+        launchProvider?.updateArgumentsData(argumentsString);
         launchProvider.updateFileContent();
       }
     }
@@ -536,6 +537,8 @@ function initArgumentParser() {
     commandName,
     async () => {
       argumentsString = await vscode.window.showInputBox();
+      launchProvider?.updateArgumentsData(argumentsString);
+      launchProvider?.updateFileContent();
     },
   );
 

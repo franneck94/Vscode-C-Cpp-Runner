@@ -18,6 +18,7 @@ const CONFIG_NAME = 'C/C++ Runner: Debug Session';
 
 export class LaunchProvider extends FileProvider {
   public buildMode: Builds = Builds.debug;
+  public argumentsString: string | undefined;
 
   constructor(
     protected settings: SettingsProvider,
@@ -111,6 +112,10 @@ export class LaunchProvider extends FileProvider {
       }
     }
 
+    if (this.argumentsString && this.argumentsString !== '') {
+      launchTemplate.configurations[0].args[0] = this.argumentsString;
+    }
+
     launchTemplate.configurations[0].cwd = this.activeFolder;
     const debugPath = path.join(
       this.activeFolder,
@@ -149,6 +154,12 @@ export class LaunchProvider extends FileProvider {
 
   public updateModeData(buildMode: Builds) {
     this.buildMode = buildMode;
+  }
+
+  public updateArgumentsData(argumentsString: string | undefined) {
+    if (argumentsString !== undefined) {
+      this.argumentsString = argumentsString;
+    }
   }
 
   public changeCallback() {

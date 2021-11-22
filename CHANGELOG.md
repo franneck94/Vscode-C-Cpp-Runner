@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 2.0.2: November 17, 2021
+
+**Bugfix**: Fixed issue for ARM64 Mac user
+
 ## Version 2.0.1: November 17, 2021
 
 **Regression Bugfix**: Fixed issue for handling whitespaces in paths

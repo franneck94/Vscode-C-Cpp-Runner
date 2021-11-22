@@ -58,10 +58,13 @@ export class PropertiesProvider extends FileProvider {
 
     if (!configLocal) return;
 
+    if (!this.settings.cCompiler) return;
+    if (!this.settings.architecure) return;
+
     const triplet =
-      `${this.settings.operatingSystem}-` +
-      `${this.settings.cCompiler}-` +
-      `${this.settings.architecure}`;
+      `${this.settings.operatingSystem.toLowerCase()}-` +
+      `${this.settings.cCompiler.toLowerCase()}-` +
+      `${this.settings.architecure.toLowerCase()}`;
 
     const currentConfig = configLocal.configurations[0];
     currentConfig.compilerArgs = [];

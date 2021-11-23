@@ -8,7 +8,7 @@
 ## Version 2.0.4: November 23, 2021
 
 - **Regression Bugfix**: Fixed issue with cmd arguments
-- **Info**: On windows the paths in the launch.json file are now stored with "/" instead of "\\"
+- **Info**: On windows, the paths in the launch.json file are now stored with "/" instead of "\\"
 - **Info**: On windows, the commands are now always launched in an extra CMD instance
 
 ## Version 2.0.3: November 22, 2021

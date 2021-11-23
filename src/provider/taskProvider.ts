@@ -87,10 +87,7 @@ export class TaskProvider implements vscode.TaskProvider {
       const scope = vscode.TaskScope.Workspace;
       let execution: vscode.ShellExecution;
 
-      if (
-        this._settingsProvider.operatingSystem === OperatingSystems.windows &&
-        this._settingsProvider.isPowershellTerminal
-      ) {
+      if (this._settingsProvider.operatingSystem === OperatingSystems.windows) {
         const shellOptions: vscode.ShellExecutionOptions = {
           executable: 'C:/Windows/System32/cmd.exe',
           shellArgs: ['/d', '/c'],

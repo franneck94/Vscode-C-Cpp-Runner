@@ -1,16 +1,27 @@
 # C/C++ Runner Change Log
 
+## Open Issues
+
+- Issue at loading settings from existing c_cpp_properties.json
+  - Load the correct compiler args
+
+## Version 2.0.4: November 23, 2021
+
+- **Regression Bugfix**: Fixed issue with cmd arguments
+- **Info**: On windows the paths in the launch.json file are now stored with "/" instead of "\\"
+- **Info**: On windows, the commands are now always launched in an extra CMD instance
+
 ## Version 2.0.3: November 22, 2021
 
-**Regression Bugfix**: Fixed issue with cmd arguments
+- **Regression Bugfix**: Fixed issue with cmd arguments
 
 ## Version 2.0.2: November 22, 2021
 
-**Bugfix**: Fixed issue for ARM64 Mac user
+- **Bugfix**: Fixed issue for ARM64 Mac user
 
 ## Version 2.0.1: November 17, 2021
 
-**Regression Bugfix**: Fixed issue for handling whitespaces in paths
+- **Regression Bugfix**: Fixed issue for handling whitespaces in paths
 
 ## Version 2.0.0: November 16, 2021
 

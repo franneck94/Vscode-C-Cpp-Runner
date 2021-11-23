@@ -1,6 +1,11 @@
 import * as path from 'path';
 
-import { pathExists, readJsonFile, writeJsonFile } from '../utils/fileUtils';
+import {
+	pathExists,
+	readJsonFile,
+	replaceBackslashes,
+	writeJsonFile,
+} from '../utils/fileUtils';
 import {
 	Architectures,
 	Builds,
@@ -113,15 +118,26 @@ export class LaunchProvider extends FileProvider {
     }
 
     if (this.argumentsString && this.argumentsString !== '') {
-      launchTemplate.configurations[0].args[0] = this.argumentsString;
+      launchTemplate.configurations[0].args = this.argumentsString.split(' ');
     }
 
-    launchTemplate.configurations[0].cwd = this.activeFolder;
+    if (this.settings.operatingSystem === OperatingSystems.windows) {
+      launchTemplate.configurations[0].cwd = replaceBackslashes(
+        this.activeFolder,
+      );
+    } else {
+      launchTemplate.configurations[0].cwd = this.activeFolder;
+    }
+
     const debugPath = path.join(
       this.activeFolder,
       `build/${this.buildMode}/out${this.buildMode}`,
     );
-    launchTemplate.configurations[0].program = debugPath;
+    if (this.settings.operatingSystem === OperatingSystems.windows) {
+      launchTemplate.configurations[0].program = replaceBackslashes(debugPath);
+    } else {
+      launchTemplate.configurations[0].program = debugPath;
+    }
 
     const launchLocal: JsonConfiguration | undefined = readJsonFile(
       this._outputPath,

@@ -3,7 +3,7 @@
     {
       "name": "windows-cygwin-gcc-x64",
       "includePath": ["${workspaceFolder}/**"],
-      "compilerPath": "C:/cygwin64/bin/gcc.exe",
+      "compilerPath": "/usr/bin/gcc-10",
       "cStandard": "c99",
       "cppStandard": "c++17",
       "intelliSenseMode": "linux-gcc-x64",

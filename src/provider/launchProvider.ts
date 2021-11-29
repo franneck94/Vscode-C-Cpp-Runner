@@ -103,8 +103,6 @@ export class LaunchProvider extends FileProvider {
 
     if (OperatingSystems.mac === this.settings.operatingSystem) {
       launchTemplate.configurations[0].stopAtEntry = true;
-      launchTemplate.configurations[0].externalConsole = true;
-
       if (launchTemplate.configurations[0].setupCommands) {
         delete launchTemplate.configurations[0].setupCommands;
       }
@@ -114,11 +112,16 @@ export class LaunchProvider extends FileProvider {
 
       if (this.settings.architecure === Architectures.ARM64) {
         launchTemplate.configurations[0].type = 'lldb';
+        launchTemplate.configurations[0].externalConsole = false;
+      } else {
+        launchTemplate.configurations[0].externalConsole = true;
       }
     }
 
-    if (this.argumentsString && this.argumentsString !== '') {
-      launchTemplate.configurations[0].args = this.argumentsString.split(' ');
+    if (this.argumentsString) {
+      launchTemplate.configurations[0].args = [this.argumentsString];
+    } else {
+      launchTemplate.configurations[0].args = [''];
     }
 
     if (this.settings.operatingSystem === OperatingSystems.windows) {

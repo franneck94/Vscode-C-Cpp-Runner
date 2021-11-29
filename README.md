@@ -61,22 +61,24 @@ The extension will automatically search for an installed compiler on your comput
 For Linux and mac, it searches in */usr/bin/*, and on windows, it searches for *Cygwin*, *mingw*, and *msys2* in the PATH.  
 All settings will be stored in the local workspace settings (*".vscode/settings.json"*).  
 If you wish to use any other compiler or different setting, just edit the entries in the local settings file.  
-![FoundCompiler](./media/FoundCompiler.png)  
+![FoundCompiler](./media/Settings.png)  
 
 Based on the operating system and the compiler, there will be a *c_cpp_properties.json* file created in the local *.vscode* folder.  
 This file will be used by Microsoft's *C/C++* extension for intellisense. For more information refer to the official [documentation](https://code.visualstudio.com/docs/cpp/c-cpp-properties-schema-reference).  
-![CCppConfig](./media/CCppConfig.png)  
+![CCppConfig](./media/Properties.png)  
 
 ### Passing Commandline Arguments
 
-If you want to pass in command-line arguments for running or debugging the binary, you have to press the key bind `ctrl+shift+a`.  
-Then a message box will appear where you can type the arguments:
+You can pass in command-line arguments for running or debugging the binary.  
+Make sure to select the active folder beforehand, then press `ctrl+shift+a` to open the message box to type in the arguments:
 
 ![Arguments](./media/arguments.png)
 
-These arguments will be stored in the launch.json config for debugging the binary.
+These arguments will be stored in the launch.json config for debugging the binary.  
 
 ![ArgumentsDebug](./media/argumentsDebug.png)
+
+The stored arguments will be resetted after selecting a new active folder.
 
 ### Exclude Folders for Selection
 

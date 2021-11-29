@@ -78,7 +78,7 @@ These arguments will be stored in the launch.json config for debugging the binar
 
 ![ArgumentsDebug](./media/argumentsDebug.png)
 
-The stored arguments will be resetted after selecting a new active folder.
+The stored arguments will be reset after selecting a new active folder.
 
 ### Exclude Folders for Selection
 

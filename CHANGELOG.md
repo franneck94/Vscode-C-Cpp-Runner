@@ -1,13 +1,16 @@
 # C/C++ Runner Change Log
 
-## Open Issues
+## Open Tasks
 
 - Issue at loading settings from existing c_cpp_properties.json
   - Load the correct compiler args
+- Implement the functionality of using MSVC compiler
 
 ## Version 2.0.5: November 29, 2021
 
 - **Info**: Updated README
+- **Info**: Now using internal console for debugging on Mac M1
+- **Bugfix**: Command-line arguments are now stored in a single line in laun.json's args array, thus whitespaces in the arguments are handeled correct
 
 ## Version 2.0.4: November 23, 2021
 

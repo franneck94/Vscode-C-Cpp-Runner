@@ -10,7 +10,7 @@
 
 - **Info**: Updated README
 - **Info**: Now using internal console for debugging on Mac M1
-- **Bugfix**: Command-line arguments are now stored in a single line in laun.json's args array, thus whitespaces in the arguments are handeled correct
+- **Bugfix**: Command-line arguments are now stored in a single line in launch.json's args array, thus whitespaces in the arguments are handeled correct
 
 ## Version 2.0.4: November 23, 2021
 

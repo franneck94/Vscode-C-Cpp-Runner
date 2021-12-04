@@ -30,6 +30,7 @@ import { FileProvider } from './fileProvider';
 const TEMPLATE_FILENAME = 'settings_template.json';
 const OUTPUT_FILENAME = 'settings.json';
 const EXTENSION_NAME = 'C_Cpp_Runner';
+const C_CPP_EXTENSION_NAME = 'C_Cpp';
 
 export class SettingsProvider extends FileProvider {
   static DEFAULT_C_COMPILER_PATH = 'gcc';
@@ -49,6 +50,9 @@ export class SettingsProvider extends FileProvider {
 
   // Workspace data
   private _configGlobal = vscode.workspace.getConfiguration(EXTENSION_NAME);
+  private _configGlobalCCpp = vscode.workspace.getConfiguration(
+    C_CPP_EXTENSION_NAME,
+  );
   // Machine information
   private _isMinGW: boolean = false;
   public operatingSystem = getOperatingSystem();
@@ -197,10 +201,14 @@ export class SettingsProvider extends FileProvider {
     super._updateFolderData(workspaceFolder);
   }
 
-  private getSettings() {
-    const settingsLocal: JsonSettings | undefined = readJsonFile(
-      this._outputPath,
-    );
+  private getSettings(cachedSettings: JsonSettings | undefined = undefined) {
+    let settingsLocal: JsonSettings | undefined;
+
+    if (cachedSettings === undefined) {
+      settingsLocal = readJsonFile(this._outputPath);
+    } else {
+      settingsLocal = cachedSettings;
+    }
 
     this.getMandatorySettings(settingsLocal);
     this.getOptionalSettings(settingsLocal);
@@ -270,6 +278,19 @@ export class SettingsProvider extends FileProvider {
       'excludeSearch',
       SettingsProvider.DEFAULT_EXCLUDE_SEARCH,
     );
+
+    // Additional settings
+    if (this._configGlobalCCpp) {
+      const globalIncludePath = this.getSettingsValue(
+        this._configGlobalCCpp['default'],
+        'includePath',
+        '',
+        false,
+      );
+      if (globalIncludePath && globalIncludePath !== '') {
+        this.includePaths.push(...globalIncludePath);
+      }
+    }
   }
 
   private getSettingsFromProperties(settingsFileMissing: boolean) {

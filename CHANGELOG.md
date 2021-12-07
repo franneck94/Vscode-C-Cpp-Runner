@@ -1,10 +1,8 @@
 # C/C++ Runner Change Log
 
-## Open Tasks
+## Version 2.1.0: December 07, 2021
 
-- Issue at loading settings from existing c_cpp_properties.json
-  - Load the correct compiler args
-- Implement the functionality of using MSVC compiler
+- **Info**: Load global *C_Cpp.default.includePath* setting for the extensions *includePaths*
 
 ## Version 2.0.5: November 29, 2021
 

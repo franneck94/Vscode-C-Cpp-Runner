@@ -1,16 +1,15 @@
 # C/C++ Runner Change Log
 
-## Open Tasks
+## Version 2.1.0: December 07, 2021
 
-- Issue at loading settings from existing c_cpp_properties.json
-  - Load the correct compiler args
-- Implement the functionality of using MSVC compiler
+- **Info**: Load global *C_Cpp.default.includePath* setting for the extensions *includePaths*
+- **Bugfix**: Opening a project for the first time with the C/C++ Runner extension and an already existing c_cpp_properties.json file, the compiler args are now correctly read-in.
 
 ## Version 2.0.5: November 29, 2021
 
 - **Info**: Updated README
 - **Info**: Now using the internal console for debugging on Mac M1
-- **Bugfix**: Command-line arguments are now stored in a single line in launch.json's args array, thus whitespaces in the arguments are handled correct
+- **Bugfix**: Command-line arguments are now stored in a single line in launch.json's args array, thus whitespaces in the arguments are handled correctly
 
 ## Version 2.0.4: November 23, 2021
 

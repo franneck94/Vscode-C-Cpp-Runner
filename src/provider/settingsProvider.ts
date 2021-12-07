@@ -91,7 +91,7 @@ export class SettingsProvider extends FileProvider {
       return;
     }
 
-    if (settingsMissing && !propertiesFileMissing && activeFolder) {
+    if (settingsFileMissing && !propertiesFileMissing && activeFolder) {
       this.getSettingsFromProperties(settingsFileMissing);
       this.storeCommands();
       return;
@@ -201,14 +201,10 @@ export class SettingsProvider extends FileProvider {
     super._updateFolderData(workspaceFolder);
   }
 
-  private getSettings(cachedSettings: JsonSettings | undefined = undefined) {
-    let settingsLocal: JsonSettings | undefined;
-
-    if (cachedSettings === undefined) {
-      settingsLocal = readJsonFile(this._outputPath);
-    } else {
-      settingsLocal = cachedSettings;
-    }
+  private getSettings() {
+    const settingsLocal: JsonSettings | undefined = readJsonFile(
+      this._outputPath,
+    );
 
     this.getMandatorySettings(settingsLocal);
     this.getOptionalSettings(settingsLocal);
@@ -349,6 +345,14 @@ export class SettingsProvider extends FileProvider {
       SettingsProvider.DEFAULT_INCLUDE_PATHS,
     );
 
+    let _compilerArgs = this.getPropertiesValue(
+      properties,
+      'compilerArgs',
+      SettingsProvider.DEFAULT_INCLUDE_PATHS,
+    );
+    const _warnings = _compilerArgs.filter((arg: string) => arg.includes('-W'));
+    _compilerArgs = _compilerArgs.filter((arg: string) => !arg.includes('-W'));
+
     this.cStandard =
       _cStandard !== '${default}'
         ? _cStandard
@@ -361,13 +365,20 @@ export class SettingsProvider extends FileProvider {
       _includePaths !== ['${workspaceFolder}/**']
         ? _includePaths
         : SettingsProvider.DEFAULT_INCLUDE_PATHS;
+    this.compilerArgs =
+      _compilerArgs !== ''
+        ? _compilerArgs
+        : SettingsProvider.DEFAULT_COMPILER_ARGS;
+    this.linkerArgs =
+      _compilerArgs !== ''
+        ? _compilerArgs
+        : SettingsProvider.DEFAULT_LINKER_ARGS;
+    this.warnings =
+      _warnings.length > 0 ? _warnings : SettingsProvider.DEFAULT_WARNINGS;
 
     if (settingsFileMissing) {
       this.enableWarnings = SettingsProvider.DEFAULT_ENABLE_WARNINGS;
-      this.warnings = SettingsProvider.DEFAULT_WARNINGS;
       this.warningsAsError = SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
-      this.compilerArgs = SettingsProvider.DEFAULT_COMPILER_ARGS;
-      this.linkerArgs = SettingsProvider.DEFAULT_LINKER_ARGS;
       this.excludeSearch = SettingsProvider.DEFAULT_EXCLUDE_SEARCH;
     } else {
       const settingsLocal: JsonSettings | undefined = readJsonFile(

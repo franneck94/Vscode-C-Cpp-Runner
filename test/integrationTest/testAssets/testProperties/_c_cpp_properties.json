@@ -7,7 +7,7 @@
       "cStandard": "c99",
       "cppStandard": "c++17",
       "intelliSenseMode": "linux-gcc-x64",
-      "compilerArgs": ["-Wall", "-Wextra", "-Wpedantic", "-Wshadow"]
+      "compilerArgs": ["-Wall", "-Wextra", "-Wpedantic", "-Wshadow", "-m64"]
     }
   ],
   "version": 4

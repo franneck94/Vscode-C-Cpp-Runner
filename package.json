@@ -200,7 +200,7 @@
             "-Wextra",
             "-Wpedantic"
           ],
-          "description": "Warnings to check by the compiler. Separated by whitespaces.",
+          "description": "Warnings to check by the compiler.",
           "scope": "resource"
         },
         "C_Cpp_Runner.warningsAsError": {
@@ -241,7 +241,7 @@
             "gnu17"
           ],
           "default": "",
-          "description": "C-Standard for the C Compiler.",
+          "description": "C-Standard for the C Compiler. (If empty, compiler's default is used)",
           "scope": "resource"
         },
         "C_Cpp_Runner.cppStandard": {
@@ -264,7 +264,7 @@
             "gnu++23"
           ],
           "default": "",
-          "description": "C++ Standard for the C++ Compiler.",
+          "description": "C++ Standard for the C++ Compiler. (If empty, compiler's default is used)",
           "scope": "resource"
         },
         "C_Cpp_Runner.compilerArgs": {
@@ -273,7 +273,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Additional compiler arguments. Separated by whitespaces.",
+          "description": "Additional compiler arguments.",
           "scope": "resource"
         },
         "C_Cpp_Runner.linkerArgs": {
@@ -282,7 +282,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Additional linker arguments. Separated by whitespaces.",
+          "description": "Additional linker arguments.",
           "scope": "resource"
         },
         "C_Cpp_Runner.includePaths": {
@@ -291,7 +291,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Additional include paths. Separated by whitespaces.",
+          "description": "Additional include paths.",
           "scope": "resource"
         },
         "C_Cpp_Runner.excludeSearch": {

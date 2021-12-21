@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 2.1.1: December 21, 2021
+
+- **Bugfix**: Now passing linker args after the object files
+
 ## Version 2.1.0: December 07, 2021
 
 - **Info**: Load global *C_Cpp.default.includePath* setting for the extensions *includePaths*

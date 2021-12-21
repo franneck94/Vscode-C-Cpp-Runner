@@ -82,6 +82,8 @@ export async function executeBuildTask(
   }
 
   let fullCompilerArgs = '';
+  let fillLinkerArgs = '';
+
   if (warnings) {
     fullCompilerArgs += `${warnings}`;
   }
@@ -96,9 +98,6 @@ export async function executeBuildTask(
   if (compilerArgs && compilerArgs.length > 0) {
     fullCompilerArgs += ' ' + compilerArgs.join(' ');
   }
-  if (linkerArgs && linkerArgs.length > 0) {
-    fullCompilerArgs += ' ' + linkerArgs.join(' ');
-  }
   if (includePaths && includePaths.length > 0) {
     for (const includePath of includePaths) {
       const hasSpace = includePath.includes(' ');
@@ -109,6 +108,10 @@ export async function executeBuildTask(
         fullCompilerArgs += ` -I${includePath}`;
       }
     }
+  }
+
+  if (linkerArgs && linkerArgs.length > 0) {
+    fillLinkerArgs += ' ' + linkerArgs.join(' ');
   }
 
   let commandLine: string = '';
@@ -174,6 +177,10 @@ export async function executeBuildTask(
   if (!task || !task.execution) return;
 
   commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullObjectFileArgs}`;
+
+  if (fillLinkerArgs && fillLinkerArgs !== '') {
+    commandLine += fillLinkerArgs;
+  }
 
   task.execution.commandLine = commandLine;
   await vscode.tasks.executeTask(task);

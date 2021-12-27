@@ -609,6 +609,9 @@ export class SettingsProvider extends FileProvider {
       if (cBasename.includes(Compilers.clang)) {
         this.cCompiler = Compilers.clang;
         this.debugger = Debuggers.lldb;
+      } else if (cBasename.includes(Compilers.cl)) {
+        this.cCompiler = Compilers.cl;
+        this.debugger = Debuggers.gdb;
       } else {
         this.cCompiler = Compilers.gcc;
         this.debugger = Debuggers.gdb;
@@ -619,6 +622,9 @@ export class SettingsProvider extends FileProvider {
       if (cppBasename.includes(Compilers.clangpp)) {
         this.cppCompiler = Compilers.clangpp;
         this.debugger = Debuggers.lldb;
+      } else if (cppBasename.includes(Compilers.cl)) {
+        this.cppCompiler = Compilers.cl;
+        this.debugger = Debuggers.gdb;
       } else {
         this.cppCompiler = Compilers.gpp;
         this.debugger = Debuggers.gdb;
@@ -738,6 +744,14 @@ export class SettingsProvider extends FileProvider {
     this.updatebasedOnEnv('cCompilerPath', pathGcc);
     this.cCompiler = Compilers.gcc;
     this._cCompilerFound = true;
+  }
+
+  public setCl(pathCl: string) {
+    this.updatebasedOnEnv('cCompilerPath', pathCl);
+    this.cCompiler = Compilers.cl;
+    this.cppCompiler = Compilers.cl;
+    this._cCompilerFound = true;
+    this._cppCompilerFound = true;
   }
 
   public setClang(pathClang: string) {

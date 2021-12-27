@@ -49,6 +49,7 @@ export enum Compilers {
   gpp = 'g++',
   clang = 'clang',
   clangpp = 'clang++',
+  cl = 'cl'
 }
 
 export enum Debuggers {

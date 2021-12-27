@@ -11,7 +11,13 @@ import {
 	mkdirRecursive,
 	pathExists,
 } from '../utils/fileUtils';
-import { Builds, Languages, OperatingSystems, Task } from '../utils/types';
+import {
+	Builds,
+	Compilers,
+	Languages,
+	OperatingSystems,
+	Task,
+} from '../utils/types';
 
 export async function executeBuildTask(
   task: Task,
@@ -53,6 +59,50 @@ export async function executeBuildTask(
 
   const executablePath = path.join(modeDir, executableName);
 
+  let commandLine: string | undefined;
+  if (
+    settingsProvider.operatingSystem === OperatingSystems.windows &&
+    settingsProvider.cCompiler?.includes(Compilers.cl)
+  ) {
+    commandLine = executeBuildTaskMsvcBased(
+      settingsProvider,
+      activeFolder,
+      buildMode,
+      language,
+      files,
+      modeDir,
+      appendSymbol,
+      executablePath,
+    );
+  } else {
+    commandLine = executeBuildTaskUnixBased(
+      settingsProvider,
+      activeFolder,
+      buildMode,
+      language,
+      files,
+      modeDir,
+      appendSymbol,
+      executablePath,
+    );
+  }
+
+  if (!task || !task.execution || commandLine === undefined) return;
+
+  task.execution.commandLine = commandLine;
+  await vscode.tasks.executeTask(task);
+}
+
+function executeBuildTaskUnixBased(
+  settingsProvider: SettingsProvider,
+  activeFolder: string,
+  buildMode: Builds,
+  language: Languages,
+  files: string[],
+  modeDir: string,
+  appendSymbol: string,
+  executablePath: string,
+) {
   let compiler: string | undefined;
   let standard: string | undefined;
 
@@ -174,14 +224,152 @@ export async function executeBuildTask(
     fullObjectFileArgs = `${objectFilesStr} -o ${executablePath}`;
   }
 
-  if (!task || !task.execution) return;
-
   commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullObjectFileArgs}`;
 
   if (fillLinkerArgs && fillLinkerArgs !== '') {
     commandLine += fillLinkerArgs;
   }
 
-  task.execution.commandLine = commandLine;
-  await vscode.tasks.executeTask(task);
+  return commandLine;
+}
+
+function executeBuildTaskMsvcBased(
+  settingsProvider: SettingsProvider,
+  activeFolder: string,
+  buildMode: Builds,
+  language: Languages,
+  files: string[],
+  modeDir: string,
+  appendSymbol: string,
+  executablePath: string,
+) {
+  let compiler: string | undefined;
+  let standard: string | undefined;
+
+  if (language === Languages.cpp) {
+    compiler = settingsProvider.cppCompilerPath;
+    standard = settingsProvider.cppStandard;
+  } else {
+    compiler = settingsProvider.cCompilerPath;
+    standard = settingsProvider.cStandard;
+  }
+
+  const useWarnings = settingsProvider.enableWarnings;
+  const warningsAsErrors = settingsProvider.warningsAsError;
+  let warnings: string = '';
+  if (useWarnings) {
+    warnings = settingsProvider.warnings.join(' ');
+  }
+  if (useWarnings && warningsAsErrors) {
+    warnings += ' -WX';
+  }
+  const includePaths = settingsProvider.includePaths;
+  const compilerArgs = settingsProvider.compilerArgs;
+  const linkerArgs = settingsProvider.linkerArgs;
+
+  if (!includePaths.includes(activeFolder)) {
+    includePaths.push(activeFolder);
+  }
+
+  let fullCompilerArgs = '';
+  let fillLinkerArgs = '';
+
+  if (warnings) {
+    fullCompilerArgs += `/W3`;
+  }
+  if (standard) {
+    fullCompilerArgs += ` /std:${standard}`;
+  }
+  if (buildMode === Builds.debug) {
+    fullCompilerArgs += ' /Od /Zi';
+  } else {
+    fullCompilerArgs += ' /Ox /GL /DNDEBUG';
+  }
+  if (compilerArgs && compilerArgs.length > 0) {
+    fullCompilerArgs += ' ' + compilerArgs.join(' ');
+  }
+  if (includePaths && includePaths.length > 0) {
+    for (const includePath of includePaths) {
+      const hasSpace = includePath.includes(' ');
+
+      if (hasSpace) {
+        fullCompilerArgs += ` -I"${includePath}"`;
+      } else {
+        fullCompilerArgs += ` -I${includePath}`;
+      }
+    }
+  }
+
+  if (linkerArgs && linkerArgs.length > 0) {
+    fillLinkerArgs += ' ' + linkerArgs.join(' ');
+  }
+
+  let commandLine: string =
+    '"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvarsall.bat" x64 &&';
+
+  const objectFiles: string[] = [];
+
+  let idx = -1;
+
+  for (const file of files) {
+    const fileExtension = path.parse(file).ext;
+
+    if (language === Languages.c && !isCSourceFile(fileExtension)) {
+      continue;
+    } else if (language === Languages.cpp && !isCppSourceFile(fileExtension)) {
+      continue;
+    }
+
+    idx++;
+
+    const fileBaseName = path.parse(file).name;
+    const filePath = path.join(activeFolder, file);
+    const objectFilePath = path.join(modeDir, fileBaseName + '.obj');
+
+    objectFiles.push(objectFilePath);
+
+    const hasSpace = filePath.includes(' ');
+    let fullFileArgs = `/FS /Fd${modeDir}\\ /Fo${modeDir}\\ `;
+    if (hasSpace) {
+      fullFileArgs += `/c "${filePath}"`;
+    } else {
+      fullFileArgs += `/c ${filePath}`;
+    }
+
+    if (idx === 0) {
+      commandLine += `${compiler} ${fullCompilerArgs} ${fullFileArgs}`;
+    } else {
+      commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullFileArgs}`;
+    }
+  }
+
+  // Exe task
+  let objectFilesStr: string = '';
+  for (const objectfile of objectFiles) {
+    const hasSpace = objectfile.includes(' ');
+
+    if (hasSpace) {
+      objectFilesStr += ` "${objectfile}"`;
+    } else {
+      objectFilesStr += ` ${objectfile}`;
+    }
+  }
+
+  if (objectFilesStr === '') return;
+
+  const executablePathHasSpace = executablePath.includes(' ');
+  let fullObjectFileArgs: string = '';
+  if (executablePathHasSpace) {
+    fullObjectFileArgs = `${objectFilesStr} /OUT:"${executablePath}"`;
+  } else {
+    fullObjectFileArgs = `${objectFilesStr} /OUT:${executablePath}`;
+  }
+
+  commandLine += ` ${appendSymbol} link.exe ${fullObjectFileArgs}`;
+
+  if (fillLinkerArgs && fillLinkerArgs !== '') {
+    commandLine += fillLinkerArgs;
+  }
+
+  return commandLine;
 }

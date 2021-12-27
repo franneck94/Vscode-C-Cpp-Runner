@@ -1,5 +1,13 @@
 # C/C++ Runner Change Log
 
+## Version 2.2.0: December 27, 2021
+
+- MSVC Compiler Support
+  - Add Commands (Tick)
+  - Add setting for msvc batch path
+    - User dont has to change standard compiler/debugger paths
+  - Check how to start debugger
+
 ## Version 2.1.1: December 21, 2021
 
 - **Bugfix**: Now passing linker args after the object files

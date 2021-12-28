@@ -36,8 +36,10 @@ export class SettingsProvider extends FileProvider {
   static DEFAULT_C_COMPILER_PATH = 'gcc';
   static DEFAULT_CPP_COMPILER_PATH = 'g++';
   static DEFAULT_DEBUGGER_PATH = 'gdb';
+  static DEFAULT_MSVC_BATCH_PATH = '';
   static DEFAULT_C_STANDARD = '';
   static DEFAULT_CPP_STANDARD = '';
+  static DEFAULT_INCLUDE_SEARCH = ['*'];
   static DEFAULT_EXCLUDE_SEARCH = [];
 
   static DEFAULT_ENABLE_WARNINGS = true;
@@ -54,10 +56,11 @@ export class SettingsProvider extends FileProvider {
     C_CPP_EXTENSION_NAME,
   );
   // Machine information
-  private _isMinGW: boolean = false;
+  private isMinGW: boolean = false;
   public operatingSystem = getOperatingSystem();
   public architecure: Architectures | undefined;
   public isCygwin: boolean = false;
+  public isMsvc: boolean = false;
   public cCompiler: Compilers | undefined;
   public cppCompiler: Compilers | undefined;
   public debugger: Debuggers | undefined;
@@ -69,11 +72,13 @@ export class SettingsProvider extends FileProvider {
   public cCompilerPath: string = SettingsProvider.DEFAULT_C_COMPILER_PATH;
   public cppCompilerPath: string = SettingsProvider.DEFAULT_CPP_COMPILER_PATH;
   public debuggerPath: string = SettingsProvider.DEFAULT_DEBUGGER_PATH;
+  public msvcBatchPath: string = SettingsProvider.DEFAULT_MSVC_BATCH_PATH;
   public cStandard: string = SettingsProvider.DEFAULT_C_STANDARD;
   public cppStandard: string = SettingsProvider.DEFAULT_CPP_STANDARD;
   public compilerArgs: string[] = SettingsProvider.DEFAULT_COMPILER_ARGS;
   public linkerArgs: string[] = SettingsProvider.DEFAULT_LINKER_ARGS;
   public includePaths: string[] = SettingsProvider.DEFAULT_INCLUDE_PATHS;
+  public includeSearch: string[] = SettingsProvider.DEFAULT_INCLUDE_SEARCH;
   public excludeSearch: string[] = SettingsProvider.DEFAULT_EXCLUDE_SEARCH;
   public enableWarnings: boolean = SettingsProvider.DEFAULT_ENABLE_WARNINGS;
   public warningsAsError: boolean = SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
@@ -229,6 +234,15 @@ export class SettingsProvider extends FileProvider {
   }
 
   private getOptionalSettings(settingsLocal: JsonSettings | undefined) {
+    this.msvcBatchPath = this.getSettingsValue(
+      settingsLocal,
+      'msvcBatchPath',
+      SettingsProvider.DEFAULT_MSVC_BATCH_PATH,
+    );
+    if (this.msvcBatchPath !== SettingsProvider.DEFAULT_MSVC_BATCH_PATH) {
+      this.isMsvc = true;
+    }
+
     this.enableWarnings = this.getSettingsValue(
       settingsLocal,
       'enableWarnings',
@@ -244,6 +258,7 @@ export class SettingsProvider extends FileProvider {
       'warningsAsError',
       SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS,
     );
+
     this.cStandard = this.getSettingsValue(
       settingsLocal,
       'cStandard',
@@ -254,6 +269,7 @@ export class SettingsProvider extends FileProvider {
       'cppStandard',
       SettingsProvider.DEFAULT_CPP_STANDARD,
     );
+
     this.compilerArgs = this.getSettingsValue(
       settingsLocal,
       'compilerArgs',
@@ -268,6 +284,12 @@ export class SettingsProvider extends FileProvider {
       settingsLocal,
       'includePaths',
       SettingsProvider.DEFAULT_INCLUDE_PATHS,
+    );
+
+    this.includeSearch = this.getSettingsValue(
+      settingsLocal,
+      'includeSearch',
+      SettingsProvider.DEFAULT_INCLUDE_SEARCH,
     );
     this.excludeSearch = this.getSettingsValue(
       settingsLocal,
@@ -339,6 +361,7 @@ export class SettingsProvider extends FileProvider {
       'cppStandard',
       SettingsProvider.DEFAULT_CPP_STANDARD,
     );
+
     const _includePaths = this.getPropertiesValue(
       properties,
       'includePath',
@@ -361,10 +384,12 @@ export class SettingsProvider extends FileProvider {
       _cppStandard !== '${default}'
         ? _cppStandard
         : SettingsProvider.DEFAULT_CPP_STANDARD;
+
     this.includePaths =
       _includePaths !== ['${workspaceFolder}/**']
         ? _includePaths
         : SettingsProvider.DEFAULT_INCLUDE_PATHS;
+
     this.compilerArgs =
       _compilerArgs !== ''
         ? _compilerArgs
@@ -373,6 +398,7 @@ export class SettingsProvider extends FileProvider {
       _compilerArgs !== ''
         ? _compilerArgs
         : SettingsProvider.DEFAULT_LINKER_ARGS;
+
     this.warnings =
       _warnings.length > 0 ? _warnings : SettingsProvider.DEFAULT_WARNINGS;
 
@@ -609,9 +635,6 @@ export class SettingsProvider extends FileProvider {
       if (cBasename.includes(Compilers.clang)) {
         this.cCompiler = Compilers.clang;
         this.debugger = Debuggers.lldb;
-      } else if (cBasename.includes(Compilers.cl)) {
-        this.cCompiler = Compilers.cl;
-        this.debugger = Debuggers.gdb;
       } else {
         this.cCompiler = Compilers.gcc;
         this.debugger = Debuggers.gdb;
@@ -622,9 +645,6 @@ export class SettingsProvider extends FileProvider {
       if (cppBasename.includes(Compilers.clangpp)) {
         this.cppCompiler = Compilers.clangpp;
         this.debugger = Debuggers.lldb;
-      } else if (cppBasename.includes(Compilers.cl)) {
-        this.cppCompiler = Compilers.cl;
-        this.debugger = Debuggers.gdb;
       } else {
         this.cppCompiler = Compilers.gpp;
         this.debugger = Debuggers.gdb;
@@ -647,7 +667,7 @@ export class SettingsProvider extends FileProvider {
     }
 
     if (this.operatingSystem === OperatingSystems.windows) {
-      if (!this.isCygwin) this._isMinGW = true;
+      if (!this.isCygwin) this.isMinGW = true;
     }
   }
 
@@ -746,14 +766,6 @@ export class SettingsProvider extends FileProvider {
     this._cCompilerFound = true;
   }
 
-  public setCl(pathCl: string) {
-    this.updatebasedOnEnv('cCompilerPath', pathCl);
-    this.cCompiler = Compilers.cl;
-    this.cppCompiler = Compilers.cl;
-    this._cCompilerFound = true;
-    this._cppCompilerFound = true;
-  }
-
   public setClang(pathClang: string) {
     this.updatebasedOnEnv('cCompilerPath', pathClang);
     this.cCompiler = Compilers.clang;
@@ -795,9 +807,5 @@ export class SettingsProvider extends FileProvider {
     this.update('excludeSearch', this.excludeSearch);
     this.update('enableWarnings', this.enableWarnings);
     this.update('warningsAsError', this.warningsAsError);
-  }
-
-  public get isMinGW() {
-    return this._isMinGW;
   }
 }

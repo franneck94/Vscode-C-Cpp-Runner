@@ -6,6 +6,7 @@
   - Done: Add Compile Command
   - Todo: Add Setting for MSVC Batch Path
   - Todo: Check how to start debugger
+- Include pattern for folder selection
 
 ## Version 2.1.1: December 21, 2021
 

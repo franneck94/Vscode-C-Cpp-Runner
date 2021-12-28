@@ -294,6 +294,17 @@
           "description": "Additional include paths.",
           "scope": "resource"
         },
+        "C_Cpp_Runner.includeSearch": {
+          "type": "array",
+          "default": [
+            "*"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "List glob patterns to include for folder selection.",
+          "scope": "resource"
+        },
         "C_Cpp_Runner.excludeSearch": {
           "type": "array",
           "default": [],

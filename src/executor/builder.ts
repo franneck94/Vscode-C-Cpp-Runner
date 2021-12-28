@@ -11,13 +11,7 @@ import {
 	mkdirRecursive,
 	pathExists,
 } from '../utils/fileUtils';
-import {
-	Builds,
-	Compilers,
-	Languages,
-	OperatingSystems,
-	Task,
-} from '../utils/types';
+import { Builds, Languages, OperatingSystems, Task } from '../utils/types';
 
 export async function executeBuildTask(
   task: Task,
@@ -62,7 +56,7 @@ export async function executeBuildTask(
   let commandLine: string | undefined;
   if (
     settingsProvider.operatingSystem === OperatingSystems.windows &&
-    settingsProvider.cCompiler?.includes(Compilers.cl)
+    settingsProvider.isMsvc
   ) {
     commandLine = executeBuildTaskMsvcBased(
       settingsProvider,
@@ -247,10 +241,10 @@ function executeBuildTaskMsvcBased(
   let standard: string | undefined;
 
   if (language === Languages.cpp) {
-    compiler = settingsProvider.cppCompilerPath;
+    compiler = SettingsProvider.MSVC_COMPILER_NAME;
     standard = settingsProvider.cppStandard;
   } else {
-    compiler = settingsProvider.cCompilerPath;
+    compiler = SettingsProvider.MSVC_COMPILER_NAME;
     standard = settingsProvider.cStandard;
   }
 
@@ -274,7 +268,7 @@ function executeBuildTaskMsvcBased(
   let fullCompilerArgs = '';
   let fillLinkerArgs = '';
 
-  if (warnings) {
+  if (useWarnings && warnings !== '') {
     fullCompilerArgs += `/W3`;
   }
   if (standard) {
@@ -304,8 +298,7 @@ function executeBuildTaskMsvcBased(
     fillLinkerArgs += ' ' + linkerArgs.join(' ');
   }
 
-  let commandLine: string =
-    '"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvarsall.bat" x64 &&';
+  let commandLine: string = `"${settingsProvider.msvcBatchPath}" ${settingsProvider.architecure} &&`;
 
   const objectFiles: string[] = [];
 
@@ -365,7 +358,8 @@ function executeBuildTaskMsvcBased(
     fullObjectFileArgs = `${objectFilesStr} /OUT:${executablePath}`;
   }
 
-  commandLine += ` ${appendSymbol} link.exe ${fullObjectFileArgs}`;
+  const linker = SettingsProvider.MSVC_LINKER_NAME;
+  commandLine += ` ${appendSymbol} ${linker} ${fullObjectFileArgs}`;
 
   if (fillLinkerArgs && fillLinkerArgs !== '') {
     commandLine += fillLinkerArgs;

@@ -3,10 +3,9 @@
 ## Version 2.2.0: December 27, 2021
 
 - MSVC Compiler Support
-  - Add Commands (Tick)
-  - Add setting for msvc batch path
-    - User dont has to change standard compiler/debugger paths
-  - Check how to start debugger
+  - Done: Add Compile Command
+  - Todo: Add Setting for MSVC Batch Path
+  - Todo: Check how to start debugger
 
 ## Version 2.1.1: December 21, 2021
 

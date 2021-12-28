@@ -227,6 +227,12 @@
           "description": "The path to the debugger (either gdb or lldb).",
           "scope": "resource"
         },
+        "C_Cpp_Runner.msvcBatchPath": {
+          "type": "string",
+          "default": "",
+          "description": "The path to the MSVC batch file (Needed to compile/debug with MSVC Compiler).",
+          "scope": "resource"
+        },
         "C_Cpp_Runner.cStandard": {
           "type": "string",
           "enum": [

@@ -123,9 +123,6 @@ For more information about glob pattern see [here](https://en.wikipedia.org/wiki
 
 - 📝 Allowed file extensions for headers: \*.h, \*.hpp, \*.hh, \*.hxx
 - 📝 Allowed file extensions for sources: \*.c, \*.cpp, \*.cc, \*.cxx
-- 📁 The folder selection menu will not list:
-  - Folder names **including** '.' (e.g. *.vscode*), '\_\_' (e.g. temp folders) or 'CMake'
-  - The folder named *build* since this is the auto generated folder by this extension
 
 ### CMake Projects in the Workspace Directory
 

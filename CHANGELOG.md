@@ -2,14 +2,14 @@
 
 ## Version 3.0.0: December 30, 2021
 
-- MSVC Compiler Support
-  - Done: Add Compile Command
-  - Done: Add Setting for MSVC Batch Path
-  - Done: MSVC Host/Target architecture is equal to current architecture
-  - Done: Added debug config for MSVC
-- Done: Removed warnings from compiler args in c_cpp_properties.json
-- Done: Update logic for exclude pattern for folder selection
-- Done: Include pattern for folder selection
+- **Feature**: MSVC Compiler Support
+  - Add Compiler Commands
+  - Add Setting for MSVC Batch Path
+  - MSVC Host/Target architecture is equal to current architecture
+  - Added debug config for MSVC
+- **Info**: Removed warnings from compiler args in c_cpp_properties.json
+- **Feature**: Updated logic for exclude pattern for folder selection
+- **Feature**: Added Include pattern for folder selection
 
 ## Version 2.1.1: December 21, 2021
 

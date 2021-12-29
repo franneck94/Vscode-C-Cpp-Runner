@@ -21,7 +21,7 @@ You do not need to know about any compiler commands. 😎
   - Alternative 1: Install gcc, g++ and gdb via [Cygwin](https://www.cygwin.com/).  
   - Alternative 2: Linux Distro via [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install).
   - Alternative 3: MinGW via [MSYS2](https://www.msys2.org/).  
-  - Alternative 4: MSVC Compiler via [VS/BuildTools](https://visualstudio.microsoft.com/de/downloads/?q=build+tools) - see below for instructions.  
+  - Alternative 4: MSVC Compiler via [VS/BuildTools](https://visualstudio.microsoft.com/de/downloads/?q=build+tools) - see [below](#using-the-msvc-compiler) for instructions.  
 - 🖥️ Linux:
   - Recommended to install gcc, g++ and gdb via a package manager (e.g. `apt`).
 - 🖥️ MacOS:
@@ -60,7 +60,7 @@ Besides that, you can also select a folder by right-clicking in the context menu
 
 The extension will automatically search for an installed compiler on your computer.  
 For Linux and mac, it searches in */usr/bin/*, and on windows, it searches for *Cygwin*, *mingw*, and *msys2* in the PATH.  
-Note: On windows it will not be searched for any MSVC installation (see below).
+Note: On windows, it will not be searched for any MSVC installation.  
 All settings will be stored in the local workspace settings (*".vscode/settings.json"*).  
 If you wish to use any other compiler or different setting, just edit the entries in the local settings file.  
 ![FoundCompiler](./media/Settings.png)  
@@ -139,7 +139,9 @@ Since version 3.0 the MSVC compiler (toolchain) can also be used.
 To do so, set the setting **msvcBatchPath** to a valid path.  
 Then the other settings about the compiler and debugger are ignored in the workspace.  
 Note: The batch file will be started with the system's architecture.  
-E.g. on a 64bit Windows, here only the 64bit (Host and Target) compiler will be used.
+E.g. on a 64bit Windows, here only the 64bit (Host and Target) compiler will be used - so no cross-compiling.  
+Caveat 1: Currently if warnings are enabled, only **/W3** is used.  
+Caveat 2: Currently the linker args are ignored.  
 
 ## Release Notes
 

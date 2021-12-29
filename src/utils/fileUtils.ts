@@ -137,6 +137,19 @@ export function excludePatternFromList(
   return foldersList;
 }
 
+export function foldersInDirWoFilter(dir: fs.PathLike) {
+  const fileDirents = readDir(dir);
+
+  if (!fileDirents) return [];
+
+  const folders = fileDirents.filter((folder) => folder.isDirectory());
+  const folderNames = folders.map((folder) =>
+    path.join(dir.toString(), folder.name),
+  );
+
+  return folderNames;
+}
+
 export function foldersInDir(dir: fs.PathLike) {
   const fileDirents = readDir(dir);
 

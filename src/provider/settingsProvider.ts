@@ -3,6 +3,7 @@ import * as vscode from 'vscode';
 
 import {
 	commandCheck,
+	foldersInDirWoFilter,
 	getBasename,
 	pathExists,
 	readJsonFile,
@@ -605,9 +606,20 @@ export class SettingsProvider extends FileProvider {
 
     if (!msvcBasePath) return;
 
-    msvcBasePath += '/VC/Tools/MSVC';
+    msvcBasePath += 'VC/Tools/MSVC';
 
-    const versionNumber = '14.30.30705';
+    const installed_versions = foldersInDirWoFilter(msvcBasePath);
+    const newst_version_path =
+      installed_versions[installed_versions.length - 1];
+    if (installed_versions.length === 0 || !newst_version_path) return;
+
+    const newst_version_path_splitted = newst_version_path.split('\\');
+    if (newst_version_path_splitted.length === 0) return;
+
+    const versionNumber =
+      newst_version_path_splitted[newst_version_path_splitted.length - 1];
+
+    if (!versionNumber) return;
 
     let architecturePath: string;
     if (
@@ -618,6 +630,8 @@ export class SettingsProvider extends FileProvider {
     } else {
       architecturePath = 'bin/Hostx86/x86';
     }
+
+    if (!pathExists(architecturePath)) return;
 
     this.msvcToolsPath = path.join(
       msvcBasePath,

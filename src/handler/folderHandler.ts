@@ -5,6 +5,7 @@ import { SettingsProvider } from '../provider/settingsProvider';
 import {
 	excludePatternFromList,
 	getDirectoriesRecursive,
+	includePatternFromList,
 	naturalSort,
 	replaceBackslashes,
 } from '../utils/fileUtils';
@@ -31,8 +32,20 @@ export async function folderHandler(
     });
 
     if (settingsProvider) {
+      foldersList = includePatternFromList(
+        settingsProvider.includeSearch,
+        foldersList,
+      );
+    }
+
+    if (settingsProvider) {
       foldersList = excludePatternFromList(
         settingsProvider.excludeSearch,
+        foldersList,
+      );
+    } else {
+      foldersList = excludePatternFromList(
+        SettingsProvider.DEFAULT_EXCLUDE_SEARCH,
         foldersList,
       );
     }

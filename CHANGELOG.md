@@ -8,7 +8,8 @@
   - Done: MSVC Host/Target architecture is equal to current architecture
   - Done: Added debug config for MSVC
 - Done: Removed warnings from compiler args in c_cpp_properties.json
-- Todo: Include pattern for folder selection
+- Done: Update logic for exclude pattern for folder selection
+- Done: Include pattern for folder selection
 
 ## Version 2.1.1: December 21, 2021
 

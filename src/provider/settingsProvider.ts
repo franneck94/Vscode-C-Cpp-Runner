@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 
 import {
 	commandCheck,
-	foldersInDirWoFilter,
+	foldersInDir,
 	getBasename,
 	pathExists,
 	readJsonFile,
@@ -41,8 +41,15 @@ export class SettingsProvider extends FileProvider {
   static DEFAULT_MSVC_TOOLS_PATH = '';
   static DEFAULT_C_STANDARD = '';
   static DEFAULT_CPP_STANDARD = '';
-  static DEFAULT_INCLUDE_SEARCH = ['*'];
-  static DEFAULT_EXCLUDE_SEARCH = [];
+  static DEFAULT_INCLUDE_SEARCH = ['*', '**/*'];
+  static DEFAULT_EXCLUDE_SEARCH = [
+    '**/build',
+    '**/build/**',
+    '**/.*',
+    '**/.*/**',
+    '**/.vscode',
+    '**/.vscode/**',
+  ];
 
   static DEFAULT_ENABLE_WARNINGS = true;
   static DEFAULT_WARNINGS_AS_ERRORS = false;
@@ -608,7 +615,7 @@ export class SettingsProvider extends FileProvider {
 
     msvcBasePath += 'VC/Tools/MSVC';
 
-    const installed_versions = foldersInDirWoFilter(msvcBasePath);
+    const installed_versions = foldersInDir(msvcBasePath);
     const newst_version_path =
       installed_versions[installed_versions.length - 1];
     if (installed_versions.length === 0 || !newst_version_path) return;

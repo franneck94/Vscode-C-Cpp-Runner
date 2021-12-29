@@ -126,6 +126,19 @@ export function filesInDir(dir: string) {
   return files;
 }
 
+export function includePatternFromList(
+  includeSearch: string[],
+  foldersList: string[],
+) {
+  const result: string[] = [];
+
+  for (const pattern of includeSearch) {
+    result.push(...foldersList.filter((folder) => minimatch(folder, pattern)));
+  }
+
+  return result;
+}
+
 export function excludePatternFromList(
   excludeSearch: string[],
   foldersList: string[],
@@ -137,31 +150,12 @@ export function excludePatternFromList(
   return foldersList;
 }
 
-export function foldersInDirWoFilter(dir: fs.PathLike) {
-  const fileDirents = readDir(dir);
-
-  if (!fileDirents) return [];
-
-  const folders = fileDirents.filter((folder) => folder.isDirectory());
-  const folderNames = folders.map((folder) =>
-    path.join(dir.toString(), folder.name),
-  );
-
-  return folderNames;
-}
-
 export function foldersInDir(dir: fs.PathLike) {
   const fileDirents = readDir(dir);
 
   if (!fileDirents) return [];
 
-  let folders = fileDirents.filter((folder) => folder.isDirectory());
-  folders = folders.filter((folder) => !folder.name.includes('.'));
-  folders = folders.filter((folder) => !folder.name.includes('__'));
-  folders = folders.filter((folder) => !(folder.name === 'build'));
-  folders = folders.filter(
-    (folder) => !folder.name.includes('CMake'.toLowerCase()),
-  );
+  const folders = fileDirents.filter((folder) => folder.isDirectory());
   const folderNames = folders.map((folder) =>
     path.join(dir.toString(), folder.name),
   );

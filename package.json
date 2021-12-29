@@ -303,21 +303,29 @@
         "C_Cpp_Runner.includeSearch": {
           "type": "array",
           "default": [
-            "*"
+            "*",
+            "**/*"
           ],
           "items": {
             "type": "string"
           },
-          "description": "List glob patterns to include for folder selection.",
+          "description": "Include glob patterns for folder selection. (Run before exlcude pattern)",
           "scope": "resource"
         },
         "C_Cpp_Runner.excludeSearch": {
           "type": "array",
-          "default": [],
+          "default": [
+            "**/build",
+            "**/build/**",
+            "**/.*",
+            "**/.*/**",
+            "**/.vscode",
+            "**/.vscode/**"
+          ],
           "items": {
             "type": "string"
           },
-          "description": "List glob patterns to exclude from folder selection.",
+          "description": "Exclude glob patterns for folder selection. (Run after include pattern)",
           "scope": "resource"
         },
         "C_Cpp_Runner.loggingActive": {

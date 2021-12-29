@@ -1,15 +1,14 @@
 # C/C++ Runner Change Log
 
-## Version 2.2.0: December 27, 2021
+## Version 3.0.0: December 30, 2021
 
 - MSVC Compiler Support
   - Done: Add Compile Command
   - Done: Add Setting for MSVC Batch Path
-    - Todo: Add search for MSVC Version (in SettingsProvider)
   - Done: MSVC Host/Target architecture is equal to current architecture
   - Done: Added debug config for MSVC
-- Todo: Include pattern for folder selection
 - Done: Removed warnings from compiler args in c_cpp_properties.json
+- Todo: Include pattern for folder selection
 
 ## Version 2.1.1: December 21, 2021
 

@@ -7,9 +7,9 @@
   - Done: Add Setting for MSVC Batch Path
     - Todo: Add search for MSVC Version (in SettingsProvider)
   - Done: MSVC Host/Target architecture is equal to current architecture
-  - Todo: Check how to start debugger
+  - Done: Added debug config for MSVC
 - Todo: Include pattern for folder selection
-- Check/Todo: Removed warnings from compiler args in c_cpp_properties.json
+- Done: Removed warnings from compiler args in c_cpp_properties.json
 
 ## Version 2.1.1: December 21, 2021
 

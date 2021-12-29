@@ -82,64 +82,13 @@ export class LaunchProvider extends FileProvider {
 
     if (!launchTemplate) return;
 
-    launchTemplate.configurations[0].name = CONFIG_NAME;
-    if (this.settings.debugger) {
-      launchTemplate.configurations[0].MIMode = this.settings.debugger;
-      launchTemplate.configurations[0].miDebuggerPath = this.settings.debuggerPath;
-
-      /* On Windows with Cygwin the internal console does not work properly. */
-      if (
-        OperatingSystems.windows === this.settings.operatingSystem &&
-        this.settings.isCygwin
-      ) {
-        launchTemplate.configurations[0].externalConsole = true;
-      }
+    if (
+      this.settings.operatingSystem === OperatingSystems.windows &&
+      this.settings.isMsvc
+    ) {
+      this.msvcBasedDebugger(launchTemplate);
     } else {
-      launchTemplate.configurations[0].MIMode =
-        SettingsProvider.DEFAULT_DEBUGGER_PATH;
-      launchTemplate.configurations[0].miDebuggerPath =
-        SettingsProvider.DEFAULT_DEBUGGER_PATH;
-    }
-
-    if (OperatingSystems.mac === this.settings.operatingSystem) {
-      launchTemplate.configurations[0].stopAtEntry = true;
-      if (launchTemplate.configurations[0].setupCommands) {
-        delete launchTemplate.configurations[0].setupCommands;
-      }
-      if (launchTemplate.configurations[0].miDebuggerPath) {
-        delete launchTemplate.configurations[0].miDebuggerPath;
-      }
-
-      if (this.settings.architecure === Architectures.ARM64) {
-        launchTemplate.configurations[0].type = 'lldb';
-        launchTemplate.configurations[0].externalConsole = false;
-      } else {
-        launchTemplate.configurations[0].externalConsole = true;
-      }
-    }
-
-    if (this.argumentsString) {
-      launchTemplate.configurations[0].args = [this.argumentsString];
-    } else {
-      launchTemplate.configurations[0].args = [''];
-    }
-
-    if (this.settings.operatingSystem === OperatingSystems.windows) {
-      launchTemplate.configurations[0].cwd = replaceBackslashes(
-        this.activeFolder,
-      );
-    } else {
-      launchTemplate.configurations[0].cwd = this.activeFolder;
-    }
-
-    const debugPath = path.join(
-      this.activeFolder,
-      `build/${this.buildMode}/out${this.buildMode}`,
-    );
-    if (this.settings.operatingSystem === OperatingSystems.windows) {
-      launchTemplate.configurations[0].program = replaceBackslashes(debugPath);
-    } else {
-      launchTemplate.configurations[0].program = debugPath;
+      this.unixBasedDebugger(launchTemplate);
     }
 
     const launchLocal: JsonConfiguration | undefined = readJsonFile(
@@ -205,5 +154,98 @@ export class LaunchProvider extends FileProvider {
     } else {
       this.writeFileData();
     }
+  }
+
+  private msvcBasedDebugger(launchTemplate: JsonConfiguration) {
+    launchTemplate.configurations[0].name = CONFIG_NAME;
+
+    delete launchTemplate.configurations[0].MIMode;
+    delete launchTemplate.configurations[0].miDebuggerPath;
+    delete launchTemplate.configurations[0].setupCommands;
+
+    launchTemplate.configurations[0].type = 'cppvsdbg';
+    launchTemplate.configurations[0].externalConsole = true;
+
+    if (this.argumentsString) {
+      launchTemplate.configurations[0].args = [this.argumentsString];
+    } else {
+      launchTemplate.configurations[0].args = [''];
+    }
+
+    launchTemplate.configurations[0].cwd = replaceBackslashes(
+      this.activeFolder,
+    );
+
+    const debugPath = path.join(
+      this.activeFolder,
+      `build/${this.buildMode}/out${this.buildMode}`,
+    );
+    launchTemplate.configurations[0].program = replaceBackslashes(debugPath);
+
+    return launchTemplate;
+  }
+
+  private unixBasedDebugger(launchTemplate: JsonConfiguration) {
+    launchTemplate.configurations[0].name = CONFIG_NAME;
+    if (this.settings.debugger) {
+      launchTemplate.configurations[0].MIMode = this.settings.debugger;
+      launchTemplate.configurations[0].miDebuggerPath = this.settings.debuggerPath;
+
+      /* On Windows with Cygwin the internal console does not work properly. */
+      if (
+        OperatingSystems.windows === this.settings.operatingSystem &&
+        this.settings.isCygwin
+      ) {
+        launchTemplate.configurations[0].externalConsole = true;
+      }
+    } else {
+      launchTemplate.configurations[0].MIMode =
+        SettingsProvider.DEFAULT_DEBUGGER_PATH;
+      launchTemplate.configurations[0].miDebuggerPath =
+        SettingsProvider.DEFAULT_DEBUGGER_PATH;
+    }
+
+    if (OperatingSystems.mac === this.settings.operatingSystem) {
+      launchTemplate.configurations[0].stopAtEntry = true;
+      if (launchTemplate.configurations[0].setupCommands) {
+        delete launchTemplate.configurations[0].setupCommands;
+      }
+      if (launchTemplate.configurations[0].miDebuggerPath) {
+        delete launchTemplate.configurations[0].miDebuggerPath;
+      }
+
+      if (this.settings.architecure === Architectures.ARM64) {
+        launchTemplate.configurations[0].type = 'lldb';
+        launchTemplate.configurations[0].externalConsole = false;
+      } else {
+        launchTemplate.configurations[0].externalConsole = true;
+      }
+    }
+
+    if (this.argumentsString) {
+      launchTemplate.configurations[0].args = [this.argumentsString];
+    } else {
+      launchTemplate.configurations[0].args = [''];
+    }
+
+    if (this.settings.operatingSystem === OperatingSystems.windows) {
+      launchTemplate.configurations[0].cwd = replaceBackslashes(
+        this.activeFolder,
+      );
+    } else {
+      launchTemplate.configurations[0].cwd = this.activeFolder;
+    }
+
+    const debugPath = path.join(
+      this.activeFolder,
+      `build/${this.buildMode}/out${this.buildMode}`,
+    );
+    if (this.settings.operatingSystem === OperatingSystems.windows) {
+      launchTemplate.configurations[0].program = replaceBackslashes(debugPath);
+    } else {
+      launchTemplate.configurations[0].program = debugPath;
+    }
+
+    return launchTemplate;
   }
 }

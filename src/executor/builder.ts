@@ -126,7 +126,7 @@ function executeBuildTaskUnixBased(
   }
 
   let fullCompilerArgs = '';
-  let fillLinkerArgs = '';
+  let fullLinkerArgs = '';
 
   if (warnings) {
     fullCompilerArgs += `${warnings}`;
@@ -155,7 +155,7 @@ function executeBuildTaskUnixBased(
   }
 
   if (linkerArgs && linkerArgs.length > 0) {
-    fillLinkerArgs += ' ' + linkerArgs.join(' ');
+    fullLinkerArgs += ' ' + linkerArgs.join(' ');
   }
 
   let commandLine: string = '';
@@ -220,8 +220,8 @@ function executeBuildTaskUnixBased(
 
   commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullObjectFileArgs}`;
 
-  if (fillLinkerArgs && fillLinkerArgs !== '') {
-    commandLine += fillLinkerArgs;
+  if (fullLinkerArgs && fullLinkerArgs !== '') {
+    commandLine += fullLinkerArgs;
   }
 
   return commandLine;
@@ -266,7 +266,8 @@ function executeBuildTaskMsvcBased(
   }
 
   let fullCompilerArgs = '';
-  let fillLinkerArgs = '';
+  // @ts-ignore
+  let fullLinkerArgs = '';
 
   if (useWarnings && warnings !== '') {
     fullCompilerArgs += `/W3`;
@@ -282,6 +283,7 @@ function executeBuildTaskMsvcBased(
   if (compilerArgs && compilerArgs.length > 0) {
     fullCompilerArgs += ' ' + compilerArgs.join(' ');
   }
+  fullCompilerArgs += ' /EHsc ';
   if (includePaths && includePaths.length > 0) {
     for (const includePath of includePaths) {
       const hasSpace = includePath.includes(' ');
@@ -295,15 +297,14 @@ function executeBuildTaskMsvcBased(
   }
 
   if (linkerArgs && linkerArgs.length > 0) {
-    fillLinkerArgs += ' ' + linkerArgs.join(' ');
+    fullLinkerArgs += ' ' + linkerArgs.join(' ');
   }
 
-  let commandLine: string = `"${settingsProvider.msvcBatchPath}" ${settingsProvider.architecure} &&`;
+  let commandLine: string = `"${settingsProvider.msvcBatchPath}" ${settingsProvider.architecure} ${appendSymbol}`;
 
-  const objectFiles: string[] = [];
+  const pathArgs = `/Fd${modeDir}\\ /Fo${modeDir}\\ /Fe${executablePath}`;
 
-  let idx = -1;
-
+  let fullFileArgs: string | undefined;
   for (const file of files) {
     const fileExtension = path.parse(file).ext;
 
@@ -313,57 +314,19 @@ function executeBuildTaskMsvcBased(
       continue;
     }
 
-    idx++;
-
-    const fileBaseName = path.parse(file).name;
     const filePath = path.join(activeFolder, file);
-    const objectFilePath = path.join(modeDir, fileBaseName + '.obj');
-
-    objectFiles.push(objectFilePath);
-
     const hasSpace = filePath.includes(' ');
-    let fullFileArgs = `/FS /Fd${modeDir}\\ /Fo${modeDir}\\ `;
-    if (hasSpace) {
-      fullFileArgs += `/c "${filePath}"`;
-    } else {
-      fullFileArgs += `/c ${filePath}`;
-    }
-
-    if (idx === 0) {
-      commandLine += `${compiler} ${fullCompilerArgs} ${fullFileArgs}`;
-    } else {
-      commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullFileArgs}`;
-    }
-  }
-
-  // Exe task
-  let objectFilesStr: string = '';
-  for (const objectfile of objectFiles) {
-    const hasSpace = objectfile.includes(' ');
 
     if (hasSpace) {
-      objectFilesStr += ` "${objectfile}"`;
+      fullFileArgs += ` "${filePath}"`;
     } else {
-      objectFilesStr += ` ${objectfile}`;
+      fullFileArgs += ` ${filePath}`;
     }
   }
 
-  if (objectFilesStr === '') return;
+  if (!fullFileArgs) return;
 
-  const executablePathHasSpace = executablePath.includes(' ');
-  let fullObjectFileArgs: string = '';
-  if (executablePathHasSpace) {
-    fullObjectFileArgs = `${objectFilesStr} /OUT:"${executablePath}"`;
-  } else {
-    fullObjectFileArgs = `${objectFilesStr} /OUT:${executablePath}`;
-  }
-
-  const linker = SettingsProvider.MSVC_LINKER_NAME;
-  commandLine += ` ${appendSymbol} ${linker} ${fullObjectFileArgs}`;
-
-  if (fillLinkerArgs && fillLinkerArgs !== '') {
-    commandLine += fillLinkerArgs;
-  }
+  commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} ${fullFileArgs}`;
 
   return commandLine;
 }

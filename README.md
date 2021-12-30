@@ -140,10 +140,10 @@ However, the user can trigger the start-up of this extension by pressing `ctrl+a
 Since version 3.0 the MSVC compiler (toolchain) can also be used.  
 To do so, set the setting **msvcBatchPath** to a valid path.  
 Then the other settings about the compiler and debugger are ignored in the workspace.  
-Note: The batch file will be started with the system's architecture.  
-E.g. on a 64bit Windows, here only the 64bit (Host and Target) compiler will be used - so no cross-compiling.  
-Caveat 1: Currently if warnings are enabled, only **/W3** is used.  
+If you want to stop using the MSVC compiler in the workspace, just reset the **msvcBatchPath** setting.  
+Caveat 1: Currently **if** warnings are enabled, the warning level **/W3** is always used.  
 Caveat 2: Currently the linker args are ignored.  
+Caveat 3: Currently no cross-compiling is allowed.
 
 ## Release Notes
 
@@ -151,5 +151,5 @@ Refer to the [CHANGELOG](CHANGELOG.md).
 
 ## License
 
-Copyright (C) 2021 Jan Schaffranek.  
+Copyright (C) 2021-2022 Jan Schaffranek.  
 Licensed under the [MIT License](LICENSE).

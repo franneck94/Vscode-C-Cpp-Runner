@@ -103,7 +103,9 @@ export function activate(context: vscode.ExtensionContext) {
     workspaceFolder = vscode.workspace.workspaceFolders[0].uri.fsPath;
   }
 
+  // Extra behaviour for my coding courses ;)
   const courseMakefileFound = isCourseProject();
+
   const cmakeFileFound = isCmakeProject();
 
   if (cmakeFileFound || courseMakefileFound) {

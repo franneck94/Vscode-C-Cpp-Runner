@@ -1,9 +1,8 @@
 # VSCode C/C++ Runner
 
-🚀 Compile, run and debug single or multiple C/C++ files with ease. 🚀
+🚀 Compile, run and debug **single** or **multiple** C/C++ files with ease. 🚀
 
 This extension provides an easy interface to compile, run and debug your C/C++ code.  
-It does not only compile single C/C++ files but also multiple files.  
 You do not need to know about any compiler commands. 😎
 
 ## Example
@@ -19,9 +18,9 @@ You do not need to know about any compiler commands. 😎
 
 - 🖥️ Windows:
   - Alternative 1: Install gcc, g++ and gdb via [Cygwin](https://www.cygwin.com/).  
-  - Alternative 2: Linux Distro via [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install).
-  - Alternative 3: MinGW via [MSYS2](https://www.msys2.org/).  
-  - Alternative 4: MSVC Compiler via [VS/BuildTools](https://visualstudio.microsoft.com/de/downloads/?q=build+tools) - see [below](#using-the-msvc-compiler) for instructions.  
+  - Alternative 2: Install gcc, g++ and gdb on Linux Distro via [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install).
+  - Alternative 3: Install gcc, g++ and gdb on MinGW via [MSYS2](https://www.msys2.org/).  
+  - Alternative 4: Install MSVC or Clang Compiler via [VS/BuildTools](https://visualstudio.microsoft.com/de/downloads/?q=build+tools) - see [below](#using-the-msvc-compiler) for instructions.  
 - 🖥️ Linux:
   - Recommended to install gcc, g++ and gdb via a package manager (e.g. `apt`).
 - 🖥️ MacOS:

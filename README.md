@@ -27,6 +27,11 @@ You do not need to know about any compiler commands. 😎
   - Alternative 1: Install clang, clang++ and lldb via [xcode-tools](https://developer.apple.com/xcode/features/).
   - Alternative 2: Install the llvm toolchain with [brew](https://apple.stackexchange.com/a/362837).
 
+## Extension Activation Conditions
+
+- Whenever there is a C/C++ file in the base directory of your workspace
+- Whenever you open a C/C++ file
+
 ## How to use: Compile **all** files in a folder
 
 1️⃣ Select the folder that contains the C/C++ files.  
@@ -40,12 +45,12 @@ Besides that, you can also select a folder by right-clicking in the context menu
 
 - ⚙️ Build: This task will compile all C/C++ files in the selected folder and will link them into a binary.
 - ▶️ Run*: This task will execute the built binary.
-- 🐞 Debug*: This task will start a debugging session for the binary.
 - 🗑️ Clean*: This helper task will delete all compiled object files (*.o).
+- 🐞 Debug*: This task will start a debugging session for the binary.
 
 *This task is a no-op if the build task was not executed previously.
 
-## How to use: Compile a single file
+## How to use: Compile a **single** file
 
 1️⃣ Open the C/C++ file you want to compile (build).  
 2️⃣ Select either debug or release mode for building the binary (debug is the default case).  
@@ -54,19 +59,6 @@ Besides that, you can also select a folder by right-clicking in the context menu
 5️⃣ To debug the binary press **ctrl+alt+d**.  
 
 ## Extension Features
-
-### Configuration
-
-The extension will automatically search for an installed compiler on your computer.  
-For Linux and mac, it searches in */usr/bin/*, and on windows, it searches for *Cygwin*, *mingw*, and *msys2* in the PATH.  
-Note: On windows, it will not be searched for any MSVC installation.  
-All settings will be stored in the local workspace settings (*".vscode/settings.json"*).  
-If you wish to use any other compiler or different setting, just edit the entries in the local settings file.  
-![FoundCompiler](./media/Settings.png)  
-
-Based on the operating system and the compiler, there will be a *c_cpp_properties.json* file created in the local *.vscode* folder.  
-This file will be used by Microsoft's *C/C++* extension for intellisense. For more information refer to the official [documentation](https://code.visualstudio.com/docs/cpp/c-cpp-properties-schema-reference).  
-![CCppConfig](./media/Properties.png)  
 
 ### Passing Commandline Arguments
 
@@ -79,7 +71,8 @@ These arguments will be stored in the launch.json config for debugging the binar
 
 ![ArgumentsDebug](./media/argumentsDebug.png)
 
-The stored arguments will be reset after selecting a new active folder.
+If you now run or debug your program these values will be fed into **argc**/**argv**.  
+Note: The stored arguments will be reset after selecting a new active folder.
 
 ### Include & Exclude Folders for Selection
 
@@ -97,6 +90,19 @@ The folder selection would change from left to right.
 
 For more information about glob pattern see [here](https://en.wikipedia.org/wiki/Glob_(programming)#Syntax).
 
+### Configuration
+
+The extension will automatically search for an installed compiler on your computer.  
+For Linux and mac, it searches in */usr/bin/*, and on windows, it searches for *Cygwin*, *mingw*, and *msys2* in the PATH.  
+Note: On windows, it will not be searched for any MSVC installation.  
+All settings will be stored in the local workspace settings (*".vscode/settings.json"*).  
+If you wish to use any other compiler or different setting, just edit the entries in the **local** settings file.  
+![FoundCompiler](./media/Settings.png)  
+
+Based on the operating system and the compiler, there will be a *c_cpp_properties.json* file created in the local *.vscode* folder.  
+This file will be used by Microsoft's *C/C++* extension for intellisense. For more information refer to the official [documentation](https://code.visualstudio.com/docs/cpp/c-cpp-properties-schema-reference).  
+![CCppConfig](./media/Properties.png)  
+
 ### Extension Settings
 
 - ⚙️ C Compiler path (defaults to gcc)
@@ -104,9 +110,9 @@ For more information about glob pattern see [here](https://en.wikipedia.org/wiki
 - ⚙️ C++ Compiler path (defaults to g++)
 - ⚙️ C++ Standard (defaults to the compiler's default)
 - ⚙️ Debugger path (defaults to gdb)
-- ⚙️ MSVC batch (toolchain) path (defaults to '')
+- ⚙️ MSVC batch path (defaults to \"\")
 - ⚙️ To enable warnings (defaults to True)
-- ⚙️ What warnings should be checked by the compiler (defaults to ['-Wall', '-Wextra', '-Wpedantic'])
+- ⚙️ What warnings should be checked by the compiler (defaults to [\"-Wall\", \"-Wextra\", \"-Wpedantic\"])
 - ⚙️ To treat warnings as errors (defaults to False)
 - ⚙️ Additional compiler arguments (defaults to [] e.g. **-flto**)
 - ⚙️ Additional linker arguments (defaults to [] e.g. **-lpthread**).

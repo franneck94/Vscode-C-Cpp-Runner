@@ -37,9 +37,13 @@
   "activationEvents": [
     "onLanguage:c",
     "onLanguage:cpp",
+    "workspaceContains:*.h",
     "workspaceContains:*.c",
+    "workspaceContains:*.hh",
     "workspaceContains:*.cc",
+    "workspaceContains:*.hxx",
     "workspaceContains:*.cxx",
+    "workspaceContains:*.hpp",
     "workspaceContains:*.cpp"
   ],
   "main": "./dist/main",

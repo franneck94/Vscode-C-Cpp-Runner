@@ -53,6 +53,50 @@ export async function executeBuildTask(
 
   const executablePath = path.join(modeDir, executableName);
 
+  let commandLine: string | undefined;
+  if (
+    settingsProvider.operatingSystem === OperatingSystems.windows &&
+    settingsProvider.isMsvc
+  ) {
+    commandLine = executeBuildTaskMsvcBased(
+      settingsProvider,
+      activeFolder,
+      buildMode,
+      language,
+      files,
+      modeDir,
+      appendSymbol,
+      executablePath,
+    );
+  } else {
+    commandLine = executeBuildTaskUnixBased(
+      settingsProvider,
+      activeFolder,
+      buildMode,
+      language,
+      files,
+      modeDir,
+      appendSymbol,
+      executablePath,
+    );
+  }
+
+  if (!task || !task.execution || commandLine === undefined) return;
+
+  task.execution.commandLine = commandLine;
+  await vscode.tasks.executeTask(task);
+}
+
+function executeBuildTaskUnixBased(
+  settingsProvider: SettingsProvider,
+  activeFolder: string,
+  buildMode: Builds,
+  language: Languages,
+  files: string[],
+  modeDir: string,
+  appendSymbol: string,
+  executablePath: string,
+) {
   let compiler: string | undefined;
   let standard: string | undefined;
 
@@ -82,10 +126,10 @@ export async function executeBuildTask(
   }
 
   let fullCompilerArgs = '';
-  let fillLinkerArgs = '';
+  let fullLinkerArgs = '';
 
   if (warnings) {
-    fullCompilerArgs += `${warnings}`;
+    fullCompilerArgs += warnings;
   }
   if (standard) {
     fullCompilerArgs += ` --std=${standard}`;
@@ -111,7 +155,7 @@ export async function executeBuildTask(
   }
 
   if (linkerArgs && linkerArgs.length > 0) {
-    fillLinkerArgs += ' ' + linkerArgs.join(' ');
+    fullLinkerArgs += ' ' + linkerArgs.join(' ');
   }
 
   let commandLine: string = '';
@@ -174,14 +218,130 @@ export async function executeBuildTask(
     fullObjectFileArgs = `${objectFilesStr} -o ${executablePath}`;
   }
 
-  if (!task || !task.execution) return;
-
   commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullObjectFileArgs}`;
 
-  if (fillLinkerArgs && fillLinkerArgs !== '') {
-    commandLine += fillLinkerArgs;
+  if (fullLinkerArgs && fullLinkerArgs !== '') {
+    commandLine += fullLinkerArgs;
   }
 
-  task.execution.commandLine = commandLine;
-  await vscode.tasks.executeTask(task);
+  return commandLine;
+}
+
+function executeBuildTaskMsvcBased(
+  settingsProvider: SettingsProvider,
+  activeFolder: string,
+  buildMode: Builds,
+  language: Languages,
+  files: string[],
+  modeDir: string,
+  appendSymbol: string,
+  executablePath: string,
+) {
+  let compiler: string | undefined;
+  let standard: string | undefined;
+
+  if (language === Languages.cpp) {
+    compiler = SettingsProvider.MSVC_COMPILER_NAME;
+    standard = settingsProvider.cppStandard;
+  } else {
+    compiler = SettingsProvider.MSVC_COMPILER_NAME;
+    standard = settingsProvider.cStandard;
+  }
+
+  const useWarnings = settingsProvider.enableWarnings;
+  const warningsAsErrors = settingsProvider.warningsAsError;
+  let warnings: string = '';
+  if (useWarnings) {
+    warnings = settingsProvider.warnings.join(' ');
+  }
+  if (useWarnings && warningsAsErrors) {
+    warnings += ' -WX';
+  }
+  const includePaths = settingsProvider.includePaths;
+  const compilerArgs = settingsProvider.compilerArgs;
+  const linkerArgs = settingsProvider.linkerArgs;
+
+  if (!includePaths.includes(activeFolder)) {
+    includePaths.push(activeFolder);
+  }
+
+  let fullCompilerArgs = '';
+
+  if (useWarnings && warnings !== '') {
+    fullCompilerArgs += warnings;
+  }
+
+  if (standard) {
+    fullCompilerArgs += ` /std:${standard}`;
+  }
+  // Note: The c standard in msvc is either c11 or c17
+  if (language === Languages.c) {
+    // Deactivate secure function warnings in older c standards
+    if (
+      ['c89', 'c99', 'gnu89', 'gnu99'].some(
+        (ext) => settingsProvider.cStandard === ext,
+      )
+    ) {
+      fullCompilerArgs += ' /D_CRT_SECURE_NO_WARNINGS';
+    }
+  }
+
+  if (buildMode === Builds.debug) {
+    fullCompilerArgs += ' /Od /Zi';
+  } else {
+    fullCompilerArgs += ' /Ox /GL /DNDEBUG';
+  }
+  fullCompilerArgs += ' /EHsc';
+
+  if (includePaths && includePaths.length > 0) {
+    for (const includePath of includePaths) {
+      const hasSpace = includePath.includes(' ');
+
+      if (hasSpace) {
+        fullCompilerArgs += ` -I"${includePath}"`;
+      } else {
+        fullCompilerArgs += ` -I${includePath}`;
+      }
+    }
+  }
+
+  let fullLinkerArgs: string = '';
+  if (linkerArgs && linkerArgs.length > 0) {
+    fullLinkerArgs += ' ' + linkerArgs.join(' ');
+  }
+  fullCompilerArgs += fullLinkerArgs;
+
+  if (compilerArgs && compilerArgs.length > 0) {
+    fullCompilerArgs += ' ' + compilerArgs.join(' ');
+  }
+
+  let commandLine: string = `"${settingsProvider.msvcBatchPath}" ${settingsProvider.architecure} ${appendSymbol} `;
+
+  const pathArgs = `/Fd${modeDir}\\ /Fo${modeDir}\\ /Fe${executablePath}`;
+
+  let fullFileArgs: string = '';
+  for (const file of files) {
+    const fileExtension = path.parse(file).ext;
+
+    if (language === Languages.c && !isCSourceFile(fileExtension)) {
+      continue;
+    } else if (language === Languages.cpp && !isCppSourceFile(fileExtension)) {
+      continue;
+    }
+
+    const filePath = path.join(activeFolder, file);
+    const hasSpace = filePath.includes(' ');
+
+    if (hasSpace) {
+      fullFileArgs += ` "${filePath}"`;
+    } else {
+      fullFileArgs += ` ${filePath}`;
+    }
+  }
+
+  if (fullFileArgs === '') return;
+
+  commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} ${fullFileArgs}`;
+
+  return commandLine;
 }

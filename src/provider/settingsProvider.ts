@@ -3,6 +3,7 @@ import * as vscode from 'vscode';
 
 import {
 	commandCheck,
+	foldersInDir,
 	getBasename,
 	pathExists,
 	readJsonFile,
@@ -36,17 +37,31 @@ export class SettingsProvider extends FileProvider {
   static DEFAULT_C_COMPILER_PATH = 'gcc';
   static DEFAULT_CPP_COMPILER_PATH = 'g++';
   static DEFAULT_DEBUGGER_PATH = 'gdb';
-  static DEFAULT_C_STANDARD = '';
+  static DEFAULT_MSVC_BATCH_PATH = '';
+  static DEFAULT_MSVC_TOOLS_PATH = '';
+  static DEFAULT_C_STANDARD_UNIX = '';
+  static DEFAULT_C_STANDARD_MSVC = 'c17';
   static DEFAULT_CPP_STANDARD = '';
-  static DEFAULT_EXCLUDE_SEARCH = [];
+  static DEFAULT_INCLUDE_SEARCH = ['*', '**/*'];
+  static DEFAULT_EXCLUDE_SEARCH = [
+    '**/build',
+    '**/build/**',
+    '**/.*',
+    '**/.*/**',
+    '**/.vscode',
+    '**/.vscode/**',
+  ];
 
   static DEFAULT_ENABLE_WARNINGS = true;
   static DEFAULT_WARNINGS_AS_ERRORS = false;
 
-  static DEFAULT_WARNINGS = ['-Wall', '-Wextra', '-Wpedantic'];
+  static DEFAULT_WARNINGS_UNIX = ['-Wall', '-Wextra', '-Wpedantic'];
+  static DEFAULT_WARNINGS_MSVC = ['/W4'];
   static DEFAULT_COMPILER_ARGS = [];
   static DEFAULT_LINKER_ARGS = [];
   static DEFAULT_INCLUDE_PATHS = [];
+
+  static MSVC_COMPILER_NAME = 'cl.exe';
 
   // Workspace data
   private _configGlobal = vscode.workspace.getConfiguration(EXTENSION_NAME);
@@ -54,10 +69,10 @@ export class SettingsProvider extends FileProvider {
     C_CPP_EXTENSION_NAME,
   );
   // Machine information
-  private _isMinGW: boolean = false;
   public operatingSystem = getOperatingSystem();
   public architecure: Architectures | undefined;
   public isCygwin: boolean = false;
+  public isMsvc: boolean = false;
   public cCompiler: Compilers | undefined;
   public cppCompiler: Compilers | undefined;
   public debugger: Debuggers | undefined;
@@ -69,15 +84,18 @@ export class SettingsProvider extends FileProvider {
   public cCompilerPath: string = SettingsProvider.DEFAULT_C_COMPILER_PATH;
   public cppCompilerPath: string = SettingsProvider.DEFAULT_CPP_COMPILER_PATH;
   public debuggerPath: string = SettingsProvider.DEFAULT_DEBUGGER_PATH;
-  public cStandard: string = SettingsProvider.DEFAULT_C_STANDARD;
+  public msvcBatchPath: string = SettingsProvider.DEFAULT_MSVC_BATCH_PATH;
+  public msvcToolsPath: string = SettingsProvider.DEFAULT_MSVC_TOOLS_PATH;
+  public cStandard: string = SettingsProvider.DEFAULT_C_STANDARD_UNIX;
   public cppStandard: string = SettingsProvider.DEFAULT_CPP_STANDARD;
   public compilerArgs: string[] = SettingsProvider.DEFAULT_COMPILER_ARGS;
   public linkerArgs: string[] = SettingsProvider.DEFAULT_LINKER_ARGS;
   public includePaths: string[] = SettingsProvider.DEFAULT_INCLUDE_PATHS;
+  public includeSearch: string[] = SettingsProvider.DEFAULT_INCLUDE_SEARCH;
   public excludeSearch: string[] = SettingsProvider.DEFAULT_EXCLUDE_SEARCH;
   public enableWarnings: boolean = SettingsProvider.DEFAULT_ENABLE_WARNINGS;
   public warningsAsError: boolean = SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
-  public warnings: string[] = SettingsProvider.DEFAULT_WARNINGS;
+  public warnings: string[] = SettingsProvider.DEFAULT_WARNINGS_UNIX;
 
   constructor(public workspaceFolder: string, public activeFolder: string) {
     super(workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
@@ -229,31 +247,59 @@ export class SettingsProvider extends FileProvider {
   }
 
   private getOptionalSettings(settingsLocal: JsonSettings | undefined) {
+    this.msvcBatchPath = this.getSettingsValue(
+      settingsLocal,
+      'msvcBatchPath',
+      SettingsProvider.DEFAULT_MSVC_BATCH_PATH,
+    );
+
+    if (this.msvcBatchPath !== SettingsProvider.DEFAULT_MSVC_BATCH_PATH) {
+      this.isMsvc = true;
+      this.searchMsvcToolsPath();
+    } else {
+      this.isMsvc = false;
+    }
+
     this.enableWarnings = this.getSettingsValue(
       settingsLocal,
       'enableWarnings',
       SettingsProvider.DEFAULT_ENABLE_WARNINGS,
     );
+
     this.warnings = this.getSettingsValue(
       settingsLocal,
       'warnings',
-      SettingsProvider.DEFAULT_WARNINGS,
+      SettingsProvider.DEFAULT_WARNINGS_UNIX,
     );
+
+    const msvcWarnings = this.warnings.some((warning: string) =>
+      warning.includes('/'),
+    );
+
+    if (this.isMsvc && !msvcWarnings) {
+      this.warnings = SettingsProvider.DEFAULT_WARNINGS_MSVC;
+    } else if (!this.isMsvc && msvcWarnings) {
+      this.warnings = SettingsProvider.DEFAULT_WARNINGS_UNIX;
+    }
+
     this.warningsAsError = this.getSettingsValue(
       settingsLocal,
       'warningsAsError',
       SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS,
     );
+
     this.cStandard = this.getSettingsValue(
       settingsLocal,
       'cStandard',
-      SettingsProvider.DEFAULT_C_STANDARD,
+      SettingsProvider.DEFAULT_C_STANDARD_UNIX,
     );
+
     this.cppStandard = this.getSettingsValue(
       settingsLocal,
       'cppStandard',
       SettingsProvider.DEFAULT_CPP_STANDARD,
     );
+
     this.compilerArgs = this.getSettingsValue(
       settingsLocal,
       'compilerArgs',
@@ -268,6 +314,12 @@ export class SettingsProvider extends FileProvider {
       settingsLocal,
       'includePaths',
       SettingsProvider.DEFAULT_INCLUDE_PATHS,
+    );
+
+    this.includeSearch = this.getSettingsValue(
+      settingsLocal,
+      'includeSearch',
+      SettingsProvider.DEFAULT_INCLUDE_SEARCH,
     );
     this.excludeSearch = this.getSettingsValue(
       settingsLocal,
@@ -332,13 +384,14 @@ export class SettingsProvider extends FileProvider {
     const _cStandard = this.getPropertiesValue(
       properties,
       'cStandard',
-      SettingsProvider.DEFAULT_C_STANDARD,
+      SettingsProvider.DEFAULT_C_STANDARD_UNIX,
     );
     const _cppStandard = this.getPropertiesValue(
       properties,
       'cppStandard',
       SettingsProvider.DEFAULT_CPP_STANDARD,
     );
+
     const _includePaths = this.getPropertiesValue(
       properties,
       'includePath',
@@ -356,15 +409,17 @@ export class SettingsProvider extends FileProvider {
     this.cStandard =
       _cStandard !== '${default}'
         ? _cStandard
-        : SettingsProvider.DEFAULT_C_STANDARD;
+        : SettingsProvider.DEFAULT_C_STANDARD_UNIX;
     this.cppStandard =
       _cppStandard !== '${default}'
         ? _cppStandard
         : SettingsProvider.DEFAULT_CPP_STANDARD;
+
     this.includePaths =
       _includePaths !== ['${workspaceFolder}/**']
         ? _includePaths
         : SettingsProvider.DEFAULT_INCLUDE_PATHS;
+
     this.compilerArgs =
       _compilerArgs !== ''
         ? _compilerArgs
@@ -373,8 +428,9 @@ export class SettingsProvider extends FileProvider {
       _compilerArgs !== ''
         ? _compilerArgs
         : SettingsProvider.DEFAULT_LINKER_ARGS;
+
     this.warnings =
-      _warnings.length > 0 ? _warnings : SettingsProvider.DEFAULT_WARNINGS;
+      _warnings.length > 0 ? _warnings : SettingsProvider.DEFAULT_WARNINGS_UNIX;
 
     if (settingsFileMissing) {
       this.enableWarnings = SettingsProvider.DEFAULT_ENABLE_WARNINGS;
@@ -567,6 +623,45 @@ export class SettingsProvider extends FileProvider {
     }
   }
 
+  private searchMsvcToolsPath() {
+    let msvcBasePath = this.msvcBatchPath.split('VC')[0];
+
+    if (!msvcBasePath) return;
+
+    msvcBasePath += 'VC/Tools/MSVC';
+
+    const installed_versions = foldersInDir(msvcBasePath);
+    const newst_version_path =
+      installed_versions[installed_versions.length - 1];
+    if (installed_versions.length === 0 || !newst_version_path) return;
+
+    const newst_version_path_splitted = newst_version_path.split('\\');
+    if (newst_version_path_splitted.length === 0) return;
+
+    const versionNumber =
+      newst_version_path_splitted[newst_version_path_splitted.length - 1];
+
+    if (!versionNumber) return;
+
+    let architecturePath: string;
+    if (
+      this.architecure === Architectures.x64 ||
+      this.architecure === undefined
+    ) {
+      architecturePath = 'bin/Hostx64/x64';
+    } else {
+      architecturePath = 'bin/Hostx86/x86';
+    }
+
+    if (!pathExists(architecturePath)) return;
+
+    this.msvcToolsPath = path.join(
+      msvcBasePath,
+      versionNumber,
+      architecturePath,
+    );
+  }
+
   private setCommands() {
     if (this._commands.foundGcc && this._commands.pathGcc) {
       this.setGcc(this._commands.pathGcc);
@@ -639,10 +734,6 @@ export class SettingsProvider extends FileProvider {
       this.architecure = Architectures.x64;
       this.isCygwin = false;
     }
-
-    if (this.operatingSystem === OperatingSystems.windows) {
-      if (!this.isCygwin) this._isMinGW = true;
-    }
   }
 
   public reset() {
@@ -650,12 +741,14 @@ export class SettingsProvider extends FileProvider {
     this.cCompilerPath = SettingsProvider.DEFAULT_C_COMPILER_PATH;
     this.cppCompilerPath = SettingsProvider.DEFAULT_CPP_COMPILER_PATH;
     this.debuggerPath = SettingsProvider.DEFAULT_DEBUGGER_PATH;
+    this.msvcBatchPath = SettingsProvider.DEFAULT_MSVC_BATCH_PATH;
+    this.msvcToolsPath = SettingsProvider.DEFAULT_MSVC_TOOLS_PATH;
 
     /* Optional in settings.json */
     this.enableWarnings = SettingsProvider.DEFAULT_ENABLE_WARNINGS;
-    this.warnings = SettingsProvider.DEFAULT_WARNINGS;
+    this.warnings = SettingsProvider.DEFAULT_WARNINGS_UNIX;
     this.warningsAsError = SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
-    this.cStandard = SettingsProvider.DEFAULT_C_STANDARD;
+    this.cStandard = SettingsProvider.DEFAULT_C_STANDARD_UNIX;
     this.cppStandard = SettingsProvider.DEFAULT_CPP_STANDARD;
     this.compilerArgs = SettingsProvider.DEFAULT_COMPILER_ARGS;
     this.linkerArgs = SettingsProvider.DEFAULT_LINKER_ARGS;
@@ -691,7 +784,7 @@ export class SettingsProvider extends FileProvider {
       return settingsLocal[settingName];
     }
 
-    if (this._configGlobal.has(name)) {
+    if (!isExtensionSetting && this._configGlobal.has(name)) {
       return this._configGlobal.get(name, defaultValue);
     }
 
@@ -771,19 +864,20 @@ export class SettingsProvider extends FileProvider {
   }
 
   public setOtherSettings() {
-    this.update('warnings', this.warnings);
-    this.update('compilerArgs', this.compilerArgs);
-    this.update('includePaths', this.includePaths);
-    this.update('linkerArgs', this.linkerArgs);
-
     this.update('cStandard', this.cStandard);
     this.update('cppStandard', this.cppStandard);
-    this.update('excludeSearch', this.excludeSearch);
+
+    this.update('msvcBatchPath', this.msvcBatchPath);
+
+    this.update('warnings', this.warnings);
     this.update('enableWarnings', this.enableWarnings);
     this.update('warningsAsError', this.warningsAsError);
-  }
 
-  public get isMinGW() {
-    return this._isMinGW;
+    this.update('compilerArgs', this.compilerArgs);
+    this.update('linkerArgs', this.linkerArgs);
+    this.update('includePaths', this.includePaths);
+
+    this.update('includeSearch', this.includeSearch);
+    this.update('excludeSearch', this.excludeSearch);
   }
 }

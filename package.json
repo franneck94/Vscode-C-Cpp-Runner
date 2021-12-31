@@ -2,7 +2,7 @@
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
   "description": "🚀 Compile, run and debug single or multiple C/C++ files with ease. 🚀",
-  "version": "2.1.1",
+  "version": "3.0.0",
   "publisher": "franneck94",
   "license": "MIT",
   "icon": "icon.png",
@@ -11,7 +11,7 @@
     "theme": "dark"
   },
   "engines": {
-    "vscode": "^1.60.0"
+    "vscode": "^1.63.0"
   },
   "categories": [
     "Programming Languages",
@@ -37,9 +37,13 @@
   "activationEvents": [
     "onLanguage:c",
     "onLanguage:cpp",
+    "workspaceContains:*.h",
     "workspaceContains:*.c",
+    "workspaceContains:*.hh",
     "workspaceContains:*.cc",
+    "workspaceContains:*.hxx",
     "workspaceContains:*.cxx",
+    "workspaceContains:*.hpp",
     "workspaceContains:*.cpp"
   ],
   "main": "./dist/main",
@@ -227,6 +231,12 @@
           "description": "The path to the debugger (either gdb or lldb).",
           "scope": "resource"
         },
+        "C_Cpp_Runner.msvcBatchPath": {
+          "type": "string",
+          "default": "",
+          "description": "The path to the MSVC batch file (Needed to compile/debug with MSVC Compiler).",
+          "scope": "resource"
+        },
         "C_Cpp_Runner.cStandard": {
           "type": "string",
           "enum": [
@@ -294,13 +304,32 @@
           "description": "Additional include paths.",
           "scope": "resource"
         },
-        "C_Cpp_Runner.excludeSearch": {
+        "C_Cpp_Runner.includeSearch": {
           "type": "array",
-          "default": [],
+          "default": [
+            "*",
+            "**/*"
+          ],
           "items": {
             "type": "string"
           },
-          "description": "List glob patterns to exclude from folder selection.",
+          "description": "Include glob patterns for folder selection. (Run before exlcude pattern)",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.excludeSearch": {
+          "type": "array",
+          "default": [
+            "**/build",
+            "**/build/**",
+            "**/.*",
+            "**/.*/**",
+            "**/.vscode",
+            "**/.vscode/**"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Exclude glob patterns for folder selection. (Run after include pattern)",
           "scope": "resource"
         },
         "C_Cpp_Runner.loggingActive": {

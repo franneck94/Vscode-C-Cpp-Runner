@@ -1,3 +1,5 @@
+import * as path from 'path';
+
 import {
 	getBasename,
 	pathExists,
@@ -29,22 +31,24 @@ export class PropertiesProvider extends FileProvider {
   }
 
   protected updateCheck() {
-    let doUpdate = false;
+    if (!pathExists(this._outputPath)) return true;
 
-    if (!pathExists(this._outputPath)) {
-      doUpdate = true;
-    } else {
-      const configLocal: JsonConfiguration = readJsonFile(this._outputPath);
-      if (configLocal) {
-        const triplet: string = configLocal.configurations[0].name;
+    const configLocal: JsonConfiguration = readJsonFile(this._outputPath);
 
-        if (!triplet.includes(this.settings.operatingSystem)) {
-          doUpdate = true;
-        }
-      }
+    if (!configLocal) return true;
+
+    const triplet: string = configLocal.configurations[0].name;
+    if (!triplet.includes(this.settings.operatingSystem)) return true;
+
+    if (
+      this.settings.msvcBatchPath !==
+        SettingsProvider.DEFAULT_MSVC_BATCH_PATH &&
+      !configLocal.configurations[0].intelliSenseMode.includes('msvc')
+    ) {
+      return true;
     }
 
-    return doUpdate;
+    return false;
   }
 
   public writeFileData() {
@@ -58,25 +62,25 @@ export class PropertiesProvider extends FileProvider {
 
     if (!configLocal) return;
 
-    if (!this.settings.cCompiler) return;
+    if (!this.settings.cCompiler && !this.settings.isMsvc) return;
     if (!this.settings.architecure) return;
 
-    const triplet =
-      `${this.settings.operatingSystem.toLowerCase()}-` +
-      `${this.settings.cCompiler.toLowerCase()}-` +
-      `${this.settings.architecure.toLowerCase()}`;
+    const os = this.settings.operatingSystem.toLowerCase();
+    const arch = this.settings.architecure.toLowerCase();
+    let compiler: string;
+
+    if (this.settings.isMsvc) {
+      compiler = 'msvc';
+    } else if (this.settings.cCompiler) {
+      compiler = this.settings.cCompiler.toLowerCase();
+    } else {
+      return;
+    }
+
+    const triplet = `${os}-${compiler}-${arch}`;
 
     const currentConfig = configLocal.configurations[0];
     currentConfig.compilerArgs = [];
-
-    if (this.settings.warnings) {
-      for (const warning of this.settings.warnings) {
-        const compilerArgsSet = new Set(currentConfig.compilerArgs);
-        if (!compilerArgsSet.has(warning)) {
-          currentConfig.compilerArgs.push(warning);
-        }
-      }
-    }
 
     if (this.settings.compilerArgs) {
       for (const arg of this.settings.compilerArgs) {
@@ -111,11 +115,19 @@ export class PropertiesProvider extends FileProvider {
       currentConfig.cppStandard = '${default}';
     }
 
-    currentConfig.compilerPath = this.settings.cCompilerPath;
+    if (this.settings.isMsvc) {
+      currentConfig.compilerPath = path.join(
+        this.settings.msvcToolsPath,
+        SettingsProvider.MSVC_COMPILER_NAME,
+      );
+    } else {
+      currentConfig.compilerPath = this.settings.cCompilerPath;
+    }
 
     // Since C/C++ Extension Version 1.4.0 cygwin is a linux triplet
     if (
       this.settings.isCygwin &&
+      !this.settings.isMsvc &&
       this.settings.operatingSystem === OperatingSystems.windows
     ) {
       currentConfig.name = triplet.replace('windows', 'windows-cygwin');
@@ -180,13 +192,11 @@ export class PropertiesProvider extends FileProvider {
 
     const argsSet: Set<string> = new Set(currentConfig.compilerArgs);
     const args: string[] = [...argsSet];
-    const warningArgs = args.filter((arg: string) => arg.includes('-W'));
     const compilerArgs = args.filter((arg: string) => !arg.includes('-W'));
     const includeArgs = currentConfig.includePath.filter(
       (path: string) => path !== INCLUDE_PATTERN,
     );
 
-    this.settings.warnings = warningArgs;
     this.settings.compilerArgs = compilerArgs;
     this.settings.includePaths = includeArgs;
 

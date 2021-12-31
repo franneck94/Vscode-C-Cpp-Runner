@@ -1,5 +1,19 @@
 # C/C++ Runner Change Log
 
+## Version 3.0.0: December 31, 2021
+
+- **Feature**: MSVC Compiler Support
+  - Add Compiler Commands
+  - Add Setting for MSVC Batch Path
+    - E.g.: "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvarsall.bat"
+  - MSVC Host/Target architecture is equal to current architecture
+  - Added debug config for MSVC
+  - Default warning level for MSVC is **/W4**, this will be set if MSVC "mode" is active
+  - Default C version is c17 for MSVC
+- **Info**: Removed warnings from compiler args in c_cpp_properties.json
+- **Feature**: Updated logic for exclude pattern for folder selection
+- **Feature**: Added Include pattern for folder selection
+
 ## Version 2.1.1: December 21, 2021
 
 - **Bugfix**: Now passing linker args after the object files

@@ -137,13 +137,10 @@ However, the user can trigger the start-up of this extension by pressing `ctrl+a
 
 ## Using the MSVC Compiler
 
-Since version 3.0 the MSVC compiler (toolchain) can also be used.  
-To do so, set the setting **msvcBatchPath** to a valid path.  
-Then the other settings about the compiler and debugger are ignored in the workspace.  
-If you want to stop using the MSVC compiler in the workspace, just reset the **msvcBatchPath** setting.  
-Caveat 1: Currently **if** warnings are enabled, the warning level **/W3** is always used.  
-Caveat 2: Currently the linker args are ignored.  
-Caveat 3: Currently no cross-compiling is allowed.
+To use the MSVC compiler (toolchain), set the **msvcBatchPath** setting to a valid path.  
+Then the other settings about the GCC/Clang tools are ignored in the current workspace.  
+If you want to stop using the MSVC compiler, just reset the local **msvcBatchPath** setting.  
+Caveat: Currently no cross-compiling is allowed.
 
 ## Release Notes
 

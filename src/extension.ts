@@ -531,11 +531,11 @@ function initModeStatusBar() {
 }
 
 function initArgumentParser() {
-  if (commandResetDisposable) return;
+  if (commandArgumentDisposable) return;
 
   const commandName = `${EXTENSION_NAME}.args`;
 
-  commandResetDisposable = vscode.commands.registerCommand(
+  commandArgumentDisposable = vscode.commands.registerCommand(
     commandName,
     async () => {
       argumentsString = await vscode.window.showInputBox();
@@ -544,28 +544,25 @@ function initArgumentParser() {
     },
   );
 
-  extensionContext?.subscriptions.push(commandResetDisposable);
+  extensionContext?.subscriptions.push(commandArgumentDisposable);
 }
 
 function initReset() {
-  if (commandArgumentDisposable) return;
+  if (commandResetDisposable) return;
 
   const commandName = `${EXTENSION_NAME}.resetLocalSettings`;
 
-  commandArgumentDisposable = vscode.commands.registerCommand(
+  commandResetDisposable = vscode.commands.registerCommand(
     commandName,
     async () => {
-      if (!settingsProvider) return;
-
-      settingsProvider.reset();
-
+      settingsProvider?.reset();
       propertiesProvider?.updateFileContent();
       taskProvider?.getTasks();
       launchProvider?.updateFileContent();
     },
   );
 
-  extensionContext?.subscriptions.push(commandArgumentDisposable);
+  extensionContext?.subscriptions.push(commandResetDisposable);
 }
 
 function initBuildStatusBar() {

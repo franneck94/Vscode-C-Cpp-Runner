@@ -129,7 +129,7 @@ function executeBuildTaskUnixBased(
   let fullLinkerArgs = '';
 
   if (warnings) {
-    fullCompilerArgs += `${warnings}`;
+    fullCompilerArgs += warnings;
   }
   if (standard) {
     fullCompilerArgs += ` --std=${standard}`;
@@ -266,24 +266,33 @@ function executeBuildTaskMsvcBased(
   }
 
   let fullCompilerArgs = '';
-  // @ts-ignore
-  let fullLinkerArgs = '';
 
   if (useWarnings && warnings !== '') {
-    fullCompilerArgs += `/W3`;
+    fullCompilerArgs += warnings;
   }
+
   if (standard) {
     fullCompilerArgs += ` /std:${standard}`;
   }
+  // Note: The c standard in msvc is either c11 or c17
+  if (language === Languages.c) {
+    // Deactivate secure function warnings in older c standards
+    if (
+      ['c89', 'c99', 'gnu89', 'gnu99'].some(
+        (ext) => settingsProvider.cStandard === ext,
+      )
+    ) {
+      fullCompilerArgs += ' /D_CRT_SECURE_NO_WARNINGS';
+    }
+  }
+
   if (buildMode === Builds.debug) {
     fullCompilerArgs += ' /Od /Zi';
   } else {
     fullCompilerArgs += ' /Ox /GL /DNDEBUG';
   }
-  if (compilerArgs && compilerArgs.length > 0) {
-    fullCompilerArgs += ' ' + compilerArgs.join(' ');
-  }
-  fullCompilerArgs += ' /EHsc ';
+  fullCompilerArgs += ' /EHsc';
+
   if (includePaths && includePaths.length > 0) {
     for (const includePath of includePaths) {
       const hasSpace = includePath.includes(' ');
@@ -296,15 +305,21 @@ function executeBuildTaskMsvcBased(
     }
   }
 
+  let fullLinkerArgs: string = '';
   if (linkerArgs && linkerArgs.length > 0) {
     fullLinkerArgs += ' ' + linkerArgs.join(' ');
   }
+  fullCompilerArgs += fullLinkerArgs;
 
-  let commandLine: string = `"${settingsProvider.msvcBatchPath}" ${settingsProvider.architecure} ${appendSymbol}`;
+  if (compilerArgs && compilerArgs.length > 0) {
+    fullCompilerArgs += ' ' + compilerArgs.join(' ');
+  }
+
+  let commandLine: string = `"${settingsProvider.msvcBatchPath}" ${settingsProvider.architecure} ${appendSymbol} `;
 
   const pathArgs = `/Fd${modeDir}\\ /Fo${modeDir}\\ /Fe${executablePath}`;
 
-  let fullFileArgs: string | undefined;
+  let fullFileArgs: string = '';
   for (const file of files) {
     const fileExtension = path.parse(file).ext;
 
@@ -324,7 +339,7 @@ function executeBuildTaskMsvcBased(
     }
   }
 
-  if (!fullFileArgs) return;
+  if (fullFileArgs === '') return;
 
   commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} ${fullFileArgs}`;
 

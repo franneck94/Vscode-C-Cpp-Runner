@@ -39,7 +39,8 @@ export class SettingsProvider extends FileProvider {
   static DEFAULT_DEBUGGER_PATH = 'gdb';
   static DEFAULT_MSVC_BATCH_PATH = '';
   static DEFAULT_MSVC_TOOLS_PATH = '';
-  static DEFAULT_C_STANDARD = '';
+  static DEFAULT_C_STANDARD_UNIX = '';
+  static DEFAULT_C_STANDARD_MSVC = 'c17';
   static DEFAULT_CPP_STANDARD = '';
   static DEFAULT_INCLUDE_SEARCH = ['*', '**/*'];
   static DEFAULT_EXCLUDE_SEARCH = [
@@ -54,13 +55,13 @@ export class SettingsProvider extends FileProvider {
   static DEFAULT_ENABLE_WARNINGS = true;
   static DEFAULT_WARNINGS_AS_ERRORS = false;
 
-  static DEFAULT_WARNINGS = ['-Wall', '-Wextra', '-Wpedantic'];
+  static DEFAULT_WARNINGS_UNIX = ['-Wall', '-Wextra', '-Wpedantic'];
+  static DEFAULT_WARNINGS_MSVC = ['/W4'];
   static DEFAULT_COMPILER_ARGS = [];
   static DEFAULT_LINKER_ARGS = [];
   static DEFAULT_INCLUDE_PATHS = [];
 
   static MSVC_COMPILER_NAME = 'cl.exe';
-  static MSVC_LINKER_NAME = 'link.exe';
 
   // Workspace data
   private _configGlobal = vscode.workspace.getConfiguration(EXTENSION_NAME);
@@ -85,7 +86,7 @@ export class SettingsProvider extends FileProvider {
   public debuggerPath: string = SettingsProvider.DEFAULT_DEBUGGER_PATH;
   public msvcBatchPath: string = SettingsProvider.DEFAULT_MSVC_BATCH_PATH;
   public msvcToolsPath: string = SettingsProvider.DEFAULT_MSVC_TOOLS_PATH;
-  public cStandard: string = SettingsProvider.DEFAULT_C_STANDARD;
+  public cStandard: string = SettingsProvider.DEFAULT_C_STANDARD_UNIX;
   public cppStandard: string = SettingsProvider.DEFAULT_CPP_STANDARD;
   public compilerArgs: string[] = SettingsProvider.DEFAULT_COMPILER_ARGS;
   public linkerArgs: string[] = SettingsProvider.DEFAULT_LINKER_ARGS;
@@ -94,7 +95,7 @@ export class SettingsProvider extends FileProvider {
   public excludeSearch: string[] = SettingsProvider.DEFAULT_EXCLUDE_SEARCH;
   public enableWarnings: boolean = SettingsProvider.DEFAULT_ENABLE_WARNINGS;
   public warningsAsError: boolean = SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
-  public warnings: string[] = SettingsProvider.DEFAULT_WARNINGS;
+  public warnings: string[] = SettingsProvider.DEFAULT_WARNINGS_UNIX;
 
   constructor(public workspaceFolder: string, public activeFolder: string) {
     super(workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
@@ -251,6 +252,7 @@ export class SettingsProvider extends FileProvider {
       'msvcBatchPath',
       SettingsProvider.DEFAULT_MSVC_BATCH_PATH,
     );
+
     if (this.msvcBatchPath !== SettingsProvider.DEFAULT_MSVC_BATCH_PATH) {
       this.isMsvc = true;
       this.searchMsvcToolsPath();
@@ -263,11 +265,23 @@ export class SettingsProvider extends FileProvider {
       'enableWarnings',
       SettingsProvider.DEFAULT_ENABLE_WARNINGS,
     );
+
     this.warnings = this.getSettingsValue(
       settingsLocal,
       'warnings',
-      SettingsProvider.DEFAULT_WARNINGS,
+      SettingsProvider.DEFAULT_WARNINGS_UNIX,
     );
+
+    const msvcWarnings = this.warnings.some((warning: string) =>
+      warning.includes('/'),
+    );
+
+    if (this.isMsvc && !msvcWarnings) {
+      this.warnings = SettingsProvider.DEFAULT_WARNINGS_MSVC;
+    } else if (!this.isMsvc && msvcWarnings) {
+      this.warnings = SettingsProvider.DEFAULT_WARNINGS_UNIX;
+    }
+
     this.warningsAsError = this.getSettingsValue(
       settingsLocal,
       'warningsAsError',
@@ -277,8 +291,9 @@ export class SettingsProvider extends FileProvider {
     this.cStandard = this.getSettingsValue(
       settingsLocal,
       'cStandard',
-      SettingsProvider.DEFAULT_C_STANDARD,
+      SettingsProvider.DEFAULT_C_STANDARD_UNIX,
     );
+
     this.cppStandard = this.getSettingsValue(
       settingsLocal,
       'cppStandard',
@@ -369,7 +384,7 @@ export class SettingsProvider extends FileProvider {
     const _cStandard = this.getPropertiesValue(
       properties,
       'cStandard',
-      SettingsProvider.DEFAULT_C_STANDARD,
+      SettingsProvider.DEFAULT_C_STANDARD_UNIX,
     );
     const _cppStandard = this.getPropertiesValue(
       properties,
@@ -394,7 +409,7 @@ export class SettingsProvider extends FileProvider {
     this.cStandard =
       _cStandard !== '${default}'
         ? _cStandard
-        : SettingsProvider.DEFAULT_C_STANDARD;
+        : SettingsProvider.DEFAULT_C_STANDARD_UNIX;
     this.cppStandard =
       _cppStandard !== '${default}'
         ? _cppStandard
@@ -415,7 +430,7 @@ export class SettingsProvider extends FileProvider {
         : SettingsProvider.DEFAULT_LINKER_ARGS;
 
     this.warnings =
-      _warnings.length > 0 ? _warnings : SettingsProvider.DEFAULT_WARNINGS;
+      _warnings.length > 0 ? _warnings : SettingsProvider.DEFAULT_WARNINGS_UNIX;
 
     if (settingsFileMissing) {
       this.enableWarnings = SettingsProvider.DEFAULT_ENABLE_WARNINGS;
@@ -726,12 +741,14 @@ export class SettingsProvider extends FileProvider {
     this.cCompilerPath = SettingsProvider.DEFAULT_C_COMPILER_PATH;
     this.cppCompilerPath = SettingsProvider.DEFAULT_CPP_COMPILER_PATH;
     this.debuggerPath = SettingsProvider.DEFAULT_DEBUGGER_PATH;
+    this.msvcBatchPath = SettingsProvider.DEFAULT_MSVC_BATCH_PATH;
+    this.msvcToolsPath = SettingsProvider.DEFAULT_MSVC_TOOLS_PATH;
 
     /* Optional in settings.json */
     this.enableWarnings = SettingsProvider.DEFAULT_ENABLE_WARNINGS;
-    this.warnings = SettingsProvider.DEFAULT_WARNINGS;
+    this.warnings = SettingsProvider.DEFAULT_WARNINGS_UNIX;
     this.warningsAsError = SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
-    this.cStandard = SettingsProvider.DEFAULT_C_STANDARD;
+    this.cStandard = SettingsProvider.DEFAULT_C_STANDARD_UNIX;
     this.cppStandard = SettingsProvider.DEFAULT_CPP_STANDARD;
     this.compilerArgs = SettingsProvider.DEFAULT_COMPILER_ARGS;
     this.linkerArgs = SettingsProvider.DEFAULT_LINKER_ARGS;
@@ -767,7 +784,7 @@ export class SettingsProvider extends FileProvider {
       return settingsLocal[settingName];
     }
 
-    if (this._configGlobal.has(name)) {
+    if (!isExtensionSetting && this._configGlobal.has(name)) {
       return this._configGlobal.get(name, defaultValue);
     }
 

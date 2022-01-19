@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 3.1.0: January 19, 2021
+
+- ...
+
 ## Version 3.0.0: December 31, 2021
 
 - **Feature**: MSVC Compiler Support

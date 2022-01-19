@@ -33,7 +33,6 @@ import {
 	getActivationState,
 	getLoggingState,
 	isCmakeProject,
-	isCourseProject,
 	setContextValue,
 	updateActivationState,
 	updateLoggingState,
@@ -103,15 +102,12 @@ export function activate(context: vscode.ExtensionContext) {
     workspaceFolder = vscode.workspace.workspaceFolders[0].uri.fsPath;
   }
 
-  // Extra behaviour for my coding courses ;)
-  const courseMakefileFound = isCourseProject();
-
   const cmakeFileFound = isCmakeProject();
 
-  if (cmakeFileFound || courseMakefileFound) {
+  if (cmakeFileFound) {
     showStatusBarItems = false;
     createExtensionFiles = false;
-    const infoMessage = `CMake/Make Project found. UI disabled.`;
+    const infoMessage = `CMake Project found. UI disabled.`;
     logger.log(loggingActive, infoMessage);
   }
 

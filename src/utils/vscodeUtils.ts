@@ -122,21 +122,3 @@ export function isCmakeProject() {
 
   return cmakeFileFound;
 }
-
-export function isCourseProject() {
-  const workspaceFodlers = vscode.workspace.workspaceFolders;
-  let foundMakefile = false;
-
-  if (workspaceFodlers) {
-    workspaceFodlers.forEach((folder) => {
-      const vscodePath = path.join(folder.uri.fsPath, '.vscode');
-      const makefilePath = path.join(vscodePath, 'Makefile');
-
-      if (pathExists(makefilePath)) {
-        foundMakefile = true;
-      }
-    });
-  }
-
-  return foundMakefile;
-}

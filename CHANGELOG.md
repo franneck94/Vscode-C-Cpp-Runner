@@ -2,7 +2,8 @@
 
 ## Version 3.1.0: January 19, 2021
 
-- ...
+- **Info**: Removed Makefile deactivation
+- **Info**: Updated README
 
 ## Version 3.0.0: December 31, 2021
 

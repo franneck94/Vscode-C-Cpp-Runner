@@ -17,15 +17,13 @@ You do not need to know about any compiler commands. 😎
 ## Install the Software Requirements (optional)
 
 - 🖥️ Windows:
-  - Alternative 1: Install gcc, g++ and gdb via [Cygwin](https://www.cygwin.com/).  
-  - Alternative 2: Install gcc, g++ and gdb on Linux Distro via [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install).
-  - Alternative 3: Install gcc, g++ and gdb on MinGW via [MSYS2](https://www.msys2.org/).  
-  - Alternative 4: Install MSVC or Clang Compiler via [VS/BuildTools](https://visualstudio.microsoft.com/de/downloads/?q=build+tools) - see [below](#using-the-msvc-compiler) for instructions.  
-- 🖥️ Linux:
-  - Recommended to install gcc, g++ and gdb via a package manager (e.g. `apt`).
+  - Alternative 1: Install gcc, g++ and gdb via [Cygwin](https://www.cygwin.com/) or [MSYS2](https://www.msys2.org/)  
+  - Alternative 2: Install MSVC or Clang Compiler via [VS BuildTools](https://visualstudio.microsoft.com/de/downloads/?q=build+tools) - see [below](#using-the-msvc-compiler) for instructions  
+- 🖥️ Linux/MacOS:
+  - Recommended to install gcc, g++ and gdb via a package manager (e.g. `apt`)
 - 🖥️ MacOS:
-  - Alternative 1: Install clang, clang++ and lldb via [xcode-tools](https://developer.apple.com/xcode/features/).
-  - Alternative 2: Install the llvm toolchain with [brew](https://apple.stackexchange.com/a/362837).
+  - Alternative 1: Install clang, clang++ and lldb via [xcode-tools](https://developer.apple.com/xcode/features/)
+  - Alternative 2: Install clang, clang++ and lldb with the llvm toolchain via [brew](https://apple.stackexchange.com/a/362837)
 
 ## Extension Activation Conditions
 
@@ -95,7 +93,7 @@ For more information about glob pattern see [here](https://en.wikipedia.org/wiki
 The extension will automatically search for an installed compiler on your computer.  
 For Linux and mac, it searches in */usr/bin/*, and on windows, it searches for *Cygwin*, *mingw*, and *msys2* in the PATH.  
 Note: On windows, it will not be searched for any MSVC installation.  
-All settings will be stored in the local workspace settings (*".vscode/settings.json"*).  
+All settings will be stored in the **local** workspace settings (*".vscode/settings.json"*).  
 If you wish to use any other compiler or different setting, just edit the entries in the **local** settings file.  
 ![FoundCompiler](./media/Settings.png)  
 
@@ -137,7 +135,7 @@ However, the user can trigger the start-up of this extension by pressing `ctrl+a
 
 ## Using the MSVC Compiler
 
-To use the MSVC compiler (toolchain), set the **msvcBatchPath** setting to a valid path.  
+To use the MSVC compiler (toolchain), set the local **msvcBatchPath** setting to a valid path.  
 Then the other settings about the GCC/Clang tools are ignored in the current workspace.  
 If you want to stop using the MSVC compiler, just reset the local **msvcBatchPath** setting.  
 Caveat: Currently no cross-compiling is allowed.

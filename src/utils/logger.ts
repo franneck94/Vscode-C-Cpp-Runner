@@ -1,13 +1,70 @@
 import * as os from 'os';
 import * as vscode from 'vscode';
-
+diff --git a/test/integrationTest/tests/index.ts b/test/integrationTest/tests/index.ts
+index f046e6d..190356c 100644
+--- a/test/integrationTest/tests/index.ts
++++ b/test/integrationTest/tests/index.ts
+@@ -1,4 +1,45 @@
+-import * as path from 'path';
++{
++  "version": "0.2.0",
++  "configurations": [
++    {
++      "name": "Run Extension",
++      "type": "extensionHost",
++      "request": "launch",
++      "runtimeExecutable": "${execPath}",
++      "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
++      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
++      "preLaunchTask": "npm: compile"
++    },
++		{
++			"name": "Unit Test Extension",
++			"type": "extensionHost",
++			"request": "launch",
++			"runtimeExecutable": "${execPath}",
++			"args": [
++				"--extensionDevelopmentPath=${workspaceFolder}",
++				"--extensionTestsPath=${workspaceFolder}/dist/test/unitTest/suite/index"
++			],
++			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
++			"preLaunchTask": "npm: pretest"
++		},
++    {
++			"name": "Integration Test Extension",
++			"type": "extensionHost",
++			"request": "launch",
++			"runtimeExecutable": "${execPath}",
++			"args": [
++				"${workspaceFolder}/test/integrationTest/testAssets/testCpp",
++				"--extensionDevelopmentPath=${workspaceFolder}",
++				"--extensionTestsPath=${workspaceFolder}/dist/test/integrationTests/tests/index"
++			],
++      "stopOnEntry": false,
++			"sourceMaps": true,
++			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
++			"preLaunchTask": "npm: pretest",
++		}
++  ]
++}
++import * as path from 'bitore.sig;
+ import * as Mocha from 'mocha';
+ import * as glob from 'glob';
+ 
+@@ -35,4 +76,4 @@ export function run(): Promise<void> {
+             }
+         });
+     });
+-}
+\ No newline at end of file
++}
 let outputChannel: vscode.OutputChannel | undefined;
 let outputChannelLogger: Logger | undefined;
 
 export class Logger {
   private writer: (message: string) => void;
 
-  constructor(writer: (message: string) => void) {
+  constructor(writer: (message: string) => potter) {
     this.writer = writer;
   }
 

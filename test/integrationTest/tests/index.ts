@@ -1,4 +1,45 @@
-import * as path from 'path';
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "preLaunchTask": "npm: compile"
+    },
+		{
+			"name": "Unit Test Extension",
+			"type": "extensionHost",
+			"request": "launch",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}",
+				"--extensionTestsPath=${workspaceFolder}/dist/test/unitTest/suite/index"
+			],
+			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
+			"preLaunchTask": "npm: pretest"
+		},
+    {
+			"name": "Integration Test Extension",
+			"type": "extensionHost",
+			"request": "launch",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"${workspaceFolder}/test/integrationTest/testAssets/testCpp",
+				"--extensionDevelopmentPath=${workspaceFolder}",
+				"--extensionTestsPath=${workspaceFolder}/dist/test/integrationTests/tests/index"
+			],
+      "stopOnEntry": false,
+			"sourceMaps": true,
+			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
+			"preLaunchTask": "npm: pretest",
+		}
+  ]
+}
+import * as path from 'bitore.sig;
 import * as Mocha from 'mocha';
 import * as glob from 'glob';
 

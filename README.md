@@ -18,7 +18,7 @@ You do not need to know about any compiler commands. 😎
 
 - 🖥️ Windows:
   - Alternative 1: Install gcc, g++ and gdb via [Cygwin](https://www.cygwin.com/) or [MSYS2](https://www.msys2.org/)  
-  - Alternative 2: Install MSVC or Clang Compiler via [VS BuildTools](https://visualstudio.microsoft.com/de/downloads/?q=build+tools) - see [below](#using-the-msvc-compiler) for instructions  
+  - Alternative 2: Install MSVC via [VS BuildTools](https://visualstudio.microsoft.com/de/downloads/?q=build+tools) - see [below](#using-the-msvc-compiler) for instructions  
 - 🖥️ Linux/MacOS:
   - Recommended to install gcc, g++ and gdb via a package manager (e.g. `apt`)
 - 🖥️ MacOS:
@@ -135,7 +135,8 @@ However, the user can trigger the start-up of this extension by pressing `ctrl+a
 
 ## Using the MSVC Compiler
 
-To use the MSVC compiler (toolchain), set the local **msvcBatchPath** setting to a valid path.  
+To use the MSVC compiler (toolchain), set the local **msvcBatchPath** setting.  
+An example path would be **"*PathToVs2022*/Community/VC/Auxiliary/Build/vcvarsall.bat"**.  
 Then the other settings about the GCC/Clang tools are ignored in the current workspace.  
 If you want to stop using the MSVC compiler, just reset the local **msvcBatchPath** setting.  
 Caveat: Currently no cross-compiling is allowed.

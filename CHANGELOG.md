@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 3.1.1: January 31, 2021
+
+- **Info**: Updated MSVC instructions
+
 ## Version 3.1.0: January 19, 2021
 
 - **Info**: Removed Makefile deactivation

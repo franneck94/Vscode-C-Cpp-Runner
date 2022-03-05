@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 3.2.1: March 5, 2022
+
+- **Regression**: Fixed problem with whitespaces in workspace dir
+
 ## Version 3.2.0: March 5, 2022
 
 - **Info**: Now using relative paths for building the binary, hence the console output is shortened and more readable

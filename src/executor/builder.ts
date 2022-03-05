@@ -11,10 +11,10 @@ import {
 	mkdirRecursive,
 	pathExists,
 } from '../utils/fileUtils';
-import { Builds, Languages, OperatingSystems, Task } from '../utils/types';
+import { Builds, Languages, OperatingSystems } from '../utils/types';
 
 export async function executeBuildTask(
-  task: Task,
+  task: vscode.Task,
   settingsProvider: SettingsProvider,
   activeFolder: string,
   buildMode: Builds,
@@ -83,8 +83,13 @@ export async function executeBuildTask(
 
   if (!task || !task.execution || commandLine === undefined) return;
 
+  if (!(task.execution instanceof vscode.ShellExecution)) return;
+
   task.execution.commandLine = commandLine;
+
   await vscode.tasks.executeTask(task);
+
+  await task.execution.
 }
 
 function executeBuildTaskUnixBased(

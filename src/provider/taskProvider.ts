@@ -22,7 +22,7 @@ const CONFIG_NAME = 'C/C++ Runner: Debug Session';
 
 export class TaskProvider implements vscode.TaskProvider {
   private readonly _tasksFile: string;
-  public tasks: Task[] | undefined;
+  public tasks: vscode.Task[] | undefined;
 
   constructor(
     private readonly _settingsProvider: SettingsProvider,
@@ -71,11 +71,6 @@ export class TaskProvider implements vscode.TaskProvider {
       if (taskJson.type !== taskType) {
         continue;
       }
-      if (taskJson.options) {
-        if (taskJson.options.hide) {
-          continue;
-        }
-      }
 
       const shellCommand = `${taskJson.command} ${taskJson.args.join(' ')}`;
 
@@ -83,7 +78,6 @@ export class TaskProvider implements vscode.TaskProvider {
         type: taskType,
         task: taskJson.label,
       };
-      const problemMatcher = '$gcc';
       const scope = vscode.TaskScope.Workspace;
       let execution: vscode.ShellExecution;
 
@@ -97,13 +91,12 @@ export class TaskProvider implements vscode.TaskProvider {
         execution = new vscode.ShellExecution(shellCommand);
       }
 
-      const task = new Task(
+      const task = new vscode.Task(
         definition,
         scope,
         taskJson.label,
         EXTENSION_NAME,
         execution,
-        problemMatcher,
       );
       this.tasks.push(task);
     }

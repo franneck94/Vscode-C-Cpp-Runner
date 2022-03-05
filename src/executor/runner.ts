@@ -2,10 +2,10 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import { pathExists } from '../utils/fileUtils';
-import { Builds, OperatingSystems, Task } from '../utils/types';
+import { Builds, OperatingSystems } from '../utils/types';
 
 export async function executeRunTask(
-  task: Task,
+  task: vscode.Task,
   activeFolder: string,
   buildMode: Builds,
   argumentsString: string | undefined,
@@ -43,7 +43,10 @@ export async function executeRunTask(
   }
 
   if (task && task.execution) {
+    if (!(task.execution instanceof vscode.ShellExecution)) return;
+
     task.execution.commandLine = executableCall;
+
     await vscode.tasks.executeTask(task);
   }
 }

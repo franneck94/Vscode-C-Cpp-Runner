@@ -641,15 +641,17 @@ function initCleanStatusBar() {
 
       if (
         !cleanTask.execution ||
-        !(cleanTask.execution instanceof vscode.ShellExecution) ||
-        !cleanTask.execution.commandLine
+        !(cleanTask.execution instanceof vscode.ProcessExecution)
       ) {
         return;
       }
 
       let relativeModeDir = modeDir.replace(workspaceFolder, '');
       relativeModeDir = replaceBackslashes(relativeModeDir);
-      cleanTask.execution.commandLine = `echo Cleaning ${relativeModeDir}...`;
+
+      if (cleanTask.execution.args.length !== 3) return;
+
+      cleanTask.execution.args[2] = `echo Cleaning ${relativeModeDir}...`;
 
       if (!pathExists(modeDir)) return;
 
@@ -710,35 +712,6 @@ function initDebugSingleFile() {
 }
 
 async function buildTaskCallback(singleFileBuild: boolean) {
-  if (!taskProvider || !taskProvider.tasks) {
-    const infoMessage = `buildCallback failed`;
-    logger.log(loggingActive, infoMessage);
-    return;
-  }
-
-  taskProvider.getTasks();
-
-  const projectFolder = taskProvider.getProjectFolder();
-  if (!projectFolder) return;
-
-  const buildTaskIndex = 0;
-  const buildTask = taskProvider.tasks[buildTaskIndex];
-
-  if (!buildTask) return;
-
-  if (
-    !buildTask.execution ||
-    !(buildTask.execution instanceof vscode.ShellExecution) ||
-    !buildTask.execution.commandLine
-  ) {
-    return;
-  }
-
-  buildTask.execution.commandLine = buildTask.execution.commandLine.replace(
-    'FILE_DIR',
-    projectFolder,
-  );
-
   if (!activeFolder) return;
 
   const buildDir = path.join(activeFolder, 'build');
@@ -749,7 +722,6 @@ async function buildTaskCallback(singleFileBuild: boolean) {
   if (!settingsProvider) return;
 
   await executeBuildTask(
-    buildTask,
     settingsProvider,
     activeFolder,
     buildMode,
@@ -758,35 +730,6 @@ async function buildTaskCallback(singleFileBuild: boolean) {
 }
 
 async function runTaskCallback() {
-  if (!taskProvider || !taskProvider.tasks) {
-    const infoMessage = `runCallback failed`;
-    logger.log(loggingActive, infoMessage);
-    return;
-  }
-
-  taskProvider.getTasks();
-
-  const projectFolder = taskProvider.getProjectFolder();
-  if (!projectFolder) return;
-
-  const runTaskIndex = 1;
-  const runTask = taskProvider.tasks[runTaskIndex];
-
-  if (!runTask) return;
-
-  if (
-    !runTask.execution ||
-    !(runTask.execution instanceof vscode.ShellExecution) ||
-    !runTask.execution.commandLine
-  ) {
-    return;
-  }
-
-  runTask.execution.commandLine = runTask.execution.commandLine.replace(
-    'FILE_DIR',
-    projectFolder,
-  );
-
   if (!activeFolder) return;
 
   const buildDir = path.join(activeFolder, 'build');
@@ -799,7 +742,6 @@ async function runTaskCallback() {
   }
 
   await executeRunTask(
-    runTask,
     activeFolder,
     buildMode,
     argumentsString,
@@ -808,11 +750,5 @@ async function runTaskCallback() {
 }
 
 function debugTaskCallback() {
-  if (!activeFolder || !workspaceFolder) {
-    const infoMessage = `debugCallback failed`;
-    logger.log(loggingActive, infoMessage);
-    return;
-  }
-
-  if (taskProvider) runDebugger(activeFolder, workspaceFolder, buildMode);
+  runDebugger(activeFolder, workspaceFolder, buildMode);
 }

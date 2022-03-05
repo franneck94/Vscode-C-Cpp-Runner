@@ -1,11 +1,13 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
+import { SettingsProvider } from '../provider/settingsProvider';
 import { pathExists } from '../utils/fileUtils';
 import { Builds, OperatingSystems } from '../utils/types';
 
+const EXTENSION_NAME = 'C_Cpp_Runner';
+
 export async function executeRunTask(
-  task: vscode.Task,
   activeFolder: string,
   buildMode: Builds,
   argumentsString: string | undefined,
@@ -28,25 +30,47 @@ export async function executeRunTask(
 
   if (!pathExists(path.join(activeFolder, executableRelativePath))) return;
 
-  let executableCall: string = '';
+  let commandLine: string = '';
   const activeFolderHasSpace = activeFolder.includes(' ');
   const executableRelativePathHasSpace = executableRelativePath.includes(' ');
 
   if (activeFolderHasSpace || executableRelativePathHasSpace) {
-    executableCall = `cd "${activeFolder}" && "${executableRelativePath}"`;
+    commandLine = `cd "${activeFolder}" && "${executableRelativePath}"`;
   } else {
-    executableCall = `cd ${activeFolder} && ${executableRelativePath}`;
+    commandLine = `cd ${activeFolder} && ${executableRelativePath}`;
   }
 
   if (argumentsString) {
-    executableCall += ` ${argumentsString}`;
+    commandLine += ` ${argumentsString}`;
   }
 
-  if (task && task.execution) {
-    if (!(task.execution instanceof vscode.ShellExecution)) return;
+  if (!commandLine) return;
 
-    task.execution.commandLine = executableCall;
+  const task_name = 'Build';
 
-    await vscode.tasks.executeTask(task);
+  let execution: vscode.ProcessExecution | undefined;
+  if (operatingSystem === OperatingSystems.windows) {
+    execution = new vscode.ProcessExecution('C:/Windows/System32/cmd.exe', [
+      '/d',
+      '/c',
+      commandLine,
+    ]);
+  } else {
+    execution = new vscode.ProcessExecution('terminal', [commandLine]);
   }
+
+  const definition = {
+    type: 'shell',
+    task: task_name,
+  };
+
+  const task = new vscode.Task(
+    definition,
+    vscode.TaskScope.Workspace,
+    task_name,
+    EXTENSION_NAME,
+    execution,
+  );
+
+  await vscode.tasks.executeTask(task);
 }

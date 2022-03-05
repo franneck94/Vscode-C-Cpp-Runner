@@ -13,8 +13,9 @@ import {
 } from '../utils/fileUtils';
 import { Builds, Languages, OperatingSystems } from '../utils/types';
 
+const EXTENSION_NAME = 'C_Cpp_Runner';
+
 export async function executeBuildTask(
-  task: vscode.Task,
   settingsProvider: SettingsProvider,
   activeFolder: string,
   buildMode: Builds,
@@ -81,15 +82,35 @@ export async function executeBuildTask(
     );
   }
 
-  if (!task || !task.execution || commandLine === undefined) return;
+  if (!commandLine) return;
 
-  if (!(task.execution instanceof vscode.ShellExecution)) return;
+  const task_name = 'Build';
 
-  task.execution.commandLine = commandLine;
+  let execution: vscode.ProcessExecution | undefined;
+  if (settingsProvider.operatingSystem === OperatingSystems.windows) {
+    execution = new vscode.ProcessExecution('C:/Windows/System32/cmd.exe', [
+      '/d',
+      '/c',
+      commandLine,
+    ]);
+  } else {
+    execution = new vscode.ProcessExecution('terminal', [commandLine]);
+  }
+
+  const definition = {
+    type: 'shell',
+    task: task_name,
+  };
+
+  const task = new vscode.Task(
+    definition,
+    vscode.TaskScope.Workspace,
+    task_name,
+    EXTENSION_NAME,
+    execution,
+  );
 
   await vscode.tasks.executeTask(task);
-
-  await task.execution.
 }
 
 function executeBuildTaskUnixBased(

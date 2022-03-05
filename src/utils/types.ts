@@ -21,7 +21,7 @@ export interface JsonTask {
 }
 
 export class Task extends vscode.Task {
-  override execution?: vscode.ShellExecution;
+  override execution?: vscode.ProcessExecution;
 }
 
 export class Commands {

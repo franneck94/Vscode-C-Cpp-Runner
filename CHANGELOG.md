@@ -1,10 +1,15 @@
 # C/C++ Runner Change Log
 
-## Version 3.1.1: January 31, 2021
+## Version 3.2.0: March 5, 2022
+
+- **Info**: Now using relative paths for building the binary, hence the console output is shortened and more readable
+- **Bugfix**: Hot fix since extension was not working anymore with VSCode 1.65.0
+
+## Version 3.1.1: January 31, 2022
 
 - **Info**: Updated MSVC instructions
 
-## Version 3.1.0: January 19, 2021
+## Version 3.1.0: January 19, 20212
 
 - **Info**: Removed Makefile deactivation
 - **Info**: Updated README

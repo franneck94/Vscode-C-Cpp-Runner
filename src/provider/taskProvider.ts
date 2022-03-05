@@ -1,41 +1,25 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import { extensionPath } from '../extension';
 import {
 	readJsonFile,
 	replaceBackslashes,
 	writeJsonFile,
 } from '../utils/fileUtils';
-import {
-	Builds,
-	JsonConfiguration,
-	JsonTask,
-	OperatingSystems,
-	Task,
-} from '../utils/types';
+import { Builds, JsonConfiguration, Task } from '../utils/types';
 import { getLaunchConfigIndex } from '../utils/vscodeUtils';
-import { SettingsProvider } from './settingsProvider';
 
 const EXTENSION_NAME = 'C_Cpp_Runner';
 const CONFIG_NAME = 'C/C++ Runner: Debug Session';
 
 export class TaskProvider implements vscode.TaskProvider {
-  private readonly _tasksFile: string;
   public tasks: vscode.Task[] | undefined;
 
   constructor(
-    private readonly _settingsProvider: SettingsProvider,
     private _workspaceFolder: string | undefined,
     private _activeFolder: string | undefined,
     private _buildMode: Builds,
   ) {
-    const templateDirectory = path.join(
-      extensionPath ? extensionPath : '',
-      'templates',
-    );
-    this._tasksFile = path.join(templateDirectory, 'tasks_template.json');
-
     this.getTasks();
   }
 

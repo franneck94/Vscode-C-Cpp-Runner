@@ -19,13 +19,7 @@ import { LaunchProvider } from './provider/launchProvider';
 import { PropertiesProvider } from './provider/propertiesProvider';
 import { SettingsProvider } from './provider/settingsProvider';
 import { TaskProvider } from './provider/taskProvider';
-import {
-	foldersInDir,
-	mkdirRecursive,
-	pathExists,
-	replaceBackslashes,
-	rmdirRecursive,
-} from './utils/fileUtils';
+import { foldersInDir, mkdirRecursive, pathExists } from './utils/fileUtils';
 import * as logger from './utils/logger';
 import { Builds } from './utils/types';
 import {
@@ -190,12 +184,7 @@ function initWorkspaceProvider() {
   }
 
   if (!taskProvider) {
-    taskProvider = new TaskProvider(
-      settingsProvider,
-      workspaceFolder,
-      activeFolder,
-      buildMode,
-    );
+    taskProvider = new TaskProvider(workspaceFolder, activeFolder, buildMode);
   }
 }
 

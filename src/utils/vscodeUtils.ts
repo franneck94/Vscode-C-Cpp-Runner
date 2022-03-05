@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 
 import { extensionState } from '../extension';
 import { filesInDir, pathExists, readJsonFile } from './fileUtils';
-import { JsonConfiguration, JsonSettings } from './types';
+import { JsonConfiguration, JsonSettings, OperatingSystems } from './types';
 
 const STATUS_BAR_ALIGN = vscode.StatusBarAlignment.Left;
 const STATUS_BAR_PRIORITY = 50;
@@ -121,4 +121,35 @@ export function isCmakeProject() {
   }
 
   return cmakeFileFound;
+}
+
+export function getProcessExection(
+  operatingSystem: OperatingSystems,
+  commandLine: string,
+  activeFolder: string,
+) {
+  const options = {
+    cwd: activeFolder,
+  };
+
+  let execution: vscode.ProcessExecution | undefined;
+  if (operatingSystem === OperatingSystems.windows) {
+    execution = new vscode.ProcessExecution(
+      'C:/Windows/System32/cmd.exe',
+      ['/d', '/c', commandLine],
+      options,
+    );
+  } else {
+    let standard_shell = process.env['SHELL'];
+    if (!standard_shell) {
+      standard_shell = '/bin/bash';
+    }
+    execution = new vscode.ProcessExecution(
+      standard_shell,
+      ['-c', commandLine],
+      options,
+    );
+  }
+
+  return execution;
 }

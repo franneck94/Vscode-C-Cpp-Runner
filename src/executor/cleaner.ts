@@ -7,6 +7,7 @@ import {
 	rmdirRecursive,
 } from '../utils/fileUtils';
 import { Builds, OperatingSystems } from '../utils/types';
+import { getProcessExecution } from '../utils/vscodeUtils';
 
 const EXTENSION_NAME = 'C_Cpp_Runner';
 
@@ -31,17 +32,11 @@ export async function executeCleanTask(
 
   const task_name = 'Clean';
 
-  let execution: vscode.ProcessExecution | undefined;
-
-  if (operatingSystem === OperatingSystems.windows) {
-    execution = new vscode.ProcessExecution('C:/Windows/System32/cmd.exe', [
-      '/d',
-      '/c',
-      commandLine,
-    ]);
-  } else {
-    execution = new vscode.ProcessExecution('terminal', [commandLine]);
-  }
+  const execution = getProcessExecution(
+    operatingSystem,
+    commandLine,
+    activeFolder,
+  );
 
   const definition = {
     type: 'shell',

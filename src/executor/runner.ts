@@ -1,7 +1,6 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import { SettingsProvider } from '../provider/settingsProvider';
 import { pathExists } from '../utils/fileUtils';
 import { Builds, OperatingSystems } from '../utils/types';
 
@@ -46,7 +45,7 @@ export async function executeRunTask(
 
   if (!commandLine) return;
 
-  const task_name = 'Build';
+  const task_name = 'Run';
 
   let execution: vscode.ProcessExecution | undefined;
   if (operatingSystem === OperatingSystems.windows) {

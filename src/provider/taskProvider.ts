@@ -58,54 +58,6 @@ export class TaskProvider implements vscode.TaskProvider {
   }
 
   private setTasksDefinition() {
-    const taskType = 'shell';
-    const configJson: JsonTask = readJsonFile(this._tasksFile);
-
-    if (!configJson) {
-      return [];
-    }
-
-    this.tasks = [];
-
-    for (const taskJson of configJson.tasks) {
-      if (taskJson.type !== taskType) {
-        continue;
-      }
-
-      // const shellCommand = `${taskJson.command} ${taskJson.args.join(' ')}`;
-
-      const definition = {
-        type: taskType,
-        task: taskJson.label,
-      };
-      const scope = vscode.TaskScope.Workspace;
-      // let execution: vscode.ProcessExecution;
-
-      // if (this._settingsProvider.operatingSystem === OperatingSystems.windows) {
-      //   const shellOptions: vscode.ProcessExecutionOptions = {
-      //     executable: 'C:/Windows/System32/cmd.exe',
-      //     shellArgs: ['/d', '/c'],
-      //   };
-      //   execution = new vscode.ProcessExecution(shellCommand, shellOptions);
-      // } else {
-      //   execution = new vscode.ProcessExecution(shellCommand);
-      // }
-
-      const execution = new vscode.ProcessExecution(
-        'C:/Windows/System32/cmd.exe',
-        ['/d', '/c', 'COMMAND'],
-      );
-
-      const task = new vscode.Task(
-        definition,
-        scope,
-        taskJson.label,
-        EXTENSION_NAME,
-        execution,
-      );
-      this.tasks.push(task);
-    }
-
     this.addDebugTask();
 
     return this.tasks;

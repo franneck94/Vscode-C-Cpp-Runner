@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import { executeBuildTask } from './executor/builder';
+import { executeCleanTask } from './executor/cleaner';
 import { runDebugger } from './executor/debugger';
 import { executeRunTask } from './executor/runner';
 import { folderHandler } from './handler/folderHandler';
@@ -610,7 +611,7 @@ function initDebugStatusBar() {
   extensionContext?.subscriptions.push(commandDebugDisposable);
 }
 
-function initCleanStatusBar() {
+async function initCleanStatusBar() {
   if (cleanStatusBar) return;
 
   cleanStatusBar = createStatusBarItem();
@@ -621,42 +622,7 @@ function initCleanStatusBar() {
   commandCleanDisposable = vscode.commands.registerCommand(
     commandName,
     async () => {
-      if (
-        !taskProvider ||
-        !taskProvider.tasks ||
-        !activeFolder ||
-        !workspaceFolder
-      ) {
-        const infoMessage = `cleanCallback failed`;
-        logger.log(loggingActive, infoMessage);
-        return;
-      }
-      const cleanTaskIndex = 2;
-      const cleanTask = taskProvider.tasks[cleanTaskIndex];
-
-      if (!cleanTask) return;
-
-      const buildDir = path.join(activeFolder, 'build');
-      const modeDir = path.join(buildDir, `${buildMode}`);
-
-      if (
-        !cleanTask.execution ||
-        !(cleanTask.execution instanceof vscode.ProcessExecution)
-      ) {
-        return;
-      }
-
-      let relativeModeDir = modeDir.replace(workspaceFolder, '');
-      relativeModeDir = replaceBackslashes(relativeModeDir);
-
-      if (cleanTask.execution.args.length !== 3) return;
-
-      cleanTask.execution.args[2] = `echo Cleaning ${relativeModeDir}...`;
-
-      if (!pathExists(modeDir)) return;
-
-      rmdirRecursive(modeDir);
-      await vscode.tasks.executeTask(cleanTask);
+      cleanTaskCallback();
     },
   );
 
@@ -745,6 +711,24 @@ async function runTaskCallback() {
     activeFolder,
     buildMode,
     argumentsString,
+    settingsProvider.operatingSystem,
+  );
+}
+
+async function cleanTaskCallback() {
+  if (
+    !settingsProvider ||
+    !settingsProvider.operatingSystem ||
+    !activeFolder ||
+    !workspaceFolder
+  ) {
+    return;
+  }
+
+  await executeCleanTask(
+    activeFolder,
+    buildMode,
+    workspaceFolder,
     settingsProvider.operatingSystem,
   );
 }

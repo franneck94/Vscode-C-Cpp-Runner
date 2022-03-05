@@ -220,30 +220,17 @@ function executeBuildTaskUnixBased(
   // Exe task
   let objectFilesStr: string = '';
   for (const objectfile of objectFiles) {
-    const hasSpace = objectfile.includes(' ');
-
-    if (hasSpace) {
-      objectFilesStr += ` "${objectfile}"`;
-    } else {
-      objectFilesStr += ` ${objectfile}`;
-    }
+    objectFilesStr += ` ${objectfile}`;
   }
 
   if (objectFilesStr === '') return;
-
-  const executablePathHasSpace = executablePath.includes(' ');
 
   executablePath = executablePath.replace(activeFolder, '');
   if (!executablePath.startsWith('.')) {
     executablePath = '.' + executablePath;
   }
 
-  let fullObjectFileArgs: string = '';
-  if (executablePathHasSpace) {
-    fullObjectFileArgs = `${objectFilesStr} -o "${executablePath}"`;
-  } else {
-    fullObjectFileArgs = `${objectFilesStr} -o ${executablePath}`;
-  }
+  const fullObjectFileArgs = `${objectFilesStr} -o ${executablePath}`;
 
   commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullObjectFileArgs}`;
 

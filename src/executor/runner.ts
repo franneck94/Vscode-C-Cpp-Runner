@@ -18,26 +18,23 @@ export async function executeRunTask(
   if (!pathExists(path.join(activeFolder, modeDir))) return;
 
   let executableName: string;
-  let executableRelativePath: string;
+  let executablePath: string;
 
   if (operatingSystem === OperatingSystems.windows) {
     executableName = `out${buildMode}.exe`;
-    executableRelativePath = path.join(modeDir, executableName);
+    executablePath = `.\\${path.join(modeDir, executableName)}`;
   } else {
     executableName = `out${buildMode}`;
-    executableRelativePath = `./${path.join(modeDir, executableName)}`;
+    executablePath = `./${path.join(modeDir, executableName)}`;
   }
 
-  if (!pathExists(path.join(activeFolder, executableRelativePath))) return;
-
   let commandLine: string = '';
-  const activeFolderHasSpace = activeFolder.includes(' ');
-  const executableRelativePathHasSpace = executableRelativePath.includes(' ');
+  const executablePathHasSpace = executablePath.includes(' ');
 
-  if (activeFolderHasSpace || executableRelativePathHasSpace) {
-    commandLine = `cd "${activeFolder}" && "${executableRelativePath}"`;
+  if (executablePathHasSpace) {
+    commandLine = `"${executablePath}"`;
   } else {
-    commandLine = `cd ${activeFolder} && ${executableRelativePath}`;
+    commandLine = executablePath;
   }
 
   if (argumentsString) {

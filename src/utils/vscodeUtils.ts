@@ -123,7 +123,7 @@ export function isCmakeProject() {
   return cmakeFileFound;
 }
 
-export function getProcessExection(
+export function getProcessExecution(
   operatingSystem: OperatingSystems,
   commandLine: string,
   activeFolder: string,

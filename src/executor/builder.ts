@@ -93,6 +93,9 @@ export async function executeBuildTask(
       '/c',
       commandLine,
     ]);
+  } else if (settingsProvider.operatingSystem === OperatingSystems.linux) {
+    const env = process.env;
+    execution = new vscode.ProcessExecution('terminal', [commandLine]);
   } else {
     execution = new vscode.ProcessExecution('terminal', [commandLine]);
   }

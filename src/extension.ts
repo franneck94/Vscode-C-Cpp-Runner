@@ -18,7 +18,6 @@ import {
 import { LaunchProvider } from './provider/launchProvider';
 import { PropertiesProvider } from './provider/propertiesProvider';
 import { SettingsProvider } from './provider/settingsProvider';
-import { TaskProvider } from './provider/taskProvider';
 import { foldersInDir, mkdirRecursive, pathExists } from './utils/fileUtils';
 import * as logger from './utils/logger';
 import { Builds } from './utils/types';
@@ -34,7 +33,6 @@ import {
 } from './utils/vscodeUtils';
 
 let folderContextMenuDisposable: vscode.Disposable | undefined;
-let taskProviderDisposable: Readonly<vscode.Disposable | undefined>;
 let commandHandlerDisposable: vscode.Disposable | undefined;
 let commandToggleStateDisposable: vscode.Disposable | undefined;
 let commandFolderDisposable: vscode.Disposable | undefined;
@@ -55,7 +53,6 @@ let eventDeleteFilesDisposable: vscode.Disposable | undefined;
 let settingsProvider: SettingsProvider | undefined;
 let launchProvider: LaunchProvider | undefined;
 let propertiesProvider: PropertiesProvider | undefined;
-let taskProvider: TaskProvider | undefined;
 
 let folderStatusBar: vscode.StatusBarItem | undefined;
 let modeStatusBar: vscode.StatusBarItem | undefined;
@@ -140,7 +137,6 @@ export function deactivate() {
   disposeItem(runStatusBar);
   disposeItem(debugStatusBar);
   disposeItem(cleanStatusBar);
-  disposeItem(taskProviderDisposable);
   disposeItem(folderContextMenuDisposable);
   disposeItem(commandHandlerDisposable);
   disposeItem(commandToggleStateDisposable);
@@ -182,29 +178,13 @@ function initWorkspaceProvider() {
       activeFolder,
     );
   }
-
-  if (!taskProvider) {
-    taskProvider = new TaskProvider(workspaceFolder, activeFolder, buildMode);
-  }
 }
 
 function initWorkspaceDisposables() {
-  initTaskProviderDisposable();
   initArgumentParser();
   initContextMenuDisposable();
   initReset();
   initToggleDisposable();
-}
-
-function initTaskProviderDisposable() {
-  if (!taskProvider || taskProviderDisposable) return;
-
-  taskProviderDisposable = vscode.tasks.registerTaskProvider(
-    EXTENSION_NAME,
-    taskProvider,
-  );
-
-  extensionContext?.subscriptions.push(taskProviderDisposable);
 }
 
 function initToggleDisposable() {
@@ -290,7 +270,6 @@ function initConfigurationChangeDisposable() {
         settingsProvider?.updateFileContent();
         propertiesProvider?.updateFileContent();
         launchProvider?.updateFileContent();
-        taskProvider?.getTasks();
       }
     },
   );
@@ -344,11 +323,21 @@ function initFileDeleteDisposable() {
         if (workspaceFolder && oldName === workspaceFolder) {
           workspaceFolder = undefined;
           updateFolderData();
-          updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+          updateFolderStatus(
+            folderStatusBar,
+            workspaceFolder,
+            activeFolder,
+            showStatusBarItems,
+          );
         } else if (activeFolder && oldName === activeFolder) {
           activeFolder = undefined;
           updateFolderData();
-          updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+          updateFolderStatus(
+            folderStatusBar,
+            workspaceFolder,
+            activeFolder,
+            showStatusBarItems,
+          );
         }
       });
     },
@@ -380,11 +369,6 @@ function updateFolderData() {
   initWorkspaceDisposables();
   argumentsString = '';
 
-  if (taskProvider) {
-    taskProvider.updateFolderData(workspaceFolder, activeFolder);
-    taskProvider.updateModeData(buildMode);
-  }
-
   if (workspaceFolder && activeFolder) {
     if (settingsProvider) {
       settingsProvider.updateFolderData(workspaceFolder);
@@ -404,7 +388,12 @@ function updateFolderData() {
   }
 
   if (folderStatusBar) {
-    updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+    updateFolderStatus(
+      folderStatusBar,
+      workspaceFolder,
+      activeFolder,
+      showStatusBarItems,
+    );
   }
   if (modeStatusBar) {
     updateModeStatus(
@@ -446,10 +435,20 @@ function initFolderStatusBar() {
         activeFolder = workspaceFolderFs;
         updateFolderData();
       } else {
-        updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+        updateFolderStatus(
+          folderStatusBar,
+          workspaceFolder,
+          activeFolder,
+          showStatusBarItems,
+        );
       }
     } else {
-      updateFolderStatus(folderStatusBar, taskProvider, showStatusBarItems);
+      updateFolderStatus(
+        folderStatusBar,
+        workspaceFolder,
+        activeFolder,
+        showStatusBarItems,
+      );
     }
   }
 
@@ -489,18 +488,13 @@ function initModeStatusBar() {
       const pickedMode = await modeHandler();
       if (pickedMode) {
         buildMode = pickedMode;
-        if (taskProvider) {
-          taskProvider.updateModeData(buildMode);
-        }
+
         updateModeStatus(
           modeStatusBar,
           showStatusBarItems,
           activeFolder,
           buildMode,
         );
-
-        if (!taskProvider) return;
-        taskProvider.updateModeData(buildMode);
 
         if (!launchProvider) return;
         launchProvider.updateModeData(buildMode);
@@ -543,7 +537,6 @@ function initReset() {
     async () => {
       settingsProvider?.reset();
       propertiesProvider?.updateFileContent();
-      taskProvider?.getTasks();
       launchProvider?.updateFileContent();
     },
   );
@@ -723,5 +716,8 @@ async function cleanTaskCallback() {
 }
 
 function debugTaskCallback() {
+  if (!activeFolder) return;
+  if (!workspaceFolder) return;
+
   runDebugger(activeFolder, workspaceFolder, buildMode);
 }

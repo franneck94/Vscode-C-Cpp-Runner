@@ -71,7 +71,7 @@ These arguments will be stored in the launch.json config for debugging the binar
 
 If you now run or debug your program these values will be fed into **argc**/**argv**.  
 The stored arguments will be reset after selecting a new active folder.  
-Note: Do not use ' or " for any arguments.
+Note: For strings with whitespaces please use \"\".
 
 ### Include & Exclude Folders for Selection
 

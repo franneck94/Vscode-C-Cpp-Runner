@@ -3,9 +3,9 @@
 int main()
 {
 #ifndef NDEBUG
-    printf("Debug Mode");
+    printf("Debug Mode - Nested 2");
 #else
-    printf("Release Mode");
+    printf("Release Mode - Nested 2");
 #endif
 
     return 0;

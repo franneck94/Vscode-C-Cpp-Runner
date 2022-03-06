@@ -8,13 +8,10 @@ import { getLaunchConfigIndex } from '../utils/vscodeUtils';
 const CONFIG_NAME = 'C/C++ Runner: Debug Session';
 
 export async function runDebugger(
-  activeFolder: string | undefined,
-  workspaceFolder: string | undefined,
+  activeFolder: string,
+  workspaceFolder: string,
   buildMode: Builds,
 ) {
-  if (!activeFolder) return;
-  if (!workspaceFolder) return;
-
   const uriWorkspaceFolder = vscode.Uri.file(workspaceFolder);
   const folder = vscode.workspace.getWorkspaceFolder(uriWorkspaceFolder);
   const launchPath = path.join(workspaceFolder, '.vscode', 'launch.json');

@@ -1,5 +1,10 @@
 # C/C++ Runner Change Log
 
+## Version 3.2.2: March 6, 2022
+
+- **Internal**: Removed task provider
+- **Regression**: Fixed CMD arguments bug with whitespaces
+
 ## Version 3.2.1: March 5, 2022
 
 - **Regression**: Fixed problem with whitespaces in workspace dir

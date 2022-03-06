@@ -127,7 +127,15 @@ export class LaunchProvider extends FileProvider {
   public updateArgumentsData(argumentsString: string | undefined) {
     if (argumentsString !== undefined) {
       if (argumentsString.includes(' ')) {
-        this.argumentsString = argumentsString.split(' ');
+        if (!argumentsString.includes('"')) {
+          this.argumentsString = argumentsString.split(' ');
+        } else {
+          this.argumentsString = argumentsString.split('" ');
+        }
+
+        this.argumentsString = this.argumentsString.map((arg: string) =>
+          arg.replace('"', ''),
+        );
       } else {
         this.argumentsString = [argumentsString];
       }

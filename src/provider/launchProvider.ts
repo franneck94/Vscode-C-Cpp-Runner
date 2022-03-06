@@ -23,7 +23,7 @@ const CONFIG_NAME = 'C/C++ Runner: Debug Session';
 
 export class LaunchProvider extends FileProvider {
   public buildMode: Builds = Builds.debug;
-  public argumentsString: string | undefined;
+  public argumentsString: string[] | undefined;
 
   constructor(
     protected settings: SettingsProvider,
@@ -126,7 +126,11 @@ export class LaunchProvider extends FileProvider {
 
   public updateArgumentsData(argumentsString: string | undefined) {
     if (argumentsString !== undefined) {
-      this.argumentsString = argumentsString;
+      if (argumentsString.includes(' ')) {
+        this.argumentsString = argumentsString.split(' ');
+      } else {
+        this.argumentsString = [argumentsString];
+      }
     }
   }
 
@@ -167,7 +171,7 @@ export class LaunchProvider extends FileProvider {
     launchTemplate.configurations[0].externalConsole = true;
 
     if (this.argumentsString) {
-      launchTemplate.configurations[0].args = [this.argumentsString];
+      launchTemplate.configurations[0].args = this.argumentsString;
     } else {
       launchTemplate.configurations[0].args = [''];
     }
@@ -223,7 +227,7 @@ export class LaunchProvider extends FileProvider {
     }
 
     if (this.argumentsString) {
-      launchTemplate.configurations[0].args = [this.argumentsString];
+      launchTemplate.configurations[0].args = this.argumentsString;
     } else {
       launchTemplate.configurations[0].args = [''];
     }

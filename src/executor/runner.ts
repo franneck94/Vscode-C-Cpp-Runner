@@ -2,10 +2,12 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import { pathExists } from '../utils/fileUtils';
-import { Builds, OperatingSystems, Task } from '../utils/types';
+import { Builds, OperatingSystems } from '../utils/types';
+import { getProcessExecution } from '../utils/vscodeUtils';
+
+const EXTENSION_NAME = 'C_Cpp_Runner';
 
 export async function executeRunTask(
-  task: Task,
   activeFolder: string,
   buildMode: Builds,
   argumentsString: string | undefined,
@@ -16,34 +18,51 @@ export async function executeRunTask(
   if (!pathExists(path.join(activeFolder, modeDir))) return;
 
   let executableName: string;
-  let executableRelativePath: string;
+  let executablePath: string;
 
   if (operatingSystem === OperatingSystems.windows) {
     executableName = `out${buildMode}.exe`;
-    executableRelativePath = path.join(modeDir, executableName);
+    executablePath = `.\\${path.join(modeDir, executableName)}`;
   } else {
     executableName = `out${buildMode}`;
-    executableRelativePath = `./${path.join(modeDir, executableName)}`;
+    executablePath = `./${path.join(modeDir, executableName)}`;
   }
 
-  if (!pathExists(path.join(activeFolder, executableRelativePath))) return;
+  let commandLine: string = '';
+  const executablePathHasSpace = executablePath.includes(' ');
 
-  let executableCall: string = '';
-  const activeFolderHasSpace = activeFolder.includes(' ');
-  const executableRelativePathHasSpace = executableRelativePath.includes(' ');
-
-  if (activeFolderHasSpace || executableRelativePathHasSpace) {
-    executableCall = `cd "${activeFolder}" && "${executableRelativePath}"`;
+  if (executablePathHasSpace) {
+    commandLine = `"${executablePath}"`;
   } else {
-    executableCall = `cd ${activeFolder} && ${executableRelativePath}`;
+    commandLine = executablePath;
   }
 
   if (argumentsString) {
-    executableCall += ` ${argumentsString}`;
+    commandLine += ` ${argumentsString}`;
   }
 
-  if (task && task.execution) {
-    task.execution.commandLine = executableCall;
-    await vscode.tasks.executeTask(task);
-  }
+  if (!commandLine) return;
+
+  const task_name = 'Run';
+
+  const execution = getProcessExecution(
+    operatingSystem,
+    commandLine,
+    activeFolder,
+  );
+
+  const definition = {
+    type: 'shell',
+    task: task_name,
+  };
+
+  const task = new vscode.Task(
+    definition,
+    vscode.TaskScope.Workspace,
+    task_name,
+    EXTENSION_NAME,
+    execution,
+  );
+
+  await vscode.tasks.executeTask(task);
 }

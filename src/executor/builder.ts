@@ -11,10 +11,12 @@ import {
 	mkdirRecursive,
 	pathExists,
 } from '../utils/fileUtils';
-import { Builds, Languages, OperatingSystems, Task } from '../utils/types';
+import { Builds, Languages, OperatingSystems } from '../utils/types';
+import { getProcessExecution } from '../utils/vscodeUtils';
+
+const EXTENSION_NAME = 'C_Cpp_Runner';
 
 export async function executeBuildTask(
-  task: Task,
   settingsProvider: SettingsProvider,
   activeFolder: string,
   buildMode: Builds,
@@ -44,8 +46,10 @@ export async function executeBuildTask(
     mkdirRecursive(modeDir);
   }
 
+  const operatingSystem = settingsProvider.operatingSystem;
+
   let executableName: string;
-  if (settingsProvider.operatingSystem === OperatingSystems.windows) {
+  if (operatingSystem === OperatingSystems.windows) {
     executableName = `out${buildMode}.exe`;
   } else {
     executableName = `out${buildMode}`;
@@ -54,10 +58,7 @@ export async function executeBuildTask(
   const executablePath = path.join(modeDir, executableName);
 
   let commandLine: string | undefined;
-  if (
-    settingsProvider.operatingSystem === OperatingSystems.windows &&
-    settingsProvider.isMsvc
-  ) {
+  if (operatingSystem === OperatingSystems.windows && settingsProvider.isMsvc) {
     commandLine = executeBuildTaskMsvcBased(
       settingsProvider,
       activeFolder,
@@ -81,9 +82,29 @@ export async function executeBuildTask(
     );
   }
 
-  if (!task || !task.execution || commandLine === undefined) return;
+  if (!commandLine) return;
 
-  task.execution.commandLine = commandLine;
+  const task_name = 'Build';
+
+  const definition = {
+    type: 'shell',
+    task: task_name,
+  };
+
+  const execution = getProcessExecution(
+    operatingSystem,
+    commandLine,
+    activeFolder,
+  );
+
+  const task = new vscode.Task(
+    definition,
+    vscode.TaskScope.Workspace,
+    task_name,
+    EXTENSION_NAME,
+    execution,
+  );
+
   await vscode.tasks.executeTask(task);
 }
 
@@ -120,10 +141,6 @@ function executeBuildTaskUnixBased(
   const includePaths = settingsProvider.includePaths;
   const compilerArgs = settingsProvider.compilerArgs;
   const linkerArgs = settingsProvider.linkerArgs;
-
-  if (!includePaths.includes(activeFolder)) {
-    includePaths.push(activeFolder);
-  }
 
   let fullCompilerArgs = '';
   let fullLinkerArgs = '';
@@ -176,17 +193,21 @@ function executeBuildTaskUnixBased(
     idx++;
 
     const fileBaseName = path.parse(file).name;
-    const filePath = path.join(activeFolder, file);
-    const objectFilePath = path.join(modeDir, fileBaseName + '.o');
+    modeDir = modeDir.replace(activeFolder, '');
+
+    let objectFilePath = path.join(modeDir, fileBaseName + '.o');
+    if (!objectFilePath.startsWith('.')) {
+      objectFilePath = '.' + objectFilePath;
+    }
 
     objectFiles.push(objectFilePath);
 
-    const hasSpace = filePath.includes(' ');
+    const hasSpace = file.includes(' ');
     let fullFileArgs;
     if (hasSpace) {
-      fullFileArgs = `-c "${filePath}" -o "${objectFilePath}"`;
+      fullFileArgs = `-c "${file}" -o "${objectFilePath}"`;
     } else {
-      fullFileArgs = `-c ${filePath} -o ${objectFilePath}`;
+      fullFileArgs = `-c ${file} -o ${objectFilePath}`;
     }
 
     if (idx === 0) {
@@ -199,30 +220,25 @@ function executeBuildTaskUnixBased(
   // Exe task
   let objectFilesStr: string = '';
   for (const objectfile of objectFiles) {
-    const hasSpace = objectfile.includes(' ');
-
-    if (hasSpace) {
-      objectFilesStr += ` "${objectfile}"`;
-    } else {
-      objectFilesStr += ` ${objectfile}`;
-    }
+    objectFilesStr += ` ${objectfile}`;
   }
 
   if (objectFilesStr === '') return;
 
-  const executablePathHasSpace = executablePath.includes(' ');
-  let fullObjectFileArgs: string = '';
-  if (executablePathHasSpace) {
-    fullObjectFileArgs = `${objectFilesStr} -o "${executablePath}"`;
-  } else {
-    fullObjectFileArgs = `${objectFilesStr} -o ${executablePath}`;
+  executablePath = executablePath.replace(activeFolder, '');
+  if (!executablePath.startsWith('.')) {
+    executablePath = '.' + executablePath;
   }
+
+  const fullObjectFileArgs = `${objectFilesStr} -o ${executablePath}`;
 
   commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullObjectFileArgs}`;
 
   if (fullLinkerArgs && fullLinkerArgs !== '') {
     commandLine += fullLinkerArgs;
   }
+
+  commandLine = commandLine.replace('  ', ' ');
 
   return commandLine;
 }

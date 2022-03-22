@@ -1,28 +1,20 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import { TaskProvider } from '../provider/taskProvider';
 import { replaceBackslashes } from '../utils/fileUtils';
 import { Builds } from '../utils/types';
 
 export function updateFolderStatus(
   status: vscode.StatusBarItem | undefined,
-  taskProvider: TaskProvider | undefined,
+  workspaceFolder: string | undefined,
+  activeFolder: string | undefined,
   showStatusBarItems: boolean,
 ) {
   if (!status) return;
 
-  if (
-    taskProvider &&
-    taskProvider.workspaceFolder &&
-    taskProvider.activeFolder
-  ) {
-    const workspaceFolder = taskProvider.workspaceFolder;
+  if (workspaceFolder && activeFolder) {
     const workspaceName = path.basename(workspaceFolder);
-    let text = taskProvider.activeFolder.replace(
-      workspaceFolder,
-      workspaceName,
-    );
+    let text = activeFolder.replace(workspaceFolder, workspaceName);
 
     text = replaceBackslashes(text);
     const dirs = text.split('/');

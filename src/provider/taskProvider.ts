@@ -2,11 +2,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import { extensionPath } from '../extension';
-import {
-	readJsonFile,
-	replaceBackslashes,
-	writeJsonFile,
-} from '../utils/fileUtils';
+import { readJsonFile, writeJsonFile } from '../utils/fileUtils';
 import {
 	Builds,
 	JsonConfiguration,
@@ -26,9 +22,9 @@ export class TaskProvider implements vscode.TaskProvider {
 
   constructor(
     private readonly _settingsProvider: SettingsProvider,
-    private _workspaceFolder: string | undefined,
-    private _activeFolder: string | undefined,
-    private _buildMode: Builds,
+    public workspaceFolder: string | undefined,
+    public activeFolder: string | undefined,
+    public buildMode: Builds,
   ) {
     const templateDirectory = path.join(
       extensionPath ? extensionPath : '',
@@ -159,61 +155,5 @@ export class TaskProvider implements vscode.TaskProvider {
     }
 
     return undefined;
-  }
-
-  private addDebugTask() {
-    if (!this.tasks) return;
-    if (!this.workspaceFolder || !this.activeFolder) return;
-
-    const folder = this.activeFolder.replace(
-      this.workspaceFolder,
-      path.basename(this.workspaceFolder),
-    );
-    let label = `Debug: ${this.activeFolder}`;
-    const splitted = label.split(': ');
-    if (!splitted[1]) return;
-    label = label.replace(splitted[1], folder);
-    label = replaceBackslashes(label);
-    const definition = {
-      type: 'shell',
-      task: label,
-    };
-    const problemMatcher = '$gcc';
-    const scope = vscode.TaskScope.Workspace;
-
-    const task = new Task(
-      definition,
-      scope,
-      label,
-      EXTENSION_NAME,
-      undefined,
-      problemMatcher,
-    );
-
-    this.tasks.push(task);
-  }
-
-  public get buildMode() {
-    return this._buildMode;
-  }
-
-  public set buildMode(value: Builds) {
-    this._buildMode = value;
-  }
-
-  public get activeFolder() {
-    return this._activeFolder;
-  }
-
-  public set activeFolder(value: string | undefined) {
-    this._activeFolder = value;
-  }
-
-  public get workspaceFolder() {
-    return this._workspaceFolder;
-  }
-
-  public set workspaceFolder(value: string | undefined) {
-    this._workspaceFolder = value;
   }
 }

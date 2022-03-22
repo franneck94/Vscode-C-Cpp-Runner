@@ -50,6 +50,9 @@ export async function folderHandler(
       );
     }
 
+    // XXX: Quick fix for double folder names due to include pattern
+    const foldersSet = new Set(foldersList);
+    foldersList = Array.from(foldersSet);
     foldersList = naturalSort(foldersList);
   });
 

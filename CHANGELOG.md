@@ -1,5 +1,10 @@
 # C/C++ Runner Change Log
 
+## Version 3.2.3: March 22, 2022
+
+- **Bugfix**: Fixed cmd argument bugs
+- **Bugfix**: Fixed double folder entries in folder selection
+
 ## Version 3.2.2: March 6, 2022
 
 - **Internal**: Removed task provider

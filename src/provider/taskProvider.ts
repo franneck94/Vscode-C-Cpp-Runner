@@ -105,10 +105,9 @@ export class TaskProvider implements vscode.TaskProvider {
         execution,
         problemMatcher,
       );
+
       this.tasks.push(task);
     }
-
-    this.addDebugTask();
 
     return this.tasks;
   }

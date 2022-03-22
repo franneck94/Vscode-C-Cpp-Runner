@@ -225,7 +225,7 @@ export class LaunchProvider extends FileProvider {
     if (this.argumentsString) {
       launchTemplate.configurations[0].args = [this.argumentsString];
     } else {
-      launchTemplate.configurations[0].args = [''];
+      launchTemplate.configurations[0].args = [];
     }
 
     if (this.settings.operatingSystem === OperatingSystems.windows) {

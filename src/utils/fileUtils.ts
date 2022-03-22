@@ -239,3 +239,12 @@ export function getBasename(pathStr: string) {
 
   return pathStr;
 }
+
+export function getOccurenceIndicies(text: string, char: string) {
+  const indices = [];
+  for (let i = 0; i < text.length; i++) {
+    if (text[i] === char) indices.push(i);
+  }
+
+  return indices;
+}

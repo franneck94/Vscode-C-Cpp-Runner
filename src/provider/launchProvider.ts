@@ -1,6 +1,7 @@
 import * as path from 'path';
 
 import {
+	getOccurenceIndicies,
 	pathExists,
 	readJsonFile,
 	replaceBackslashes,
@@ -125,21 +126,54 @@ export class LaunchProvider extends FileProvider {
   }
 
   public updateArgumentsData(argumentsString: string | undefined) {
-    if (argumentsString !== undefined) {
-      if (argumentsString.includes(' ')) {
-        if (!argumentsString.includes('"')) {
-          this.argumentsString = argumentsString.split(' ');
-        } else {
-          this.argumentsString = argumentsString.split('" ');
-        }
+    if (argumentsString === undefined) return;
 
-        this.argumentsString = this.argumentsString.map((arg: string) =>
-          arg.replace('"', ''),
-        );
-      } else {
-        this.argumentsString = [argumentsString];
-      }
+    if (argumentsString === '') {
+      this.argumentsString = [];
+      return;
     }
+
+    if (!argumentsString.includes(' ')) {
+      this.argumentsString = [argumentsString];
+    }
+
+    if (!argumentsString.includes('"')) {
+      this.argumentsString = argumentsString.split(' ');
+      return;
+    }
+
+    const indicies = getOccurenceIndicies(argumentsString, '"');
+    this.argumentsString = [];
+
+    const strsToReplace: string[] = [];
+    if (!indicies || indicies.length < 2) return;
+
+    for (let i = 0; i < indicies.length; i += 2) {
+      const sub = argumentsString.slice(
+        (indicies[i] as number) + 1,
+        indicies[i + 1],
+      );
+      this.argumentsString.push(sub);
+      strsToReplace.push(sub);
+    }
+
+    for (const strReplace of strsToReplace) {
+      argumentsString = argumentsString.replace(strReplace, '');
+    }
+
+    argumentsString = argumentsString.replace(/"/g, '');
+    if (argumentsString.startsWith(' ')) {
+      argumentsString = argumentsString.slice(1);
+    }
+    if (argumentsString.endsWith(' ')) {
+      argumentsString = argumentsString.slice(0, argumentsString.length - 2);
+    }
+
+    this.argumentsString.push(
+      ...argumentsString.split(' ').filter((str: string) => Boolean(str)),
+    );
+
+    this.argumentsString.map((str: string) => str.replace(/"/g, ''));
   }
 
   public changeCallback() {
@@ -181,7 +215,7 @@ export class LaunchProvider extends FileProvider {
     if (this.argumentsString) {
       launchTemplate.configurations[0].args = this.argumentsString;
     } else {
-      launchTemplate.configurations[0].args = [''];
+      launchTemplate.configurations[0].args = [];
     }
 
     launchTemplate.configurations[0].cwd = replaceBackslashes(
@@ -234,7 +268,7 @@ export class LaunchProvider extends FileProvider {
       }
     }
 
-    if (this.argumentsString) {
+    if (this.argumentsString && this.argumentsString.length > 0) {
       launchTemplate.configurations[0].args = this.argumentsString;
     } else {
       launchTemplate.configurations[0].args = [];

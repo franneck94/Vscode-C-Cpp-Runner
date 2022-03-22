@@ -348,10 +348,7 @@
     "compile": "npm run webpack",
     "compile-watch": "npm run webpack-watch",
     "watch": "tsc -watch -p ./",
-    "lint": "eslint src --ext ts",
-    "pretest": "tsc -p ./ && tsc -p test.tsconfig.json",
-    "test": "node ./dist/test/unitTest/runTest.js",
-    "integrationTest": "node ./dist/test/integrationTest/runTest.js"
+    "lint": "eslint src --ext ts"
   },
   "devDependencies": {
     "@types/glob": "^7.1.3",

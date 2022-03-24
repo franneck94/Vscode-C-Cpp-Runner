@@ -34,6 +34,7 @@ export async function executeCleanTask(
 
   const execution = getProcessExecution(
     operatingSystem,
+    false,
     commandLine,
     activeFolder,
   );

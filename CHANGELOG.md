@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 3.2.4: March 24, 2022
+
+- **Regression**: Fixed MSVC compiling issue
+
 ## Version 3.2.3: March 22, 2022
 
 - **Bugfix**: Fixed cmd argument bugs

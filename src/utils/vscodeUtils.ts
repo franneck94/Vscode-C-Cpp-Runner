@@ -125,6 +125,7 @@ export function isCmakeProject() {
 
 export function getProcessExecution(
   operatingSystem: OperatingSystems,
+  isMsvcBuildTask: boolean,
   commandLine: string,
   activeFolder: string,
 ) {
@@ -132,13 +133,21 @@ export function getProcessExecution(
     cwd: activeFolder,
   };
 
-  let execution: vscode.ProcessExecution | undefined;
+  let execution: vscode.ProcessExecution | vscode.ShellExecution | undefined;
   if (operatingSystem === OperatingSystems.windows) {
-    execution = new vscode.ProcessExecution(
-      'C:/Windows/System32/cmd.exe',
-      ['/d', '/c', commandLine],
-      options,
-    );
+    if (isMsvcBuildTask) {
+      const shellOptions: vscode.ShellExecutionOptions = {
+        executable: 'C:/Windows/System32/cmd.exe',
+        shellArgs: ['/d', '/c'],
+      };
+      execution = new vscode.ShellExecution(commandLine, shellOptions);
+    } else {
+      execution = new vscode.ProcessExecution(
+        'C:/Windows/System32/cmd.exe',
+        ['/d', '/c', commandLine],
+        options,
+      );
+    }
   } else {
     let standard_shell = process.env['SHELL'];
     if (!standard_shell) {

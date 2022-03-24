@@ -93,6 +93,7 @@ export async function executeBuildTask(
 
   const execution = getProcessExecution(
     operatingSystem,
+    settingsProvider.isMsvc,
     commandLine,
     activeFolder,
   );

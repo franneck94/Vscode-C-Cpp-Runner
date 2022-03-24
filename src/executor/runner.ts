@@ -47,6 +47,7 @@ export async function executeRunTask(
 
   const execution = getProcessExecution(
     operatingSystem,
+    false,
     commandLine,
     activeFolder,
   );

@@ -42,26 +42,8 @@ export function getLaunchConfigIndex(
   return undefined;
 }
 
-export function updateLoggingState() {
-  extensionState?.update(
-    'loggingActive',
-    vscode.workspace
-      .getConfiguration('C_Cpp_Runner')
-      .get('loggingActive', false),
-  );
-}
-
 export function updateActivationState(newState: boolean) {
   extensionState?.update('activatedExtension', newState);
-}
-
-export function getLoggingState() {
-  if (extensionState) {
-    const loggingActive = <boolean>extensionState.get('loggingActive');
-    return loggingActive;
-  }
-
-  return false;
 }
 
 export function getActivationState() {

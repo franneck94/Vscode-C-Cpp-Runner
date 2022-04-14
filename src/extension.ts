@@ -19,17 +19,14 @@ import { LaunchProvider } from './provider/launchProvider';
 import { PropertiesProvider } from './provider/propertiesProvider';
 import { SettingsProvider } from './provider/settingsProvider';
 import { foldersInDir, mkdirRecursive, pathExists } from './utils/fileUtils';
-import * as logger from './utils/logger';
 import { Builds } from './utils/types';
 import {
 	createStatusBarItem,
 	disposeItem,
 	getActivationState,
-	getLoggingState,
 	isCmakeProject,
 	setContextValue,
 	updateActivationState,
-	updateLoggingState,
 } from './utils/vscodeUtils';
 
 let folderContextMenuDisposable: vscode.Disposable | undefined;
@@ -73,7 +70,6 @@ const EXTENSION_NAME = 'C_Cpp_Runner';
 export let extensionContext: vscode.ExtensionContext | undefined;
 export let extensionState: vscode.Memento | undefined;
 export let extensionPath: string | undefined;
-export let loggingActive: boolean = false;
 
 export function activate(context: vscode.ExtensionContext) {
   if (
@@ -99,15 +95,12 @@ export function activate(context: vscode.ExtensionContext) {
   if (cmakeFileFound) {
     showStatusBarItems = false;
     createExtensionFiles = false;
-    const infoMessage = `CMake Project found. UI disabled.`;
-    logger.log(loggingActive, infoMessage);
   }
 
   extensionContext = context;
   extensionPath = context.extensionPath;
   extensionState = context.workspaceState;
-  updateLoggingState();
-  loggingActive = getLoggingState();
+
   setContextValue(`${EXTENSION_NAME}:activatedExtension`, true);
   updateActivationState(true);
 
@@ -219,9 +212,6 @@ function initToggleDisposable() {
         );
         updateActivationState(!extensionIsDisabled);
       }
-
-      const infoMessage = `Called toggleExtensionState.`;
-      logger.log(loggingActive, infoMessage);
     },
   );
 
@@ -243,9 +233,6 @@ function initContextMenuDisposable() {
       activeFolder = clickedUriItem.fsPath;
       workspaceFolder = workspaceItem.uri.fsPath;
       updateFolderData();
-
-      const infoMessage = `Called folderContextMenu.`;
-      logger.log(loggingActive, infoMessage);
     },
   );
 
@@ -289,9 +276,6 @@ function initFileRenameDisposable() {
         const oldName = file.oldUri.fsPath;
         const newName = file.newUri.fsPath;
 
-        const infoMessage = `Renaming: ${oldName} -> ${newName}.`;
-        logger.log(loggingActive, infoMessage);
-
         if (workspaceFolder && oldName === workspaceFolder) {
           workspaceFolder = newName;
           updateFolderData();
@@ -316,9 +300,6 @@ function initFileDeleteDisposable() {
 
       e.files.forEach((file) => {
         const oldName = file.fsPath;
-
-        const infoMessage = `Deleting: ${oldName}.`;
-        logger.log(loggingActive, infoMessage);
 
         if (workspaceFolder && oldName === workspaceFolder) {
           workspaceFolder = undefined;
@@ -463,9 +444,6 @@ function initFolderStatusBar() {
         activeFolder = ret.activeFolder;
         workspaceFolder = ret.workspaceFolder;
         updateFolderData();
-      } else {
-        const infoMessage = `Folder callback aborted.`;
-        logger.log(loggingActive, infoMessage);
       }
     },
   );
@@ -499,9 +477,6 @@ function initModeStatusBar() {
         if (!launchProvider) return;
         launchProvider.updateModeData(buildMode);
         launchProvider.updateFileContent();
-      } else {
-        const infoMessage = `Mode callback aborted.`;
-        logger.log(loggingActive, infoMessage);
       }
     },
   );

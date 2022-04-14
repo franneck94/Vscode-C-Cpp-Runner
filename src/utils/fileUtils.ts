@@ -3,8 +3,6 @@ import * as JSON5 from 'json5';
 import * as minimatch from 'minimatch';
 import * as path from 'path';
 
-import { loggingActive } from '../extension';
-import * as logger from './logger';
 import { JsonSettings, Languages } from './types';
 
 export function replaceBackslashes(text: string) {
@@ -14,19 +12,13 @@ export function replaceBackslashes(text: string) {
 export function mkdirRecursive(dir: string) {
   try {
     fs.mkdirSync(dir, { recursive: true });
-  } catch (err) {
-    const errorMessage = `mkdirRecursive: ${err}`;
-    logger.log(loggingActive, errorMessage);
-  }
+  } catch (err) {}
 }
 
 export function rmdirRecursive(dir: string) {
   try {
     fs.rmdirSync(dir, { recursive: true });
-  } catch (err) {
-    const errorMessage = `rmdirSync: ${err}`;
-    logger.log(loggingActive, errorMessage);
-  }
+  } catch (err) {}
 }
 
 export function filterOnString(names: string[], filterName: string) {
@@ -106,12 +98,7 @@ export function getDirectoriesRecursive(dir: fs.PathLike) {
 export function readDir(dir: string | fs.PathLike) {
   try {
     return fs.readdirSync(dir, { withFileTypes: true });
-  } catch (err) {
-    const errorMessage = `readDir: ${err}`;
-    logger.log(loggingActive, errorMessage);
-
-    return undefined;
-  }
+  } catch (err) {}
 }
 
 export function filesInDir(dir: string) {
@@ -169,12 +156,7 @@ export function readJsonFile(filepath: string) {
   try {
     const fileContent = fs.readFileSync(filepath, 'utf-8');
     configJson = JSON5.parse(fileContent);
-  } catch (err) {
-    const errorMessage = `readJsonFile: ${err}`;
-    logger.log(loggingActive, errorMessage);
-
-    return undefined;
-  }
+  } catch (err) {}
 
   return configJson;
 }
@@ -192,11 +174,7 @@ export function writeJsonFile(outputFilePath: string, jsonContent: any) {
 
   try {
     fs.writeFileSync(outputFilePath, jsonString);
-  } catch (err) {
-    const errorMessage = `writeJsonFile: ${err}`;
-    logger.log(loggingActive, errorMessage);
-    return;
-  }
+  } catch (err) {}
 }
 
 export function naturalSort(names: string[]) {

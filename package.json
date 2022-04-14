@@ -2,7 +2,7 @@
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
   "description": "🚀 Compile, run and debug single or multiple C/C++ files with ease. 🚀",
-  "version": "3.2.4",
+  "version": "3.2.5",
   "publisher": "franneck94",
   "license": "MIT",
   "icon": "icon.png",
@@ -11,7 +11,7 @@
     "theme": "dark"
   },
   "engines": {
-    "vscode": "^1.65.0"
+    "vscode": "^1.66.0"
   },
   "categories": [
     "Programming Languages",
@@ -234,7 +234,7 @@
         "C_Cpp_Runner.msvcBatchPath": {
           "type": "string",
           "default": "",
-          "description": "The path to the MSVC batch file (Needed to compile/debug with MSVC Compiler).",
+          "description": "The path to the MSVC batch file (Needed to use the Visual Studio Compiler).",
           "scope": "resource"
         },
         "C_Cpp_Runner.cStandard": {
@@ -313,7 +313,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Include glob patterns for folder selection. (Run before exlcude pattern)",
+          "description": "Include glob patterns for folder selection. (Ran before exlcude pattern)",
           "scope": "resource"
         },
         "C_Cpp_Runner.excludeSearch": {
@@ -329,13 +329,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Exclude glob patterns for folder selection. (Run after include pattern)",
-          "scope": "resource"
-        },
-        "C_Cpp_Runner.loggingActive": {
-          "type": "boolean",
-          "default": false,
-          "description": "Whether to enable logging to the distput channel or not (Reload required).",
+          "description": "Exclude glob patterns for folder selection. (Ran after include pattern)",
           "scope": "resource"
         }
       }

@@ -1,5 +1,10 @@
 # C/C++ Runner Change Log
 
+## Version 3.3.0: April 14, 2022
+
+- **Info**: For debugging the internal console is now used on all operating systems
+- **Info**: Removed not working logging
+
 ## Version 3.2.4: March 24, 2022
 
 - **Regression**: Fixed MSVC compiling issue
@@ -21,7 +26,7 @@
 ## Version 3.2.0: March 5, 2022
 
 - **Info**: Now using relative paths for building the binary, hence the console output is shortened and more readable
-- **Bugfix**: Hot fix since extension was not working anymore with VSCode 1.65.0
+- **Bugfix**: Hotfix since the extension was not working anymore with VSCode 1.65.0
 
 ## Version 3.1.1: January 31, 2022
 
@@ -124,7 +129,7 @@
 
 ## Version 1.4.2: October 25, 2021
 
-- **Info**: Set mac launch config to externalConsole andf stopAtEntry.
+- **Info**: Set mac launch config to console andf stopAtEntry.
 
 ## Version 1.4.1: September 20, 2021
 
@@ -209,7 +214,7 @@ This would now be:
 }
 ```
 
-- All settings are now stored to the local `.vscode/settings.json` file
+- All settings are now stored in the local `.vscode/settings.json` file
 
 ## Version 0.17.1: June 16, 2021
 
@@ -263,7 +268,7 @@ This would now be:
 
 - **Improvement**: Selected folder path is shortened in the status bar.
 - **Improvement**: Remove x86/x64 architecture from build mode. The user should rather select an appropriate x86 or x64 compiler in the settings.
-- **Improvement**: Default c and cpp standard is now the compiler's default.
+- **Improvement**: The default c and cpp standard is now the compiler's default.
 - **Improvement**: Improved lookup performance for installed software.
 
 ## Version 0.12.1: May 10, 2021
@@ -279,7 +284,7 @@ This would now be:
 - **Improvement**: The settings are now read/saved correctly in a use case with multiple workspaces.
 A multi-workspace setting is now fully compatible with the extension.
 - **Bugfix**: External console is now set to false for Mac due to debugging issues.
-- **Bugfix**: In a multi-root workspace use-case the cmake detection is now working properly.
+- **Bugfix**: In a multi-root workspace use case the cmake detection is now working properly.
 
 ## Version 0.10.0: April 26, 2021
 
@@ -295,14 +300,14 @@ A multi-workspace setting is now fully compatible with the extension.
 
 - **Bugfix**: Makefile issue with Windows/MinGW
 - **Info**: Added try/catch clauses to all IO related functions
-- **Info**: Added logger to log certain info/errors. Also added setting loggingActive to activate the logger
+- **Info**: Added logger to log certain info/errors. Also added the setting loggingActive to activate the logger
 
 ## Version 0.8.2: April 19, 2021
 
 - **Bugfix**: Set debug console to external for lldb (MacOS) - see: [github issue](https://github.com/microsoft/vscode-cpptools/issues/5079)
 - **Bugfix**: Makefile arguments that can hold multiple values are now passed with "" instead of ''
-- **Bugfix**: In a multi-root workspace use-case, the file watchers were not updated to a new selected workspace (on workspace change)
-- **Info**: In a multi-root workspace use-case, the extension's settings are stored in the '.code-workspace' file
+- **Bugfix**: In a multi-root workspace use case, the file watchers were not updated to a new selected workspace (on workspace change)
+- **Info**: In a multi-root workspace use case, the extension's settings are stored in the '.code-workspace' file
 
 ## Version 0.8.1: April 14, 2021
 
@@ -343,7 +348,7 @@ A multi-workspace setting is now fully compatible with the extension.
 ## Version 0.6.0: April 9, 2021
 
 - **Feature**: Removed extension activation when CMakeLists.txt is present in the root folder of the workspace
-- **Feature**: Select root folder automatically, if this is the only folder in the workspace
+- **Feature**: Select the root folder automatically, if this is the only folder in the workspace
 - **Bugfix**: Corrected packing with webpack
 - **Bugfix**: settings.json is now re-created on delete event
 - **Info**: Added Microsoft's C/C++ extension as "extensionDependencies" entry
@@ -352,9 +357,9 @@ A multi-workspace setting is now fully compatible with the extension.
 ## Version 0.5.3: April 5, 2021
 
 - **Feature**: Added search for "mingw32-make" for MinGW users
-- **Feature**: Updated makefile for Windows user without Cygwin/MSYS installed
+- **Feature**: Updated makefile for Windows users without Cygwin/MSYS installed
 - **Info**: Removed Microsoft's C/C++ extension as "extensionPack" entry, since deactivating/uninstalling this extension would also do so for the Microsoft ones
-- **Bugfix**: Extension couldn't start after installing
+- **Bugfix**: The extension couldn't start after installing
 
 ## Version 0.5.2: April 5, 2021
 

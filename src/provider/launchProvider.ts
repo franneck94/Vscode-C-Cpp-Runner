@@ -210,7 +210,6 @@ export class LaunchProvider extends FileProvider {
     delete launchTemplate.configurations[0].setupCommands;
 
     launchTemplate.configurations[0].type = 'cppvsdbg';
-    launchTemplate.configurations[0].externalConsole = true;
 
     if (this.argumentsString) {
       launchTemplate.configurations[0].args = this.argumentsString;
@@ -236,14 +235,6 @@ export class LaunchProvider extends FileProvider {
     if (this.settings.debugger) {
       launchTemplate.configurations[0].MIMode = this.settings.debugger;
       launchTemplate.configurations[0].miDebuggerPath = this.settings.debuggerPath;
-
-      /* On Windows with Cygwin the internal console does not work properly. */
-      if (
-        OperatingSystems.windows === this.settings.operatingSystem &&
-        this.settings.isCygwin
-      ) {
-        launchTemplate.configurations[0].externalConsole = true;
-      }
     } else {
       launchTemplate.configurations[0].MIMode =
         SettingsProvider.DEFAULT_DEBUGGER_PATH;
@@ -262,9 +253,6 @@ export class LaunchProvider extends FileProvider {
 
       if (this.settings.architecure === Architectures.ARM64) {
         launchTemplate.configurations[0].type = 'lldb';
-        launchTemplate.configurations[0].externalConsole = false;
-      } else {
-        launchTemplate.configurations[0].externalConsole = true;
       }
     }
 

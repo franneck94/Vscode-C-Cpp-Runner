@@ -3,6 +3,7 @@
 ## Version 3.4.0: May 4, 2022
 
 - **Info**: Shortened the msvc commands to have a better overview of the executed command
+- **Info**: Added currently known problems list to the README
 
 ## Version 3.3.0: April 14, 2022
 

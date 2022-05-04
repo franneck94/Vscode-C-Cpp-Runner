@@ -146,6 +146,11 @@ Caveat: Currently no cross-compiling is allowed.
 
 Refer to the [CHANGELOG](CHANGELOG.md).
 
+## Currently known issues
+
+- Include paths that contain whitespaces
+- Using the extension without admin rights on the computer
+
 ## License
 
 Copyright (C) 2021-2022 Jan Schaffranek.  

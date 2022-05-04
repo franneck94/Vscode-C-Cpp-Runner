@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 3.4.0: May 4, 2022
+
+- **Info**: Shortened the msvc commands to have a better overview of the executed command
+
 ## Version 3.3.0: April 14, 2022
 
 - **Info**: For debugging the internal console is now used on all operating systems

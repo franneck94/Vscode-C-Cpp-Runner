@@ -278,10 +278,6 @@ function executeBuildTaskMsvcBased(
   const compilerArgs = settingsProvider.compilerArgs;
   const linkerArgs = settingsProvider.linkerArgs;
 
-  if (!includePaths.includes(activeFolder)) {
-    includePaths.push(activeFolder);
-  }
-
   let fullCompilerArgs = '';
 
   if (useWarnings && warnings !== '') {
@@ -315,9 +311,9 @@ function executeBuildTaskMsvcBased(
       const hasSpace = includePath.includes(' ');
 
       if (hasSpace) {
-        fullCompilerArgs += ` -I"${includePath}"`;
+        fullCompilerArgs += ` /I"${includePath}"`;
       } else {
-        fullCompilerArgs += ` -I${includePath}`;
+        fullCompilerArgs += ` /I${includePath}`;
       }
     }
   }
@@ -334,6 +330,8 @@ function executeBuildTaskMsvcBased(
 
   let commandLine: string = `"${settingsProvider.msvcBatchPath}" ${settingsProvider.architecure} ${appendSymbol} `;
 
+  modeDir = modeDir.replace(activeFolder, '.');
+  executablePath = executablePath.replace(activeFolder, '.');
   const pathArgs = `/Fd${modeDir}\\ /Fo${modeDir}\\ /Fe${executablePath}`;
 
   let fullFileArgs: string = '';
@@ -350,9 +348,9 @@ function executeBuildTaskMsvcBased(
     const hasSpace = filePath.includes(' ');
 
     if (hasSpace) {
-      fullFileArgs += ` "${filePath}"`;
+      fullFileArgs += ` "${file}"`;
     } else {
-      fullFileArgs += ` ${filePath}`;
+      fullFileArgs += ` ${file}`;
     }
   }
 

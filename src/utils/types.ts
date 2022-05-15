@@ -33,7 +33,7 @@ export class Commands {
   pathClang: string | undefined;
   foundClangpp: boolean = false;
   pathClangpp: string | undefined;
-  foundGDB: boolean = false;
+  foundGdb: boolean = false;
   pathGDB: string | undefined;
   foundLLDB: boolean = false;
   pathLLDB: string | undefined;
@@ -62,6 +62,7 @@ export enum CompilerSystems {
   mingw = 'mingw',
   msys2 = 'msys2',
   clang = 'clang',
+  msvc = 'msvc',
 }
 
 export enum OperatingSystems {

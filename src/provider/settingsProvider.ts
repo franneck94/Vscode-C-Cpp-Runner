@@ -479,13 +479,13 @@ export class SettingsProvider extends FileProvider {
       }
     }
 
-    if (!this._commands.foundGDB) {
+    if (!this._commands.foundGdb) {
       ({
-        f: this._commands.foundGDB,
+        f: this._commands.foundGdb,
         p: this._commands.pathGDB,
       } = await commandExists(Debuggers.gdb));
 
-      if (!this._commands.foundGDB) {
+      if (!this._commands.foundGdb) {
         ({
           f: this._commands.foundLLDB,
           p: this._commands.pathLLDB,
@@ -509,7 +509,7 @@ export class SettingsProvider extends FileProvider {
         if (
           (this._commands.foundGcc &&
             this._commands.foundGpp &&
-            this._commands.foundGDB) ||
+            this._commands.foundGdb) ||
           (this._commands.foundClang &&
             this._commands.foundClangpp &&
             this._commands.foundLLDB)
@@ -517,109 +517,59 @@ export class SettingsProvider extends FileProvider {
           break;
         }
 
-        if (this.operatingSystem === OperatingSystems.windows) {
-          if (this.skipCheckWindows(envPath)) continue;
-        } else if (this.operatingSystem === OperatingSystems.linux) {
-          if (this.skipCheckLinux(envPath)) continue;
-        } else if (this.operatingSystem === OperatingSystems.mac) {
-          if (this.skipCheckMac(envPath)) continue;
-        }
+        if (!envPath.toLowerCase().includes('bin')) continue;
 
-        if (this.operatingSystem === OperatingSystems.windows) {
-          this.searchPathVariablesWindows(envPath);
-        } else if (this.operatingSystem === OperatingSystems.linux) {
-          this.searchPathVariablesLinux(envPath);
-        } else if (this.operatingSystem === OperatingSystems.mac) {
-          this.searchPathVariablesMac(envPath);
-        }
+        this.searchInstallations(envPath);
       }
     }
   }
 
-  private skipCheckWindows(envPath: string) {
-    if (
-      !envPath.toLowerCase().includes('bin') &&
-      !envPath.toLowerCase().includes('mingw') &&
-      !envPath.toLowerCase().includes('msys') &&
-      !envPath.toLowerCase().includes('cygwin')
-    ) {
-      return true;
+  private searchInstallations(envPath: string) {
+    let extension = '';
+
+    if (this.operatingSystem === OperatingSystems.windows) {
+      extension = '.exe';
     }
 
-    return false;
-  }
+    const _pathGcc = path.join(envPath, Compilers.gcc + extension);
+    const _pathGpp = path.join(envPath, Compilers.gpp + extension);
+    const _pathGdb = path.join(envPath, Debuggers.gdb + extension);
 
-  private skipCheckLinux(envPath: string) {
-    if (
-      !envPath.toLowerCase().startsWith('/bin') &&
-      !envPath.toLowerCase().startsWith('/usr/bin')
-    ) {
-      return true;
-    }
-
-    return false;
-  }
-
-  private skipCheckMac(envPath: string) {
-    if (!envPath.toLowerCase().includes('bin')) {
-      return true;
-    }
-
-    return false;
-  }
-
-  private searchPathVariablesWindows(envPath: string) {
-    const lower_path = envPath.toLocaleLowerCase();
-    if (
-      lower_path.includes(CompilerSystems.cygwin) ||
-      lower_path.includes(CompilerSystems.mingw) ||
-      lower_path.includes(CompilerSystems.msys2)
-    ) {
-      this._commands.pathGcc = path.join(envPath, Compilers.gcc + '.exe');
-      this._commands.pathGpp = path.join(envPath, Compilers.gpp + '.exe');
-      this._commands.pathGDB = path.join(envPath, Debuggers.gdb + '.exe');
-
-      if (pathExists(this._commands.pathGcc)) {
-        this._commands.foundGcc = true;
-      }
-      if (pathExists(this._commands.pathGpp)) {
-        this._commands.foundGpp = true;
-      }
-      if (pathExists(this._commands.pathGDB)) {
-        this._commands.foundGDB = true;
-      }
-    }
-  }
-
-  private searchPathVariablesLinux(envPath: string) {
-    this._commands.pathGcc = path.join(envPath, Compilers.gcc);
-    this._commands.pathGpp = path.join(envPath, Compilers.gpp);
-    this._commands.pathGDB = path.join(envPath, Debuggers.gdb);
-
-    if (pathExists(this._commands.pathGcc)) {
+    if (pathExists(_pathGcc)) {
       this._commands.foundGcc = true;
+      this._commands.pathGcc = _pathGcc;
     }
-    if (pathExists(this._commands.pathGpp)) {
+    if (pathExists(_pathGpp)) {
       this._commands.foundGpp = true;
+      this._commands.pathGpp = _pathGpp;
     }
-    if (pathExists(this._commands.pathGDB)) {
-      this._commands.foundGDB = true;
+    if (pathExists(_pathGdb)) {
+      this._commands.foundGdb = true;
+      this._commands.pathGDB = _pathGdb;
     }
-  }
 
-  private searchPathVariablesMac(envPath: string) {
-    this._commands.pathClang = path.join(envPath, Compilers.clang);
-    this._commands.pathClangpp = path.join(envPath, Compilers.clangpp);
-    this._commands.pathLLDB = path.join(envPath, Debuggers.lldb);
+    if (
+      this._commands.foundGcc &&
+      this._commands.foundGpp &&
+      this._commands.foundGdb
+    )
+      return;
 
-    if (pathExists(this._commands.pathClang)) {
+    const _pathClang = path.join(envPath, Compilers.clang + extension);
+    const _pathClangpp = path.join(envPath, Compilers.clangpp + extension);
+    const _pathLLDB = path.join(envPath, Debuggers.lldb + extension);
+
+    if (pathExists(_pathClang)) {
       this._commands.foundClang = true;
+      this._commands.pathClang = _pathClang;
     }
-    if (pathExists(this._commands.pathClangpp)) {
+    if (pathExists(_pathClangpp)) {
       this._commands.foundClangpp = true;
+      this._commands.pathClangpp = _pathClangpp;
     }
-    if (pathExists(this._commands.pathLLDB)) {
+    if (pathExists(_pathLLDB)) {
       this._commands.foundLLDB = true;
+      this._commands.pathLLDB = _pathLLDB;
     }
   }
 
@@ -679,7 +629,7 @@ export class SettingsProvider extends FileProvider {
       this.cppCompiler = undefined;
     }
 
-    if (this._commands.foundGDB && this._commands.pathGDB) {
+    if (this._commands.foundGdb && this._commands.pathGDB) {
       this.setGDB(this._commands.pathGDB);
     } else if (this._commands.foundLLDB && this._commands.pathLLDB) {
       this.setLLDB(this._commands.pathLLDB);

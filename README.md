@@ -22,8 +22,7 @@ You do not need to know about any compiler commands. 😎
 - 🖥️ Linux/MacOS:
   - Recommended to install gcc, g++ and gdb via a package manager (e.g. `apt`)
 - 🖥️ MacOS:
-  - Alternative 1: Install clang, clang++ and lldb via [xcode-tools](https://developer.apple.com/xcode/features/)
-  - Alternative 2: Install clang, clang++ and lldb with the llvm toolchain via [brew](https://apple.stackexchange.com/a/362837)
+  - Recommanded to install clang, clang++ and lldb via [xcode-tools](https://developer.apple.com/xcode/features/)
 
 ## Extension Activation Conditions
 

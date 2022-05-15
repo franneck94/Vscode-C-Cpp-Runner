@@ -186,7 +186,7 @@ export function naturalSort(names: string[]) {
   );
 }
 
-export function commandCheck(key: string, jsonData: JsonSettings) {
+export function localSettingExist(key: string, jsonData: JsonSettings) {
   const commandPath = jsonData[key];
 
   if (!commandPath) return false;

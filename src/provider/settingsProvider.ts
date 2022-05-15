@@ -2,9 +2,9 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import {
-	commandCheck,
 	foldersInDir,
 	getBasename,
+	localSettingExist,
 	pathExists,
 	readJsonFile,
 	removeExtension,
@@ -20,7 +20,6 @@ import {
 	Architectures,
 	Commands,
 	Compilers,
-	CompilerSystems,
 	Debuggers,
 	JsonSettings,
 	OperatingSystems,
@@ -100,11 +99,12 @@ export class SettingsProvider extends FileProvider {
   constructor(public workspaceFolder: string, public activeFolder: string) {
     super(workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
 
-    const settingsFileMissing = this.checkSettingsFile();
+    const settingsFileMissing = this.localSettingsExist();
     const settingsMissing = this.updateCheck();
-    const propertiesFileMissing = this.checkPropertiesFile();
+    const propertiesFileMissing = this.localPropertiesExist();
 
     if (settingsMissing && propertiesFileMissing && activeFolder) {
+      this.resetSettings();
       this.createFileData();
       return;
     }
@@ -128,14 +128,14 @@ export class SettingsProvider extends FileProvider {
 
     if (!pathExists(this._outputPath)) {
       settingsMissing = true;
-    } else if (!this.commandsStored()) {
+    } else if (!this.commandsAlreadyStored()) {
       settingsMissing = true;
     }
 
     return settingsMissing;
   }
 
-  private checkPropertiesFile() {
+  private localPropertiesExist() {
     let propertiesFileMissing = false;
 
     const propertiesPath = path.join(
@@ -149,7 +149,7 @@ export class SettingsProvider extends FileProvider {
     return propertiesFileMissing;
   }
 
-  private checkSettingsFile() {
+  private localSettingsExist() {
     let settingsFileMissing = false;
 
     const settingsPath = path.join(this._vscodeDirectory, 'settings.json');
@@ -160,7 +160,7 @@ export class SettingsProvider extends FileProvider {
     return settingsFileMissing;
   }
 
-  private commandsStored() {
+  private commandsAlreadyStored() {
     if (pathExists(this._outputPath)) {
       const settingsJson: JsonSettings | undefined = readJsonFile(
         this._outputPath,
@@ -169,9 +169,9 @@ export class SettingsProvider extends FileProvider {
       if (!settingsJson) return false;
 
       if (
-        commandCheck(`${EXTENSION_NAME}.cCompilerPath`, settingsJson) &&
-        commandCheck(`${EXTENSION_NAME}.cppCompilerPath`, settingsJson) &&
-        commandCheck(`${EXTENSION_NAME}.debuggerPath`, settingsJson)
+        localSettingExist(`${EXTENSION_NAME}.cCompilerPath`, settingsJson) &&
+        localSettingExist(`${EXTENSION_NAME}.cppCompilerPath`, settingsJson) &&
+        localSettingExist(`${EXTENSION_NAME}.debuggerPath`, settingsJson)
       ) {
         return true;
       }
@@ -198,7 +198,7 @@ export class SettingsProvider extends FileProvider {
   }
 
   private storeCommands() {
-    if (this.commandsStored()) return;
+    if (this.commandsAlreadyStored()) return;
 
     this.getCommands();
     this.setCommands();
@@ -687,23 +687,7 @@ export class SettingsProvider extends FileProvider {
   }
 
   public reset() {
-    /* Mandatory in settings.json */
-    this.cCompilerPath = SettingsProvider.DEFAULT_C_COMPILER_PATH;
-    this.cppCompilerPath = SettingsProvider.DEFAULT_CPP_COMPILER_PATH;
-    this.debuggerPath = SettingsProvider.DEFAULT_DEBUGGER_PATH;
-    this.msvcBatchPath = SettingsProvider.DEFAULT_MSVC_BATCH_PATH;
-    this.msvcToolsPath = SettingsProvider.DEFAULT_MSVC_TOOLS_PATH;
-
-    /* Optional in settings.json */
-    this.enableWarnings = SettingsProvider.DEFAULT_ENABLE_WARNINGS;
-    this.warnings = SettingsProvider.DEFAULT_WARNINGS_UNIX;
-    this.warningsAsError = SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
-    this.cStandard = SettingsProvider.DEFAULT_C_STANDARD_UNIX;
-    this.cppStandard = SettingsProvider.DEFAULT_CPP_STANDARD;
-    this.compilerArgs = SettingsProvider.DEFAULT_COMPILER_ARGS;
-    this.linkerArgs = SettingsProvider.DEFAULT_LINKER_ARGS;
-    this.includePaths = SettingsProvider.DEFAULT_INCLUDE_PATHS;
-    this.excludeSearch = SettingsProvider.DEFAULT_EXCLUDE_SEARCH;
+    this.resetSettings();
 
     /* Write default settings to file */
     this.setGcc(this.cCompilerPath);
@@ -712,9 +696,83 @@ export class SettingsProvider extends FileProvider {
     this.setOtherSettings();
   }
 
+  private resetSettings() {
+    /* Mandatory in settings.json */
+    this.cCompilerPath = this.getDefaultSettingsValue(
+      'cCompilerPath',
+      SettingsProvider.DEFAULT_C_COMPILER_PATH,
+    );
+    this.cppCompilerPath = this.getDefaultSettingsValue(
+      'cppCompilerPath',
+      SettingsProvider.DEFAULT_CPP_COMPILER_PATH,
+    );
+    this.debuggerPath = this.getDefaultSettingsValue(
+      'debuggerPath',
+      SettingsProvider.DEFAULT_DEBUGGER_PATH,
+    );
+    this.msvcBatchPath = this.getDefaultSettingsValue(
+      'msvcBatchPath',
+      SettingsProvider.DEFAULT_MSVC_BATCH_PATH,
+    );
+    this.msvcToolsPath = this.getDefaultSettingsValue(
+      'msvcToolsPath',
+      SettingsProvider.DEFAULT_MSVC_TOOLS_PATH,
+    );
+
+    /* Optional in settings.json */
+    this.enableWarnings = this.getDefaultSettingsValue(
+      'enableWarnings',
+      SettingsProvider.DEFAULT_ENABLE_WARNINGS,
+    );
+    this.warnings = this.getDefaultSettingsValue(
+      'warnings',
+      SettingsProvider.DEFAULT_WARNINGS_UNIX,
+    );
+    this.enableWarnings = this.getDefaultSettingsValue(
+      'enableWarnings',
+      SettingsProvider.DEFAULT_ENABLE_WARNINGS,
+    );
+    this.warningsAsError = this.getDefaultSettingsValue(
+      'warningsAsError',
+      SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS,
+    );
+    this.cStandard = this.getDefaultSettingsValue(
+      'cStandard',
+      SettingsProvider.DEFAULT_C_STANDARD_UNIX,
+    );
+    this.cppStandard = this.getDefaultSettingsValue(
+      'cppStandard',
+      SettingsProvider.DEFAULT_CPP_STANDARD,
+    );
+    this.compilerArgs = this.getDefaultSettingsValue(
+      'compilerArgs',
+      SettingsProvider.DEFAULT_COMPILER_ARGS,
+    );
+    this.linkerArgs = this.getDefaultSettingsValue(
+      'linkerArgs',
+      SettingsProvider.DEFAULT_LINKER_ARGS,
+    );
+    this.includePaths = this.getDefaultSettingsValue(
+      'includePaths',
+      SettingsProvider.DEFAULT_INCLUDE_PATHS,
+    );
+    this.excludeSearch = this.getDefaultSettingsValue(
+      'excludeSearch',
+      SettingsProvider.DEFAULT_EXCLUDE_SEARCH,
+    );
+  }
+
   /********************/
   /* HELPER FUNCTIONS */
   /********************/
+
+  private getDefaultSettingsValue(name: string, defaultValue: any) {
+    if (this._configGlobal.has(name)) {
+      return this._configGlobal.get(name, defaultValue);
+    }
+
+    return defaultValue;
+  }
 
   private getSettingsValue(
     settingsLocal: JsonSettings | undefined,
@@ -734,7 +792,7 @@ export class SettingsProvider extends FileProvider {
       return settingsLocal[settingName];
     }
 
-    if (!isExtensionSetting && this._configGlobal.has(name)) {
+    if (this._configGlobal.has(name)) {
       return this._configGlobal.get(name, defaultValue);
     }
 

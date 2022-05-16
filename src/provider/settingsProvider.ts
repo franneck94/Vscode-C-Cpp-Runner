@@ -3,24 +3,19 @@ import * as vscode from 'vscode';
 
 import {
 	foldersInDir,
-	getBasename,
 	localSettingExist,
 	pathExists,
 	readJsonFile,
-	removeExtension,
 	replaceBackslashes,
 	writeJsonFile,
 } from '../utils/fileUtils';
 import {
-	commandExists,
 	getCompilerArchitecture,
 	getOperatingSystem,
 } from '../utils/systemUtils';
 import {
 	Architectures,
 	Commands,
-	Compilers,
-	Debuggers,
 	JsonSettings,
 	OperatingSystems,
 } from '../utils/types';
@@ -72,12 +67,6 @@ export class SettingsProvider extends FileProvider {
   public architecure: Architectures | undefined;
   public isCygwin: boolean = false;
   public isMsvc: boolean = false;
-  public cCompiler: Compilers | undefined;
-  public cppCompiler: Compilers | undefined;
-  public debugger: Debuggers | undefined;
-  private _cCompilerFound: boolean = false;
-  private _cppCompilerFound: boolean = false;
-  private _debuggerFound: boolean = false;
   private _commands: Commands = new Commands();
   // Settings
   public cCompilerPath: string = SettingsProvider.DEFAULT_C_COMPILER_PATH;
@@ -99,9 +88,9 @@ export class SettingsProvider extends FileProvider {
   constructor(public workspaceFolder: string, public activeFolder: string) {
     super(workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
 
-    const settingsFileMissing = this.localSettingsExist();
+    const settingsFileMissing = this.localFileExist('settings.json');
     const settingsMissing = this.updateCheck();
-    const propertiesFileMissing = this.localPropertiesExist();
+    const propertiesFileMissing = this.localFileExist('c_cpp_properties.json');
 
     if (settingsMissing && propertiesFileMissing && activeFolder) {
       this.resetSettings();
@@ -117,7 +106,6 @@ export class SettingsProvider extends FileProvider {
 
     if (activeFolder) {
       this.getSettings();
-      this.getCommandTypes();
       this.getArchitecture();
       return;
     }
@@ -135,24 +123,10 @@ export class SettingsProvider extends FileProvider {
     return settingsMissing;
   }
 
-  private localPropertiesExist() {
-    let propertiesFileMissing = false;
-
-    const propertiesPath = path.join(
-      this._vscodeDirectory,
-      'c_cpp_properties.json',
-    );
-    if (!pathExists(propertiesPath)) {
-      propertiesFileMissing = true;
-    }
-
-    return propertiesFileMissing;
-  }
-
-  private localSettingsExist() {
+  private localFileExist(name: string) {
     let settingsFileMissing = false;
 
-    const settingsPath = path.join(this._vscodeDirectory, 'settings.json');
+    const settingsPath = path.join(this._vscodeDirectory, name);
     if (!pathExists(settingsPath)) {
       settingsFileMissing = true;
     }
@@ -175,14 +149,6 @@ export class SettingsProvider extends FileProvider {
       ) {
         return true;
       }
-
-      if (
-        this._cCompilerFound &&
-        this._cppCompilerFound &&
-        this._debuggerFound
-      ) {
-        return true;
-      }
     }
 
     return false;
@@ -200,9 +166,7 @@ export class SettingsProvider extends FileProvider {
   private storeCommands() {
     if (this.commandsAlreadyStored()) return;
 
-    this.getCommands();
     this.setCommands();
-    this.getCommandTypes();
     this.getArchitecture();
   }
 
@@ -381,29 +345,31 @@ export class SettingsProvider extends FileProvider {
     this.debuggerPath = path.join(rootDirCompiler, debuggerPath);
 
     /* Optional in settings.json */
-    const _cStandard = this.getPropertiesValue(
+    const _cStandard: string = this.getPropertiesValue(
       properties,
       'cStandard',
       SettingsProvider.DEFAULT_C_STANDARD_UNIX,
     );
-    const _cppStandard = this.getPropertiesValue(
+    const _cppStandard: string = this.getPropertiesValue(
       properties,
       'cppStandard',
       SettingsProvider.DEFAULT_CPP_STANDARD,
     );
 
-    const _includePaths = this.getPropertiesValue(
+    const _includePaths: string[] = this.getPropertiesValue(
       properties,
       'includePath',
       SettingsProvider.DEFAULT_INCLUDE_PATHS,
     );
 
-    let _compilerArgs = this.getPropertiesValue(
+    let _compilerArgs: string[] = this.getPropertiesValue(
       properties,
       'compilerArgs',
       SettingsProvider.DEFAULT_INCLUDE_PATHS,
     );
-    const _warnings = _compilerArgs.filter((arg: string) => arg.includes('-W'));
+    const _warnings: string[] = _compilerArgs.filter((arg: string) =>
+      arg.includes('-W'),
+    );
     _compilerArgs = _compilerArgs.filter((arg: string) => !arg.includes('-W'));
 
     this.cStandard =
@@ -416,18 +382,12 @@ export class SettingsProvider extends FileProvider {
         : SettingsProvider.DEFAULT_CPP_STANDARD;
 
     this.includePaths =
-      _includePaths !== ['${workspaceFolder}/**']
+      _includePaths.length !== 0
         ? _includePaths
         : SettingsProvider.DEFAULT_INCLUDE_PATHS;
 
-    this.compilerArgs =
-      _compilerArgs !== ''
-        ? _compilerArgs
-        : SettingsProvider.DEFAULT_COMPILER_ARGS;
-    this.linkerArgs =
-      _compilerArgs !== ''
-        ? _compilerArgs
-        : SettingsProvider.DEFAULT_LINKER_ARGS;
+    this.compilerArgs = SettingsProvider.DEFAULT_COMPILER_ARGS;
+    this.linkerArgs = SettingsProvider.DEFAULT_LINKER_ARGS;
 
     this.warnings =
       _warnings.length > 0 ? _warnings : SettingsProvider.DEFAULT_WARNINGS_UNIX;
@@ -442,134 +402,6 @@ export class SettingsProvider extends FileProvider {
       );
 
       this.getOptionalSettings(settingsLocal);
-    }
-  }
-
-  public getCommands() {
-    this.searchPathVariables();
-    this.searchCommands();
-  }
-
-  private async searchCommands() {
-    if (!this._commands.foundGcc) {
-      ({
-        f: this._commands.foundGcc,
-        p: this._commands.pathGcc,
-      } = await commandExists(Compilers.gcc));
-
-      if (!this._commands.foundGcc) {
-        ({
-          f: this._commands.foundClang,
-          p: this._commands.pathClang,
-        } = await commandExists(Compilers.clang));
-      }
-    }
-
-    if (!this._commands.foundGpp) {
-      ({
-        f: this._commands.foundGpp,
-        p: this._commands.pathGpp,
-      } = await commandExists(Compilers.gpp));
-
-      if (!this._commands.foundGpp) {
-        ({
-          f: this._commands.foundClangpp,
-          p: this._commands.pathClangpp,
-        } = await commandExists(Compilers.clangpp));
-      }
-    }
-
-    if (!this._commands.foundGdb) {
-      ({
-        f: this._commands.foundGdb,
-        p: this._commands.pathGDB,
-      } = await commandExists(Debuggers.gdb));
-
-      if (!this._commands.foundGdb) {
-        ({
-          f: this._commands.foundLLDB,
-          p: this._commands.pathLLDB,
-        } = await commandExists(Debuggers.lldb));
-      }
-    }
-  }
-
-  private searchPathVariables() {
-    this._commands = new Commands();
-
-    const env = process.env;
-    if (env['PATH']) {
-      let paths: string[] = [];
-      if (this.operatingSystem === OperatingSystems.windows) {
-        paths = env['PATH'].split(';');
-      } else {
-        paths = env['PATH'].split(':');
-      }
-      for (const envPath of paths) {
-        if (
-          (this._commands.foundGcc &&
-            this._commands.foundGpp &&
-            this._commands.foundGdb) ||
-          (this._commands.foundClang &&
-            this._commands.foundClangpp &&
-            this._commands.foundLLDB)
-        ) {
-          break;
-        }
-
-        if (!envPath.toLowerCase().includes('bin')) continue;
-
-        this.searchInstallations(envPath);
-      }
-    }
-  }
-
-  private searchInstallations(envPath: string) {
-    let extension = '';
-
-    if (this.operatingSystem === OperatingSystems.windows) {
-      extension = '.exe';
-    }
-
-    const _pathGcc = path.join(envPath, Compilers.gcc + extension);
-    const _pathGpp = path.join(envPath, Compilers.gpp + extension);
-    const _pathGdb = path.join(envPath, Debuggers.gdb + extension);
-
-    if (pathExists(_pathGcc)) {
-      this._commands.foundGcc = true;
-      this._commands.pathGcc = _pathGcc;
-    }
-    if (pathExists(_pathGpp)) {
-      this._commands.foundGpp = true;
-      this._commands.pathGpp = _pathGpp;
-    }
-    if (pathExists(_pathGdb)) {
-      this._commands.foundGdb = true;
-      this._commands.pathGDB = _pathGdb;
-    }
-
-    if (
-      this._commands.foundGcc &&
-      this._commands.foundGpp &&
-      this._commands.foundGdb
-    )
-      return;
-
-    const _pathClang = path.join(envPath, Compilers.clang + extension);
-    const _pathClangpp = path.join(envPath, Compilers.clangpp + extension);
-    const _pathLLDB = path.join(envPath, Debuggers.lldb + extension);
-
-    if (pathExists(_pathClang)) {
-      this._commands.foundClang = true;
-      this._commands.pathClang = _pathClang;
-    }
-    if (pathExists(_pathClangpp)) {
-      this._commands.foundClangpp = true;
-      this._commands.pathClangpp = _pathClangpp;
-    }
-    if (pathExists(_pathLLDB)) {
-      this._commands.foundLLDB = true;
-      this._commands.pathLLDB = _pathLLDB;
     }
   }
 
@@ -617,66 +449,29 @@ export class SettingsProvider extends FileProvider {
       this.setGcc(this._commands.pathGcc);
     } else if (this._commands.foundClang && this._commands.pathClang) {
       this.setClang(this._commands.pathClang);
-    } else {
-      this.cCompiler = undefined;
     }
 
     if (this._commands.foundGpp && this._commands.pathGpp) {
       this.setGpp(this._commands.pathGpp);
     } else if (this._commands.foundClangpp && this._commands.pathClangpp) {
       this.setClangpp(this._commands.pathClangpp);
-    } else {
-      this.cppCompiler = undefined;
     }
 
     if (this._commands.foundGdb && this._commands.pathGDB) {
       this.setGDB(this._commands.pathGDB);
     } else if (this._commands.foundLLDB && this._commands.pathLLDB) {
       this.setLLDB(this._commands.pathLLDB);
-    } else {
-      this.debugger = undefined;
     }
 
     this.setOtherSettings();
   }
 
-  private getCommandTypes() {
-    let cBasename = this.cCompilerPath;
-    let cppBasename = this.cppCompilerPath;
-
-    cBasename = getBasename(cBasename);
-    cBasename = removeExtension(cBasename, 'exe');
-
-    cppBasename = getBasename(cppBasename);
-    cppBasename = removeExtension(cppBasename, 'exe');
-
-    if (cBasename) {
-      if (cBasename.includes(Compilers.clang)) {
-        this.cCompiler = Compilers.clang;
-        this.debugger = Debuggers.lldb;
-      } else {
-        this.cCompiler = Compilers.gcc;
-        this.debugger = Debuggers.gdb;
-      }
-    }
-
-    if (cppBasename) {
-      if (cppBasename.includes(Compilers.clangpp)) {
-        this.cppCompiler = Compilers.clangpp;
-        this.debugger = Debuggers.lldb;
-      } else {
-        this.cppCompiler = Compilers.gpp;
-        this.debugger = Debuggers.gdb;
-      }
-    }
-  }
-
   private getArchitecture() {
-    if (this.cCompiler) {
+    if (this.cCompilerPath) {
       const ret = getCompilerArchitecture(this.cCompilerPath);
       this.architecure = ret.architecure;
       this.isCygwin = ret.isCygwin;
-    } else if (this.cppCompiler) {
+    } else if (this.cppCompilerPath) {
       const ret = getCompilerArchitecture(this.cppCompilerPath);
       this.architecure = ret.architecure;
       this.isCygwin = ret.isCygwin;
@@ -693,6 +488,7 @@ export class SettingsProvider extends FileProvider {
     this.setGcc(this.cCompilerPath);
     this.setGpp(this.cppCompilerPath);
     this.setGDB(this.debuggerPath);
+
     this.setOtherSettings();
   }
 
@@ -823,7 +619,7 @@ export class SettingsProvider extends FileProvider {
     writeJsonFile(this._outputPath, settingsJson);
   }
 
-  private updatebasedOnEnv(settingsName: string, settingsValue: string) {
+  private updateBasedOnEnv(settingsName: string, settingsValue: string) {
     if (this.operatingSystem === OperatingSystems.windows) {
       this.update(settingsName, replaceBackslashes(settingsValue));
     } else {
@@ -836,39 +632,27 @@ export class SettingsProvider extends FileProvider {
   /********************/
 
   public setGcc(pathGcc: string) {
-    this.updatebasedOnEnv('cCompilerPath', pathGcc);
-    this.cCompiler = Compilers.gcc;
-    this._cCompilerFound = true;
+    this.updateBasedOnEnv('cCompilerPath', pathGcc);
   }
 
   public setClang(pathClang: string) {
-    this.updatebasedOnEnv('cCompilerPath', pathClang);
-    this.cCompiler = Compilers.clang;
-    this._cCompilerFound = true;
+    this.updateBasedOnEnv('cCompilerPath', pathClang);
   }
 
   public setGpp(pathGpp: string) {
-    this.updatebasedOnEnv('cppCompilerPath', pathGpp);
-    this.cppCompiler = Compilers.gpp;
-    this._cppCompilerFound = true;
+    this.updateBasedOnEnv('cppCompilerPath', pathGpp);
   }
 
   public setClangpp(pathClangpp: string) {
-    this.updatebasedOnEnv('cppCompilerPath', pathClangpp);
-    this.cppCompiler = Compilers.clangpp;
-    this._cppCompilerFound = true;
+    this.updateBasedOnEnv('cppCompilerPath', pathClangpp);
   }
 
   public setLLDB(pathLLDB: string) {
-    this.updatebasedOnEnv('debuggerPath', pathLLDB);
-    this.debugger = Debuggers.lldb;
-    this._debuggerFound = true;
+    this.updateBasedOnEnv('debuggerPath', pathLLDB);
   }
 
   public setGDB(pathGDB: string) {
-    this.updatebasedOnEnv('debuggerPath', pathGDB);
-    this.debugger = Debuggers.gdb;
-    this._debuggerFound = true;
+    this.updateBasedOnEnv('debuggerPath', pathGDB);
   }
 
   public setOtherSettings() {

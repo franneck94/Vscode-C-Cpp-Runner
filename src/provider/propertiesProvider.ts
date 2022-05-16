@@ -62,7 +62,7 @@ export class PropertiesProvider extends FileProvider {
 
     if (!configLocal) return;
 
-    if (!this.settings.cCompiler && !this.settings.isMsvc) return;
+    if (!this.settings.cCompilerPath && !this.settings.isMsvc) return;
     if (!this.settings.architecure) return;
 
     const os = this.settings.operatingSystem.toLowerCase();
@@ -71,8 +71,10 @@ export class PropertiesProvider extends FileProvider {
 
     if (this.settings.isMsvc) {
       compiler = 'msvc';
-    } else if (this.settings.cCompiler) {
-      compiler = this.settings.cCompiler.toLowerCase();
+    } else if (this.settings.cCompilerPath) {
+      compiler = this.settings.cCompilerPath.toLowerCase().includes('gcc')
+        ? 'gcc'
+        : 'clang';
     } else {
       return;
     }

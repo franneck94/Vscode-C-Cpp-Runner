@@ -232,8 +232,12 @@ export class LaunchProvider extends FileProvider {
 
   private unixBasedDebugger(launchTemplate: JsonConfiguration) {
     launchTemplate.configurations[0].name = CONFIG_NAME;
-    if (this.settings.debugger) {
-      launchTemplate.configurations[0].MIMode = this.settings.debugger;
+    if (this.settings.debuggerPath) {
+      launchTemplate.configurations[0].MIMode = this.settings.debuggerPath.includes(
+        'gdb',
+      )
+        ? 'gdb'
+        : 'lldb';
       launchTemplate.configurations[0].miDebuggerPath = this.settings.debuggerPath;
     } else {
       launchTemplate.configurations[0].MIMode =

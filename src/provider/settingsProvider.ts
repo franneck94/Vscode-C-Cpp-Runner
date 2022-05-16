@@ -93,14 +93,14 @@ export class SettingsProvider extends FileProvider {
     const propertiesFileMissing = this.localFileExist('c_cpp_properties.json');
 
     if (settingsMissing && propertiesFileMissing && activeFolder) {
-      this.resetSettings();
+      this.loadGlobalSettings();
       this.createFileData();
       return;
     }
 
     if (settingsFileMissing && !propertiesFileMissing && activeFolder) {
       this.getSettingsFromProperties();
-      this.storeCommands();
+      this.storeSettings();
       return;
     }
 
@@ -160,14 +160,7 @@ export class SettingsProvider extends FileProvider {
 
   public writeFileData() {
     this.loadLocalSettings();
-    this.storeCommands();
-  }
-
-  private storeCommands() {
-    if (this.commandsAlreadyStored()) return;
-
-    this.setCommands();
-    this.getArchitecture();
+    this.storeSettings();
   }
 
   public deleteCallback() {
@@ -418,28 +411,6 @@ export class SettingsProvider extends FileProvider {
     );
   }
 
-  private setCommands() {
-    if (this._commands.foundGcc && this._commands.pathGcc) {
-      this.setGcc(this._commands.pathGcc);
-    } else if (this._commands.foundClang && this._commands.pathClang) {
-      this.setClang(this._commands.pathClang);
-    }
-
-    if (this._commands.foundGpp && this._commands.pathGpp) {
-      this.setGpp(this._commands.pathGpp);
-    } else if (this._commands.foundClangpp && this._commands.pathClangpp) {
-      this.setClangpp(this._commands.pathClangpp);
-    }
-
-    if (this._commands.foundGdb && this._commands.pathGDB) {
-      this.setGDB(this._commands.pathGDB);
-    } else if (this._commands.foundLLDB && this._commands.pathLLDB) {
-      this.setLLDB(this._commands.pathLLDB);
-    }
-
-    this.setOtherSettings();
-  }
-
   private getArchitecture() {
     if (this.cCompilerPath) {
       const ret = getCompilerArchitecture(this.cCompilerPath);
@@ -458,17 +429,11 @@ export class SettingsProvider extends FileProvider {
   }
 
   public reset() {
-    this.resetSettings();
-
-    /* Write default settings to file */
-    this.setGcc(this.cCompilerPath);
-    this.setGpp(this.cppCompilerPath);
-    this.setGDB(this.debuggerPath);
-
-    this.setOtherSettings();
+    this.loadGlobalSettings();
+    this.storeSettings();
   }
 
-  private resetSettings() {
+  private loadGlobalSettings() {
     /* Mandatory in settings.json */
     this.cCompilerPath = this.getDefaultSettingsValue(
       'cCompilerPath',
@@ -532,6 +497,28 @@ export class SettingsProvider extends FileProvider {
       'excludeSearch',
       SettingsProvider.DEFAULT_EXCLUDE_SEARCH,
     );
+  }
+
+  private storeSettings() {
+    this.updateBasedOnEnv('cCompilerPath', this.cCompilerPath);
+    this.updateBasedOnEnv('cppCompilerPath', this.cppCompilerPath);
+    this.updateBasedOnEnv('debuggerPath', this.debuggerPath);
+
+    this.update('cStandard', this.cStandard);
+    this.update('cppStandard', this.cppStandard);
+
+    this.update('msvcBatchPath', this.msvcBatchPath);
+
+    this.update('warnings', this.warnings);
+    this.update('enableWarnings', this.enableWarnings);
+    this.update('warningsAsError', this.warningsAsError);
+
+    this.update('compilerArgs', this.compilerArgs);
+    this.update('linkerArgs', this.linkerArgs);
+    this.update('includePaths', this.includePaths);
+
+    this.update('includeSearch', this.includeSearch);
+    this.update('excludeSearch', this.excludeSearch);
   }
 
   /********************/
@@ -601,51 +588,5 @@ export class SettingsProvider extends FileProvider {
     } else {
       this.update(settingsName, settingsValue);
     }
-  }
-
-  /********************/
-  /*      SETTER      */
-  /********************/
-
-  public setGcc(pathGcc: string) {
-    this.updateBasedOnEnv('cCompilerPath', pathGcc);
-  }
-
-  public setClang(pathClang: string) {
-    this.updateBasedOnEnv('cCompilerPath', pathClang);
-  }
-
-  public setGpp(pathGpp: string) {
-    this.updateBasedOnEnv('cppCompilerPath', pathGpp);
-  }
-
-  public setClangpp(pathClangpp: string) {
-    this.updateBasedOnEnv('cppCompilerPath', pathClangpp);
-  }
-
-  public setLLDB(pathLLDB: string) {
-    this.updateBasedOnEnv('debuggerPath', pathLLDB);
-  }
-
-  public setGDB(pathGDB: string) {
-    this.updateBasedOnEnv('debuggerPath', pathGDB);
-  }
-
-  public setOtherSettings() {
-    this.update('cStandard', this.cStandard);
-    this.update('cppStandard', this.cppStandard);
-
-    this.update('msvcBatchPath', this.msvcBatchPath);
-
-    this.update('warnings', this.warnings);
-    this.update('enableWarnings', this.enableWarnings);
-    this.update('warningsAsError', this.warningsAsError);
-
-    this.update('compilerArgs', this.compilerArgs);
-    this.update('linkerArgs', this.linkerArgs);
-    this.update('includePaths', this.includePaths);
-
-    this.update('includeSearch', this.includeSearch);
-    this.update('excludeSearch', this.excludeSearch);
   }
 }

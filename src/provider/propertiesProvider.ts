@@ -8,6 +8,7 @@ import {
 } from '../utils/fileUtils';
 import { commandExists } from '../utils/systemUtils';
 import {
+	CompilerSystems,
 	JsonPropertiesConfig,
 	JsonPropertiesConfigEntry,
 	OperatingSystems,
@@ -77,14 +78,14 @@ export class PropertiesProvider extends FileProvider {
 
     const os = this.settings.operatingSystem.toLowerCase();
     const arch = this.settings.architecure.toLowerCase();
-    let compiler: string;
+    let compiler: CompilerSystems;
 
     if (this.settings.useMsvc) {
-      compiler = 'msvc';
+      compiler = CompilerSystems.msvc;
     } else if (this.settings.cCompilerPath) {
       compiler = this.settings.cCompilerPath.toLowerCase().includes('gcc')
-        ? 'gcc'
-        : 'clang';
+        ? CompilerSystems.gcc
+        : CompilerSystems.clang;
     } else {
       return;
     }
@@ -94,17 +95,6 @@ export class PropertiesProvider extends FileProvider {
     const currentConfig = configLocal.configurations[0];
 
     if (currentConfig === undefined) return;
-
-    currentConfig.compilerArgs = [];
-
-    if (this.settings.compilerArgs) {
-      for (const arg of this.settings.compilerArgs) {
-        const compilerArgsSet = new Set(currentConfig.compilerArgs);
-        if (!compilerArgsSet.has(arg)) {
-          currentConfig.compilerArgs.push(arg);
-        }
-      }
-    }
 
     if (this.settings.includePaths) {
       currentConfig.includePath = [INCLUDE_PATTERN];
@@ -119,9 +109,13 @@ export class PropertiesProvider extends FileProvider {
     }
 
     if (this.settings.cStandard) {
-      currentConfig.cStandard = this.settings.cStandard;
+      currentConfig.cStandard = this.settings.useMsvc
+        ? SettingsProvider.DEFAULT_C_STANDARD_MSVC
+        : this.settings.cStandard;
     } else {
-      currentConfig.cStandard = '${default}';
+      currentConfig.cStandard = this.settings.useMsvc
+        ? SettingsProvider.DEFAULT_C_STANDARD_MSVC
+        : '${default}';
     }
 
     if (this.settings.cppStandard) {
@@ -190,7 +184,22 @@ export class PropertiesProvider extends FileProvider {
       currentConfig.compilerPath !== this.settings.cppCompilerPath
     ) {
       this.settings.cCompilerPath = currentConfig.compilerPath;
-      // this.settings.cppCompilerPath = currentConfig.compilerPath.replace();
+
+      const compilerSystem = this.settings.cCompilerPath.includes('gcc')
+        ? CompilerSystems.gcc
+        : CompilerSystems.clang;
+
+      if (compilerSystem === CompilerSystems.gcc) {
+        this.settings.cppCompilerPath = currentConfig.compilerPath.replace(
+          'gcc',
+          'g++',
+        );
+      } else {
+        this.settings.cppCompilerPath = currentConfig.compilerPath.replace(
+          'clang',
+          'clang++',
+        );
+      }
     }
 
     if (
@@ -198,7 +207,6 @@ export class PropertiesProvider extends FileProvider {
       currentConfig.cStandard !== this.settings.cStandard
     ) {
       this.settings.cStandard = currentConfig.cStandard;
-      this.settings.update('cStandard', currentConfig.cStandard);
     }
 
     if (
@@ -206,7 +214,6 @@ export class PropertiesProvider extends FileProvider {
       currentConfig.cppStandard !== this.settings.cppStandard
     ) {
       this.settings.cppStandard = currentConfig.cppStandard;
-      this.settings.update('cppStandard', currentConfig.cppStandard);
     }
 
     const includeArgs = currentConfig.includePath.filter(

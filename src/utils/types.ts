@@ -23,7 +23,8 @@ export interface JsonLaunchConfigEntry extends vscode.DebugConfiguration {
   request: string;
   args: string[];
   stopAtEntry: boolean;
-  externalConsole: boolean;
+  console?: string;
+  externalConsole?: boolean;
   cwd: string;
   environment: string[];
   program: string;
@@ -45,25 +46,15 @@ export enum Languages {
   cpp = 'Cpp',
 }
 
-export enum Compilers {
+export enum CompilerSystems {
   gcc = 'gcc',
-  gpp = 'g++',
   clang = 'clang',
-  clangpp = 'clang++',
-  cl = 'cl'
+  msvc = 'msvc'
 }
 
 export enum Debuggers {
   lldb = 'lldb',
   gdb = 'gdb',
-}
-
-export enum CompilerSystems {
-  cygwin = 'cygwin',
-  mingw = 'mingw',
-  msys2 = 'msys2',
-  clang = 'clang',
-  msvc = 'msvc',
 }
 
 export enum OperatingSystems {
@@ -81,11 +72,4 @@ export enum Architectures {
 export enum Builds {
   debug = 'Debug',
   release = 'Release',
-}
-
-export enum Tasks {
-  build = 'Build',
-  run = 'Run',
-  clean = 'Clean',
-  debug = 'Debug',
 }

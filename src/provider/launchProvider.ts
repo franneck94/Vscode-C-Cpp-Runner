@@ -51,6 +51,7 @@ export class LaunchProvider extends FileProvider {
       doUpdate = true;
     } else {
       const configJson: JsonLaunchConfig = readJsonFile(this._outputPath);
+
       if (configJson) {
         let foundConfig = false;
 
@@ -87,11 +88,13 @@ export class LaunchProvider extends FileProvider {
 
     if (
       this.settings.operatingSystem === OperatingSystems.windows &&
-      this.settings.useMsvc
+      (this.settings.useMsvc || this.settings.cCompilerPath.includes('clang'))
     ) {
       this.msvcBasedDebugger(launchTemplate);
+      delete launchTemplate.configurations[0]?.externalConsole;
     } else {
       this.unixBasedDebugger(launchTemplate);
+      delete launchTemplate.configurations[0]?.console;
     }
 
     const launchLocal: JsonLaunchConfig | undefined = readJsonFile(
@@ -250,10 +253,10 @@ export class LaunchProvider extends FileProvider {
     launchTemplate.configurations[0].name = CONFIG_NAME;
     if (this.settings.debuggerPath) {
       launchTemplate.configurations[0].MIMode = this.settings.debuggerPath.includes(
-        'gdb',
+        Debuggers.gdb,
       )
-        ? 'gdb'
-        : 'lldb';
+        ? Debuggers.gdb
+        : Debuggers.lldb;
       launchTemplate.configurations[0].miDebuggerPath = this.settings.debuggerPath;
     } else {
       launchTemplate.configurations[0].MIMode =

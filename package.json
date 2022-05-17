@@ -238,7 +238,7 @@
           "scope": "resource"
         },
         "C_Cpp_Runner.useMsvc": {
-          "type": "bool",
+          "type": "boolean",
           "default": false,
           "description": "Whether to use MSVC compiler or to use GCC/LLDB instead.",
           "scope": "resource"

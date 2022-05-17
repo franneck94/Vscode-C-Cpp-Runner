@@ -468,6 +468,10 @@ export class SettingsProvider extends FileProvider {
       'msvcToolsPath',
       SettingsProvider.DEFAULT_MSVC_TOOLS_PATH,
     );
+    this.useMsvc = this.getGlobalSettingsValue(
+      'useMsvc',
+      SettingsProvider.DEFAULT_USE_MSVC,
+    );
 
     /* Optional in settings.json */
     this.enableWarnings = this.getGlobalSettingsValue(
@@ -521,6 +525,7 @@ export class SettingsProvider extends FileProvider {
     this.update('cppStandard', this.cppStandard);
 
     this.update('msvcBatchPath', this.msvcBatchPath);
+    this.update('useMsvc', this.useMsvc);
 
     this.update('warnings', this.warnings);
     this.update('enableWarnings', this.enableWarnings);
@@ -539,11 +544,10 @@ export class SettingsProvider extends FileProvider {
   /********************/
 
   private getGlobalSettingsValue(name: string, defaultValue: any) {
-    if (this._configGlobal.has(name)) {
-      return this._configGlobal.get(name, defaultValue);
-    }
-
-    return defaultValue;
+    const fullSettingInfo = this._configGlobal.inspect(name);
+    return fullSettingInfo?.globalValue
+      ? fullSettingInfo.globalValue
+      : defaultValue;
   }
 
   private getSettingsValue(
@@ -564,11 +568,7 @@ export class SettingsProvider extends FileProvider {
       return settingsLocal[settingName];
     }
 
-    if (this._configGlobal.has(name)) {
-      return this._configGlobal.get(name, defaultValue);
-    }
-
-    return defaultValue;
+    return this.getGlobalSettingsValue(name, defaultValue);
   }
 
   private getPropertiesValue(

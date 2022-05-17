@@ -142,8 +142,10 @@ export function foldersInDir(dir: fs.PathLike) {
 
   if (!fileDirents) return [];
 
-  const folders = fileDirents.filter((folder) => folder.isDirectory());
-  const folderNames = folders.map((folder) =>
+  const folders = fileDirents.filter((folder: fs.Dirent) =>
+    folder.isDirectory(),
+  );
+  const folderNames = folders.map((folder: fs.Dirent) =>
     path.join(dir.toString(), folder.name),
   );
 

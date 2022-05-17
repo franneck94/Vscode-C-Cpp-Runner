@@ -31,12 +31,12 @@ export async function runDebugger(
 
   if (
     !configJson.configurations === undefined ||
-    !configJson.configurations[configIdx]
+    !configJson.configurations[configIdx] === undefined
   )
     return;
 
   await vscode.debug.startDebugging(
     folder,
-    configJson.configurations[configIdx],
+    configJson.configurations[configIdx] as vscode.DebugConfiguration,
   );
 }

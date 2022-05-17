@@ -237,6 +237,12 @@
           "description": "The path to the MSVC batch file (Needed to use the Visual Studio Compiler).",
           "scope": "resource"
         },
+        "C_Cpp_Runner.useMsvc": {
+          "type": "bool",
+          "default": false,
+          "description": "Whether to use MSVC compiler or to use GCC/LLDB instead.",
+          "scope": "resource"
+        },
         "C_Cpp_Runner.cStandard": {
           "type": "string",
           "enum": [

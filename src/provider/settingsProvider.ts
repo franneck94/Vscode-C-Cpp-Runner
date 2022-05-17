@@ -49,6 +49,7 @@ export class SettingsProvider extends FileProvider {
   static DEFAULT_LINKER_ARGS = [];
   static DEFAULT_INCLUDE_PATHS = [];
 
+  static DEFAULT_USE_MSVC = false;
   static MSVC_COMPILER_NAME = 'cl.exe';
 
   // Workspace data
@@ -56,17 +57,19 @@ export class SettingsProvider extends FileProvider {
   private _configGlobalCCpp = vscode.workspace.getConfiguration(
     C_CPP_EXTENSION_NAME,
   );
+
   // Machine information
   public operatingSystem = getOperatingSystem();
   public architecure: Architectures | undefined;
   public isCygwin: boolean = false;
-  public isMsvc: boolean = false;
+
   // Settings
   public cCompilerPath: string = SettingsProvider.DEFAULT_C_COMPILER_PATH;
   public cppCompilerPath: string = SettingsProvider.DEFAULT_CPP_COMPILER_PATH;
   public debuggerPath: string = SettingsProvider.DEFAULT_DEBUGGER_PATH;
   public msvcBatchPath: string = SettingsProvider.DEFAULT_MSVC_BATCH_PATH;
   public msvcToolsPath: string = SettingsProvider.DEFAULT_MSVC_TOOLS_PATH;
+  public useMsvc: boolean = SettingsProvider.DEFAULT_USE_MSVC;
   public cStandard: string = SettingsProvider.DEFAULT_C_STANDARD_UNIX;
   public cppStandard: string = SettingsProvider.DEFAULT_CPP_STANDARD;
   public compilerArgs: string[] = SettingsProvider.DEFAULT_COMPILER_ARGS;
@@ -204,12 +207,14 @@ export class SettingsProvider extends FileProvider {
       'msvcBatchPath',
       SettingsProvider.DEFAULT_MSVC_BATCH_PATH,
     );
+    this.useMsvc = this.getSettingsValue(
+      settingsLocal,
+      'useMsvc',
+      SettingsProvider.DEFAULT_USE_MSVC,
+    );
 
-    if (this.msvcBatchPath !== SettingsProvider.DEFAULT_MSVC_BATCH_PATH) {
-      this.isMsvc = true;
+    if (this.useMsvc) {
       this.searchMsvcToolsPath();
-    } else {
-      this.isMsvc = false;
     }
 
     this.enableWarnings = this.getSettingsValue(
@@ -228,9 +233,9 @@ export class SettingsProvider extends FileProvider {
       warning.includes('/'),
     );
 
-    if (this.isMsvc && !msvcWarnings) {
+    if (this.useMsvc && !msvcWarnings) {
       this.warnings = SettingsProvider.DEFAULT_WARNINGS_MSVC;
-    } else if (!this.isMsvc && msvcWarnings) {
+    } else if (!this.useMsvc && msvcWarnings) {
       this.warnings = SettingsProvider.DEFAULT_WARNINGS_UNIX;
     }
 
@@ -424,8 +429,6 @@ export class SettingsProvider extends FileProvider {
       this.architecure = Architectures.x64;
       this.isCygwin = false;
     }
-
-    this.isMsvc = false;
   }
 
   public reset() {

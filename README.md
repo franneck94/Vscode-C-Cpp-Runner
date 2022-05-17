@@ -11,12 +11,11 @@ You do not need to know about any compiler commands. 😎
 
 ## Software Requirements
 
-- 🔧 For C code: Any GCC, Clang or MSVC compiler
-- 🔧 For C++ code: Any G++, Clang++ or MSVC compiler
+- 🔧 For C code: Any GCC, Clang or MSVC* compiler
+- 🔧 For C++ code: Any G++, Clang++ or MSVC* compiler
 
-**Important**:
-Make sure that the compiler is either on your PATH variables or you have to set the absolute compiler path for the  
-**cCompilerPath**/**cppCompilerPath** setting.
+Make sure that any GCC/Clang compiler is either in your PATH or you have to set the **C/ C++ Compiler Path** setting of this extension.  
+For the MSVC compiler usage see [here](#Using-the-MSVC-Compiler).
 
 ## Extension Activation Conditions
 
@@ -84,9 +83,6 @@ For more information about glob pattern see [here](https://en.wikipedia.org/wiki
 
 ### Configuration
 
-The extension will automatically search for an installed compiler on your computer.  
-For Linux and mac, it searches in */usr/bin/*, and on windows, it searches for *Cygwin*, *mingw*, and *msys2* in the PATH.  
-Note: On windows, it will not be searched for any MSVC installation.  
 All settings will be stored in the **local** workspace settings (*".vscode/settings.json"*).  
 If you wish to use any other compiler or different setting, just edit the entries in the **local** settings file.  
 ![FoundCompiler](./media/Settings.png)  
@@ -103,6 +99,7 @@ This file will be used by Microsoft's *C/C++* extension for intellisense. For mo
 - ⚙️ C++ Standard (defaults to the compiler's default)
 - ⚙️ Debugger path (defaults to gdb)
 - ⚙️ MSVC batch path (defaults to \"\")
+- ⚙️ Use MSVC (defaults to false)
 - ⚙️ To enable warnings (defaults to True)
 - ⚙️ What warnings should be checked by the compiler (defaults to [\"-Wall\", \"-Wextra\", \"-Wpedantic\"])
 - ⚙️ To treat warnings as errors (defaults to False)
@@ -129,11 +126,12 @@ However, the user can trigger the start-up of this extension by pressing `ctrl+a
 
 ## Using the MSVC Compiler
 
-To use the MSVC compiler (toolchain), set the local **msvcBatchPath** setting.  
+To use the MSVC compiler (toolchain), set the **msvcBatchPath** setting to a valid path.  
 An example path would be **"*PathToVs2022*/Community/VC/Auxiliary/Build/vcvarsall.bat"**.  
-Then the other settings about the GCC/Clang tools are ignored in the current workspace.  
-If you want to stop using the MSVC compiler, just reset the local **msvcBatchPath** setting.  
-Caveat: Currently no cross-compiling is allowed.
+Then set the **useMsvc** to true, to not use GCC/Clang tools in the current workspace.  
+If you want to stop using the MSVC compiler, just set **useMsvc** to false.  
+
+Caveat: Currently no cross-compiling is allowed and include paths with whitespaces can make the compilation fail.
 
 ## Release Notes
 

@@ -88,6 +88,7 @@ If you wish to use any other compiler or different setting, just edit the entrie
 ![FoundCompiler](./media/Settings.png)  
 
 Based on the operating system and the compiler, there will be a *c_cpp_properties.json* file created in the local *.vscode* folder.  
+There, the compiler path, the C/C++ standard and the include paths are synced with this extension.  
 This file will be used by Microsoft's *C/C++* extension for intellisense. For more information refer to the official [documentation](https://code.visualstudio.com/docs/cpp/c-cpp-properties-schema-reference).  
 ![CCppConfig](./media/Properties.png)  
 
@@ -117,6 +118,7 @@ This file will be used by Microsoft's *C/C++* extension for intellisense. For mo
 
 - 📝 Allowed file extensions for headers: \*.h, \*.hpp, \*.hh, \*.hxx
 - 📝 Allowed file extensions for sources: \*.c, \*.cpp, \*.cc, \*.cxx
+- ⚠️ Include paths with whitespaces can make the compilation fail
 
 ### CMake Projects in the Workspace Directory
 
@@ -135,7 +137,6 @@ Caveats:
 
 - Currently no cross-compiling is allowed
 - Only the 64bit version of MSVC is allowed
-- Include paths with whitespaces can make the compilation fail
 
 ## Release Notes
 

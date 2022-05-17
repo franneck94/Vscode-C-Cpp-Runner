@@ -5,6 +5,8 @@
 - **Info**: Major update about the settings handling. Now, the global (default) settings are used to generate the local .vscode settings files, instead of searching for any compiler installation on your computer. If you do not set any absolute compiler path in the settings, it is expected to have the compiler in the PATH variables.
 - **Improvement**: The folder selection menu now skips folders that do not contain any files.
 - **Info**: Added boolean flag setting **useMsvc** to indicate if the user wants to use MSVC instead of GCC/Clang in the current workspace.
+- **Info**: Updated settings.json <=> c_cpp_properties.json sync:
+  - **Only** syncing: C compiler path, C/C++ standard and include paths
 
 ## Version 3.4.0: May 4, 2022
 

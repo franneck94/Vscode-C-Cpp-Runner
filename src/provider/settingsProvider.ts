@@ -13,12 +13,7 @@ import {
 	getCompilerArchitecture,
 	getOperatingSystem,
 } from '../utils/systemUtils';
-import {
-	Architectures,
-	Commands,
-	JsonSettings,
-	OperatingSystems,
-} from '../utils/types';
+import { Architectures, JsonSettings, OperatingSystems } from '../utils/types';
 import { getActivationState } from '../utils/vscodeUtils';
 import { FileProvider } from './fileProvider';
 
@@ -67,7 +62,6 @@ export class SettingsProvider extends FileProvider {
   public architecure: Architectures | undefined;
   public isCygwin: boolean = false;
   public isMsvc: boolean = false;
-  private _commands: Commands = new Commands();
   // Settings
   public cCompilerPath: string = SettingsProvider.DEFAULT_C_COMPILER_PATH;
   public cppCompilerPath: string = SettingsProvider.DEFAULT_CPP_COMPILER_PATH;
@@ -92,15 +86,20 @@ export class SettingsProvider extends FileProvider {
     const settingsMissing = this.updateCheck();
     const propertiesFileMissing = this.localFileExist('c_cpp_properties.json');
 
-    if (settingsMissing && propertiesFileMissing && activeFolder) {
+    const allInfoMissing =
+      settingsMissing && propertiesFileMissing && activeFolder;
+    const onlySettingsMissing =
+      settingsFileMissing && !propertiesFileMissing && activeFolder;
+
+    if (allInfoMissing) {
       this.loadGlobalSettings();
       this.createFileData();
       return;
     }
 
-    if (settingsFileMissing && !propertiesFileMissing && activeFolder) {
+    if (onlySettingsMissing) {
       this.getSettingsFromProperties();
-      this.storeSettings();
+      this.createFileData();
       return;
     }
 
@@ -435,65 +434,65 @@ export class SettingsProvider extends FileProvider {
 
   private loadGlobalSettings() {
     /* Mandatory in settings.json */
-    this.cCompilerPath = this.getDefaultSettingsValue(
+    this.cCompilerPath = this.getGlobalSettingsValue(
       'cCompilerPath',
       SettingsProvider.DEFAULT_C_COMPILER_PATH,
     );
-    this.cppCompilerPath = this.getDefaultSettingsValue(
+    this.cppCompilerPath = this.getGlobalSettingsValue(
       'cppCompilerPath',
       SettingsProvider.DEFAULT_CPP_COMPILER_PATH,
     );
-    this.debuggerPath = this.getDefaultSettingsValue(
+    this.debuggerPath = this.getGlobalSettingsValue(
       'debuggerPath',
       SettingsProvider.DEFAULT_DEBUGGER_PATH,
     );
-    this.msvcBatchPath = this.getDefaultSettingsValue(
+    this.msvcBatchPath = this.getGlobalSettingsValue(
       'msvcBatchPath',
       SettingsProvider.DEFAULT_MSVC_BATCH_PATH,
     );
-    this.msvcToolsPath = this.getDefaultSettingsValue(
+    this.msvcToolsPath = this.getGlobalSettingsValue(
       'msvcToolsPath',
       SettingsProvider.DEFAULT_MSVC_TOOLS_PATH,
     );
 
     /* Optional in settings.json */
-    this.enableWarnings = this.getDefaultSettingsValue(
+    this.enableWarnings = this.getGlobalSettingsValue(
       'enableWarnings',
       SettingsProvider.DEFAULT_ENABLE_WARNINGS,
     );
-    this.warnings = this.getDefaultSettingsValue(
+    this.warnings = this.getGlobalSettingsValue(
       'warnings',
       SettingsProvider.DEFAULT_WARNINGS_UNIX,
     );
-    this.enableWarnings = this.getDefaultSettingsValue(
+    this.enableWarnings = this.getGlobalSettingsValue(
       'enableWarnings',
       SettingsProvider.DEFAULT_ENABLE_WARNINGS,
     );
-    this.warningsAsError = this.getDefaultSettingsValue(
+    this.warningsAsError = this.getGlobalSettingsValue(
       'warningsAsError',
       SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS,
     );
-    this.cStandard = this.getDefaultSettingsValue(
+    this.cStandard = this.getGlobalSettingsValue(
       'cStandard',
       SettingsProvider.DEFAULT_C_STANDARD_UNIX,
     );
-    this.cppStandard = this.getDefaultSettingsValue(
+    this.cppStandard = this.getGlobalSettingsValue(
       'cppStandard',
       SettingsProvider.DEFAULT_CPP_STANDARD,
     );
-    this.compilerArgs = this.getDefaultSettingsValue(
+    this.compilerArgs = this.getGlobalSettingsValue(
       'compilerArgs',
       SettingsProvider.DEFAULT_COMPILER_ARGS,
     );
-    this.linkerArgs = this.getDefaultSettingsValue(
+    this.linkerArgs = this.getGlobalSettingsValue(
       'linkerArgs',
       SettingsProvider.DEFAULT_LINKER_ARGS,
     );
-    this.includePaths = this.getDefaultSettingsValue(
+    this.includePaths = this.getGlobalSettingsValue(
       'includePaths',
       SettingsProvider.DEFAULT_INCLUDE_PATHS,
     );
-    this.excludeSearch = this.getDefaultSettingsValue(
+    this.excludeSearch = this.getGlobalSettingsValue(
       'excludeSearch',
       SettingsProvider.DEFAULT_EXCLUDE_SEARCH,
     );
@@ -525,7 +524,7 @@ export class SettingsProvider extends FileProvider {
   /* HELPER FUNCTIONS */
   /********************/
 
-  private getDefaultSettingsValue(name: string, defaultValue: any) {
+  private getGlobalSettingsValue(name: string, defaultValue: any) {
     if (this._configGlobal.has(name)) {
       return this._configGlobal.get(name, defaultValue);
     }

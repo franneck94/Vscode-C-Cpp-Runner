@@ -192,9 +192,9 @@ export class LaunchProvider extends FileProvider {
         this.settings.debuggerPath = currentConfig.miDebuggerPath;
 
         if (currentConfig.miDebuggerPath.includes(Debuggers.gdb)) {
-          this.settings.setGDB(currentConfig.miDebuggerPath);
+          this.settings.debuggerPath = currentConfig.miDebuggerPath;
         } else if (currentConfig.miDebuggerPath.includes(Debuggers.lldb)) {
-          this.settings.setLLDB(currentConfig.miDebuggerPath);
+          this.settings.debuggerPath = currentConfig.miDebuggerPath;
         }
       }
     } else {

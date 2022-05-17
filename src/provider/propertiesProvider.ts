@@ -1,13 +1,7 @@
 import * as path from 'path';
 
-import {
-	getBasename,
-	pathExists,
-	readJsonFile,
-	removeExtension,
-	writeJsonFile,
-} from '../utils/fileUtils';
-import { Compilers, JsonConfiguration, OperatingSystems } from '../utils/types';
+import { pathExists, readJsonFile, writeJsonFile } from '../utils/fileUtils';
+import { JsonConfiguration, OperatingSystems } from '../utils/types';
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
 
@@ -159,21 +153,7 @@ export class PropertiesProvider extends FileProvider {
       currentConfig.compilerPath !== this.settings.cCompilerPath &&
       currentConfig.compilerPath !== this.settings.cppCompilerPath
     ) {
-      let compilerName = currentConfig.compilerPath;
       this.settings.cCompilerPath = currentConfig.compilerPath;
-
-      compilerName = getBasename(compilerName);
-      compilerName = removeExtension(compilerName, 'exe');
-
-      if (compilerName.includes(Compilers.clang)) {
-        this.settings.setClang(currentConfig.compilerPath);
-      } else if (compilerName.includes(Compilers.clangpp)) {
-        this.settings.setClangpp(currentConfig.compilerPath);
-      } else if (compilerName.includes(Compilers.gcc)) {
-        this.settings.setGcc(currentConfig.compilerPath);
-      } else if (compilerName.includes(Compilers.gpp)) {
-        this.settings.setGpp(currentConfig.compilerPath);
-      }
     }
 
     if (
@@ -192,16 +172,10 @@ export class PropertiesProvider extends FileProvider {
       this.settings.update('cppStandard', currentConfig.cppStandard);
     }
 
-    const argsSet: Set<string> = new Set(currentConfig.compilerArgs);
-    const args: string[] = [...argsSet];
-    const compilerArgs = args.filter((arg: string) => !arg.includes('-W'));
     const includeArgs = currentConfig.includePath.filter(
       (path: string) => path !== INCLUDE_PATTERN,
     );
 
-    this.settings.compilerArgs = compilerArgs;
     this.settings.includePaths = includeArgs;
-
-    this.settings.setOtherSettings();
   }
 }

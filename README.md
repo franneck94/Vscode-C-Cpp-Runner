@@ -131,7 +131,11 @@ An example path would be **"*PathToVs2022*/Community/VC/Auxiliary/Build/vcvarsal
 Then set the **useMsvc** to true, to not use GCC/Clang tools in the current workspace.  
 If you want to stop using the MSVC compiler, just set **useMsvc** to false.  
 
-Caveat: Currently no cross-compiling is allowed and include paths with whitespaces can make the compilation fail.
+Caveats:
+
+- Currently no cross-compiling is allowed
+- Only the 64bit version of MSVC is allowed
+- Include paths with whitespaces can make the compilation fail
 
 ## Release Notes
 

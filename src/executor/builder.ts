@@ -58,7 +58,10 @@ export async function executeBuildTask(
   const executablePath = path.join(modeDir, executableName);
 
   let commandLine: string | undefined;
-  if (operatingSystem === OperatingSystems.windows && settingsProvider.isMsvc) {
+  if (
+    operatingSystem === OperatingSystems.windows &&
+    settingsProvider.useMsvc
+  ) {
     commandLine = executeBuildTaskMsvcBased(
       settingsProvider,
       activeFolder,
@@ -93,7 +96,7 @@ export async function executeBuildTask(
 
   const execution = getProcessExecution(
     operatingSystem,
-    settingsProvider.isMsvc,
+    settingsProvider.useMsvc,
     commandLine,
     activeFolder,
   );

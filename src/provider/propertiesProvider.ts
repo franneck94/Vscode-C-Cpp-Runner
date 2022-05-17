@@ -64,14 +64,14 @@ export class PropertiesProvider extends FileProvider {
 
     if (!configLocal) return;
 
-    if (!this.settings.cCompilerPath && !this.settings.isMsvc) return;
+    if (!this.settings.cCompilerPath && !this.settings.useMsvc) return;
     if (!this.settings.architecure) return;
 
     const os = this.settings.operatingSystem.toLowerCase();
     const arch = this.settings.architecure.toLowerCase();
     let compiler: string;
 
-    if (this.settings.isMsvc) {
+    if (this.settings.useMsvc) {
       compiler = 'msvc';
     } else if (this.settings.cCompilerPath) {
       compiler = this.settings.cCompilerPath.toLowerCase().includes('gcc')
@@ -119,7 +119,7 @@ export class PropertiesProvider extends FileProvider {
       currentConfig.cppStandard = '${default}';
     }
 
-    if (this.settings.isMsvc) {
+    if (this.settings.useMsvc) {
       currentConfig.compilerPath = path.join(
         this.settings.msvcToolsPath,
         SettingsProvider.MSVC_COMPILER_NAME,
@@ -142,7 +142,7 @@ export class PropertiesProvider extends FileProvider {
     // Since C/C++ Extension Version 1.4.0 cygwin is a linux triplet
     if (
       this.settings.isCygwin &&
-      !this.settings.isMsvc &&
+      !this.settings.useMsvc &&
       this.settings.operatingSystem === OperatingSystems.windows
     ) {
       currentConfig.name = triplet.replace('windows', 'windows-cygwin');

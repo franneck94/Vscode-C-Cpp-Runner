@@ -417,18 +417,28 @@ export class SettingsProvider extends FileProvider {
   }
 
   private getArchitecture() {
+    if (this.useMsvc) {
+      this.architecure = Architectures.x64;
+      this.isCygwin = false;
+      return;
+    }
+
     if (this.cCompilerPath) {
       const ret = getCompilerArchitecture(this.cCompilerPath);
       this.architecure = ret.architecure;
       this.isCygwin = ret.isCygwin;
-    } else if (this.cppCompilerPath) {
+      return;
+    }
+
+    if (this.cppCompilerPath) {
       const ret = getCompilerArchitecture(this.cppCompilerPath);
       this.architecure = ret.architecure;
       this.isCygwin = ret.isCygwin;
-    } else {
-      this.architecure = Architectures.x64;
-      this.isCygwin = false;
+      return;
     }
+
+    this.architecure = Architectures.x64;
+    this.isCygwin = false;
   }
 
   public reset() {

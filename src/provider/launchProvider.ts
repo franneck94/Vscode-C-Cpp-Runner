@@ -87,7 +87,7 @@ export class LaunchProvider extends FileProvider {
 
     if (
       this.settings.operatingSystem === OperatingSystems.windows &&
-      this.settings.isMsvc
+      this.settings.useMsvc
     ) {
       this.msvcBasedDebugger(launchTemplate);
     } else {

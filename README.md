@@ -14,15 +14,9 @@ You do not need to know about any compiler commands. 😎
 - 🔧 For C code: Any GCC, Clang or MSVC compiler
 - 🔧 For C++ code: Any G++, Clang++ or MSVC compiler
 
-## Install the Software Requirements (optional)
-
-- 🖥️ Windows:
-  - Alternative 1: Install gcc, g++ and gdb via [Cygwin](https://www.cygwin.com/) or [MSYS2](https://www.msys2.org/)  
-  - Alternative 2: Install MSVC via [VS BuildTools](https://visualstudio.microsoft.com/de/downloads/?q=build+tools) - see [below](#using-the-msvc-compiler) for instructions  
-- 🖥️ Linux/MacOS:
-  - Recommended to install gcc, g++ and gdb via a package manager (e.g. `apt`)
-- 🖥️ MacOS:
-  - Recommanded to install clang, clang++ and lldb via [xcode-tools](https://developer.apple.com/xcode/features/)
+**Important**:
+Make sure that the compiler is either on your PATH variables or you have to set the absolute compiler path for the  
+**cCompilerPath**/**cppCompilerPath** setting.
 
 ## Extension Activation Conditions
 

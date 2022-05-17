@@ -77,6 +77,8 @@ export class LaunchProvider extends FileProvider {
       this.activeFolder = this.workspaceFolder;
     }
 
+    if (!this.templatePath) return;
+
     const launchTemplate: JsonConfiguration | undefined = readJsonFile(
       this.templatePath,
     );

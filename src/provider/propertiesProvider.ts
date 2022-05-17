@@ -54,6 +54,8 @@ export class PropertiesProvider extends FileProvider {
   public async writeFileData() {
     let configLocal: JsonConfiguration | undefined;
 
+    if (!this.templatePath) return;
+
     if (!pathExists(this._outputPath)) {
       configLocal = readJsonFile(this.templatePath);
     } else {

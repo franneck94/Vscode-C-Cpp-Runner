@@ -11,7 +11,7 @@ export abstract class CallbackProvider {
 
   constructor(
     protected _workspaceFolder: string,
-    protected templateFileName: string,
+    protected templateFileName: string | undefined,
     protected outputFileName: string,
   ) {
     this._vscodeDirectory = path.join(this._workspaceFolder, '.vscode');

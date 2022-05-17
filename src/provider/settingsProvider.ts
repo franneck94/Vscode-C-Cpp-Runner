@@ -17,7 +17,6 @@ import { Architectures, JsonSettings, OperatingSystems } from '../utils/types';
 import { getActivationState } from '../utils/vscodeUtils';
 import { FileProvider } from './fileProvider';
 
-const TEMPLATE_FILENAME = 'settings_template.json';
 const OUTPUT_FILENAME = 'settings.json';
 const EXTENSION_NAME = 'C_Cpp_Runner';
 const C_CPP_EXTENSION_NAME = 'C_Cpp';
@@ -80,7 +79,7 @@ export class SettingsProvider extends FileProvider {
   public warnings: string[] = SettingsProvider.DEFAULT_WARNINGS_UNIX;
 
   constructor(public workspaceFolder: string, public activeFolder: string) {
-    super(workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
+    super(workspaceFolder, undefined, OUTPUT_FILENAME);
 
     const settingsFileMissing = this.localFileExist('settings.json');
     const settingsMissing = this.updateCheck();

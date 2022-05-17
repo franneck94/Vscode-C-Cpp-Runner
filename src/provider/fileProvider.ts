@@ -6,11 +6,11 @@ import { getActivationState } from '../utils/vscodeUtils';
 import { CallbackProvider } from './callbackProvider';
 
 export abstract class FileProvider extends CallbackProvider {
-  protected readonly templatePath: string;
+  protected readonly templatePath: string | undefined;
 
   constructor(
     workspaceFolder: string,
-    templateFileName: string,
+    templateFileName: string | undefined,
     outputFileName: string,
   ) {
     super(workspaceFolder, templateFileName, outputFileName);
@@ -19,7 +19,10 @@ export abstract class FileProvider extends CallbackProvider {
       extensionPath ? extensionPath : '',
       'templates',
     );
-    this.templatePath = path.join(templateDirectory, templateFileName);
+
+    if (templateFileName) {
+      this.templatePath = path.join(templateDirectory, templateFileName);
+    }
 
     if (!pathExists(this._vscodeDirectory)) {
       mkdirRecursive(this._vscodeDirectory);

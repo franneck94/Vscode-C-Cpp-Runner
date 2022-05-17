@@ -11,7 +11,7 @@ import {
 	Architectures,
 	Builds,
 	Debuggers,
-	JsonConfiguration,
+	JsonLaunchConfig,
 	OperatingSystems,
 } from '../utils/types';
 import { getLaunchConfigIndex } from '../utils/vscodeUtils';
@@ -50,7 +50,7 @@ export class LaunchProvider extends FileProvider {
     if (!pathExists(this._outputPath)) {
       doUpdate = true;
     } else {
-      const configJson: JsonConfiguration = readJsonFile(this._outputPath);
+      const configJson: JsonLaunchConfig = readJsonFile(this._outputPath);
       if (configJson) {
         let foundConfig = false;
 
@@ -79,7 +79,7 @@ export class LaunchProvider extends FileProvider {
 
     if (!this.templatePath) return;
 
-    const launchTemplate: JsonConfiguration | undefined = readJsonFile(
+    const launchTemplate: JsonLaunchConfig | undefined = readJsonFile(
       this.templatePath,
     );
 
@@ -94,7 +94,7 @@ export class LaunchProvider extends FileProvider {
       this.unixBasedDebugger(launchTemplate);
     }
 
-    const launchLocal: JsonConfiguration | undefined = readJsonFile(
+    const launchLocal: JsonLaunchConfig | undefined = readJsonFile(
       this._outputPath,
     );
 
@@ -109,9 +109,13 @@ export class LaunchProvider extends FileProvider {
       configIdx = launchLocal.configurations.length;
     }
 
+    if (!launchTemplate.configurations[0]) return;
+
     if (launchLocal && launchLocal.configurations.length === configIdx) {
       launchLocal.configurations.push(launchTemplate.configurations[0]);
     } else {
+      if (!launchLocal.configurations[configIdx]) return;
+
       launchLocal.configurations[configIdx] = launchTemplate.configurations[0];
     }
 
@@ -179,7 +183,7 @@ export class LaunchProvider extends FileProvider {
   }
 
   public changeCallback() {
-    const launchLocal: JsonConfiguration | undefined = readJsonFile(
+    const launchLocal: JsonLaunchConfig | undefined = readJsonFile(
       this._outputPath,
     );
 
@@ -190,12 +194,18 @@ export class LaunchProvider extends FileProvider {
     if (configIdx !== undefined) {
       const currentConfig = launchLocal.configurations[configIdx];
 
-      if (currentConfig.miDebuggerPath !== this.settings.debuggerPath) {
+      if (currentConfig === undefined) return;
+
+      if (
+        currentConfig.miDebuggerPath !== this.settings.debuggerPath &&
+        currentConfig.miDebuggerPath
+      ) {
         this.settings.debuggerPath = currentConfig.miDebuggerPath;
 
-        if (currentConfig.miDebuggerPath.includes(Debuggers.gdb)) {
-          this.settings.debuggerPath = currentConfig.miDebuggerPath;
-        } else if (currentConfig.miDebuggerPath.includes(Debuggers.lldb)) {
+        if (
+          currentConfig.miDebuggerPath.includes(Debuggers.gdb) ||
+          currentConfig.miDebuggerPath.includes(Debuggers.lldb)
+        ) {
           this.settings.debuggerPath = currentConfig.miDebuggerPath;
         }
       }
@@ -204,7 +214,9 @@ export class LaunchProvider extends FileProvider {
     }
   }
 
-  private msvcBasedDebugger(launchTemplate: JsonConfiguration) {
+  private msvcBasedDebugger(launchTemplate: JsonLaunchConfig) {
+    if (launchTemplate.configurations[0] === undefined) return;
+
     launchTemplate.configurations[0].name = CONFIG_NAME;
 
     delete launchTemplate.configurations[0].MIMode;
@@ -232,7 +244,9 @@ export class LaunchProvider extends FileProvider {
     return launchTemplate;
   }
 
-  private unixBasedDebugger(launchTemplate: JsonConfiguration) {
+  private unixBasedDebugger(launchTemplate: JsonLaunchConfig) {
+    if (launchTemplate.configurations[0] === undefined) return;
+
     launchTemplate.configurations[0].name = CONFIG_NAME;
     if (this.settings.debuggerPath) {
       launchTemplate.configurations[0].MIMode = this.settings.debuggerPath.includes(

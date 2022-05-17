@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import { pathExists, readJsonFile } from '../utils/fileUtils';
-import { Builds, JsonConfiguration } from '../utils/types';
+import { Builds, JsonLaunchConfig } from '../utils/types';
 import { getLaunchConfigIndex } from '../utils/vscodeUtils';
 
 const CONFIG_NAME = 'C/C++ Runner: Debug Session';
@@ -16,7 +16,7 @@ export async function runDebugger(
   const folder = vscode.workspace.getWorkspaceFolder(uriWorkspaceFolder);
   const launchPath = path.join(workspaceFolder, '.vscode', 'launch.json');
 
-  const configJson: JsonConfiguration | undefined = readJsonFile(launchPath);
+  const configJson: JsonLaunchConfig | undefined = readJsonFile(launchPath);
 
   if (!configJson) return;
 
@@ -28,6 +28,12 @@ export async function runDebugger(
   const modeDir = path.join(buildDir, `${buildMode}`);
 
   if (!pathExists(modeDir)) return;
+
+  if (
+    !configJson.configurations === undefined ||
+    !configJson.configurations[configIdx]
+  )
+    return;
 
   await vscode.debug.startDebugging(
     folder,

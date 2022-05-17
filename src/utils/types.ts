@@ -4,39 +4,40 @@ export interface JsonSettings {
   [name: string]: string;
 }
 
-export interface JsonConfiguration {
-  configurations: any[];
+export interface JsonPropertiesConfigEntry {
+  name: string;
+  includePath: string[];
+  compilerPath: string;
+  cStandard: string;
+  cppStandard: string;
+  intelliSenseMode: string;
+  compilerArgs: string[];
 }
 
-export interface JsonInnerTask {
+export interface JsonPropertiesConfig {
+  configurations: JsonPropertiesConfigEntry[];
+}
+
+export interface JsonLaunchConfigEntry extends vscode.DebugConfiguration {
+  type: string;
+  request: string;
   args: string[];
-  command: string;
-  type: any;
-  options: any;
-  label: any;
+  stopAtEntry: boolean;
+  externalConsole: boolean;
+  cwd: string;
+  environment: string[];
+  program: string;
+  MIMode?: string;
+  miDebuggerPath?: string;
+  setupCommands?: any[];
 }
 
-export interface JsonTask {
-  tasks: JsonInnerTask[];
+export interface JsonLaunchConfig {
+  configurations: JsonLaunchConfigEntry[];
 }
 
 export class Task extends vscode.Task {
   override execution?: vscode.ProcessExecution;
-}
-
-export class Commands {
-  foundGcc: boolean = false;
-  pathGcc: string | undefined;
-  foundGpp: boolean = false;
-  pathGpp: string | undefined;
-  foundClang: boolean = false;
-  pathClang: string | undefined;
-  foundClangpp: boolean = false;
-  pathClangpp: string | undefined;
-  foundGdb: boolean = false;
-  pathGDB: string | undefined;
-  foundLLDB: boolean = false;
-  pathLLDB: string | undefined;
 }
 
 export enum Languages {

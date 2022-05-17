@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 
 import { extensionState } from '../extension';
 import { filesInDir, pathExists, readJsonFile } from './fileUtils';
-import { JsonConfiguration, JsonSettings, OperatingSystems } from './types';
+import { JsonLaunchConfig, JsonSettings, OperatingSystems } from './types';
 
 const STATUS_BAR_ALIGN = vscode.StatusBarAlignment.Left;
 const STATUS_BAR_PRIORITY = 50;
@@ -24,7 +24,7 @@ export function setContextValue(key: string, value: any) {
 }
 
 export function getLaunchConfigIndex(
-  configJson: JsonConfiguration,
+  configJson: JsonLaunchConfig,
   configName: string,
 ) {
   let configIdx = 0;

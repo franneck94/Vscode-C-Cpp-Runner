@@ -7,7 +7,11 @@ import {
 	writeJsonFile,
 } from '../utils/fileUtils';
 import { commandExists } from '../utils/systemUtils';
-import { JsonConfiguration, OperatingSystems } from '../utils/types';
+import {
+	JsonPropertiesConfig,
+	JsonPropertiesConfigEntry,
+	OperatingSystems,
+} from '../utils/types';
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
 
@@ -33,17 +37,21 @@ export class PropertiesProvider extends FileProvider {
   protected updateCheck() {
     if (!pathExists(this._outputPath)) return true;
 
-    const configLocal: JsonConfiguration = readJsonFile(this._outputPath);
+    const configLocal: JsonPropertiesConfig = readJsonFile(this._outputPath);
 
     if (!configLocal) return true;
 
-    const triplet: string = configLocal.configurations[0].name;
+    const currentConfig = configLocal.configurations[0];
+
+    if (currentConfig === undefined) return true;
+
+    const triplet: string = currentConfig.name;
     if (!triplet.includes(this.settings.operatingSystem)) return true;
 
     if (
       this.settings.msvcBatchPath !==
         SettingsProvider.DEFAULT_MSVC_BATCH_PATH &&
-      !configLocal.configurations[0].intelliSenseMode.includes('msvc')
+      !currentConfig.intelliSenseMode.includes('msvc')
     ) {
       return true;
     }
@@ -52,7 +60,7 @@ export class PropertiesProvider extends FileProvider {
   }
 
   public async writeFileData() {
-    let configLocal: JsonConfiguration | undefined;
+    let configLocal: JsonPropertiesConfig | undefined;
 
     if (!this.templatePath) return;
 
@@ -84,6 +92,9 @@ export class PropertiesProvider extends FileProvider {
     const triplet = `${os}-${compiler}-${arch}`;
 
     const currentConfig = configLocal.configurations[0];
+
+    if (currentConfig === undefined) return;
+
     currentConfig.compilerArgs = [];
 
     if (this.settings.compilerArgs) {
@@ -160,19 +171,26 @@ export class PropertiesProvider extends FileProvider {
   }
 
   public changeCallback() {
-    const configLocal: JsonConfiguration | undefined = readJsonFile(
+    const configLocal: JsonPropertiesConfig | undefined = readJsonFile(
       this._outputPath,
     );
 
     if (!configLocal) return;
 
-    const currentConfig = configLocal.configurations[0];
+    const currentConfig: JsonPropertiesConfigEntry | undefined =
+      configLocal.configurations[0];
+
+    if (currentConfig === undefined) return;
+
+    const absoluteCompilerPath = !pathExists(this.settings.cCompilerPath);
 
     if (
+      absoluteCompilerPath &&
       currentConfig.compilerPath !== this.settings.cCompilerPath &&
       currentConfig.compilerPath !== this.settings.cppCompilerPath
     ) {
       this.settings.cCompilerPath = currentConfig.compilerPath;
+      // this.settings.cppCompilerPath = currentConfig.compilerPath.replace();
     }
 
     if (
@@ -194,7 +212,8 @@ export class PropertiesProvider extends FileProvider {
     const includeArgs = currentConfig.includePath.filter(
       (path: string) => path !== INCLUDE_PATTERN,
     );
-
     this.settings.includePaths = includeArgs;
+
+    this.settings.writeFileData();
   }
 }

@@ -7,13 +7,12 @@
       "request": "launch",
       "args": [],
       "stopAtEntry": false,
+      "externalConsole": true,
       "cwd": "${fileDirname}",
       "environment": [],
       "program": "${fileDirname}/build/Debug/outDebug",
-      "internalConsoleOptions": "openOnSessionStart",
       "MIMode": "",
       "miDebuggerPath": "",
-      "console": "integratedTerminal",
       "setupCommands": [
         {
           "description": "Enable pretty-printing for gdb",

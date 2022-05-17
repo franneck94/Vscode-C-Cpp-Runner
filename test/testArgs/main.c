@@ -9,9 +9,7 @@ int main(int argc, char **argv)
         printf("argv[%d]: %s\n", i, argv[i]);
     }
 
-    int i = 0;
-    scanf("%d", &i);
-    printf("%d\n", i);
+    printf("WWWWWW");
 
     return 0;
 }

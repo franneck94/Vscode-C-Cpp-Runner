@@ -94,12 +94,14 @@ export class SettingsProvider extends FileProvider {
     if (allInfoMissing) {
       this.loadGlobalSettings();
       this.createFileData();
+      this.getArchitecture();
       return;
     }
 
     if (onlySettingsMissing) {
       this.getSettingsFromProperties();
       this.createFileData();
+      this.getArchitecture();
       return;
     }
 

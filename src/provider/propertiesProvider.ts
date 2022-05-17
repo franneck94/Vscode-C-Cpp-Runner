@@ -1,6 +1,12 @@
 import * as path from 'path';
 
-import { pathExists, readJsonFile, writeJsonFile } from '../utils/fileUtils';
+import {
+	pathExists,
+	readJsonFile,
+	replaceBackslashes,
+	writeJsonFile,
+} from '../utils/fileUtils';
+import { commandExists } from '../utils/systemUtils';
 import { JsonConfiguration, OperatingSystems } from '../utils/types';
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
@@ -45,7 +51,7 @@ export class PropertiesProvider extends FileProvider {
     return false;
   }
 
-  public writeFileData() {
+  public async writeFileData() {
     let configLocal: JsonConfiguration | undefined;
 
     if (!pathExists(this._outputPath)) {
@@ -117,7 +123,18 @@ export class PropertiesProvider extends FileProvider {
         SettingsProvider.MSVC_COMPILER_NAME,
       );
     } else {
-      currentConfig.compilerPath = this.settings.cCompilerPath;
+      if (pathExists(this.settings.cCompilerPath)) {
+        currentConfig.compilerPath = this.settings.cCompilerPath;
+      } else {
+        // non-absolute compiler path
+        const ret = await commandExists(this.settings.cCompilerPath);
+
+        if (!ret || !ret.p) {
+          currentConfig.compilerPath = this.settings.cCompilerPath;
+        } else {
+          currentConfig.compilerPath = replaceBackslashes(ret.p);
+        }
+      }
     }
 
     // Since C/C++ Extension Version 1.4.0 cygwin is a linux triplet

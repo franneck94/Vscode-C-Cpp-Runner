@@ -2,7 +2,7 @@
 
 ## Version 4.0.0: May 17, 2022
 
-- **Info**: Major update about the settings handling. Now, the global (default) settings are used to generate the local .vscode settings files, instead of searching for any compiler installation on your computer. If you do not set any absolute compiler path in the settings, it is expected to have the compiler in the PATH variables.
+- **Info**: Major update about the settings handling. Now, the global (default) settings are used to generate the local .vscode settings files, instead of searching for any compiler installation on your computer. If you do not set an absolute compiler path in the settings, it is expected to have the compiler in the PATH variables (like calling `gcc` in the terminal).
 - **Info**: Added boolean flag setting **useMsvc** to indicate if the user wants to use MSVC instead of GCC/Clang in the current workspace.
 - **Info**: Clang on windows (backed by MSVC) will also use the MSVC debuggee type
 - **Info**: Updated settings.json <=> c_cpp_properties.json sync:
@@ -371,7 +371,7 @@ A multi-workspace setting is now fully compatible with the extension.
 
 - **Feature**: Added search for "mingw32-make" for MinGW users
 - **Feature**: Updated makefile for Windows users without Cygwin/MSYS installed
-- **Info**: Removed Microsoft's C/C++ extension as "extensionPack" entry, since deactivating/uninstalling this extension would also do so for the Microsoft ones
+- **Info**: Removed Microsoft's C/C++ extension as an "extensionPack" entry, since deactivating/uninstalling this extension would also do so for the Microsoft ones
 - **Bugfix**: The extension couldn't start after installing
 
 ## Version 0.5.2: April 5, 2021

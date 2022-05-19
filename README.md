@@ -1,8 +1,6 @@
 # VSCode C/C++ Runner
 
-🚀 Compile, run and debug **single** or **multiple** C/C++ files with ease. 🚀
-
-This extension provides an easy interface to compile, run and debug your C/C++ code.  
+🚀 Compile, run and debug **single** or **multiple** C/C++ files with ease. 🚀  
 You do not need to know about any compiler commands. 😎
 
 ## Example
@@ -11,16 +9,16 @@ You do not need to know about any compiler commands. 😎
 
 ## Software Requirements
 
-- 🔧 For C code: Any GCC, Clang or MSVC* compiler
-- 🔧 For C++ code: Any G++, Clang++ or MSVC* compiler
+- 🔧 For C code: Any GCC, Clang or MSVC compiler
+- 🔧 For C++ code: Any G++, Clang++ or MSVC compiler
 
-Make sure that any GCC/Clang compiler is either in your PATH or you have to set the **C/ C++ Compiler Path** setting of this extension.  
+Make sure that your GCC/Clang compiler is either in your PATH or you have to set the **C/ C++ Compiler Path** setting of this extension.  
 For the MSVC compiler usage see [here](#Using-the-MSVC-Compiler).
 
 ## Extension Activation Conditions
 
-- Whenever there is a C/C++ file in the base directory of your workspace
-- Whenever you open a C/C++ file
+- Whenever there is a C/C++ file in the **base** directory of your workspace
+- Whenever you open a C/C++ file in your workspace
 
 ## How to use: Compile **all** files in a folder
 
@@ -53,7 +51,7 @@ Besides that, you can also select a folder by right-clicking in the context menu
 ### Passing Commandline Arguments
 
 You can pass in command-line arguments for running or debugging the binary.  
-Make sure to select the active folder beforehand, then press `ctrl+shift+a` to open the message box to type in the arguments:
+Make sure to select the active folder beforehand, then press `ctrl+alt+a` to open the message box to type in the arguments:
 
 ![Arguments](./media/arguments.png)
 
@@ -88,7 +86,7 @@ If you wish to use any other compiler or different setting, just edit the entrie
 ![FoundCompiler](./media/Settings.png)  
 
 Based on the operating system and the compiler, there will be a *c_cpp_properties.json* file created in the local *.vscode* folder.  
-There, the compiler path, the C/C++ standard and the include paths are synced with this extension.  
+There, the compiler path, the C/C++ standard, and the included paths are **synced** with this extension.  
 This file will be used by Microsoft's *C/C++* extension for intellisense. For more information refer to the official [documentation](https://code.visualstudio.com/docs/cpp/c-cpp-properties-schema-reference).  
 ![CCppConfig](./media/Properties.png)  
 
@@ -135,17 +133,11 @@ If you want to stop using the MSVC compiler, just set **useMsvc** to false.
 
 Caveats:
 
-- Currently no cross-compiling is allowed
-- Only the 64bit version of MSVC is allowed
+- Only the 64bit (no cross-compiling) version of MSVC is allowed
 
 ## Release Notes
 
 Refer to the [CHANGELOG](CHANGELOG.md).
-
-## Currently known issues
-
-- Include paths that contain whitespaces
-- Using the extension without admin rights on the computer
 
 ## License
 

@@ -14,7 +14,6 @@ import {
 	getOperatingSystem,
 } from '../utils/systemUtils';
 import { Architectures, JsonSettings, OperatingSystems } from '../utils/types';
-import { getActivationState } from '../utils/vscodeUtils';
 import { FileProvider } from './fileProvider';
 
 const OUTPUT_FILENAME = 'settings.json';
@@ -54,9 +53,8 @@ export class SettingsProvider extends FileProvider {
 
   // Workspace data
   private _configGlobal = vscode.workspace.getConfiguration(EXTENSION_NAME);
-  private _configGlobalCCpp = vscode.workspace.getConfiguration(
-    C_CPP_EXTENSION_NAME,
-  );
+  private _configGlobalCCpp =
+    vscode.workspace.getConfiguration(C_CPP_EXTENSION_NAME);
 
   // Machine information
   public operatingSystem = getOperatingSystem();
@@ -162,13 +160,11 @@ export class SettingsProvider extends FileProvider {
   /********************/
 
   public writeFileData() {
-    this.loadLocalSettings();
     this.storeSettings();
   }
 
   public deleteCallback() {
-    const extensionIsActive = getActivationState();
-    if (extensionIsActive) this.writeFileData();
+    this.storeSettings();
   }
 
   public changeCallback() {
@@ -303,8 +299,8 @@ export class SettingsProvider extends FileProvider {
       this._vscodeDirectory,
       'c_cpp_properties.json',
     );
-    const properties: JsonSettings | undefined = readJsonFile(propertiesPath)
-      .configurations[0];
+    const properties: JsonSettings | undefined =
+      readJsonFile(propertiesPath).configurations[0];
 
     if (!properties) return;
 

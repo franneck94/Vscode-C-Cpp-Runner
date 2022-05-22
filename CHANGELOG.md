@@ -1,5 +1,10 @@
 # C/C++ Runner Change Log
 
+## Version 4.0.1: May 22, 2022
+
+- **Regression**: Fixed failing msvc compilation with multiple source files
+- **Regression**: Fixed properties <=> settings sync bug
+
 ## Version 4.0.0: May 17, 2022
 
 - **Info**: Major update about the settings handling. Now, the global (default) settings are used to generate the local .vscode settings files, instead of searching for any compiler installation on your computer. If you do not set an absolute compiler path in the settings, it is expected to have the compiler in the PATH variables (like calling `gcc` in the terminal).

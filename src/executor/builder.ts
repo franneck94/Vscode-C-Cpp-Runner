@@ -347,18 +347,18 @@ function executeBuildTaskMsvcBased(
       continue;
     }
 
-    const filePath = path.join(activeFolder, file);
-    const hasSpace = filePath.includes(' ');
+    const hasSpace = file.includes(' ');
 
     if (hasSpace) {
-      fullFileArgs += ` "${file}"`;
+      fullFileArgs += ` .\\"${file}"`;
     } else {
-      fullFileArgs += ` ${file}`;
+      fullFileArgs += ` .\\${file}`;
     }
   }
 
   if (fullFileArgs === '') return;
 
+  commandLine += ` cd ${activeFolder} &&`;
   commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} ${fullFileArgs}`;
 
   return commandLine;

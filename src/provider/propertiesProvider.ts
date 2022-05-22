@@ -21,6 +21,7 @@ const OUTPUT_FILENAME = 'c_cpp_properties.json';
 const INCLUDE_PATTERN = '${workspaceFolder}/**';
 
 export class PropertiesProvider extends FileProvider {
+  protected lastConfig: JsonPropertiesConfig | undefined;
   constructor(
     protected settings: SettingsProvider,
     public workspaceFolder: string,
@@ -33,26 +34,30 @@ export class PropertiesProvider extends FileProvider {
     if (updateRequired && activeFolder) {
       this.createFileData();
     }
+
+    if (pathExists(this._outputPath)) {
+      this.lastConfig = readJsonFile(this._outputPath);
+    }
   }
 
   protected updateCheck() {
     if (!pathExists(this._outputPath)) return true;
 
-    const configLocal: JsonPropertiesConfig = readJsonFile(this._outputPath);
+    const currentConfig: JsonPropertiesConfig = readJsonFile(this._outputPath);
 
-    if (!configLocal) return true;
+    if (!currentConfig) return true;
 
-    const currentConfig = configLocal.configurations[0];
+    const currentConfigEntry = currentConfig.configurations[0];
 
-    if (currentConfig === undefined) return true;
+    if (currentConfigEntry === undefined) return true;
 
-    const triplet: string = currentConfig.name;
+    const triplet: string = currentConfigEntry.name;
     if (!triplet.includes(this.settings.operatingSystem)) return true;
 
     if (
       this.settings.msvcBatchPath !==
         SettingsProvider.DEFAULT_MSVC_BATCH_PATH &&
-      !currentConfig.intelliSenseMode.includes('msvc')
+      !currentConfigEntry.intelliSenseMode.includes('msvc')
     ) {
       return true;
     }
@@ -92,54 +97,58 @@ export class PropertiesProvider extends FileProvider {
 
     const triplet = `${os}-${compiler}-${arch}`;
 
-    const currentConfig = configLocal.configurations[0];
+    const configLocalEntry = configLocal.configurations[0];
 
-    if (currentConfig === undefined) return;
+    if (configLocalEntry === undefined) return;
 
-    if (this.settings.includePaths) {
-      currentConfig.includePath = [INCLUDE_PATTERN];
+    if (this.settings.includePaths.length > 0) {
+      configLocalEntry.includePath = [INCLUDE_PATTERN];
       for (const path of this.settings.includePaths) {
-        const includePathSet = new Set(currentConfig.includePath);
-        if (path !== INCLUDE_PATTERN && !includePathSet.has(path)) {
-          currentConfig.includePath.push(path);
+        const includePathSet = new Set(configLocalEntry.includePath);
+        if (
+          path !== INCLUDE_PATTERN &&
+          !includePathSet.has(path) &&
+          path !== '$(default)'
+        ) {
+          configLocalEntry.includePath.push(path);
         }
       }
     } else {
-      currentConfig.includePath = [INCLUDE_PATTERN];
+      configLocalEntry.includePath = [INCLUDE_PATTERN];
     }
 
     if (this.settings.cStandard) {
-      currentConfig.cStandard = this.settings.useMsvc
+      configLocalEntry.cStandard = this.settings.useMsvc
         ? SettingsProvider.DEFAULT_C_STANDARD_MSVC
         : this.settings.cStandard;
     } else {
-      currentConfig.cStandard = this.settings.useMsvc
+      configLocalEntry.cStandard = this.settings.useMsvc
         ? SettingsProvider.DEFAULT_C_STANDARD_MSVC
         : '${default}';
     }
 
     if (this.settings.cppStandard) {
-      currentConfig.cppStandard = this.settings.cppStandard;
+      configLocalEntry.cppStandard = this.settings.cppStandard;
     } else {
-      currentConfig.cppStandard = '${default}';
+      configLocalEntry.cppStandard = '${default}';
     }
 
     if (this.settings.useMsvc) {
-      currentConfig.compilerPath = path.join(
+      configLocalEntry.compilerPath = path.join(
         this.settings.msvcToolsPath,
         SettingsProvider.MSVC_COMPILER_NAME,
       );
     } else {
       if (pathExists(this.settings.cCompilerPath)) {
-        currentConfig.compilerPath = this.settings.cCompilerPath;
+        configLocalEntry.compilerPath = this.settings.cCompilerPath;
       } else {
         // non-absolute compiler path
         const ret = await commandExists(this.settings.cCompilerPath);
 
         if (!ret || !ret.p) {
-          currentConfig.compilerPath = this.settings.cCompilerPath;
+          configLocalEntry.compilerPath = this.settings.cCompilerPath;
         } else {
-          currentConfig.compilerPath = replaceBackslashes(ret.p);
+          configLocalEntry.compilerPath = replaceBackslashes(ret.p);
         }
       }
     }
@@ -150,11 +159,11 @@ export class PropertiesProvider extends FileProvider {
       !this.settings.useMsvc &&
       this.settings.operatingSystem === OperatingSystems.windows
     ) {
-      currentConfig.name = triplet.replace('windows', 'windows-cygwin');
-      currentConfig.intelliSenseMode = triplet.replace('windows', 'linux');
+      configLocalEntry.name = triplet.replace('windows', 'windows-cygwin');
+      configLocalEntry.intelliSenseMode = triplet.replace('windows', 'linux');
     } else {
-      currentConfig.name = triplet;
-      currentConfig.intelliSenseMode = triplet;
+      configLocalEntry.name = triplet;
+      configLocalEntry.intelliSenseMode = triplet;
     }
 
     writeJsonFile(this._outputPath, configLocal);
@@ -165,62 +174,65 @@ export class PropertiesProvider extends FileProvider {
   }
 
   public changeCallback() {
-    const configLocal: JsonPropertiesConfig | undefined = readJsonFile(
+    const currentConfig: JsonPropertiesConfig | undefined = readJsonFile(
       this._outputPath,
     );
 
-    if (!configLocal) return;
+    if (!this.lastConfig) {
+      this.lastConfig = readJsonFile(this._outputPath);
 
-    const currentConfig: JsonPropertiesConfigEntry | undefined =
-      configLocal.configurations[0];
-
-    if (currentConfig === undefined) return;
-
-    const absoluteCompilerPath = !pathExists(this.settings.cCompilerPath);
-
-    if (
-      absoluteCompilerPath &&
-      currentConfig.compilerPath !== this.settings.cCompilerPath &&
-      currentConfig.compilerPath !== this.settings.cppCompilerPath
-    ) {
-      this.settings.cCompilerPath = currentConfig.compilerPath;
-
-      const compilerSystem = this.settings.cCompilerPath.includes('gcc')
-        ? CompilerSystems.gcc
-        : CompilerSystems.clang;
-
-      if (compilerSystem === CompilerSystems.gcc) {
-        this.settings.cppCompilerPath = currentConfig.compilerPath.replace(
-          'gcc',
-          'g++',
-        );
-      } else {
-        this.settings.cppCompilerPath = currentConfig.compilerPath.replace(
-          'clang',
-          'clang++',
-        );
-      }
+      if (!this.lastConfig) return;
     }
 
+    if (!currentConfig) return;
+
+    const currentConfigEntry: JsonPropertiesConfigEntry | undefined =
+      currentConfig.configurations[0];
+
+    if (currentConfigEntry === undefined) return;
+
+    const lastConfigEntry: JsonPropertiesConfigEntry | undefined =
+      this.lastConfig.configurations[0];
+
+    if (lastConfigEntry === undefined) return;
+
+    let updated = false;
+
+    if (currentConfigEntry.cStandard !== lastConfigEntry.cStandard) {
+      this.settings.cStandard = currentConfigEntry.cStandard;
+      updated = true;
+    }
+    if (currentConfigEntry.cppStandard !== lastConfigEntry.cppStandard) {
+      this.settings.cppStandard = currentConfigEntry.cppStandard;
+      updated = true;
+    }
+    if (currentConfigEntry.compilerPath !== lastConfigEntry.compilerPath) {
+      this.settings.cCompilerPath = currentConfigEntry.compilerPath;
+      updated = true;
+    }
     if (
-      currentConfig.cStandard !== '${default}' &&
-      currentConfig.cStandard !== this.settings.cStandard
+      !arraysEqual(currentConfigEntry.includePath, lastConfigEntry.includePath)
     ) {
-      this.settings.cStandard = currentConfig.cStandard;
+      this.settings.includePaths = currentConfigEntry.includePath.filter(
+        (path: string) => path !== '${workspaceFolder}/**',
+      );
+      updated = true;
     }
 
-    if (
-      currentConfig.cppStandard !== '${default}' &&
-      currentConfig.cppStandard !== this.settings.cppStandard
-    ) {
-      this.settings.cppStandard = currentConfig.cppStandard;
+    if (updated) {
+      this.settings.writeFileData();
+
+      this.lastConfig = currentConfig;
     }
-
-    const includeArgs = currentConfig.includePath.filter(
-      (path: string) => path !== INCLUDE_PATTERN,
-    );
-    this.settings.includePaths = includeArgs;
-
-    this.settings.writeFileData();
   }
+}
+
+function arraysEqual(a: any[], b: any[]) {
+  if (a === b) return true;
+  if (a.length !== b.length) return false;
+
+  for (let i = 0; i < a.length; ++i) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
 }

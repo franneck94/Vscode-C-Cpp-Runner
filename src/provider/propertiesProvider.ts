@@ -125,6 +125,8 @@ export class PropertiesProvider extends FileProvider {
 
     configLocalEntry.cStandard = this.settings.cStandard
       ? this.settings.cStandard
+      : this.settings.useMsvc
+      ? SettingsProvider.DEFAULT_C_STANDARD_MSVC
       : '${default}';
 
     configLocalEntry.cppStandard = this.settings.cppStandard
@@ -197,17 +199,29 @@ export class PropertiesProvider extends FileProvider {
     let updated = false;
 
     if (currentConfigEntry.cStandard !== lastConfigEntry.cStandard) {
-      this.settings.cStandard = currentConfigEntry.cStandard;
+      this.settings.cStandard =
+        currentConfigEntry.cStandard !== '${default}'
+          ? currentConfigEntry.cStandard
+          : '';
       updated = true;
     }
+
     if (currentConfigEntry.cppStandard !== lastConfigEntry.cppStandard) {
-      this.settings.cppStandard = currentConfigEntry.cppStandard;
+      this.settings.cppStandard =
+        currentConfigEntry.cppStandard !== '${default}'
+          ? currentConfigEntry.cppStandard
+          : '';
       updated = true;
     }
-    if (currentConfigEntry.compilerPath !== lastConfigEntry.compilerPath) {
+
+    if (
+      currentConfigEntry.compilerPath !== lastConfigEntry.compilerPath &&
+      !currentConfigEntry.compilerPath.includes('cl.exe')
+    ) {
       this.settings.cCompilerPath = currentConfigEntry.compilerPath;
       updated = true;
     }
+
     if (
       !arraysEqual(currentConfigEntry.includePath, lastConfigEntry.includePath)
     ) {

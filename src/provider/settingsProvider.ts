@@ -13,7 +13,14 @@ import {
 	getCompilerArchitecture,
 	getOperatingSystem,
 } from '../utils/systemUtils';
-import { Architectures, JsonSettings, OperatingSystems } from '../utils/types';
+import {
+	Architectures,
+	CompilerSystems,
+	JsonPropertiesConfig,
+	JsonPropertiesConfigEntry,
+	JsonSettings,
+	OperatingSystems,
+} from '../utils/types';
 import { FileProvider } from './fileProvider';
 
 const OUTPUT_FILENAME = 'settings.json';
@@ -113,15 +120,13 @@ export class SettingsProvider extends FileProvider {
   }
 
   protected updateCheck() {
-    let settingsMissing = false;
-
     if (!pathExists(this._outputPath)) {
-      settingsMissing = true;
+      return true;
     } else if (!this.commandsAlreadyStored()) {
-      settingsMissing = true;
+      return true;
     }
 
-    return settingsMissing;
+    return false;
   }
 
   private localFileExist(name: string) {
@@ -299,78 +304,68 @@ export class SettingsProvider extends FileProvider {
       this._vscodeDirectory,
       'c_cpp_properties.json',
     );
-    const properties: JsonSettings | undefined =
-      readJsonFile(propertiesPath).configurations[0];
+    const propertiesConfig: JsonPropertiesConfig | undefined =
+      readJsonFile(propertiesPath);
 
-    if (!properties) return;
+    if (!propertiesConfig) return;
+
+    const currentConfigEntry: JsonPropertiesConfigEntry | undefined =
+      propertiesConfig.configurations[0];
+
+    if (!currentConfigEntry) return;
 
     /* Mandatory in settings.json */
     this.cCompilerPath = this.getPropertiesValue(
-      properties,
+      currentConfigEntry,
       'compilerPath',
-      SettingsProvider.DEFAULT_C_COMPILER_PATH,
+      this.cCompilerPath,
     );
 
+    const isGccBased = this.cCompilerPath.includes(CompilerSystems.gcc);
+    const isClangBased = this.cCompilerPath.includes(CompilerSystems.clang);
+
     const rootDirCompiler = path.dirname(this.cCompilerPath);
-    const programSuffix =
+    const suffix =
       this.operatingSystem === OperatingSystems.windows ? '.exe' : '';
-    const isClang = path
-      .basename(this.cCompilerPath)
-      .toLowerCase()
-      .includes('clang');
 
-    let cppCompilerPath: string;
-    let debuggerPath: string;
-
-    if (isClang) {
-      cppCompilerPath = 'clang++' + programSuffix;
-      debuggerPath = 'lldb' + programSuffix;
-    } else {
-      cppCompilerPath = 'g++' + programSuffix;
-      debuggerPath = 'gdb' + programSuffix;
+    if (isGccBased) {
+      this.cppCompilerPath = path.join(rootDirCompiler, 'g++' + suffix);
+      this.debuggerPath = path.join(rootDirCompiler, 'gdb' + suffix);
+    } else if (isClangBased) {
+      this.cppCompilerPath = path.join(rootDirCompiler, 'clang++' + suffix);
+      this.debuggerPath = path.join(rootDirCompiler, 'lldb' + suffix);
     }
-
-    this.cppCompilerPath = path.join(rootDirCompiler, cppCompilerPath);
-    this.debuggerPath = path.join(rootDirCompiler, debuggerPath);
 
     /* Optional in settings.json */
     const _cStandard: string = this.getPropertiesValue(
-      properties,
+      currentConfigEntry,
       'cStandard',
-      SettingsProvider.DEFAULT_C_STANDARD_UNIX,
+      this.cStandard,
     );
-    const _cppStandard: string = this.getPropertiesValue(
-      properties,
-      'cppStandard',
-      SettingsProvider.DEFAULT_CPP_STANDARD,
-    );
-
-    const _includePaths: string[] = this.getPropertiesValue(
-      properties,
-      'includePath',
-      SettingsProvider.DEFAULT_INCLUDE_PATHS,
-    );
-
     this.cStandard =
       _cStandard !== '${default}'
         ? _cStandard
         : SettingsProvider.DEFAULT_C_STANDARD_UNIX;
+
+    const _cppStandard: string = this.getPropertiesValue(
+      currentConfigEntry,
+      'cppStandard',
+      this.cppStandard,
+    );
     this.cppStandard =
       _cppStandard !== '${default}'
         ? _cppStandard
         : SettingsProvider.DEFAULT_CPP_STANDARD;
 
+    const _includePaths: string[] = this.getPropertiesValue(
+      currentConfigEntry,
+      'includePath',
+      this.includePaths,
+    );
     this.includePaths =
       _includePaths.length !== 0
         ? _includePaths
         : SettingsProvider.DEFAULT_INCLUDE_PATHS;
-
-    this.compilerArgs = SettingsProvider.DEFAULT_COMPILER_ARGS;
-    this.linkerArgs = SettingsProvider.DEFAULT_LINKER_ARGS;
-    this.warnings = SettingsProvider.DEFAULT_WARNINGS_UNIX;
-    this.enableWarnings = SettingsProvider.DEFAULT_ENABLE_WARNINGS;
-    this.warningsAsError = SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
-    this.excludeSearch = SettingsProvider.DEFAULT_EXCLUDE_SEARCH;
   }
 
   private searchMsvcToolsPath() {
@@ -568,8 +563,8 @@ export class SettingsProvider extends FileProvider {
   }
 
   private getPropertiesValue(
-    properties: JsonSettings | undefined,
-    name: string,
+    properties: JsonPropertiesConfigEntry | undefined,
+    name: keyof JsonPropertiesConfigEntry,
     defaultValue: any,
   ) {
     if (properties && properties[name] !== undefined) {

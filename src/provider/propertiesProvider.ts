@@ -6,8 +6,10 @@ import {
 	replaceBackslashes,
 	writeJsonFile,
 } from '../utils/fileUtils';
+import { arraysEqual } from '../utils/general';
 import { commandExists } from '../utils/systemUtils';
 import {
+	Architectures,
 	CompilerSystems,
 	JsonPropertiesConfig,
 	JsonPropertiesConfigEntry,
@@ -55,8 +57,7 @@ export class PropertiesProvider extends FileProvider {
     if (!triplet.includes(this.settings.operatingSystem)) return true;
 
     if (
-      this.settings.msvcBatchPath !==
-        SettingsProvider.DEFAULT_MSVC_BATCH_PATH &&
+      this.settings.useMsvc &&
       !currentConfigEntry.intelliSenseMode.includes('msvc')
     ) {
       return true;
@@ -79,12 +80,17 @@ export class PropertiesProvider extends FileProvider {
     if (!configLocal) return;
 
     if (!this.settings.cCompilerPath && !this.settings.useMsvc) return;
-    if (!this.settings.architecure) return;
 
     const os = this.settings.operatingSystem.toLowerCase();
-    const arch = this.settings.architecure.toLowerCase();
-    let compiler: CompilerSystems;
 
+    let arch: string;
+    if (!this.settings.architecure) {
+      arch = Architectures.x64;
+    } else {
+      arch = this.settings.architecure.toLowerCase();
+    }
+
+    let compiler: CompilerSystems;
     if (this.settings.useMsvc) {
       compiler = CompilerSystems.msvc;
     } else if (this.settings.cCompilerPath) {
@@ -106,8 +112,8 @@ export class PropertiesProvider extends FileProvider {
       for (const path of this.settings.includePaths) {
         const includePathSet = new Set(configLocalEntry.includePath);
         if (
-          path !== INCLUDE_PATTERN &&
           !includePathSet.has(path) &&
+          path !== INCLUDE_PATTERN &&
           path !== '$(default)'
         ) {
           configLocalEntry.includePath.push(path);
@@ -117,21 +123,13 @@ export class PropertiesProvider extends FileProvider {
       configLocalEntry.includePath = [INCLUDE_PATTERN];
     }
 
-    if (this.settings.cStandard) {
-      configLocalEntry.cStandard = this.settings.useMsvc
-        ? SettingsProvider.DEFAULT_C_STANDARD_MSVC
-        : this.settings.cStandard;
-    } else {
-      configLocalEntry.cStandard = this.settings.useMsvc
-        ? SettingsProvider.DEFAULT_C_STANDARD_MSVC
-        : '${default}';
-    }
+    configLocalEntry.cStandard = this.settings.cStandard
+      ? this.settings.cStandard
+      : '${default}';
 
-    if (this.settings.cppStandard) {
-      configLocalEntry.cppStandard = this.settings.cppStandard;
-    } else {
-      configLocalEntry.cppStandard = '${default}';
-    }
+    configLocalEntry.cppStandard = this.settings.cppStandard
+      ? this.settings.cppStandard
+      : '${default}';
 
     if (this.settings.useMsvc) {
       configLocalEntry.compilerPath = path.join(
@@ -214,7 +212,7 @@ export class PropertiesProvider extends FileProvider {
       !arraysEqual(currentConfigEntry.includePath, lastConfigEntry.includePath)
     ) {
       this.settings.includePaths = currentConfigEntry.includePath.filter(
-        (path: string) => path !== '${workspaceFolder}/**',
+        (path: string) => path !== INCLUDE_PATTERN && path !== '$(default)',
       );
       updated = true;
     }
@@ -225,14 +223,4 @@ export class PropertiesProvider extends FileProvider {
       this.lastConfig = currentConfig;
     }
   }
-}
-
-function arraysEqual(a: any[], b: any[]) {
-  if (a === b) return true;
-  if (a.length !== b.length) return false;
-
-  for (let i = 0; i < a.length; ++i) {
-    if (a[i] !== b[i]) return false;
-  }
-  return true;
 }

@@ -39,36 +39,28 @@ export class LaunchProvider extends FileProvider {
 
     const updateRequired = this.updateCheck();
 
-    if (updateRequired) {
+    if (updateRequired && activeFolder) {
       this.createFileData();
     }
   }
 
   protected updateCheck() {
-    let doUpdate = false;
-
     if (!pathExists(this._outputPath)) {
-      doUpdate = true;
+      return true;
     } else {
       const configJson: JsonLaunchConfig = readJsonFile(this._outputPath);
 
       if (configJson) {
-        let foundConfig = false;
-
         configJson.configurations.forEach((config) => {
           const triplet: string = config.name;
           if (triplet.includes(this.settings.operatingSystem)) {
-            foundConfig = true;
+            return true;
           }
         });
-
-        if (!foundConfig) {
-          doUpdate = true;
-        }
       }
     }
 
-    return doUpdate;
+    return false;
   }
 
   public writeFileData() {
@@ -252,12 +244,12 @@ export class LaunchProvider extends FileProvider {
 
     launchTemplate.configurations[0].name = CONFIG_NAME;
     if (this.settings.debuggerPath) {
-      launchTemplate.configurations[0].MIMode = this.settings.debuggerPath.includes(
-        Debuggers.gdb,
-      )
-        ? Debuggers.gdb
-        : Debuggers.lldb;
-      launchTemplate.configurations[0].miDebuggerPath = this.settings.debuggerPath;
+      launchTemplate.configurations[0].MIMode =
+        this.settings.debuggerPath.includes(Debuggers.gdb)
+          ? Debuggers.gdb
+          : Debuggers.lldb;
+      launchTemplate.configurations[0].miDebuggerPath =
+        this.settings.debuggerPath;
     } else {
       launchTemplate.configurations[0].MIMode =
         SettingsProvider.DEFAULT_DEBUGGER_PATH;

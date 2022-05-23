@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 4.0.2: May 23, 2022
+
+- **Regression**: Fixed properties <=> settings sync bugs
+
 ## Version 4.0.1: May 22, 2022
 
 - **Regression**: Fixed failing msvc compilation with multiple source files

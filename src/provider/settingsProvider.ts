@@ -2,24 +2,24 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import {
-	foldersInDir,
-	localSettingExist,
-	pathExists,
-	readJsonFile,
-	replaceBackslashes,
-	writeJsonFile,
+  foldersInDir,
+  localSettingExist,
+  pathExists,
+  readJsonFile,
+  replaceBackslashes,
+  writeJsonFile,
 } from '../utils/fileUtils';
 import {
-	getCompilerArchitecture,
-	getOperatingSystem,
+  getCompilerArchitecture,
+  getOperatingSystem,
 } from '../utils/systemUtils';
 import {
-	Architectures,
-	CompilerSystems,
-	JsonPropertiesConfig,
-	JsonPropertiesConfigEntry,
-	JsonSettings,
-	OperatingSystems,
+  Architectures,
+  CompilerSystems,
+  JsonPropertiesConfig,
+  JsonPropertiesConfigEntry,
+  JsonSettings,
+  OperatingSystems,
 } from '../utils/types';
 import { FileProvider } from './fileProvider';
 
@@ -284,19 +284,6 @@ export class SettingsProvider extends FileProvider {
       'excludeSearch',
       SettingsProvider.DEFAULT_EXCLUDE_SEARCH,
     );
-
-    // Additional settings
-    if (this._configGlobalCCpp) {
-      const globalIncludePath = this.getSettingsValue(
-        this._configGlobalCCpp['default'],
-        'includePath',
-        '',
-        false,
-      );
-      if (globalIncludePath && globalIncludePath !== '') {
-        this.includePaths.push(...globalIncludePath);
-      }
-    }
   }
 
   private getSettingsFromProperties() {
@@ -545,15 +532,8 @@ export class SettingsProvider extends FileProvider {
     settingsLocal: JsonSettings | undefined,
     name: string,
     defaultValue: any,
-    isExtensionSetting: boolean = true,
   ) {
-    let settingName: string;
-
-    if (isExtensionSetting) {
-      settingName = `${EXTENSION_NAME}.${name}`;
-    } else {
-      settingName = `${name}`;
-    }
+    const settingName = `${EXTENSION_NAME}.${name}`;
 
     if (settingsLocal && settingsLocal[settingName] !== undefined) {
       return settingsLocal[settingName];

@@ -1,5 +1,10 @@
 # C/C++ Runner Change Log
 
+## Version 4.0.3: May 24, 2022
+
+- **Info**: Updated README
+- **Regression**: Removed include paths sync with Microsoft's extension, the user should rather set the include paths settings value of this extension
+
 ## Version 4.0.2: May 23, 2022
 
 - **Regression**: Fixed properties <=> settings sync bugs

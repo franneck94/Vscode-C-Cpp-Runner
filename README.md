@@ -81,14 +81,11 @@ For more information about glob pattern see [here](https://en.wikipedia.org/wiki
 
 ### Configuration
 
-All settings will be stored in the **local** workspace settings (*".vscode/settings.json"*).  
-If you wish to use any other compiler or different setting, just edit the entries in the **local** settings file.  
+The current configuration settings will be stored locally in *".vscode/settings.json"*.  
 ![FoundCompiler](./media/Settings.png)  
 
-Based on the operating system and the compiler, there will be a *c_cpp_properties.json* file created in the local *.vscode* folder.  
-There, the compiler path, the C/C++ standard, and the included paths are **synced** with this extension.  
-This file will be used by Microsoft's *C/C++* extension for intellisense. For more information refer to the official [documentation](https://code.visualstudio.com/docs/cpp/c-cpp-properties-schema-reference).  
-![CCppConfig](./media/Properties.png)  
+Based on the settings, the local *.vscode/c_cpp_properties.json* file is created and will be used by [Microsoft's *C/C++*](https://code.visualstudio.com/docs/cpp/c-cpp-properties-schema-reference) extension for intellisense.  
+There, the compiler path, the C/C++ standard, and the included paths are **synced** with this extension settings.  
 
 ### Extension Settings
 
@@ -130,10 +127,7 @@ To use the MSVC compiler (toolchain), set the **msvcBatchPath** setting to a val
 An example path would be **"*PathToVs2022*/Community/VC/Auxiliary/Build/vcvarsall.bat"**.  
 Then set the **useMsvc** to true, to not use GCC/Clang tools in the current workspace.  
 If you want to stop using the MSVC compiler, just set **useMsvc** to false.  
-
-Caveats:
-
-- Only the 64bit (no cross-compiling) version of MSVC is allowed
+Note: Only the 64bit (no cross-compiling) version of MSVC is allowed
 
 ## Release Notes
 

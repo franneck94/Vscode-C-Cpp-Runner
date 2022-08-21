@@ -84,6 +84,13 @@ export class LaunchProvider extends FileProvider {
     ) {
       this.msvcBasedDebugger(launchTemplate);
       delete launchTemplate.configurations[0]?.externalConsole;
+    } else if (
+      this.settings.operatingSystem === OperatingSystems.windows &&
+      launchTemplate.configurations[0]
+    ) {
+      this.unixBasedDebugger(launchTemplate);
+      delete launchTemplate.configurations[0]?.console;
+      launchTemplate.configurations[0].externalConsole = true;
     } else {
       this.unixBasedDebugger(launchTemplate);
       delete launchTemplate.configurations[0]?.console;
@@ -262,12 +269,13 @@ export class LaunchProvider extends FileProvider {
       if (launchTemplate.configurations[0].setupCommands) {
         delete launchTemplate.configurations[0].setupCommands;
       }
-      if (launchTemplate.configurations[0].miDebuggerPath) {
-        delete launchTemplate.configurations[0].miDebuggerPath;
-      }
 
       if (this.settings.architecure === Architectures.ARM64) {
         launchTemplate.configurations[0].type = 'lldb';
+
+        if (launchTemplate.configurations[0].miDebuggerPath) {
+          delete launchTemplate.configurations[0].miDebuggerPath;
+        }
       }
     }
 

@@ -1,11 +1,8 @@
 # C/C++ Runner Change Log
 
-## Version 4.0.5: Aug 21, 2022
+## Version 4.0.4: Aug 21, 2022
 
 - **Bugfix**: On windows gcc, external console for debugging is true
-
-## Version 4.0.4: July 4, 2022
-
 - **Bugfix**: Fixed issue with MIDebuggerPath on Mac with non ARM chip
 
 ## Version 4.0.3: May 24, 2022

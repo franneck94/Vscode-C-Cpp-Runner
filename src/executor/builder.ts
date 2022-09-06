@@ -165,6 +165,8 @@ function executeBuildTaskUnixBased(
   }
   if (includePaths && includePaths.length > 0) {
     for (const includePath of includePaths) {
+      if (includePath.includes('$(default)')) continue;
+
       const hasSpace = includePath.includes(' ');
 
       if (hasSpace) {
@@ -311,6 +313,8 @@ function executeBuildTaskMsvcBased(
 
   if (includePaths && includePaths.length > 0) {
     for (const includePath of includePaths) {
+      if (includePath.includes('$(default)')) continue;
+
       const hasSpace = includePath.includes(' ');
 
       if (hasSpace) {

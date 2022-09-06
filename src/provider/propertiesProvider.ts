@@ -114,7 +114,7 @@ export class PropertiesProvider extends FileProvider {
         if (
           !includePathSet.has(path) &&
           path !== INCLUDE_PATTERN &&
-          path !== '$(default)'
+          !path.includes('$(default)')
         ) {
           configLocalEntry.includePath.push(path);
         }
@@ -226,7 +226,8 @@ export class PropertiesProvider extends FileProvider {
       !arraysEqual(currentConfigEntry.includePath, lastConfigEntry.includePath)
     ) {
       this.settings.includePaths = currentConfigEntry.includePath.filter(
-        (path: string) => path !== INCLUDE_PATTERN && path !== '$(default)',
+        (path: string) =>
+          path !== INCLUDE_PATTERN && !path.includes('$(default)'),
       );
       updated = true;
     }

@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 4.0.5: Sep 08, 2022
+
+- **Bugfix**: Fixed build error with default include paths
+
 ## Version 4.0.4: Aug 21, 2022
 
 - **Bugfix**: On windows gcc, external console for debugging is true

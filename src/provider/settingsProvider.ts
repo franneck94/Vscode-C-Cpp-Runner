@@ -2,24 +2,24 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import {
-  foldersInDir,
-  localSettingExist,
-  pathExists,
-  readJsonFile,
-  replaceBackslashes,
-  writeJsonFile,
+	foldersInDir,
+	localSettingExist,
+	pathExists,
+	readJsonFile,
+	replaceBackslashes,
+	writeJsonFile,
 } from '../utils/fileUtils';
 import {
-  getCompilerArchitecture,
-  getOperatingSystem,
+	getCompilerArchitecture,
+	getOperatingSystem,
 } from '../utils/systemUtils';
 import {
-  Architectures,
-  CompilerSystems,
-  JsonPropertiesConfig,
-  JsonPropertiesConfigEntry,
-  JsonSettings,
-  OperatingSystems,
+	Architectures,
+	CompilerSystems,
+	JsonPropertiesConfig,
+	JsonPropertiesConfigEntry,
+	JsonSettings,
+	OperatingSystems,
 } from '../utils/types';
 import { FileProvider } from './fileProvider';
 
@@ -308,16 +308,16 @@ export class SettingsProvider extends FileProvider {
     const isGccBased = this.cCompilerPath.includes(CompilerSystems.gcc);
     const isClangBased = this.cCompilerPath.includes(CompilerSystems.clang);
 
-    const rootDirCompiler = path.dirname(this.cCompilerPath);
-    const suffix =
-      this.operatingSystem === OperatingSystems.windows ? '.exe' : '';
-
     if (isGccBased) {
-      this.cppCompilerPath = path.join(rootDirCompiler, 'g++' + suffix);
-      this.debuggerPath = path.join(rootDirCompiler, 'gdb' + suffix);
+      const cppPath = this.cCompilerPath.replace('gcc', 'g++');
+      const dbgPath = this.cCompilerPath.replace('gcc', 'gdb');
+      this.cppCompilerPath = cppPath;
+      this.debuggerPath = dbgPath;
     } else if (isClangBased) {
-      this.cppCompilerPath = path.join(rootDirCompiler, 'clang++' + suffix);
-      this.debuggerPath = path.join(rootDirCompiler, 'lldb' + suffix);
+      const cppPath = this.cCompilerPath.replace('clang', 'clang++');
+      const dbgPath = this.cCompilerPath.replace('clang', 'lldb');
+      this.cppCompilerPath = path.join(cppPath);
+      this.debuggerPath = dbgPath;
     }
 
     /* Optional in settings.json */

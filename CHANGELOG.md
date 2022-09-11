@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 4.0.6: Sep 11, 2022
+
+- **Bugfix**: Bug fixes for compiler detection
+
 ## Version 4.0.5: Sep 08, 2022
 
 - **Bugfix**: Fixed build error with default include paths

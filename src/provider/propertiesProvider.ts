@@ -145,7 +145,12 @@ export class PropertiesProvider extends FileProvider {
         // non-absolute compiler path
         const ret = await commandExists(this.settings.cCompilerPath);
 
-        if (!ret || !ret.p) {
+        if (
+          !ret ||
+          !ret.p ||
+          ret.p.includes('perl') ||
+          ret.p.includes('ruby')
+        ) {
           configLocalEntry.compilerPath = this.settings.cCompilerPath;
         } else {
           configLocalEntry.compilerPath = replaceBackslashes(ret.p);

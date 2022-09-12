@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 4.0.7: Sep 12, 2022
+
+- **Info**: Added check for windows system drive
+
 ## Version 4.0.6: Sep 11, 2022
 
 - **Bugfix**: Bug fixes for compiler detection

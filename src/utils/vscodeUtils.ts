@@ -78,9 +78,8 @@ export function isCmakeProject() {
         );
 
         if (pathExists(settingsPath)) {
-          const configLocal: JsonSettings | undefined = readJsonFile(
-            settingsPath,
-          );
+          const configLocal: JsonSettings | undefined =
+            readJsonFile(settingsPath);
 
           if (
             configLocal &&
@@ -117,24 +116,26 @@ export function getProcessExecution(
 
   let execution: vscode.ProcessExecution | vscode.ShellExecution | undefined;
   if (operatingSystem === OperatingSystems.windows) {
+    const drive = process.env['SystemDrive']
+      ? process.env['SystemDrive']
+      : 'C:';
     if (isMsvcBuildTask) {
       const shellOptions: vscode.ShellExecutionOptions = {
-        executable: 'C:/Windows/System32/cmd.exe',
+        executable: drive + '/Windows/System32/cmd.exe',
         shellArgs: ['/d', '/c'],
       };
       execution = new vscode.ShellExecution(commandLine, shellOptions);
     } else {
       execution = new vscode.ProcessExecution(
-        'C:/Windows/System32/cmd.exe',
+        drive + '/Windows/System32/cmd.exe',
         ['/d', '/c', commandLine],
         options,
       );
     }
   } else {
-    let standard_shell = process.env['SHELL'];
-    if (!standard_shell) {
-      standard_shell = '/bin/bash';
-    }
+    const standard_shell = process.env['SHELL']
+      ? process.env['SHELL']
+      : '/bin/bash';
     execution = new vscode.ProcessExecution(
       standard_shell,
       ['-c', commandLine],

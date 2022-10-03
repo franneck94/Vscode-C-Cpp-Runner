@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 4.1.0: Oct 03, 2022
+
+- **Info**: Better default value for MSVC, by scanning for installed VS
+
 ## Version 4.0.7: Sep 12, 2022
 
 - **Info**: Added check for windows system drive

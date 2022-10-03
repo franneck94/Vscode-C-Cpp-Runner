@@ -30,7 +30,8 @@ export class SettingsProvider extends FileProvider {
   static DEFAULT_C_COMPILER_PATH = 'gcc';
   static DEFAULT_CPP_COMPILER_PATH = 'g++';
   static DEFAULT_DEBUGGER_PATH = 'gdb';
-  static DEFAULT_MSVC_BATCH_PATH = '';
+  static DEFAULT_MSVC_BATCH_PATH =
+    'C:/Program Files/Microsoft Visual Studio/VR_NR/Community/VC/Auxiliary/Build/vcvarsall.bat';
   static DEFAULT_MSVC_TOOLS_PATH = '';
   static DEFAULT_C_STANDARD_UNIX = '';
   static DEFAULT_C_STANDARD_MSVC = 'c17';
@@ -205,6 +206,21 @@ export class SettingsProvider extends FileProvider {
       'msvcBatchPath',
       SettingsProvider.DEFAULT_MSVC_BATCH_PATH,
     );
+    if (this.msvcBatchPath === SettingsProvider.DEFAULT_MSVC_BATCH_PATH) {
+      if (pathExists(this.msvcBatchPath.replace('VR_NR', '2022'))) {
+        this.msvcBatchPath = this.msvcBatchPath.replace('VR_NR', '2022');
+        this.update('msvcBatchPath', this.msvcBatchPath);
+      } else if (pathExists(this.msvcBatchPath.replace('VR_NR', '2017'))) {
+        this.msvcBatchPath = this.msvcBatchPath.replace('VR_NR', '2017');
+        this.update('msvcBatchPath', this.msvcBatchPath);
+      } else if (pathExists(this.msvcBatchPath.replace('VR_NR', '2015'))) {
+        this.msvcBatchPath = this.msvcBatchPath.replace('VR_NR', '2015');
+        this.update('msvcBatchPath', this.msvcBatchPath);
+      } else {
+        this.msvcBatchPath = '';
+        this.update('msvcBatchPath', this.msvcBatchPath);
+      }
+    }
     this.useMsvc = this.getSettingsValue(
       settingsLocal,
       'useMsvc',

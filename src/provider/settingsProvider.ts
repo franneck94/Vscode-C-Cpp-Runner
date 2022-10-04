@@ -34,7 +34,7 @@ export class SettingsProvider extends FileProvider {
     'C:/Program Files/Microsoft Visual Studio/VR_NR/Community/VC/Auxiliary/Build/vcvarsall.bat';
   static DEFAULT_MSVC_TOOLS_PATH = '';
   static DEFAULT_C_STANDARD_UNIX = '';
-  static DEFAULT_C_STANDARD_MSVC = 'c17';
+  static DEFAULT_C_STANDARD_MSVC = 'c11';
   static DEFAULT_CPP_STANDARD = '';
   static DEFAULT_INCLUDE_SEARCH = ['*', '**/*'];
   static DEFAULT_EXCLUDE_SEARCH = [

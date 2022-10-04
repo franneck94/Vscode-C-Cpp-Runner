@@ -101,12 +101,18 @@ export async function executeBuildTask(
     activeFolder,
   );
 
+  const problemMatcher =
+    operatingSystem === OperatingSystems.windows && settingsProvider.useMsvc
+      ? ['$msCompile']
+      : ['$gcc'];
+
   const task = new vscode.Task(
     definition,
     vscode.TaskScope.Workspace,
     task_name,
     EXTENSION_NAME,
     execution,
+    problemMatcher,
   );
 
   await vscode.tasks.executeTask(task);

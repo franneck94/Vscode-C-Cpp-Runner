@@ -114,34 +114,41 @@ export function getProcessExecution(
     cwd: activeFolder,
   };
 
-  let execution: vscode.ProcessExecution | vscode.ShellExecution | undefined;
   if (operatingSystem === OperatingSystems.windows) {
-    const drive = process.env['SystemDrive']
-      ? process.env['SystemDrive']
-      : 'C:';
-    if (isMsvcBuildTask) {
-      const shellOptions: vscode.ShellExecutionOptions = {
-        executable: drive + '/Windows/System32/cmd.exe',
-        shellArgs: ['/d', '/c'],
-      };
-      execution = new vscode.ShellExecution(commandLine, shellOptions);
-    } else {
-      execution = new vscode.ProcessExecution(
-        drive + '/Windows/System32/cmd.exe',
-        ['/d', '/c', commandLine],
-        options,
-      );
-    }
+    return winProcessExecution(isMsvcBuildTask, commandLine, options);
   } else {
-    const standard_shell = process.env['SHELL']
-      ? process.env['SHELL']
-      : '/bin/bash';
-    execution = new vscode.ProcessExecution(
-      standard_shell,
-      ['-c', commandLine],
+    return unixProcessExecution(commandLine, options);
+  }
+}
+
+function winProcessExecution(
+  isMsvcBuildTask: boolean,
+  commandLine: string,
+  options: { cwd: string },
+) {
+  const drive = process.env['SystemDrive'] ? process.env['SystemDrive'] : 'C:';
+  if (isMsvcBuildTask) {
+    const shellOptions: vscode.ShellExecutionOptions = {
+      executable: drive + '/Windows/System32/cmd.exe',
+      shellArgs: ['/d', '/c'],
+    };
+    return new vscode.ShellExecution(commandLine, shellOptions);
+  } else {
+    return new vscode.ProcessExecution(
+      drive + '/Windows/System32/cmd.exe',
+      ['/d', '/c', commandLine],
       options,
     );
   }
+}
 
-  return execution;
+function unixProcessExecution(commandLine: string, options: { cwd: string }) {
+  const standard_shell = process.env['SHELL']
+    ? process.env['SHELL']
+    : '/bin/bash';
+  return new vscode.ProcessExecution(
+    standard_shell,
+    ['-c', commandLine],
+    options,
+  );
 }

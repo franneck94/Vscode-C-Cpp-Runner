@@ -289,17 +289,16 @@ function executeBuildTaskMsvcBased(
     fullCompilerArgs += warnings;
   }
 
-  if (standard) {
+  // Note: The c standard in msvc is either c11 or c17
+  const old_standard = ['c89', 'c99', 'gnu89', 'gnu99'].some(
+    (ext) => settingsProvider.cStandard === ext,
+  );
+
+  if (standard && !old_standard) {
     fullCompilerArgs += ` /std:${standard}`;
   }
-  // Note: The c standard in msvc is either c11 or c17
   if (language === Languages.c) {
-    // Deactivate secure function warnings in older c standards
-    if (
-      ['c89', 'c99', 'gnu89', 'gnu99'].some(
-        (ext) => settingsProvider.cStandard === ext,
-      )
-    ) {
+    if (old_standard) {
       fullCompilerArgs += ' /D_CRT_SECURE_NO_WARNINGS';
     }
   }

@@ -1,5 +1,11 @@
 # C/C++ Runner Change Log
 
+## Version 4.1.1: Oct 04, 2022
+
+- **Bugfix**: MSVC c standard bugfix
+- **Bugfix**: Added problems output again
+- **Info**: MSVC Default C Standard is now C11
+
 ## Version 4.1.0: Oct 03, 2022
 
 - **Info**: Better default value for MSVC, by scanning for installed VS

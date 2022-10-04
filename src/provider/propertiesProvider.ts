@@ -122,12 +122,23 @@ export class PropertiesProvider extends FileProvider {
     } else {
       configLocalEntry.includePath = [INCLUDE_PATTERN];
     }
+    const old_standard = ['c89', 'c99', 'gnu89', 'gnu99'].some(
+      (ext) => this.settings.cStandard === ext,
+    );
 
     configLocalEntry.cStandard = this.settings.cStandard
       ? this.settings.cStandard
       : this.settings.useMsvc
       ? SettingsProvider.DEFAULT_C_STANDARD_MSVC
       : '${default}';
+
+    if (
+      this.settings.operatingSystem === OperatingSystems.windows &&
+      this.settings.useMsvc &&
+      old_standard
+    ) {
+      configLocalEntry.cStandard = 'c11';
+    }
 
     configLocalEntry.cppStandard = this.settings.cppStandard
       ? this.settings.cppStandard

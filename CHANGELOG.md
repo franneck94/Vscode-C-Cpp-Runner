@@ -187,7 +187,7 @@
 
 ## Version 1.4.2: October 25, 2021
 
-- **Info**: Set mac launch config to console andf stopAtEntry.
+- **Info**: Set mac launch config to console and stopAtEntry.
 
 ## Version 1.4.1: September 20, 2021
 
@@ -318,7 +318,7 @@ This would now be:
 
 - **Feature**: Added option to pass arguments to the binary for running and debugging. Users can set the arguments by the new keybinding `ctrl+shift+a`.
 - **Bugfix**: Fixed bug for shortened folder path in the status bar.
-- **Important Info**: Removed `ctrl+rshift+r` keybinding for the tasks dropdown menu. If the user does not want to use the status bar items, the commands can be executed from the command palette.
+- **Important Info**: Removed `ctrl+shift+r` keybinding for the tasks dropdown menu. If the user does not want to use the status bar items, the commands can be executed from the command palette.
 - **Info**: Removed extension activation "onDebugResolve:c/cpp" since the debugging is not triggered by the user anyway.
 - **Info**: Removed extension activation  "workspaceContains:.vscode/c_cpp_properties.json" since this may result in extension activations where the user does not intend to use c/cpp code.
 

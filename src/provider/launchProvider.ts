@@ -270,7 +270,7 @@ export class LaunchProvider extends FileProvider {
         delete launchTemplate.configurations[0].setupCommands;
       }
 
-      if (this.settings.architecure === Architectures.ARM64) {
+      if (this.settings.architecture === Architectures.ARM64) {
         launchTemplate.configurations[0].type = 'lldb';
 
         if (launchTemplate.configurations[0].miDebuggerPath) {

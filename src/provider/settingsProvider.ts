@@ -63,7 +63,7 @@ export class SettingsProvider extends FileProvider {
 
   // Machine information
   public operatingSystem = getOperatingSystem();
-  public architecure: Architectures | undefined;
+  public architecture: Architectures | undefined;
   public isCygwin: boolean = false;
 
   // Settings
@@ -390,8 +390,8 @@ export class SettingsProvider extends FileProvider {
 
     let architecturePath: string;
     if (
-      this.architecure === Architectures.x64 ||
-      this.architecure === undefined
+      this.architecture === Architectures.x64 ||
+      this.architecture === undefined
     ) {
       architecturePath = 'bin/Hostx64/x64';
     } else {
@@ -409,26 +409,26 @@ export class SettingsProvider extends FileProvider {
 
   private getArchitecture() {
     if (this.useMsvc) {
-      this.architecure = Architectures.x64;
+      this.architecture = Architectures.x64;
       this.isCygwin = false;
       return;
     }
 
     if (this.cCompilerPath) {
       const ret = getCompilerArchitecture(this.cCompilerPath);
-      this.architecure = ret.architecure;
+      this.architecture = ret.architecture;
       this.isCygwin = ret.isCygwin;
       return;
     }
 
     if (this.cppCompilerPath) {
       const ret = getCompilerArchitecture(this.cppCompilerPath);
-      this.architecure = ret.architecure;
+      this.architecture = ret.architecture;
       this.isCygwin = ret.isCygwin;
       return;
     }
 
-    this.architecure = Architectures.x64;
+    this.architecture = Architectures.x64;
     this.isCygwin = false;
   }
 

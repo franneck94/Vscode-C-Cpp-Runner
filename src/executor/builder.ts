@@ -340,7 +340,7 @@ function executeBuildTaskMsvcBased(
     fullCompilerArgs += ' ' + compilerArgs.join(' ');
   }
 
-  let commandLine: string = `"${settingsProvider.msvcBatchPath}" ${settingsProvider.architecure} ${appendSymbol} `;
+  let commandLine: string = `"${settingsProvider.msvcBatchPath}" ${settingsProvider.architecture} ${appendSymbol} `;
 
   modeDir = modeDir.replace(activeFolder, '.');
   executablePath = executablePath.replace(activeFolder, '.');

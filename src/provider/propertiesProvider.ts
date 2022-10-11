@@ -84,10 +84,10 @@ export class PropertiesProvider extends FileProvider {
     const os = this.settings.operatingSystem.toLowerCase();
 
     let arch: string;
-    if (!this.settings.architecure) {
+    if (!this.settings.architecture) {
       arch = Architectures.x64;
     } else {
-      arch = this.settings.architecure.toLowerCase();
+      arch = this.settings.architecture.toLowerCase();
     }
 
     let compiler: CompilerSystems;

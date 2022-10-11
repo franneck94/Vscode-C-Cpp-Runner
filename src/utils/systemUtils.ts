@@ -44,20 +44,20 @@ export function getCompilerArchitecture(compiler: string) {
   }
 
   const str = String.fromCharCode(...byteArray);
-  let architecure = Architectures.x64;
+  let architecture = Architectures.x64;
   let isCygwin = false;
 
   if (str.toLowerCase().includes('arm')) {
-    architecure = Architectures.ARM64;
+    architecture = Architectures.ARM64;
   } else if (str.includes('64')) {
-    architecure = Architectures.x64;
+    architecture = Architectures.x64;
   } else {
-    architecure = Architectures.x86;
+    architecture = Architectures.x86;
   }
 
   if (str.includes('cygwin')) {
     isCygwin = true;
   }
 
-  return { architecure: architecure, isCygwin: isCygwin };
+  return { architecture: architecture, isCygwin: isCygwin };
 }

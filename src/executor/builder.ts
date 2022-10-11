@@ -300,7 +300,7 @@ function executeBuildTaskMsvcBased(
     (ext) => settingsProvider.cStandard === ext,
   );
 
-  if (standard && !old_standard) {
+  if (standard && (language === Languages.cpp || !old_standard)) {
     fullCompilerArgs += ` /std:${standard}`;
   }
   if (language === Languages.c) {

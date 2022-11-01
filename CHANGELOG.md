@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 4.1.3: Nov 1, 2022
+
+- **Info**: Added donation link
+
 ## Version 4.1.2: Oct 11, 2022
 
 - **Bugfix**: MSVC C++ standard bugfix

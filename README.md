@@ -137,3 +137,11 @@ Refer to the [CHANGELOG](CHANGELOG.md).
 
 Copyright (C) 2021-2022 Jan Schaffranek.  
 Licensed under the [MIT License](LICENSE).
+
+## Supporting the Work
+
+Feel free to make a donation, such that i have more time to work on my VSCode extension*s*.
+
+![PayPal QR Code](./media/QR-Code.png)
+
+Or use the Link: <https://www.paypal.com/donate/?hosted_button_id=3WDK6ET99ZQCU>

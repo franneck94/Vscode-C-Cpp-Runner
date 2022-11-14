@@ -36,7 +36,11 @@ export async function executeBuildTask(
     const isSource = isSourceFile(path.extname(currentFile));
     if (!isSource) return;
 
-    files = [path.basename(currentFile)];
+    if (currentFile.includes(' ')) {
+      files = [path.basename(currentFile)];
+    } else {
+      files = [currentFile];
+    }
   }
 
   const buildDir = path.join(activeFolder, 'build');
@@ -359,9 +363,9 @@ function executeBuildTaskMsvcBased(
     const hasSpace = file.includes(' ');
 
     if (hasSpace) {
-      fullFileArgs += ` .\\"${file}"`;
+      fullFileArgs += ` "${file}"`;
     } else {
-      fullFileArgs += ` .\\${file}`;
+      fullFileArgs += ` ${file}`;
     }
   }
 

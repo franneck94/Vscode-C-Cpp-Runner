@@ -23,7 +23,7 @@ export async function executeCleanTask(
   let relativeModeDir = modeDir.replace(workspaceFolder, '');
   relativeModeDir = replaceBackslashes(relativeModeDir);
 
-  const commandLine = `echo Cleaning ${relativeModeDir}...`;
+  const commandLine = `echo Cleaning ${modeDir}...`;
 
   if (!pathExists(modeDir)) return;
 

@@ -106,9 +106,10 @@ export function filesInDir(dir: string) {
 
   if (!fileDirents) return [];
 
+  const hasSpace = dir.includes(' ');
   const files = fileDirents
     .filter((file) => file.isFile())
-    .map((file) => file.name);
+    .map((file) => (hasSpace ? file.name : path.join(dir, file.name)));
 
   return files;
 }

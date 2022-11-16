@@ -97,7 +97,7 @@ There, the compiler path, the C/C++ standard, and the included paths are **synce
 - ⚙️ MSVC batch path (defaults to \"\")
 - ⚙️ Use MSVC (defaults to false)
 - ⚙️ To enable warnings (defaults to True)
-- ⚙️ What warnings should be checked by the compiler (defaults to [\"-Wall\", \"-Wextra\", \"-Wpedantic\"])
+- ⚙️ What warnings should be checked by the compiler
 - ⚙️ To treat warnings as errors (defaults to False)
 - ⚙️ Additional compiler arguments (defaults to [] e.g. **-flto**)
 - ⚙️ Additional linker arguments (defaults to [] e.g. **-lpthread**).

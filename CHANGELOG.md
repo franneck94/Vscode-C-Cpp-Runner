@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 4.2.0: Nov 6, 2022
+
+- **Info**: Added more default warnings
+
 ## Version 4.1.4: Nov 14, 2022
 
 - **Bugfix**: Bugfix for relative paths in problems tab

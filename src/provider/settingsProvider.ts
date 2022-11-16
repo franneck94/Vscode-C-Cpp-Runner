@@ -2,24 +2,24 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import {
-	foldersInDir,
-	localSettingExist,
-	pathExists,
-	readJsonFile,
-	replaceBackslashes,
-	writeJsonFile,
+  foldersInDir,
+  localSettingExist,
+  pathExists,
+  readJsonFile,
+  replaceBackslashes,
+  writeJsonFile,
 } from '../utils/fileUtils';
 import {
-	getCompilerArchitecture,
-	getOperatingSystem,
+  getCompilerArchitecture,
+  getOperatingSystem,
 } from '../utils/systemUtils';
 import {
-	Architectures,
-	CompilerSystems,
-	JsonPropertiesConfig,
-	JsonPropertiesConfigEntry,
-	JsonSettings,
-	OperatingSystems,
+  Architectures,
+  CompilerSystems,
+  JsonPropertiesConfig,
+  JsonPropertiesConfigEntry,
+  JsonSettings,
+  OperatingSystems,
 } from '../utils/types';
 import { FileProvider } from './fileProvider';
 
@@ -49,8 +49,22 @@ export class SettingsProvider extends FileProvider {
   static DEFAULT_ENABLE_WARNINGS = true;
   static DEFAULT_WARNINGS_AS_ERRORS = false;
 
-  static DEFAULT_WARNINGS_UNIX = ['-Wall', '-Wextra', '-Wpedantic'];
-  static DEFAULT_WARNINGS_MSVC = ['/W4'];
+  static DEFAULT_WARNINGS_UNIX = [
+    '-Wall', // This enables all the warnings about constructions that some users consider questionable
+    '-Wextra', // This enables some extra warning flags that are not enabled by -Wall
+    '-Wpedantic', // Issue all the warnings demanded by strict ISO C and ISO C++
+    '-Wshadow', // Whenever a local variable or type declaration shadows another variable
+    '-Wformat=2', // Check calls to printf and scanf, etc.
+    '-Wconversion', // on type conversions that may lose data
+    '-Wnull-dereference', // if a null dereference is detected
+    '-Wdouble-promotion', // if float is implicit promoted to double
+  ];
+  static DEFAULT_WARNINGS_MSVC = [
+    '/W4',
+    '/C4062 ', //	enumerator 'identifier' in a switch of enum 'enumeration' is not handled
+    '/C4242 ', //	'identifier': conversion from 'type1' to 'type2', possible loss of data
+    '/C4265 ', //	'class': class has virtual functions, but destructor is not virtual
+  ];
   static DEFAULT_COMPILER_ARGS = [];
   static DEFAULT_LINKER_ARGS = [];
   static DEFAULT_INCLUDE_PATHS = [];

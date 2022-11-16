@@ -3,6 +3,7 @@
 ## Version 4.2.0: Nov 6, 2022
 
 - **Info**: Added more default warnings
+- **Info**: Added c++std option "c++latest" for MSVC
 
 ## Version 4.1.4: Nov 14, 2022
 

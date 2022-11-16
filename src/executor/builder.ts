@@ -3,13 +3,13 @@ import * as vscode from 'vscode';
 
 import { SettingsProvider } from '../provider/settingsProvider';
 import {
-	filesInDir,
-	getLanguage,
-	isCppSourceFile,
-	isCSourceFile,
-	isSourceFile,
-	mkdirRecursive,
-	pathExists,
+  filesInDir,
+  getLanguage,
+  isCppSourceFile,
+  isCSourceFile,
+  isSourceFile,
+  mkdirRecursive,
+  pathExists,
 } from '../utils/fileUtils';
 import { Builds, Languages, OperatingSystems } from '../utils/types';
 import { getProcessExecution } from '../utils/vscodeUtils';
@@ -137,7 +137,13 @@ function executeBuildTaskUnixBased(
 
   if (language === Languages.cpp) {
     compiler = settingsProvider.cppCompilerPath;
-    standard = settingsProvider.cppStandard;
+
+    const usesLatest = settingsProvider.cppStandard === 'c++latest';
+    if (usesLatest) {
+      standard = SettingsProvider.DEFAULT_CPP_STANDARD;
+    } else {
+      standard = settingsProvider.cppStandard;
+    }
   } else {
     compiler = settingsProvider.cCompilerPath;
     standard = settingsProvider.cStandard;

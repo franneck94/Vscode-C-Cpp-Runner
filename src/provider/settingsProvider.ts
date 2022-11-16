@@ -57,13 +57,12 @@ export class SettingsProvider extends FileProvider {
     '-Wformat=2', // Check calls to printf and scanf, etc.
     '-Wconversion', // on type conversions that may lose data
     '-Wnull-dereference', // if a null dereference is detected
-    '-Wdouble-promotion', // if float is implicit promoted to double
   ];
   static DEFAULT_WARNINGS_MSVC = [
     '/W4',
-    '/C4062 ', //	enumerator 'identifier' in a switch of enum 'enumeration' is not handled
-    '/C4242 ', //	'identifier': conversion from 'type1' to 'type2', possible loss of data
-    '/C4265 ', //	'class': class has virtual functions, but destructor is not virtual
+    '/w44062', //	enumerator 'identifier' in a switch of enum 'enumeration' is not handled
+    '/w44242', //	'identifier': conversion from 'type1' to 'type2', possible loss of data
+    '/w44265', //	'class': class has virtual functions, but destructor is not virtual
   ];
   static DEFAULT_COMPILER_ARGS = [];
   static DEFAULT_LINKER_ARGS = [];

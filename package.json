@@ -202,9 +202,13 @@
           "default": [
             "-Wall",
             "-Wextra",
-            "-Wpedantic"
+            "-Wpedantic",
+            "-Wshadow",
+            "-Wformat=2",
+            "-Wconversion",
+            "-Wnull-dereference"
           ],
-          "description": "Warnings to check by the compiler.",
+          "description": "Warnings to check by the compiler. (MSVC uses different warnings)",
           "scope": "resource"
         },
         "C_Cpp_Runner.warningsAsError": {

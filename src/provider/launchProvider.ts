@@ -8,7 +8,6 @@ import {
 	writeJsonFile,
 } from '../utils/fileUtils';
 import {
-	Architectures,
 	Builds,
 	Debuggers,
 	JsonLaunchConfig,
@@ -264,19 +263,19 @@ export class LaunchProvider extends FileProvider {
         SettingsProvider.DEFAULT_DEBUGGER_PATH;
     }
 
-    if (OperatingSystems.mac === this.settings.operatingSystem) {
-      launchTemplate.configurations[0].stopAtEntry = true;
-      if (launchTemplate.configurations[0].setupCommands) {
-        delete launchTemplate.configurations[0].setupCommands;
-      }
+    if (
+      OperatingSystems.mac === this.settings.operatingSystem &&
+      (this.settings.cCompilerPath.includes('clang') ||
+        this.settings.cppCompilerPath.includes('clang++')) &&
+      this.settings.debuggerPath.includes('lldb')
+    ) {
+      launchTemplate.configurations[0].type = 'lldb';
 
-      if (this.settings.architecture === Architectures.ARM64) {
-        launchTemplate.configurations[0].type = 'lldb';
-
-        if (launchTemplate.configurations[0].miDebuggerPath) {
-          delete launchTemplate.configurations[0].miDebuggerPath;
-        }
-      }
+      delete launchTemplate.configurations[0]?.setupCommands;
+      delete launchTemplate.configurations[0]?.miDebuggerPath;
+      delete launchTemplate.configurations[0]?.MIMode;
+      delete launchTemplate.configurations[0]?.stopAtEntry;
+      delete launchTemplate.configurations[0]?.externalConsole;
     }
 
     if (this.argumentsString && this.argumentsString.length > 0) {

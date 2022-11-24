@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 4.2.1: Nov 24, 2022
+
+- **Bugfix**: Now only using LLDB debug extension on Mac
+
 ## Version 4.2.0: Nov 6, 2022
 
 - **Info**: Added more default warnings

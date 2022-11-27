@@ -2,7 +2,8 @@
 
 ## Version 4.2.2: Nov 27, 2022
 
-- **Bugfix**: Removed c++latest option, since MS C++ extension does not support this anyway
+- **Info**: Removed c++latest option, since MS C++ extension does not support this anyway
+- **Info**: Improved default compiler for Mac
 
 ## Version 4.2.1: Nov 24, 2022
 

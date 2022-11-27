@@ -258,9 +258,9 @@ export class LaunchProvider extends FileProvider {
         this.settings.debuggerPath;
     } else {
       launchTemplate.configurations[0].MIMode =
-        SettingsProvider.DEFAULT_DEBUGGER_PATH;
+        SettingsProvider.DEFAULT_DEBUGGER_PATH_NON_MAC;
       launchTemplate.configurations[0].miDebuggerPath =
-        SettingsProvider.DEFAULT_DEBUGGER_PATH;
+        SettingsProvider.DEFAULT_DEBUGGER_PATH_NON_MAC;
     }
 
     if (

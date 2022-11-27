@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 4.2.2: Nov 27, 2022
+
+- **Bugfix**: Removed c++latest option, since MS C++ extension does not support this anyway
+
 ## Version 4.2.1: Nov 24, 2022
 
 - **Bugfix**: Now only using LLDB debug extension on Mac

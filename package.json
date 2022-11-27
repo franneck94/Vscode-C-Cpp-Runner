@@ -281,11 +281,10 @@
             "gnu++14",
             "gnu++17",
             "gnu++20",
-            "gnu++23",
-            "c++latest"
+            "gnu++23"
           ],
           "default": "",
-          "description": "C++ Standard for the C++ Compiler. If empty, compiler's default is used. Note: \"c++latest\" is only applicable for MSVC.",
+          "description": "C++ Standard for the C++ Compiler. If empty, compiler's default is used.",
           "scope": "resource"
         },
         "C_Cpp_Runner.compilerArgs": {

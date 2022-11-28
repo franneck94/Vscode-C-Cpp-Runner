@@ -60,12 +60,22 @@ export class SettingsProvider extends FileProvider {
     '-Wformat=2', // Check calls to printf and scanf, etc.
     '-Wconversion', // on type conversions that may lose data
     '-Wnull-dereference', // if a null dereference is detected
+    '-Wsign-conversion', // for implicit conversions that may change the sign of an integer value
   ];
   static DEFAULT_WARNINGS_MSVC = [
+    // C and C++ Related Warnings
     '/W4',
+    '/w14242', //	'identfier': conversion from 'type1' to 'type1', possible loss of data
+    '/w14287', // 'operator': unsigned/negative constant mismatch
+    '/w14296', // 'operator': expression is always 'boolean_value'
+    '/w14311', // 'variable': pointer truncation from 'type1' to 'type2'
+    '/w14826', // Conversion from 'type1' to 'type_2' is sign-extended. This may cause unexpected runtime behavior
     '/w44062', //	enumerator 'identifier' in a switch of enum 'enumeration' is not handled
     '/w44242', //	'identifier': conversion from 'type1' to 'type2', possible loss of data
+    // C++ Related Warnings
+    '/w14263', // 'function': member function does not override any base class virtual member function
     '/w44265', //	'class': class has virtual functions, but destructor is not virtual
+    '/w14928', // illegal copy-initialization; more than one user-defined conversion has been implicitly applied
   ];
   static DEFAULT_COMPILER_ARGS = [];
   static DEFAULT_LINKER_ARGS = [];

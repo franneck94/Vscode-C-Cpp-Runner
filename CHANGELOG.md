@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 4.2.3: Nov 28, 2022
+
+- **Info**: Added more default warnings
+
 ## Version 4.2.2: Nov 27, 2022
 
 - **Info**: Removed c++latest option, since MS C++ extension does not support this anyway

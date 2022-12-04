@@ -37,8 +37,8 @@ let commandModeDisposable: vscode.Disposable | undefined;
 let commandBuildDisposable: vscode.Disposable | undefined;
 let commandRunDisposable: vscode.Disposable | undefined;
 let commandBuildSingleFileDisposable: vscode.Disposable | undefined;
-let commandRunSingleFileDisposable: vscode.Disposable | undefined;
-let commandDebugSingleFileDisposable: vscode.Disposable | undefined;
+let commandRunCurrentSelectionDisposable: vscode.Disposable | undefined;
+let commandDebugCurrentSelectionDisposable: vscode.Disposable | undefined;
 let commandDebugDisposable: vscode.Disposable | undefined;
 let commandCleanDisposable: vscode.Disposable | undefined;
 let commandArgumentDisposable: vscode.Disposable | undefined;
@@ -112,8 +112,8 @@ export function activate(context: vscode.ExtensionContext) {
   initCleanStatusBar();
 
   initBuildSingleFile();
-  initRunSingleFile();
-  initDebugSingleFile();
+  initRunCurrentSelection();
+  initDebugCurrentSelection();
 
   initWorkspaceProvider();
   initWorkspaceDisposables();
@@ -138,8 +138,8 @@ export function deactivate() {
   disposeItem(commandBuildDisposable);
   disposeItem(commandRunDisposable);
   disposeItem(commandBuildSingleFileDisposable);
-  disposeItem(commandRunSingleFileDisposable);
-  disposeItem(commandDebugSingleFileDisposable);
+  disposeItem(commandRunCurrentSelectionDisposable);
+  disposeItem(commandDebugCurrentSelectionDisposable);
   disposeItem(commandDebugDisposable);
   disposeItem(commandCleanDisposable);
   disposeItem(commandArgumentDisposable);
@@ -435,7 +435,7 @@ function initFolderStatusBar() {
 
   if (commandFolderDisposable) return;
 
-  const commandName = `${EXTENSION_NAME}.folder`;
+  const commandName = `${EXTENSION_NAME}.selectFolder`;
   commandFolderDisposable = vscode.commands.registerCommand(
     commandName,
     async () => {
@@ -459,7 +459,7 @@ function initModeStatusBar() {
   extensionContext?.subscriptions.push(modeStatusBar);
   updateModeStatus(modeStatusBar, showStatusBarItems, activeFolder, buildMode);
 
-  const commandName = `${EXTENSION_NAME}.mode`;
+  const commandName = `${EXTENSION_NAME}.selectMode`;
   commandModeDisposable = vscode.commands.registerCommand(
     commandName,
     async () => {
@@ -488,7 +488,7 @@ function initModeStatusBar() {
 function initArgumentParser() {
   if (commandArgumentDisposable) return;
 
-  const commandName = `${EXTENSION_NAME}.args`;
+  const commandName = `${EXTENSION_NAME}.addCmdArgs`;
 
   commandArgumentDisposable = vscode.commands.registerCommand(
     commandName,
@@ -526,7 +526,7 @@ function initBuildStatusBar() {
   extensionContext?.subscriptions.push(buildStatusBar);
   updateBuildStatus(buildStatusBar, showStatusBarItems, activeFolder);
 
-  const commandName = `${EXTENSION_NAME}.build`;
+  const commandName = `${EXTENSION_NAME}.buildFolder`;
   commandBuildDisposable = vscode.commands.registerCommand(
     commandName,
     async () => buildTaskCallback(false),
@@ -542,7 +542,7 @@ function initRunStatusBar() {
   extensionContext?.subscriptions.push(runStatusBar);
   updateRunStatus(runStatusBar, showStatusBarItems, activeFolder);
 
-  const commandName = `${EXTENSION_NAME}.run`;
+  const commandName = `${EXTENSION_NAME}.runFolder`;
   commandRunDisposable = vscode.commands.registerCommand(
     commandName,
     async () => runTaskCallback(),
@@ -559,7 +559,7 @@ function initDebugStatusBar() {
   extensionContext?.subscriptions.push(debugStatusBar);
   updateDebugStatus(debugStatusBar, showStatusBarItems, activeFolder);
 
-  const commandName = `${EXTENSION_NAME}.debug`;
+  const commandName = `${EXTENSION_NAME}.debugFolder`;
   commandDebugDisposable = vscode.commands.registerCommand(commandName, () =>
     debugTaskCallback(),
   );
@@ -575,7 +575,7 @@ async function initCleanStatusBar() {
   extensionContext?.subscriptions.push(cleanStatusBar);
   updateCleanStatus(cleanStatusBar, showStatusBarItems, activeFolder);
 
-  const commandName = `${EXTENSION_NAME}.clean`;
+  const commandName = `${EXTENSION_NAME}.cleanFolder`;
   commandCleanDisposable = vscode.commands.registerCommand(
     commandName,
     async () => {
@@ -610,28 +610,28 @@ function initBuildSingleFile() {
   extensionContext?.subscriptions.push(commandBuildSingleFileDisposable);
 }
 
-function initRunSingleFile() {
-  const commandName = `${EXTENSION_NAME}.runSingleFile`;
-  commandRunSingleFileDisposable = vscode.commands.registerCommand(
+function initRunCurrentSelection() {
+  const commandName = `${EXTENSION_NAME}.runCurrentSelection`;
+  commandRunCurrentSelectionDisposable = vscode.commands.registerCommand(
     commandName,
     async () => {
       initProviderBasedOnSingleFile();
       runTaskCallback();
     },
   );
-  extensionContext?.subscriptions.push(commandRunSingleFileDisposable);
+  extensionContext?.subscriptions.push(commandRunCurrentSelectionDisposable);
 }
 
-function initDebugSingleFile() {
-  const commandName = `${EXTENSION_NAME}.debugSingleFile`;
-  commandDebugSingleFileDisposable = vscode.commands.registerCommand(
+function initDebugCurrentSelection() {
+  const commandName = `${EXTENSION_NAME}.debugCurrentSelection`;
+  commandDebugCurrentSelectionDisposable = vscode.commands.registerCommand(
     commandName,
     () => {
       initProviderBasedOnSingleFile();
       debugTaskCallback();
     },
   );
-  extensionContext?.subscriptions.push(commandDebugSingleFileDisposable);
+  extensionContext?.subscriptions.push(commandDebugCurrentSelectionDisposable);
 }
 
 async function buildTaskCallback(singleFileBuild: boolean) {

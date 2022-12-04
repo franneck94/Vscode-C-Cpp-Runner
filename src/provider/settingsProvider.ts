@@ -2,24 +2,24 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import {
-  foldersInDir,
-  localSettingExist,
-  pathExists,
-  readJsonFile,
-  replaceBackslashes,
-  writeJsonFile,
+	foldersInDir,
+	localSettingExist,
+	pathExists,
+	readJsonFile,
+	replaceBackslashes,
+	writeJsonFile,
 } from '../utils/fileUtils';
 import {
-  getCompilerArchitecture,
-  getOperatingSystem,
+	getCompilerArchitecture,
+	getOperatingSystem,
 } from '../utils/systemUtils';
 import {
-  Architectures,
-  CompilerSystems,
-  JsonPropertiesConfig,
-  JsonPropertiesConfigEntry,
-  JsonSettings,
-  OperatingSystems,
+	Architectures,
+	CompilerSystems,
+	JsonPropertiesConfig,
+	JsonPropertiesConfigEntry,
+	JsonSettings,
+	OperatingSystems,
 } from '../utils/types';
 import { FileProvider } from './fileProvider';
 
@@ -27,9 +27,12 @@ const OUTPUT_FILENAME = 'settings.json';
 const EXTENSION_NAME = 'C_Cpp_Runner';
 
 export class SettingsProvider extends FileProvider {
-  static DEFAULT_C_COMPILER_PATH = 'gcc';
-  static DEFAULT_CPP_COMPILER_PATH = 'g++';
-  static DEFAULT_DEBUGGER_PATH = 'gdb';
+  static DEFAULT_C_COMPILER_PATH_NON_MAC = 'gcc';
+  static DEFAULT_C_COMPILER_PATH_MAC = 'clang';
+  static DEFAULT_CPP_COMPILER_PATH_NON_MAC = 'g++';
+  static DEFAULT_CPP_COMPILER_PATH_MAC = 'clang++';
+  static DEFAULT_DEBUGGER_PATH_NON_MAC = 'gdb';
+  static DEFAULT_DEBUGGER_PATH_MAC = 'lldb';
   static DEFAULT_MSVC_BATCH_PATH =
     'C:/Program Files/Microsoft Visual Studio/VR_NR/Community/VC/Auxiliary/Build/vcvarsall.bat';
   static DEFAULT_MSVC_TOOLS_PATH = '';
@@ -57,12 +60,22 @@ export class SettingsProvider extends FileProvider {
     '-Wformat=2', // Check calls to printf and scanf, etc.
     '-Wconversion', // on type conversions that may lose data
     '-Wnull-dereference', // if a null dereference is detected
+    '-Wsign-conversion', // for implicit conversions that may change the sign of an integer value
   ];
   static DEFAULT_WARNINGS_MSVC = [
+    // C and C++ Related Warnings
     '/W4',
+    '/w14242', //	'identfier': conversion from 'type1' to 'type1', possible loss of data
+    '/w14287', // 'operator': unsigned/negative constant mismatch
+    '/w14296', // 'operator': expression is always 'boolean_value'
+    '/w14311', // 'variable': pointer truncation from 'type1' to 'type2'
+    '/w14826', // Conversion from 'type1' to 'type_2' is sign-extended. This may cause unexpected runtime behavior
     '/w44062', //	enumerator 'identifier' in a switch of enum 'enumeration' is not handled
     '/w44242', //	'identifier': conversion from 'type1' to 'type2', possible loss of data
+    // C++ Related Warnings
+    '/w14263', // 'function': member function does not override any base class virtual member function
     '/w44265', //	'class': class has virtual functions, but destructor is not virtual
+    '/w14928', // illegal copy-initialization; more than one user-defined conversion has been implicitly applied
   ];
   static DEFAULT_COMPILER_ARGS = [];
   static DEFAULT_LINKER_ARGS = [];
@@ -80,9 +93,11 @@ export class SettingsProvider extends FileProvider {
   public isCygwin: boolean = false;
 
   // Settings
-  public cCompilerPath: string = SettingsProvider.DEFAULT_C_COMPILER_PATH;
-  public cppCompilerPath: string = SettingsProvider.DEFAULT_CPP_COMPILER_PATH;
-  public debuggerPath: string = SettingsProvider.DEFAULT_DEBUGGER_PATH;
+  public cCompilerPath: string =
+    SettingsProvider.DEFAULT_C_COMPILER_PATH_NON_MAC;
+  public cppCompilerPath: string =
+    SettingsProvider.DEFAULT_CPP_COMPILER_PATH_NON_MAC;
+  public debuggerPath: string = SettingsProvider.DEFAULT_DEBUGGER_PATH_NON_MAC;
   public msvcBatchPath: string = SettingsProvider.DEFAULT_MSVC_BATCH_PATH;
   public msvcToolsPath: string = SettingsProvider.DEFAULT_MSVC_TOOLS_PATH;
   public useMsvc: boolean = SettingsProvider.DEFAULT_USE_MSVC;
@@ -99,6 +114,19 @@ export class SettingsProvider extends FileProvider {
 
   constructor(public workspaceFolder: string, public activeFolder: string) {
     super(workspaceFolder, undefined, OUTPUT_FILENAME);
+
+    this.cCompilerPath =
+      this.operatingSystem !== OperatingSystems.mac
+        ? SettingsProvider.DEFAULT_C_COMPILER_PATH_NON_MAC
+        : SettingsProvider.DEFAULT_C_COMPILER_PATH_MAC;
+    this.cppCompilerPath =
+      this.operatingSystem !== OperatingSystems.mac
+        ? SettingsProvider.DEFAULT_CPP_COMPILER_PATH_NON_MAC
+        : SettingsProvider.DEFAULT_CPP_COMPILER_PATH_MAC;
+    this.debuggerPath =
+      this.operatingSystem !== OperatingSystems.mac
+        ? SettingsProvider.DEFAULT_DEBUGGER_PATH_NON_MAC
+        : SettingsProvider.DEFAULT_DEBUGGER_PATH_MAC;
 
     const settingsFileMissing = this.localFileExist('settings.json');
     const settingsMissing = this.updateCheck();
@@ -200,17 +228,23 @@ export class SettingsProvider extends FileProvider {
     this.cCompilerPath = this.getSettingsValue(
       settingsLocal,
       'cCompilerPath',
-      SettingsProvider.DEFAULT_C_COMPILER_PATH,
+      this.operatingSystem !== OperatingSystems.mac
+        ? SettingsProvider.DEFAULT_C_COMPILER_PATH_NON_MAC
+        : SettingsProvider.DEFAULT_C_COMPILER_PATH_MAC,
     );
     this.cppCompilerPath = this.getSettingsValue(
       settingsLocal,
       'cppCompilerPath',
-      SettingsProvider.DEFAULT_CPP_COMPILER_PATH,
+      this.operatingSystem !== OperatingSystems.mac
+        ? SettingsProvider.DEFAULT_CPP_COMPILER_PATH_NON_MAC
+        : SettingsProvider.DEFAULT_CPP_COMPILER_PATH_MAC,
     );
     this.debuggerPath = this.getSettingsValue(
       settingsLocal,
       'debuggerPath',
-      SettingsProvider.DEFAULT_DEBUGGER_PATH,
+      this.operatingSystem !== OperatingSystems.mac
+        ? SettingsProvider.DEFAULT_DEBUGGER_PATH_NON_MAC
+        : SettingsProvider.DEFAULT_DEBUGGER_PATH_MAC,
     );
 
     // optional
@@ -454,15 +488,21 @@ export class SettingsProvider extends FileProvider {
     /* Mandatory in settings.json */
     this.cCompilerPath = this.getGlobalSettingsValue(
       'cCompilerPath',
-      SettingsProvider.DEFAULT_C_COMPILER_PATH,
+      this.operatingSystem !== OperatingSystems.mac
+        ? SettingsProvider.DEFAULT_C_COMPILER_PATH_NON_MAC
+        : SettingsProvider.DEFAULT_C_COMPILER_PATH_MAC,
     );
     this.cppCompilerPath = this.getGlobalSettingsValue(
       'cppCompilerPath',
-      SettingsProvider.DEFAULT_CPP_COMPILER_PATH,
+      this.operatingSystem !== OperatingSystems.mac
+        ? SettingsProvider.DEFAULT_CPP_COMPILER_PATH_NON_MAC
+        : SettingsProvider.DEFAULT_CPP_COMPILER_PATH_MAC,
     );
     this.debuggerPath = this.getGlobalSettingsValue(
       'debuggerPath',
-      SettingsProvider.DEFAULT_DEBUGGER_PATH,
+      this.operatingSystem !== OperatingSystems.mac
+        ? SettingsProvider.DEFAULT_DEBUGGER_PATH_NON_MAC
+        : SettingsProvider.DEFAULT_DEBUGGER_PATH_MAC,
     );
     this.msvcBatchPath = this.getGlobalSettingsValue(
       'msvcBatchPath',

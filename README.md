@@ -9,10 +9,10 @@ You do not need to know about any compiler commands. 😎
 
 ## Software Requirements
 
-- 🔧 For C code: Any GCC, Clang or MSVC compiler
+- 🔧 For C code: Any GCC, Clang, or MSVC compiler
 - 🔧 For C++ code: Any G++, Clang++ or MSVC compiler
 
-Make sure that your GCC/Clang compiler is either in your PATH or you have to set the **C/ C++ Compiler Path** setting of this extension.  
+Make sure that your GCC/Clang compiler is either in your PATH or you have to manually set the **C/ C++ Compiler Path** setting of this extension.  
 For the MSVC compiler usage see [here](#Using-the-MSVC-Compiler).
 
 ## Extension Activation Conditions
@@ -25,10 +25,12 @@ For the MSVC compiler usage see [here](#Using-the-MSVC-Compiler).
 1️⃣ Select the folder that contains the C/C++ files.  
 You can select the folder by the quick pick menu from the status bar.  
 ![TaskStatusBar](./media/FolderStatusBar.png)  
-Besides that, you can also select a folder by right-clicking in the context menu.  
+Besides that, you can also select a folder by right-clicking in the context menu or pressing *ctrl+alt+f*.  
 2️⃣ Select either debug or release mode for building the binary (debug is the default case).  
+The keyboard shortcut is *ctrl+alt+g*.  
 ![TaskStatusBar](./media/ModeStatusBar.png)  
 3️⃣ Now you can build/run/debug the binary.  
+The keyboard shortcut for the building is *ctrl+b*, for debugging is *ctrl+alt+d* and for running is *ctrl+alt+r*.  
 ![TaskStatusBar](./media/TaskStatusBar.png)
 
 - ⚙️ Build: This task will compile all C/C++ files in the selected folder and will link them into a binary.
@@ -77,7 +79,7 @@ The folder selection would change from left to right.
 ![ExcludePaths1](./media/excludePaths1.png)
 ![ExcludePaths2](./media/excludePaths2.png)
 
-For more information about glob pattern see [here](https://en.wikipedia.org/wiki/Glob_(programming)#Syntax).
+For more information about the glob pattern see [here](https://en.wikipedia.org/wiki/Glob_(programming)#Syntax).
 
 ### Configuration
 
@@ -85,7 +87,7 @@ The current configuration settings will be stored locally in *".vscode/settings.
 ![FoundCompiler](./media/Settings.png)  
 
 Based on the settings, the local *.vscode/c_cpp_properties.json* file is created and will be used by [Microsoft's *C/C++*](https://code.visualstudio.com/docs/cpp/c-cpp-properties-schema-reference) extension for intellisense.  
-There, the compiler path, the C/C++ standard, and the included paths are **synced** with this extension settings.  
+There, the compiler path, the C/C++ standard, and the included paths are **synced** with these extension settings.  
 
 ### Extension Settings
 
@@ -109,7 +111,7 @@ There, the compiler path, the C/C++ standard, and the included paths are **synce
 
 ## Important Notes
 
-### Constraints on Files and Folders
+### Constraints with Files and Folders
 
 - 📝 Allowed file extensions for headers: \*.h, \*.hpp, \*.hh, \*.hxx
 - 📝 Allowed file extensions for sources: \*.c, \*.cpp, \*.cc, \*.cxx
@@ -124,7 +126,7 @@ However, the user can trigger the start-up of this extension by pressing `ctrl+a
 ## Using the MSVC Compiler
 
 To use the MSVC compiler (toolchain), set the **msvcBatchPath** setting to a valid path.  
-An example path would be **"*PathToVs2022*/Community/VC/Auxiliary/Build/vcvarsall.bat"**.  
+An example path would be **"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvarsall.bat"**.  
 Then set the **useMsvc** to true, to not use GCC/Clang tools in the current workspace.  
 If you want to stop using the MSVC compiler, just set **useMsvc** to false.  
 Note: Only the 64bit (no cross-compiling) version of MSVC is allowed
@@ -140,7 +142,7 @@ Licensed under the [MIT License](LICENSE).
 
 ## Supporting the Work
 
-Feel free to make a donation, such that i have more time to work on my VSCode extension*s*.
+Feel free to donate, such that I have more time to work on my VSCode extension*s*.
 
 ![PayPal QR Code](./media/QR-Code.png)
 

@@ -2,7 +2,7 @@
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
   "description": "🚀 Compile, run and debug single or multiple C/C++ files with ease. 🚀",
-  "version": "4.2.1",
+  "version": "4.3.0",
   "publisher": "franneck94",
   "license": "MIT",
   "icon": "icon.png",
@@ -11,7 +11,7 @@
     "theme": "dark"
   },
   "engines": {
-    "vscode": "^1.72.0"
+    "vscode": "^1.73.0"
   },
   "categories": [
     "Programming Languages",
@@ -55,37 +55,37 @@
     ],
     "commands": [
       {
-        "command": "C_Cpp_Runner.folder",
+        "command": "C_Cpp_Runner.selectFolder",
         "title": "Select Folder",
         "when": "C_Cpp_Runner:activatedExtension",
         "category": "C/C++ Runner"
       },
       {
-        "command": "C_Cpp_Runner.mode",
+        "command": "C_Cpp_Runner.selectMode",
         "title": "Select Mode",
         "when": "C_Cpp_Runner:activatedExtension",
         "category": "C/C++ Runner"
       },
       {
-        "command": "C_Cpp_Runner.build",
+        "command": "C_Cpp_Runner.buildFolder",
         "title": "Build Folder",
         "when": "C_Cpp_Runner:activatedExtension",
         "category": "C/C++ Runner"
       },
       {
-        "command": "C_Cpp_Runner.run",
+        "command": "C_Cpp_Runner.runFolder",
         "title": "Run Folder",
         "when": "C_Cpp_Runner:activatedExtension",
         "category": "C/C++ Runner"
       },
       {
-        "command": "C_Cpp_Runner.debug",
+        "command": "C_Cpp_Runner.debugFolder",
         "title": "Debug Folder",
         "when": "C_Cpp_Runner:activatedExtension",
         "category": "C/C++ Runner"
       },
       {
-        "command": "C_Cpp_Runner.clean",
+        "command": "C_Cpp_Runner.cleanFolder",
         "title": "Clean Folder",
         "when": "C_Cpp_Runner:activatedExtension",
         "category": "C/C++ Runner"
@@ -108,7 +108,7 @@
         "category": "C/C++ Runner"
       },
       {
-        "command": "C_Cpp_Runner.args",
+        "command": "C_Cpp_Runner.addCmdArgs",
         "title": "Commandline Arguments",
         "when": "C_Cpp_Runner:activatedExtension",
         "category": "C/C++ Runner"
@@ -120,13 +120,13 @@
         "category": "C/C++ Runner"
       },
       {
-        "command": "C_Cpp_Runner.runSingleFile",
+        "command": "C_Cpp_Runner.runCurrentSelection",
         "title": "Run Single File",
         "when": "C_Cpp_Runner:activatedExtension",
         "category": "C/C++ Runner"
       },
       {
-        "command": "C_Cpp_Runner.debugSingleFile",
+        "command": "C_Cpp_Runner.debugCurrentSelection",
         "title": "Debug Single File",
         "when": "C_Cpp_Runner:activatedExtension",
         "category": "C/C++ Runner"
@@ -139,15 +139,21 @@
         "mac": "ctrl+alt+t"
       },
       {
-        "command": "C_Cpp_Runner.folder",
+        "command": "C_Cpp_Runner.selectFolder",
         "key": "ctrl+alt+f",
         "mac": "ctrl+alt+f",
         "when": "C_Cpp_Runner:activatedExtension"
       },
       {
-        "command": "C_Cpp_Runner.mode",
+        "command": "C_Cpp_Runner.selectMode",
         "key": "ctrl+alt+g",
         "mac": "ctrl+alt+g",
+        "when": "C_Cpp_Runner:activatedExtension"
+      },
+      {
+        "command": "C_Cpp_Runner.buildFolder",
+        "key": "ctrl+b",
+        "mac": "ctrl+b",
         "when": "C_Cpp_Runner:activatedExtension"
       },
       {
@@ -157,19 +163,19 @@
         "when": "C_Cpp_Runner:activatedExtension"
       },
       {
-        "command": "C_Cpp_Runner.runSingleFile",
+        "command": "C_Cpp_Runner.runCurrentSelection",
         "key": "ctrl+alt+r",
         "mac": "ctrl+alt+r",
         "when": "C_Cpp_Runner:activatedExtension"
       },
       {
-        "command": "C_Cpp_Runner.debugSingleFile",
+        "command": "C_Cpp_Runner.debugCurrentSelection",
         "key": "ctrl+alt+d",
         "mac": "ctrl+alt+d",
         "when": "C_Cpp_Runner:activatedExtension"
       },
       {
-        "command": "C_Cpp_Runner.args",
+        "command": "C_Cpp_Runner.addCmdArgs",
         "key": "ctrl+alt+a",
         "mac": "ctrl+alt+a",
         "when": "C_Cpp_Runner:activatedExtension"
@@ -206,7 +212,8 @@
             "-Wshadow",
             "-Wformat=2",
             "-Wconversion",
-            "-Wnull-dereference"
+            "-Wnull-dereference",
+            "-Wsign-conversion"
           ],
           "description": "Warnings to check by the compiler. (MSVC uses different warnings)",
           "scope": "resource"
@@ -281,11 +288,10 @@
             "gnu++14",
             "gnu++17",
             "gnu++20",
-            "gnu++23",
-            "c++latest"
+            "gnu++23"
           ],
           "default": "",
-          "description": "C++ Standard for the C++ Compiler. If empty, compiler's default is used. Note: \"c++latest\" is only applicable for MSVC.",
+          "description": "C++ Standard for the C++ Compiler. If empty, compiler's default is used.",
           "scope": "resource"
         },
         "C_Cpp_Runner.compilerArgs": {

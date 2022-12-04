@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 4.3.1: Dec 4, 2022
+
+- **Bugfix**: Fixed bug for single file compile if C **and** C++ files are in the same directory
+
 ## Version 4.3.0: Nov 30, 2022
 
 - **Info**: Added keyboard shortcut for building the currently selected folder: *ctrl+b*

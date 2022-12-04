@@ -24,7 +24,7 @@ export async function executeBuildTask(
 ) {
   const appendSymbol = '&&';
 
-  const language = getLanguage(activeFolder);
+  let language = getLanguage(activeFolder);
 
   let files: string[];
   if (!singleFileBuild) {
@@ -32,6 +32,10 @@ export async function executeBuildTask(
   } else {
     const currentFile = vscode.window.activeTextEditor?.document.fileName;
     if (!currentFile) return;
+
+    language = isCppSourceFile(path.extname(currentFile))
+      ? Languages.cpp
+      : Languages.c;
 
     const isSource = isSourceFile(path.extname(currentFile));
     if (!isSource) return;

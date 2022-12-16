@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 4.3.2: Dec 16, 2022
+
+- **Bugfix**: CMake projects should not activate this extension
+
 ## Version 4.3.1: Dec 4, 2022
 
 - **Bugfix**: Fixed bug for single file compile if C **and** C++ files are in the same directory

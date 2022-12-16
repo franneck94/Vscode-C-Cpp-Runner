@@ -66,7 +66,7 @@ export function isCmakeProject() {
       if (!cmakeFileFound) {
         const files = filesInDir(folder.uri.fsPath);
         files.forEach((file) => {
-          if (file.toLowerCase() === 'CMakeLists.txt'.toLowerCase()) {
+          if (file.toLowerCase().includes('CMakeLists.txt'.toLowerCase())) {
             cmakeFileFound = true;
           }
         });

@@ -3,13 +3,13 @@ import * as vscode from 'vscode';
 
 import { SettingsProvider } from '../provider/settingsProvider';
 import {
-	filesInDir,
-	getLanguage,
-	isCppSourceFile,
-	isCSourceFile,
-	isSourceFile,
-	mkdirRecursive,
-	pathExists,
+  filesInDir,
+  getLanguage,
+  isCppSourceFile,
+  isCSourceFile,
+  isSourceFile,
+  mkdirRecursive,
+  pathExists,
 } from '../utils/fileUtils';
 import { Builds, Languages, OperatingSystems } from '../utils/types';
 import { getProcessExecution } from '../utils/vscodeUtils';
@@ -140,10 +140,10 @@ function executeBuildTaskUnixBased(
   let standard: string | undefined;
 
   if (language === Languages.cpp) {
-    compiler = settingsProvider.cppCompilerPath;
+    compiler = settingsProvider.cppCompilerPath.replace('.exe', '');
     standard = settingsProvider.cppStandard;
   } else {
-    compiler = settingsProvider.cCompilerPath;
+    compiler = settingsProvider.cCompilerPath.replace('.exe', '');
     standard = settingsProvider.cStandard;
   }
 
@@ -151,7 +151,11 @@ function executeBuildTaskUnixBased(
   const warningsAsErrors = settingsProvider.warningsAsError;
   let warnings: string = '';
   if (useWarnings) {
-    warnings = settingsProvider.warnings.join(' ');
+    if (settingsProvider.useMsvc) {
+      warnings = SettingsProvider.DEFAULT_WARNINGS_UNIX.join(' ');
+    } else {
+      warnings = settingsProvider.warnings.join(' ');
+    }
   }
   if (useWarnings && warningsAsErrors) {
     warnings += ' -Werror';
@@ -174,7 +178,7 @@ function executeBuildTaskUnixBased(
   } else {
     fullCompilerArgs += ' -O3 -DNDEBUG';
   }
-  if (compilerArgs && compilerArgs.length > 0) {
+  if (compilerArgs && compilerArgs.length > 0 && !settingsProvider.useMsvc) {
     fullCompilerArgs += ' ' + compilerArgs.join(' ');
   }
   if (includePaths && includePaths.length > 0) {
@@ -191,7 +195,7 @@ function executeBuildTaskUnixBased(
     }
   }
 
-  if (linkerArgs && linkerArgs.length > 0) {
+  if (linkerArgs && linkerArgs.length > 0 && !settingsProvider.useMsvc) {
     fullLinkerArgs += ' ' + linkerArgs.join(' ');
   }
 

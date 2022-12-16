@@ -1,5 +1,13 @@
 # C/C++ Runner Change Log
 
+## Version 5.0.0: Dec 16, 2022
+
+- **Info**: It is only suggested to edit the settings.json and **not** the launch.json or c_cpp_properties.json file!
+- **Change**: Removed change logic: If launch.json is changed the settings.json is not changed anymore
+- **Change**: Removed change logic: If c_cpp_properties.json is changed the settings.json is not changed anymore
+- **Bugfix**: CMake projects should not activate this extension
+- **Bugfix**: Several bugfixes for the msvc/Unix switch
+
 ## Version 4.3.1: Dec 4, 2022
 
 - **Bugfix**: Fixed bug for single file compile if C **and** C++ files are in the same directory
@@ -124,7 +132,7 @@
 
 - **Info**: Updated MSVC instructions
 
-## Version 3.1.0: January 19, 20212
+## Version 3.1.0: January 19, 2022
 
 - **Info**: Removed Makefile deactivation
 - **Info**: Updated README

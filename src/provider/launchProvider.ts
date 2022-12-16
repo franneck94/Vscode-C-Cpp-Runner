@@ -79,7 +79,8 @@ export class LaunchProvider extends FileProvider {
 
     if (
       this.settings.operatingSystem === OperatingSystems.windows &&
-      (this.settings.useMsvc || this.settings.cCompilerPath.includes('clang'))
+      (this.settings.useMsvc ||
+        this.settings.cCompilerPath.toLowerCase().includes('clang'))
     ) {
       this.msvcBasedDebugger(launchTemplate);
       delete launchTemplate.configurations[0]?.externalConsole;
@@ -196,20 +197,6 @@ export class LaunchProvider extends FileProvider {
       const currentConfig = launchLocal.configurations[configIdx];
 
       if (currentConfig === undefined) return;
-
-      if (
-        currentConfig.miDebuggerPath !== this.settings.debuggerPath &&
-        currentConfig.miDebuggerPath
-      ) {
-        this.settings.debuggerPath = currentConfig.miDebuggerPath;
-
-        if (
-          currentConfig.miDebuggerPath.includes(Debuggers.gdb) ||
-          currentConfig.miDebuggerPath.includes(Debuggers.lldb)
-        ) {
-          this.settings.debuggerPath = currentConfig.miDebuggerPath;
-        }
-      }
     } else {
       this.writeFileData();
     }
@@ -250,10 +237,11 @@ export class LaunchProvider extends FileProvider {
 
     launchTemplate.configurations[0].name = CONFIG_NAME;
     if (this.settings.debuggerPath) {
-      launchTemplate.configurations[0].MIMode =
-        this.settings.debuggerPath.includes(Debuggers.gdb)
-          ? Debuggers.gdb
-          : Debuggers.lldb;
+      launchTemplate.configurations[0].MIMode = this.settings.debuggerPath
+        .toLowerCase()
+        .includes(Debuggers.gdb)
+        ? Debuggers.gdb
+        : Debuggers.lldb;
       launchTemplate.configurations[0].miDebuggerPath =
         this.settings.debuggerPath;
     } else {
@@ -265,9 +253,9 @@ export class LaunchProvider extends FileProvider {
 
     if (
       OperatingSystems.mac === this.settings.operatingSystem &&
-      (this.settings.cCompilerPath.includes('clang') ||
-        this.settings.cppCompilerPath.includes('clang++')) &&
-      this.settings.debuggerPath.includes('lldb')
+      (this.settings.cCompilerPath.toLowerCase().includes('clang') ||
+        this.settings.cppCompilerPath.toLowerCase().includes('clang++')) &&
+      this.settings.debuggerPath.toLowerCase().includes('lldb')
     ) {
       launchTemplate.configurations[0].type = 'lldb';
 

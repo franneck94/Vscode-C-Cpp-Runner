@@ -2,7 +2,7 @@
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
   "description": "🚀 Compile, run and debug single or multiple C/C++ files with ease. 🚀",
-  "version": "4.3.1",
+  "version": "5.0.0",
   "publisher": "franneck94",
   "license": "MIT",
   "icon": "icon.png",
@@ -251,7 +251,7 @@
         "C_Cpp_Runner.useMsvc": {
           "type": "boolean",
           "default": false,
-          "description": "Whether to use MSVC compiler or to use GCC/LLDB instead.",
+          "description": "Whether to use MSVC compiler or Unix Compilers (Windows only).",
           "scope": "resource"
         },
         "C_Cpp_Runner.cStandard": {
@@ -373,14 +373,14 @@
     "prettier": "^2.2.1",
     "typescript": "^4.0.2",
     "webpack": "^5.28.0",
-    "webpack-cli": "^4.6.0"
+    "webpack-cli": "^4.10.0"
   },
   "dependencies": {
     "json5": "^2.2.0",
     "lookpath": "^1.2.0",
     "minimatch": "^3.0.4",
     "ts-loader": "^8.1.0",
-    "vsce": "^1.87.1"
+    "vsce": "^2.15.0"
   },
   "extensionDependencies": [
     "ms-vscode.cpptools",

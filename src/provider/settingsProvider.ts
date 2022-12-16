@@ -2,24 +2,24 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import {
-	foldersInDir,
-	localSettingExist,
-	pathExists,
-	readJsonFile,
-	replaceBackslashes,
-	writeJsonFile,
+  foldersInDir,
+  localSettingExist,
+  pathExists,
+  readJsonFile,
+  replaceBackslashes,
+  writeJsonFile,
 } from '../utils/fileUtils';
 import {
-	getCompilerArchitecture,
-	getOperatingSystem,
+  getCompilerArchitecture,
+  getOperatingSystem,
 } from '../utils/systemUtils';
 import {
-	Architectures,
-	CompilerSystems,
-	JsonPropertiesConfig,
-	JsonPropertiesConfigEntry,
-	JsonSettings,
-	OperatingSystems,
+  Architectures,
+  CompilerSystems,
+  JsonPropertiesConfig,
+  JsonPropertiesConfigEntry,
+  JsonSettings,
+  OperatingSystems,
 } from '../utils/types';
 import { FileProvider } from './fileProvider';
 
@@ -268,11 +268,16 @@ export class SettingsProvider extends FileProvider {
         this.update('msvcBatchPath', this.msvcBatchPath);
       }
     }
-    this.useMsvc = this.getSettingsValue(
-      settingsLocal,
-      'useMsvc',
-      SettingsProvider.DEFAULT_USE_MSVC,
-    );
+
+    if (this.operatingSystem === OperatingSystems.windows) {
+      this.useMsvc = this.getSettingsValue(
+        settingsLocal,
+        'useMsvc',
+        SettingsProvider.DEFAULT_USE_MSVC,
+      );
+    } else {
+      this.useMsvc = false;
+    }
 
     if (this.useMsvc) {
       this.searchMsvcToolsPath();

@@ -380,7 +380,7 @@
     "lookpath": "^1.2.0",
     "minimatch": "^3.0.4",
     "ts-loader": "^8.1.0",
-    "vsce": "^1.87.1"
+    "vsce": "^2.15.0"
   },
   "extensionDependencies": [
     "ms-vscode.cpptools",

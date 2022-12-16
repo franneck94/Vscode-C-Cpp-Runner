@@ -6,13 +6,11 @@ import {
 	replaceBackslashes,
 	writeJsonFile,
 } from '../utils/fileUtils';
-import { arraysEqual } from '../utils/general';
 import { commandExists } from '../utils/systemUtils';
 import {
 	Architectures,
 	CompilerSystems,
 	JsonPropertiesConfig,
-	JsonPropertiesConfigEntry,
 	OperatingSystems,
 } from '../utils/types';
 import { FileProvider } from './fileProvider';
@@ -189,69 +187,5 @@ export class PropertiesProvider extends FileProvider {
     super._updateFolderData(workspaceFolder);
   }
 
-  public changeCallback() {
-    const currentConfig: JsonPropertiesConfig | undefined = readJsonFile(
-      this._outputPath,
-    );
-
-    if (!this.lastConfig) {
-      this.lastConfig = readJsonFile(this._outputPath);
-
-      if (!this.lastConfig) return;
-    }
-
-    if (!currentConfig) return;
-
-    const currentConfigEntry: JsonPropertiesConfigEntry | undefined =
-      currentConfig.configurations[0];
-
-    if (currentConfigEntry === undefined) return;
-
-    const lastConfigEntry: JsonPropertiesConfigEntry | undefined =
-      this.lastConfig.configurations[0];
-
-    if (lastConfigEntry === undefined) return;
-
-    let updated = false;
-
-    if (currentConfigEntry.cStandard !== lastConfigEntry.cStandard) {
-      this.settings.cStandard =
-        currentConfigEntry.cStandard !== '${default}'
-          ? currentConfigEntry.cStandard
-          : '';
-      updated = true;
-    }
-
-    if (currentConfigEntry.cppStandard !== lastConfigEntry.cppStandard) {
-      this.settings.cppStandard =
-        currentConfigEntry.cppStandard !== '${default}'
-          ? currentConfigEntry.cppStandard
-          : '';
-      updated = true;
-    }
-
-    if (
-      currentConfigEntry.compilerPath !== lastConfigEntry.compilerPath &&
-      !currentConfigEntry.compilerPath.includes('cl.exe')
-    ) {
-      this.settings.cCompilerPath = currentConfigEntry.compilerPath;
-      updated = true;
-    }
-
-    if (
-      !arraysEqual(currentConfigEntry.includePath, lastConfigEntry.includePath)
-    ) {
-      this.settings.includePaths = currentConfigEntry.includePath.filter(
-        (path: string) =>
-          path !== INCLUDE_PATTERN && !path.includes('$(default)'),
-      );
-      updated = true;
-    }
-
-    if (updated) {
-      this.settings.writeFileData();
-
-      this.lastConfig = currentConfig;
-    }
-  }
+  public changeCallback() {}
 }

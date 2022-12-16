@@ -140,10 +140,10 @@ function executeBuildTaskUnixBased(
   let standard: string | undefined;
 
   if (language === Languages.cpp) {
-    compiler = settingsProvider.cppCompilerPath;
+    compiler = settingsProvider.cppCompilerPath.replace('.exe', '');
     standard = settingsProvider.cppStandard;
   } else {
-    compiler = settingsProvider.cCompilerPath;
+    compiler = settingsProvider.cCompilerPath.replace('.exe', '');
     standard = settingsProvider.cStandard;
   }
 

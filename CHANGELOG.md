@@ -3,6 +3,7 @@
 ## Version 5.0.0: Dec 16, 2022
 
 - **Bugfix**: CMake projects should not activate this extension
+- **Info**: More robust for msvc/unix switch
 - **Info**: It is only suggested to edit the settings.json and **not** the launch.json or c_cpp_properties.json file!
 - **Change**: Removed change logic: If launch.json is changed the settings.json is not changed anymore
 - **Change**: Removed change logic: If c_cpp_properties.json is changed the settings.json is not changed anymore

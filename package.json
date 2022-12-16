@@ -251,7 +251,7 @@
         "C_Cpp_Runner.useMsvc": {
           "type": "boolean",
           "default": false,
-          "description": "Whether to use MSVC compiler or to use GCC/LLDB instead.",
+          "description": "Whether to use MSVC compiler or Unix Compilers (Windows only).",
           "scope": "resource"
         },
         "C_Cpp_Runner.cStandard": {

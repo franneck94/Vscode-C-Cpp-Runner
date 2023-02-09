@@ -330,7 +330,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Include glob patterns for folder selection. (Ran before exlcude pattern)",
+          "description": "Include glob patterns for folder selection. (Ran before exclude pattern)",
           "scope": "resource"
         },
         "C_Cpp_Runner.excludeSearch": {

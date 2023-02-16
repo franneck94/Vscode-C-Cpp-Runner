@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 5.1.0: Feb 16, 2023
+
+- **Info**: Fixed status bar colors in white mode
+
 ## Version 5.0.0: Dec 16, 2022
 
 - **Info**: It is only suggested to edit the settings.json and **not** the launch.json or c_cpp_properties.json file!

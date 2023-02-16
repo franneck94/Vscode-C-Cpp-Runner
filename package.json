@@ -2,7 +2,7 @@
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
   "description": "🚀 Compile, run and debug single or multiple C/C++ files with ease. 🚀",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "publisher": "franneck94",
   "license": "MIT",
   "icon": "icon.png",

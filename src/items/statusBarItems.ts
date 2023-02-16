@@ -24,10 +24,12 @@ export function updateFolderStatus(
       text = `${dirs[0]}/.../${dirs[lastElement]}`;
     }
 
-    status.color = '';
+    status.backgroundColor = '';
     status.text = `$(folder-active) ${text}`;
   } else {
-    status.color = '#ffff00';
+    status.backgroundColor = new vscode.ThemeColor(
+      'statusBarItem.warningBackground',
+    );
     status.text = '$(alert) Select folder.';
   }
 

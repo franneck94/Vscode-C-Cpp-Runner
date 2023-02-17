@@ -51,6 +51,7 @@ export class SettingsProvider extends FileProvider {
 
   static DEFAULT_ENABLE_WARNINGS = true;
   static DEFAULT_WARNINGS_AS_ERRORS = false;
+  static DEFAULT_MEMORY_SANITIZER = false;
 
   static DEFAULT_WARNINGS_UNIX = [
     '-Wall', // This enables all the warnings about constructions that some users consider questionable
@@ -111,6 +112,8 @@ export class SettingsProvider extends FileProvider {
   public enableWarnings: boolean = SettingsProvider.DEFAULT_ENABLE_WARNINGS;
   public warningsAsError: boolean = SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
   public warnings: string[] = SettingsProvider.DEFAULT_WARNINGS_UNIX;
+  public useAddressSanitizer: boolean =
+    SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
 
   constructor(public workspaceFolder: string, public activeFolder: string) {
     super(workspaceFolder, undefined, OUTPUT_FILENAME);
@@ -349,6 +352,12 @@ export class SettingsProvider extends FileProvider {
       'excludeSearch',
       SettingsProvider.DEFAULT_EXCLUDE_SEARCH,
     );
+
+    this.useAddressSanitizer = this.getSettingsValue(
+      settingsLocal,
+      'useAddressSanitizer',
+      SettingsProvider.DEFAULT_MEMORY_SANITIZER,
+    );
   }
 
   private getSettingsFromProperties() {
@@ -563,6 +572,10 @@ export class SettingsProvider extends FileProvider {
       'excludeSearch',
       SettingsProvider.DEFAULT_EXCLUDE_SEARCH,
     );
+    this.useAddressSanitizer = this.getGlobalSettingsValue(
+      'useAddressSanitizer',
+      SettingsProvider.DEFAULT_MEMORY_SANITIZER,
+    );
   }
 
   private storeSettings() {
@@ -586,6 +599,8 @@ export class SettingsProvider extends FileProvider {
 
     this.update('includeSearch', this.includeSearch);
     this.update('excludeSearch', this.excludeSearch);
+
+    this.update('useAddressSanitizer', this.useAddressSanitizer);
   }
 
   /********************/

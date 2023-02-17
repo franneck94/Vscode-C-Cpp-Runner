@@ -170,6 +170,12 @@ function executeBuildTaskUnixBased(
   if (warnings) {
     fullCompilerArgs += warnings;
   }
+
+  const useAddressSanitizer = settingsProvider.useAddressSanitizer;
+  if (useAddressSanitizer) {
+    fullCompilerArgs += ' -fsanitize=address';
+  }
+
   if (standard) {
     fullCompilerArgs += ` --std=${standard}`;
   }
@@ -305,6 +311,11 @@ function executeBuildTaskMsvcBased(
 
   if (useWarnings && warnings !== '') {
     fullCompilerArgs += warnings;
+  }
+
+  const useAddressSanitizer = settingsProvider.useAddressSanitizer;
+  if (useAddressSanitizer) {
+    fullCompilerArgs += ' /fsanitize=address';
   }
 
   // Note: The c standard in msvc is either c11 or c17

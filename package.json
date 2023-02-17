@@ -2,7 +2,7 @@
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
   "description": "🚀 Compile, run and debug single or multiple C/C++ files with ease. 🚀",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "publisher": "franneck94",
   "license": "MIT",
   "icon": "icon.png",
@@ -347,6 +347,12 @@
             "type": "string"
           },
           "description": "Exclude glob patterns for folder selection. (Ran after include pattern)",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.useAddressSanitizer": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to activate the address (memory) sanitizer for the debug build.",
           "scope": "resource"
         }
       }

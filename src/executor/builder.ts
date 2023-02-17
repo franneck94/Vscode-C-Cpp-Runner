@@ -172,9 +172,8 @@ function executeBuildTaskUnixBased(
   }
 
   const useAddressSanitizer = settingsProvider.useAddressSanitizer;
-  let sanitizerArgs = '';
   if (useAddressSanitizer) {
-    sanitizerArgs = ' -fsanitize=address';
+    fullCompilerArgs += ' -fsanitize=address';
   }
 
   if (standard) {
@@ -242,9 +241,9 @@ function executeBuildTaskUnixBased(
     }
 
     if (idx === 0) {
-      commandLine += `${compiler} ${fullCompilerArgs} ${sanitizerArgs} ${fullFileArgs}`;
+      commandLine += `${compiler} ${fullCompilerArgs} ${fullFileArgs}`;
     } else {
-      commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${sanitizerArgs} ${fullFileArgs}`;
+      commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullFileArgs}`;
     }
   }
 

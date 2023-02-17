@@ -1,8 +1,9 @@
 # C/C++ Runner Change Log
 
-## Version 5.1.0: Feb 16, 2023
+## Version 5.1.0: Feb 17, 2023
 
 - **Info**: Fixed status bar colors in white mode
+- **Info**: Added address (memory) sanitizer flag for the debug build
 
 ## Version 5.0.0: Dec 16, 2022
 

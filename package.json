@@ -348,6 +348,12 @@
           },
           "description": "Exclude glob patterns for folder selection. (Ran after include pattern)",
           "scope": "resource"
+        },
+        "C_Cpp_Runner.useAddressSanitizer": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to activate the address (memory) sanitizer for the debug build.",
+          "scope": "resource"
         }
       }
     }

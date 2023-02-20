@@ -108,6 +108,7 @@ There, the compiler path, the C/C++ standard, and the included paths are **synce
   - Note: It is **not** (!) expected to prefix the arguments with the **-I** flag
 - ⚙️ Include glob pattern for the folder selection (defaults to ["\*", "\*\*/\*"])
 - ⚙️ Exclude glob pattern for the folder selection (defaults to ["\*\*/build", "\*\*/.\*", "\*\*/.vscode",])
+- ⚙️ Address Sanitizer: Whether to activate the compiler's address (memory) sanitizer for the debug build
 
 ## Important Notes
 

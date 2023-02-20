@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 5.1.2: Feb 20, 2023
+
+- **Info**: Better settings descr. for the address sanitizer and fixed typo
+
 ## Version 5.1.1: Feb 20, 2023
 
 - **Info**: Better settings descr. for the address sanitizer

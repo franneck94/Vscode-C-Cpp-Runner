@@ -1,5 +1,10 @@
 # C/C++ Runner Change Log
 
+## Version 5.1.1: Feb 20, 2023
+
+- **Info**: Better settings descr. for the address sanitizer
+- **Bugfix**: Now the address sanitizer is only ran in debug build
+
 ## Version 5.1.0: Feb 17, 2023
 
 - **Info**: Fixed status bar colors in white mode

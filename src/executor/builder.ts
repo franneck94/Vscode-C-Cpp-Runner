@@ -172,7 +172,7 @@ function executeBuildTaskUnixBased(
   }
 
   const useAddressSanitizer = settingsProvider.useAddressSanitizer;
-  if (useAddressSanitizer) {
+  if (useAddressSanitizer && buildMode === Builds.debug) {
     fullCompilerArgs += ' -fsanitize=address';
   }
 
@@ -314,7 +314,7 @@ function executeBuildTaskMsvcBased(
   }
 
   const useAddressSanitizer = settingsProvider.useAddressSanitizer;
-  if (useAddressSanitizer) {
+  if (useAddressSanitizer && buildMode === Builds.debug) {
     fullCompilerArgs += ' /fsanitize=address';
   }
 

@@ -2,7 +2,7 @@
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
   "description": "🚀 Compile, run and debug single or multiple C/C++ files with ease. 🚀",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "publisher": "franneck94",
   "license": "MIT",
   "icon": "icon.png",
@@ -352,7 +352,7 @@
         "C_Cpp_Runner.useAddressSanitizer": {
           "type": "boolean",
           "default": false,
-          "description": "Whether to activate the address (memory) sanitizer for the debug build.",
+          "description": "Whether to activate the address (memory) sanitizer for the debug build (Make sure your compile hads implemented this).",
           "scope": "resource"
         }
       }

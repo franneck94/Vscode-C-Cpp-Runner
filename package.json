@@ -352,7 +352,7 @@
         "C_Cpp_Runner.useAddressSanitizer": {
           "type": "boolean",
           "default": false,
-          "description": "Whether to activate the address (memory) sanitizer for the debug build (Make sure your compile hads implemented this).",
+          "description": "Whether to activate the address (memory) sanitizer for the debug build (Make sure your compiler has implemented this).",
           "scope": "resource"
         }
       }

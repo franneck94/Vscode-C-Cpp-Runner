@@ -1,6 +1,6 @@
 #include "lib1.h"
 
-void f4()
+void f5()
 {
 
 }

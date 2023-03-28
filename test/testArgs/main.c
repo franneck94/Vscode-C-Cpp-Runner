@@ -9,7 +9,5 @@ int main(int argc, char **argv)
         printf("argv[%d]: %s\n", i, argv[i]);
     }
 
-    printf("WWWWWW");
-
     return 0;
 }

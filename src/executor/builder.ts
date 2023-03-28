@@ -16,6 +16,8 @@ import { getProcessExecution } from '../utils/vscodeUtils';
 
 const EXTENSION_NAME = 'C_Cpp_Runner';
 
+const LOWER_LIMIT_WILDARD_COMPILE = 6;
+
 export async function executeBuildTask(
   settingsProvider: SettingsProvider,
   activeFolder: string,
@@ -240,10 +242,12 @@ function executeBuildTaskUnixBased(
       fullFileArgs = `-c ${file} -o ${objectFilePath}`;
     }
 
-    if (idx === 0) {
-      commandLine += `${compiler} ${fullCompilerArgs} ${fullFileArgs}`;
-    } else {
-      commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullFileArgs}`;
+    if (files.length < LOWER_LIMIT_WILDARD_COMPILE) {
+      if (idx === 0) {
+        commandLine += `${compiler} ${fullCompilerArgs} ${fullFileArgs}`;
+      } else {
+        commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullFileArgs}`;
+      }
     }
   }
 
@@ -260,9 +264,38 @@ function executeBuildTaskUnixBased(
     executablePath = '.' + executablePath;
   }
 
-  const fullObjectFileArgs = `${objectFilesStr} -o ${executablePath}`;
+  if (objectFiles.length >= LOWER_LIMIT_WILDARD_COMPILE) {
+    if (language === Languages.cpp) {
+      const has_cpp = files.some((f: string) => f.endsWith('.cpp'));
+      const has_cc = files.some((f: string) => f.endsWith('.cc'));
+      const has_cxx = files.some((f: string) => f.endsWith('.cxx'));
 
-  commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullObjectFileArgs}`;
+      if (has_cpp && !has_cc && !has_cxx)
+        commandLine += `${compiler} ${fullCompilerArgs} *.cpp`;
+      if (!has_cpp && has_cc && !has_cxx)
+        commandLine += `${compiler} ${fullCompilerArgs} *.cc`;
+      if (!has_cpp && !has_cc && has_cxx)
+        commandLine += `${compiler} ${fullCompilerArgs} *.cxx`;
+
+      if (!has_cpp && has_cc && has_cxx)
+        commandLine += `${compiler} ${fullCompilerArgs} *.cc *.cxx`;
+      if (has_cpp && !has_cc && has_cxx)
+        commandLine += `${compiler} ${fullCompilerArgs} *.cpp *.cxx`;
+      if (has_cpp && has_cc && !has_cxx)
+        commandLine += `${compiler} ${fullCompilerArgs} *.cpp *.cc`;
+
+      if (has_cpp && has_cc && has_cxx)
+        commandLine += `${compiler} ${fullCompilerArgs} *.cpp *.cc *.cxx`;
+    } else {
+      commandLine += `${compiler} ${fullCompilerArgs} *.c`;
+    }
+    commandLine += ` -o ${executablePath}`;
+  }
+
+  if (objectFiles.length < LOWER_LIMIT_WILDARD_COMPILE) {
+    const fullObjectFileArgs = `${objectFilesStr} -o ${executablePath}`;
+    commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullObjectFileArgs}`;
+  }
 
   if (fullLinkerArgs && fullLinkerArgs !== '') {
     commandLine += fullLinkerArgs;

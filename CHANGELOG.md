@@ -1,13 +1,18 @@
 # C/C++ Runner Change Log
 
+## Version 5.2.0: Mar 28, 2023
+
+- **Info**: Added Tooltips for Status Bar Items
+- **Info**: When there are more than 6 files to compile gcc/clang will use wildcards to prevent the "too long terminal command" error
+
 ## Version 5.1.2: Feb 20, 2023
 
-- **Info**: Better settings descr. for the address sanitizer and fixed typo
+- **Info**: Better settings descr. for the address sanitizer and fixed the typo
 
 ## Version 5.1.1: Feb 20, 2023
 
 - **Info**: Better settings descr. for the address sanitizer
-- **Bugfix**: Now the address sanitizer is only ran in debug build
+- **Bugfix**: Now the address sanitizer is only run in debug build
 
 ## Version 5.1.0: Feb 17, 2023
 

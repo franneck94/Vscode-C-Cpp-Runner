@@ -18,7 +18,12 @@ import {
 import { LaunchProvider } from './provider/launchProvider';
 import { PropertiesProvider } from './provider/propertiesProvider';
 import { SettingsProvider } from './provider/settingsProvider';
-import { foldersInDir, mkdirRecursive, pathExists } from './utils/fileUtils';
+import {
+  excludePatternFromList,
+  foldersInDir,
+  mkdirRecursive,
+  pathExists,
+} from './utils/fileUtils';
 import { Builds } from './utils/types';
 import {
   createStatusBarItem,
@@ -411,7 +416,13 @@ function initFolderStatusBar() {
       if (!workspaceFolders[0] || !workspaceFolders[0].uri.fsPath) return;
 
       const workspaceFolderFs = workspaceFolders[0].uri.fsPath;
-      const folders = foldersInDir(workspaceFolderFs);
+      let folders = foldersInDir(workspaceFolderFs);
+
+      folders = excludePatternFromList(
+        SettingsProvider.DEFAULT_EXCLUDE_SEARCH,
+        folders,
+      );
+
       if (folders.length === 0) {
         workspaceFolder = workspaceFolderFs;
         activeFolder = workspaceFolderFs;

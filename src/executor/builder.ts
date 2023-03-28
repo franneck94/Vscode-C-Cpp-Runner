@@ -16,6 +16,8 @@ import { getProcessExecution } from '../utils/vscodeUtils';
 
 const EXTENSION_NAME = 'C_Cpp_Runner';
 
+const LOWER_LIMIT_WILDARD_COMPILE = 7;
+
 export async function executeBuildTask(
   settingsProvider: SettingsProvider,
   activeFolder: string,
@@ -208,6 +210,7 @@ function executeBuildTaskUnixBased(
   let commandLine: string = '';
 
   const objectFiles: string[] = [];
+  const fullFileArgs: string[] = [];
 
   let idx = -1;
 
@@ -230,21 +233,25 @@ function executeBuildTaskUnixBased(
       objectFilePath = '.' + objectFilePath;
     }
 
-    objectFiles.push(objectFilePath);
-
     const hasSpace = file.includes(' ');
-    let fullFileArgs;
+    let fullFileArg;
     if (hasSpace) {
-      fullFileArgs = `-c "${file}" -o "${objectFilePath}"`;
+      fullFileArg = `-c "${file}" -o "${objectFilePath}"`;
     } else {
-      fullFileArgs = `-c ${file} -o ${objectFilePath}`;
+      fullFileArg = `-c ${file} -o ${objectFilePath}`;
     }
 
-    if (idx === 0) {
-      commandLine += `${compiler} ${fullCompilerArgs} ${fullFileArgs}`;
-    } else {
-      commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullFileArgs}`;
-    }
+    objectFiles.push(objectFilePath);
+    fullFileArgs.push(fullFileArg);
+  }
+
+  if (objectFiles.length < LOWER_LIMIT_WILDARD_COMPILE) {
+    for (const fullFileArg of fullFileArgs)
+      if (idx === 0) {
+        commandLine += `${compiler} ${fullCompilerArgs} ${fullFileArg}`;
+      } else {
+        commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullFileArg}`;
+      }
   }
 
   // Exe task
@@ -260,9 +267,38 @@ function executeBuildTaskUnixBased(
     executablePath = '.' + executablePath;
   }
 
-  const fullObjectFileArgs = `${objectFilesStr} -o ${executablePath}`;
+  if (objectFiles.length >= LOWER_LIMIT_WILDARD_COMPILE) {
+    if (language === Languages.cpp) {
+      const has_cpp = files.some((f: string) => f.endsWith('.cpp'));
+      const has_cc = files.some((f: string) => f.endsWith('.cc'));
+      const has_cxx = files.some((f: string) => f.endsWith('.cxx'));
 
-  commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullObjectFileArgs}`;
+      if (has_cpp && !has_cc && !has_cxx)
+        commandLine += `${compiler} ${fullCompilerArgs} *.cpp`;
+      if (!has_cpp && has_cc && !has_cxx)
+        commandLine += `${compiler} ${fullCompilerArgs} *.cc`;
+      if (!has_cpp && !has_cc && has_cxx)
+        commandLine += `${compiler} ${fullCompilerArgs} *.cxx`;
+
+      if (!has_cpp && has_cc && has_cxx)
+        commandLine += `${compiler} ${fullCompilerArgs} *.cc *.cxx`;
+      if (has_cpp && !has_cc && has_cxx)
+        commandLine += `${compiler} ${fullCompilerArgs} *.cpp *.cxx`;
+      if (has_cpp && has_cc && !has_cxx)
+        commandLine += `${compiler} ${fullCompilerArgs} *.cpp *.cc`;
+
+      if (has_cpp && has_cc && has_cxx)
+        commandLine += `${compiler} ${fullCompilerArgs} *.cpp *.cc *.cxx`;
+    } else {
+      commandLine += `${compiler} ${fullCompilerArgs} *.c`;
+    }
+    commandLine += ` -o ${executablePath}`;
+  }
+
+  if (objectFiles.length < LOWER_LIMIT_WILDARD_COMPILE) {
+    const fullObjectFileArgs = `${objectFilesStr} -o ${executablePath}`;
+    commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullObjectFileArgs}`;
+  }
 
   if (fullLinkerArgs && fullLinkerArgs !== '') {
     commandLine += fullLinkerArgs;
@@ -369,6 +405,8 @@ function executeBuildTaskMsvcBased(
   executablePath = executablePath.replace(activeFolder, '.');
   const pathArgs = `/Fd${modeDir}\\ /Fo${modeDir}\\ /Fe${executablePath}`;
 
+  const objectFiles: string[] = [];
+
   let fullFileArgs: string = '';
   for (const file of files) {
     const fileExtension = path.parse(file).ext;
@@ -378,6 +416,8 @@ function executeBuildTaskMsvcBased(
     } else if (language === Languages.cpp && !isCppSourceFile(fileExtension)) {
       continue;
     }
+
+    objectFiles.push(file);
 
     const hasSpace = file.includes(' ');
 
@@ -390,8 +430,37 @@ function executeBuildTaskMsvcBased(
 
   if (fullFileArgs === '') return;
 
-  commandLine += ` cd ${activeFolder} &&`;
-  commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} ${fullFileArgs}`;
+  if (objectFiles.length >= LOWER_LIMIT_WILDARD_COMPILE) {
+    commandLine += ` cd ${activeFolder} &&`;
+
+    if (language === Languages.cpp) {
+      const has_cpp = files.some((f: string) => f.endsWith('.cpp'));
+      const has_cc = files.some((f: string) => f.endsWith('.cc'));
+      const has_cxx = files.some((f: string) => f.endsWith('.cxx'));
+
+      if (has_cpp && !has_cc && !has_cxx)
+        commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} *.cpp`;
+      if (!has_cpp && has_cc && !has_cxx)
+        commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} *.cc`;
+      if (!has_cpp && !has_cc && has_cxx)
+        commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} *.cxx`;
+
+      if (!has_cpp && has_cc && has_cxx)
+        commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} *.cc *.cxx`;
+      if (has_cpp && !has_cc && has_cxx)
+        commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} *.cpp *.cxx`;
+      if (has_cpp && has_cc && !has_cxx)
+        commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} *.cpp *.cc`;
+
+      if (has_cpp && has_cc && has_cxx)
+        commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} *.cpp *.cc *.cxx`;
+    } else {
+      commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} *.c`;
+    }
+  } else {
+    commandLine += ` cd ${activeFolder} &&`;
+    commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} ${fullFileArgs}`;
+  }
 
   return commandLine;
 }

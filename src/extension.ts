@@ -8,25 +8,30 @@ import { executeRunTask } from './executor/runner';
 import { folderHandler } from './handler/folderHandler';
 import { modeHandler } from './handler/modeHandler';
 import {
-	updateBuildStatus,
-	updateCleanStatus,
-	updateDebugStatus,
-	updateFolderStatus,
-	updateModeStatus,
-	updateRunStatus,
+  updateBuildStatus,
+  updateCleanStatus,
+  updateDebugStatus,
+  updateFolderStatus,
+  updateModeStatus,
+  updateRunStatus,
 } from './items/statusBarItems';
 import { LaunchProvider } from './provider/launchProvider';
 import { PropertiesProvider } from './provider/propertiesProvider';
 import { SettingsProvider } from './provider/settingsProvider';
-import { foldersInDir, mkdirRecursive, pathExists } from './utils/fileUtils';
+import {
+  excludePatternFromList,
+  foldersInDir,
+  mkdirRecursive,
+  pathExists,
+} from './utils/fileUtils';
 import { Builds } from './utils/types';
 import {
-	createStatusBarItem,
-	disposeItem,
-	getActivationState,
-	isCmakeProject,
-	setContextValue,
-	updateActivationState,
+  createStatusBarItem,
+  disposeItem,
+  getActivationState,
+  isCmakeProject,
+  setContextValue,
+  updateActivationState,
 } from './utils/vscodeUtils';
 
 let folderContextMenuDisposable: vscode.Disposable | undefined;
@@ -402,6 +407,7 @@ function initFolderStatusBar() {
   if (folderStatusBar) return;
 
   folderStatusBar = createStatusBarItem();
+  folderStatusBar.tooltip = 'Which Folder to Compile';
   extensionContext?.subscriptions.push(folderStatusBar);
 
   const workspaceFolders = vscode.workspace.workspaceFolders;
@@ -410,7 +416,13 @@ function initFolderStatusBar() {
       if (!workspaceFolders[0] || !workspaceFolders[0].uri.fsPath) return;
 
       const workspaceFolderFs = workspaceFolders[0].uri.fsPath;
-      const folders = foldersInDir(workspaceFolderFs);
+      let folders = foldersInDir(workspaceFolderFs);
+
+      folders = excludePatternFromList(
+        SettingsProvider.DEFAULT_EXCLUDE_SEARCH,
+        folders,
+      );
+
       if (folders.length === 0) {
         workspaceFolder = workspaceFolderFs;
         activeFolder = workspaceFolderFs;
@@ -456,6 +468,7 @@ function initModeStatusBar() {
   if (modeStatusBar) return;
 
   modeStatusBar = createStatusBarItem();
+  modeStatusBar.tooltip = 'Select Compilation Mode';
   extensionContext?.subscriptions.push(modeStatusBar);
   updateModeStatus(modeStatusBar, showStatusBarItems, activeFolder, buildMode);
 
@@ -523,6 +536,7 @@ function initBuildStatusBar() {
   if (buildStatusBar) return;
 
   buildStatusBar = createStatusBarItem();
+  buildStatusBar.tooltip = 'Start Compilation';
   extensionContext?.subscriptions.push(buildStatusBar);
   updateBuildStatus(buildStatusBar, showStatusBarItems, activeFolder);
 
@@ -539,6 +553,7 @@ function initRunStatusBar() {
   if (runStatusBar) return;
 
   runStatusBar = createStatusBarItem();
+  runStatusBar.tooltip = 'Run Executable';
   extensionContext?.subscriptions.push(runStatusBar);
   updateRunStatus(runStatusBar, showStatusBarItems, activeFolder);
 
@@ -556,6 +571,7 @@ function initDebugStatusBar() {
   if (debugStatusBar) return;
 
   debugStatusBar = createStatusBarItem();
+  debugStatusBar.tooltip = 'Start Debugging';
   extensionContext?.subscriptions.push(debugStatusBar);
   updateDebugStatus(debugStatusBar, showStatusBarItems, activeFolder);
 
@@ -572,6 +588,7 @@ async function initCleanStatusBar() {
   if (cleanStatusBar) return;
 
   cleanStatusBar = createStatusBarItem();
+  cleanStatusBar.tooltip = 'Clean Build';
   extensionContext?.subscriptions.push(cleanStatusBar);
   updateCleanStatus(cleanStatusBar, showStatusBarItems, activeFolder);
 

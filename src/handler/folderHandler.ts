@@ -3,11 +3,11 @@ import * as vscode from 'vscode';
 
 import { SettingsProvider } from '../provider/settingsProvider';
 import {
-	excludePatternFromList,
-	getDirectoriesRecursive,
-	includePatternFromList,
-	naturalSort,
-	replaceBackslashes,
+  excludePatternFromList,
+  getDirectoriesRecursive,
+  includePatternFromList,
+  naturalSort,
+  replaceBackslashes,
 } from '../utils/fileUtils';
 
 export async function folderHandler(
@@ -50,7 +50,7 @@ export async function folderHandler(
       );
     }
 
-    // XXX: Quick fix for double folder names due to include pattern
+    // XXX: Quick fix for multiple equal folder names due to include pattern
     const foldersSet = new Set(foldersList);
     foldersList = Array.from(foldersSet);
     foldersList = naturalSort(foldersList);

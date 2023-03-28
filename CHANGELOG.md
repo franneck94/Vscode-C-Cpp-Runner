@@ -3,7 +3,8 @@
 ## Version 5.2.0: Mar 28, 2023
 
 - **Info**: Added Tooltips for Status Bar Items
-- **Info**: When there are more than 6 files to compile gcc/clang will use wildcards to prevent the "too long terminal command" error
+- **Info**: When there are more than 6 files to compile wildcards are used to prevent a too long terminal command error
+- **Info**: If there is only the root directory in the workspace auto select this as the active folder
 
 ## Version 5.1.2: Feb 20, 2023
 

@@ -407,7 +407,7 @@ function initFolderStatusBar() {
   if (folderStatusBar) return;
 
   folderStatusBar = createStatusBarItem();
-  folderStatusBar.tooltip = 'Select Folder';
+  folderStatusBar.tooltip = 'Which Folder to Compile';
   extensionContext?.subscriptions.push(folderStatusBar);
 
   const workspaceFolders = vscode.workspace.workspaceFolders;

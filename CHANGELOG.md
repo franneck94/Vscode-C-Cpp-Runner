@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 5.2.1: Mar 29, 2023
+
+- **Bugfx**: Compilation was broken
+
 ## Version 5.2.0: Mar 28, 2023
 
 - **Info**: Added Tooltips for Status Bar Items

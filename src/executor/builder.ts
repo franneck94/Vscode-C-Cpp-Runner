@@ -212,8 +212,6 @@ function executeBuildTaskUnixBased(
   const objectFiles: string[] = [];
   const fullFileArgs: string[] = [];
 
-  let idx = -1;
-
   for (const file of files) {
     const fileExtension = path.parse(file).ext;
 
@@ -222,8 +220,6 @@ function executeBuildTaskUnixBased(
     } else if (language === Languages.cpp && !isCppSourceFile(fileExtension)) {
       continue;
     }
-
-    idx++;
 
     const fileBaseName = path.parse(file).name;
     modeDir = modeDir.replace(activeFolder, '');
@@ -245,13 +241,16 @@ function executeBuildTaskUnixBased(
     fullFileArgs.push(fullFileArg);
   }
 
+  let idx = 0;
   if (objectFiles.length < LOWER_LIMIT_WILDARD_COMPILE) {
-    for (const fullFileArg of fullFileArgs)
+    for (const fullFileArg of fullFileArgs) {
       if (idx === 0) {
         commandLine += `${compiler} ${fullCompilerArgs} ${fullFileArg}`;
       } else {
         commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullFileArg}`;
       }
+      idx++;
+    }
   }
 
   // Exe task

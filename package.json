@@ -354,6 +354,12 @@
           "default": false,
           "description": "Whether to activate the address (memory) sanitizer for the debug build (Make sure your compiler has implemented this).",
           "scope": "resource"
+        },
+        "C_Cpp_Runner.showCompilationTime": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to output the compilation time.",
+          "scope": "resource"
         }
       }
     }

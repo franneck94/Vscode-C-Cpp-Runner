@@ -178,6 +178,11 @@ function executeBuildTaskUnixBased(
     fullCompilerArgs += ' -fsanitize=address';
   }
 
+  const showCompilationTime = settingsProvider.showCompilationTime;
+  if (showCompilationTime) {
+    fullCompilerArgs += ' -ftime-report';
+  }
+
   if (standard) {
     fullCompilerArgs += ` --std=${standard}`;
   }
@@ -353,6 +358,11 @@ function executeBuildTaskMsvcBased(
   const useAddressSanitizer = settingsProvider.useAddressSanitizer;
   if (useAddressSanitizer && buildMode === Builds.debug) {
     fullCompilerArgs += ' /fsanitize=address';
+  }
+
+  const showCompilationTime = settingsProvider.showCompilationTime;
+  if (showCompilationTime) {
+    fullCompilerArgs += ' /Bt /d2cgsummary';
   }
 
   // Note: The c standard in msvc is either c11 or c17

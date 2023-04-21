@@ -52,6 +52,7 @@ export class SettingsProvider extends FileProvider {
   static DEFAULT_ENABLE_WARNINGS = true;
   static DEFAULT_WARNINGS_AS_ERRORS = false;
   static DEFAULT_MEMORY_SANITIZER = false;
+  static DEFAULT_SHOW_COMPILATION_TIME = false;
 
   static DEFAULT_WARNINGS_UNIX = [
     '-Wall', // This enables all the warnings about constructions that some users consider questionable
@@ -114,6 +115,8 @@ export class SettingsProvider extends FileProvider {
   public warnings: string[] = SettingsProvider.DEFAULT_WARNINGS_UNIX;
   public useAddressSanitizer: boolean =
     SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
+  public showCompilationTime: boolean =
+    SettingsProvider.DEFAULT_SHOW_COMPILATION_TIME;
 
   constructor(public workspaceFolder: string, public activeFolder: string) {
     super(workspaceFolder, undefined, OUTPUT_FILENAME);
@@ -358,6 +361,12 @@ export class SettingsProvider extends FileProvider {
       'useAddressSanitizer',
       SettingsProvider.DEFAULT_MEMORY_SANITIZER,
     );
+
+    this.showCompilationTime = this.getSettingsValue(
+      settingsLocal,
+      'showCompilationTime',
+      SettingsProvider.DEFAULT_SHOW_COMPILATION_TIME,
+    );
   }
 
   private getSettingsFromProperties() {
@@ -576,6 +585,10 @@ export class SettingsProvider extends FileProvider {
       'useAddressSanitizer',
       SettingsProvider.DEFAULT_MEMORY_SANITIZER,
     );
+    this.showCompilationTime = this.getGlobalSettingsValue(
+      'showCompilationTime',
+      SettingsProvider.DEFAULT_SHOW_COMPILATION_TIME,
+    );
   }
 
   private storeSettings() {
@@ -601,6 +614,7 @@ export class SettingsProvider extends FileProvider {
     this.update('excludeSearch', this.excludeSearch);
 
     this.update('useAddressSanitizer', this.useAddressSanitizer);
+    this.update('showCompilationTime', this.showCompilationTime);
   }
 
   /********************/

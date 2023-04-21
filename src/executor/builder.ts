@@ -178,6 +178,11 @@ function executeBuildTaskUnixBased(
     fullCompilerArgs += ' -fsanitize=address';
   }
 
+  const showCompilationTime = settingsProvider.showCompilationTime;
+  if (showCompilationTime) {
+    fullCompilerArgs += ' -ftime-report';
+  }
+
   if (standard) {
     fullCompilerArgs += ` --std=${standard}`;
   }
@@ -221,7 +226,8 @@ function executeBuildTaskUnixBased(
       continue;
     }
 
-    const fileBaseName = path.parse(file).name;
+    const hasSpace = file.includes(' ');
+    const fileBaseName = path.parse(file).name.replace(' ', '');
     modeDir = modeDir.replace(activeFolder, '');
 
     let objectFilePath = path.join(modeDir, fileBaseName + '.o');
@@ -229,10 +235,9 @@ function executeBuildTaskUnixBased(
       objectFilePath = '.' + objectFilePath;
     }
 
-    const hasSpace = file.includes(' ');
     let fullFileArg;
     if (hasSpace) {
-      fullFileArg = `-c "${file}" -o "${objectFilePath}"`;
+      fullFileArg = `-c '${file}' -o '${objectFilePath}'`;
     } else {
       fullFileArg = `-c ${file} -o ${objectFilePath}`;
     }
@@ -353,6 +358,11 @@ function executeBuildTaskMsvcBased(
   const useAddressSanitizer = settingsProvider.useAddressSanitizer;
   if (useAddressSanitizer && buildMode === Builds.debug) {
     fullCompilerArgs += ' /fsanitize=address';
+  }
+
+  const showCompilationTime = settingsProvider.showCompilationTime;
+  if (showCompilationTime) {
+    fullCompilerArgs += ' /Bt /d2cgsummary';
   }
 
   // Note: The c standard in msvc is either c11 or c17

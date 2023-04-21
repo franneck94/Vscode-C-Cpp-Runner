@@ -2,7 +2,7 @@
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
   "description": "🚀 Compile, run and debug single or multiple C/C++ files with ease. 🚀",
-  "version": "5.2.2",
+  "version": "5.3.0",
   "publisher": "franneck94",
   "license": "MIT",
   "icon": "icon.png",
@@ -353,6 +353,12 @@
           "type": "boolean",
           "default": false,
           "description": "Whether to activate the address (memory) sanitizer for the debug build (Make sure your compiler has implemented this).",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.showCompilationTime": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to output the compilation time.",
           "scope": "resource"
         }
       }

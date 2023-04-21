@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 5.3.0: April 21, 2023
+
+- **Info**: Added option to show detailed compilation time
+
 ## Version 5.2.2: April 21, 2023
 
 - **Bugfx**: Whitespaces in filenames should be no problem anymore

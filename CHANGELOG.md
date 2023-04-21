@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 5.2.2: April 21, 2023
+
+- **Bugfx**: Whitespaces in filenames should be no problem anymore
+
 ## Version 5.2.1: Mar 29, 2023
 
 - **Bugfx**: Compilation was broken

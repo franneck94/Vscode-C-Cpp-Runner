@@ -321,6 +321,7 @@ function executeBuildTaskMsvcBased(
 ) {
   let compiler: string | undefined;
   let standard: string | undefined;
+  let hadSpaces = false;
 
   if (language === Languages.cpp) {
     compiler = SettingsProvider.MSVC_COMPILER_NAME;
@@ -423,6 +424,7 @@ function executeBuildTaskMsvcBased(
 
     if (hasSpace) {
       fullFileArgs += ` "${file}"`;
+      hadSpaces = true;
     } else {
       fullFileArgs += ` ${file}`;
     }
@@ -460,6 +462,10 @@ function executeBuildTaskMsvcBased(
   } else {
     commandLine += ` cd ${activeFolder} &&`;
     commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} ${fullFileArgs}`;
+  }
+
+  if (hadSpaces) {
+    commandLine = `"${commandLine}"`;
   }
 
   return commandLine;

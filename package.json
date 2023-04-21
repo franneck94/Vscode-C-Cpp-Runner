@@ -11,7 +11,7 @@
     "theme": "dark"
   },
   "engines": {
-    "vscode": "^1.76.0"
+    "vscode": "^1.77.0"
   },
   "categories": [
     "Programming Languages",

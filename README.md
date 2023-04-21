@@ -9,8 +9,7 @@ You do not need to know about any compiler commands. 😎
 
 ## Software Requirements
 
-- 🔧 For C code: Any GCC, Clang, or MSVC compiler
-- 🔧 For C++ code: Any G++, Clang++ or MSVC compiler
+- 🔧 Any GCC, Clang, or MSVC compiler
 
 Make sure that your GCC/Clang compiler is either in your PATH or you have to manually set the **C/ C++ Compiler Path** setting of this extension.  
 For the MSVC compiler usage see [here](#Using-the-MSVC-Compiler).
@@ -109,6 +108,7 @@ There, the compiler path, the C/C++ standard, and the included paths are **synce
 - ⚙️ Include glob pattern for the folder selection (defaults to ["\*", "\*\*/\*"])
 - ⚙️ Exclude glob pattern for the folder selection (defaults to ["\*\*/build", "\*\*/.\*", "\*\*/.vscode",])
 - ⚙️ Address Sanitizer: Whether to activate the compiler's address (memory) sanitizer for the debug build
+- ⚙️ Show detailed Info about Compilation Time
 
 ## Important Notes
 
@@ -138,7 +138,7 @@ Refer to the [CHANGELOG](CHANGELOG.md).
 
 ## License
 
-Copyright (C) 2021-2022 Jan Schaffranek.  
+Copyright (C) 2021-2023 Jan Schaffranek.  
 Licensed under the [MIT License](LICENSE).
 
 ## Supporting the Work

@@ -256,7 +256,8 @@ function executeBuildTaskUnixBased(
   // Exe task
   let objectFilesStr: string = '';
   for (const objectfile of objectFiles) {
-    objectFilesStr += ` ${objectfile}`;
+    if (objectfile.includes(' ')) objectFilesStr += ` "${objectfile}"`;
+    else objectFilesStr += ` ${objectfile}`;
   }
 
   if (objectFilesStr === '') return;

@@ -8,5 +8,7 @@ int main()
     printf("Release Mode");
 #endif
 
+    int i = 2;
+
     return 0;
 }

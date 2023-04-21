@@ -226,7 +226,8 @@ function executeBuildTaskUnixBased(
       continue;
     }
 
-    const fileBaseName = path.parse(file).name;
+    const hasSpace = file.includes(' ');
+    const fileBaseName = path.parse(file).name.replace(' ', '');
     modeDir = modeDir.replace(activeFolder, '');
 
     let objectFilePath = path.join(modeDir, fileBaseName + '.o');
@@ -234,10 +235,9 @@ function executeBuildTaskUnixBased(
       objectFilePath = '.' + objectFilePath;
     }
 
-    const hasSpace = file.includes(' ');
     let fullFileArg;
     if (hasSpace) {
-      fullFileArg = `-c "${file}" -o "${objectFilePath}"`;
+      fullFileArg = `-c '${file}' -o '${objectFilePath}'`;
     } else {
       fullFileArg = `-c ${file} -o ${objectFilePath}`;
     }

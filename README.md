@@ -12,7 +12,7 @@ You do not need to know about any compiler commands. 😎
 - 🔧 Any GCC, Clang, or MSVC compiler
 
 Make sure that your GCC/Clang compiler is either in your PATH or you have to manually set the **C/ C++ Compiler Path** setting of this extension.  
-For the MSVC compiler usage see [here](#Using-the-MSVC-Compiler).
+For Windows Users with the MSVC compiler see [here](#using-the-msvc-compiler).
 
 ## Extension Activation Conditions
 
@@ -34,7 +34,7 @@ The keyboard shortcut for the building is *ctrl+b*, for debugging is *ctrl+alt+d
 
 - ⚙️ Build: This task will compile all C/C++ files in the selected folder and will link them into a binary.
 - ▶️ Run*: This task will execute the built binary.
-- 🗑️ Clean*: This helper task will delete all compiled object files (*.o).
+- 🗑️ Clean*: This helper task will delete all files in the build dir.
 - 🐞 Debug*: This task will start a debugging session for the binary.
 
 *This task is a no-op if the build task was not executed previously.
@@ -90,25 +90,30 @@ There, the compiler path, the C/C++ standard, and the included paths are **synce
 
 ### Extension Settings
 
-- ⚙️ C Compiler path (defaults to gcc)
-- ⚙️ C Standard (defaults to the compiler's default)
-- ⚙️ C++ Compiler path (defaults to g++)
-- ⚙️ C++ Standard (defaults to the compiler's default)
-- ⚙️ Debugger path (defaults to gdb)
-- ⚙️ MSVC batch path (defaults to \"\")
-- ⚙️ Use MSVC (defaults to false)
-- ⚙️ To enable warnings (defaults to True)
-- ⚙️ What warnings should be checked by the compiler
-- ⚙️ To treat warnings as errors (defaults to False)
-- ⚙️ Additional compiler arguments (defaults to [] e.g. **-flto**)
-- ⚙️ Additional linker arguments (defaults to [] e.g. **-lpthread**).
-  - Note: It **is** expected to prefix the arguments with the appropriate flags (e.g. -l or -L)
-- ⚙️ Additional include paths (defaults to [] e.g. **path/to/headers/**)
-  - Note: It is **not** (!) expected to prefix the arguments with the **-I** flag
-- ⚙️ Include glob pattern for the folder selection (defaults to ["\*", "\*\*/\*"])
-- ⚙️ Exclude glob pattern for the folder selection (defaults to ["\*\*/build", "\*\*/.\*", "\*\*/.vscode",])
-- ⚙️ Address Sanitizer: Whether to activate the compiler's address (memory) sanitizer for the debug build
-- ⚙️ Show detailed Info about Compilation Time
+#### Primitive settings
+
+- ⚙️ C Compiler Path (string, defaults to \"gcc\")
+- ⚙️ C Standard (string, defaults to the compiler's default)
+- ⚙️ C++ Compiler Path (string, defaults to \"g++\")
+- ⚙️ C++ Standard (string, defaults to the compiler's default)
+- ⚙️ Debugger Path (string, defaults to \"gdb\")
+- ⚙️ MSVC Batch Path (string, defaults to \"\")
+- ⚙️ Use MSVC (boolean, defaults to false)
+- ⚙️ To enable Warnings (boolean, defaults to True)
+- ⚙️ Active Compiler Warnings (string array)
+- ⚙️ To treat Warnings as Errors (boolean, defaults to False)
+
+#### Advanced Settings
+
+- ⚙️ Address Sanitizer: Activate the compiler's address (memory) sanitizer for the **debug build**
+- ⚙️ Show detailed Information aboutthe Compilation Time
+- ⚙️ Compiler Arguments (string array, e.g. **\[\"-flto\"\]**)
+- ⚙️ Linker Arguments (string array, e.g. **\[\"-lpthread\"\]**).
+  - Note: It is **expected** to prefix the arguments with the appropriate flags (e.g. -l or -L)
+- ⚙️ Include Paths (string array, e.g. **\[\"path/to/headers/\"\]**)
+  - Note: It is **not (!) expected** to prefix the arguments with the **-I** flag
+- ⚙️ Include Glob Pattern for the Folder Selection (string array, defaults to **["\*", "\*\*/\*"]**)
+- ⚙️ Exclude Glob Pattern for the Folder Selection (string array, defaults to **["\*\*/build", "\*\*/.\*", "\*\*/.vscode",]**)
 
 ## Important Notes
 
@@ -130,7 +135,7 @@ To use the MSVC compiler (toolchain), set the **msvcBatchPath** setting to a val
 An example path would be **"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvarsall.bat"**.  
 Then set the **useMsvc** to true, to not use GCC/Clang tools in the current workspace.  
 If you want to stop using the MSVC compiler, just set **useMsvc** to false.  
-Note: Only the 64bit (no cross-compiling) version of MSVC is allowed
+Note: Only the 64bit (no cross-compiling) version of MSVC is supported.
 
 ## Release Notes
 

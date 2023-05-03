@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 5.3.1: May 03, 2023
+
+- **Info**: Updated README
+
 ## Version 5.3.0: April 21, 2023
 
 - **Info**: Added option to show detailed compilation time

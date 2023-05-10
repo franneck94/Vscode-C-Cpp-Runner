@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 5.4.0: May 10, 2023
+
+- **Info**: Added c23 standard
+
 ## Version 5.3.1: May 03, 2023
 
 - **Info**: Updated README

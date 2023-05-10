@@ -365,7 +365,7 @@ function executeBuildTaskMsvcBased(
     fullCompilerArgs += ' /Bt /d2cgsummary';
   }
 
-  // Note: The c standard in msvc is either c11 or c17
+  // Note: The c standard in msvc is either c11 or newer
   const old_standard = ['c89', 'c99', 'gnu89', 'gnu99'].some(
     (ext) => settingsProvider.cStandard === ext,
   );

@@ -82,11 +82,11 @@ For more information about the glob pattern see [here](https://en.wikipedia.org/
 
 ### Configuration
 
-The current configuration settings will be stored locally in *".vscode/settings.json"*.  
+The configuration settings will be stored locally in *".vscode/settings.json"*.  
 ![FoundCompiler](./media/Settings.png)  
 
 Based on the settings, the local *.vscode/c_cpp_properties.json* file is created and will be used by [Microsoft's *C/C++*](https://code.visualstudio.com/docs/cpp/c-cpp-properties-schema-reference) extension for intellisense.  
-There, the compiler path, the C/C++ standard, and the included paths are **synced** with these extension settings.  
+You don't have to edit this file.  
 
 ### Extension Settings
 
@@ -100,12 +100,15 @@ There, the compiler path, the C/C++ standard, and the included paths are **synce
 - ⚙️ MSVC Batch Path (string, defaults to \"\")
 - ⚙️ Use MSVC (boolean, defaults to false)
 - ⚙️ To enable Warnings (boolean, defaults to True)
-- ⚙️ Active Compiler Warnings (string array)
+- ⚙️ GCC/Clang Compiler Warnings (string array)
+- ⚙️ MSVC Compiler Warnings (string array)
 - ⚙️ To treat Warnings as Errors (boolean, defaults to False)
 
 #### Advanced Settings
 
-- ⚙️ Address Sanitizer: Activate the compiler's address (memory) sanitizer for the **debug build**
+- ⚙️ Address Sanitizer: Activate the address sanitizer for the **debug build**, iff the compiler has it implemented
+- ⚙️ Undefined Sanitizer: Activate the undefined sanitizer for the **debug build**, iff the compiler has it implemented
+- ⚙️ Leak Sanitizer: Activate the leak sanitizer for the **debug build**, iff the compiler has it implemented
 - ⚙️ Show detailed Information about the Compilation Time
 - ⚙️ Compiler Arguments (string array, e.g. **\[\"-flto\"\]**)
 - ⚙️ Linker Arguments (string array, e.g. **\[\"-lpthread\"\]**).
@@ -116,6 +119,14 @@ There, the compiler path, the C/C++ standard, and the included paths are **synce
 - ⚙️ Exclude Glob Pattern for the Folder Selection (string array, defaults to **["\*\*/build", "\*\*/.\*", "\*\*/.vscode",]**)
 
 ## Important Notes
+
+## Using the MSVC Compiler
+
+To use the MSVC compiler (toolchain), set the **msvcBatchPath** setting to a valid path.  
+An example path would be: **"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvarsall.bat"**.  
+Then set the **useMsvc** to true, to not use GCC/Clang tools in the current workspace.  
+If you want to stop using the MSVC compiler, just set **useMsvc** to false.  
+Note: Only the 64-bit (no cross-compiling) version of MSVC is supported.
 
 ### Constraints with Files and Folders
 
@@ -128,14 +139,6 @@ There, the compiler path, the C/C++ standard, and the included paths are **synce
 This extension does not start whenever there is a CMakeLists.txt in the workspace root directory.  
 This prevents an overloaded status bar with a lot of icons due to Microsoft's CMake extension.  
 However, the user can trigger the start-up of this extension by pressing `ctrl+alt+t`.
-
-## Using the MSVC Compiler
-
-To use the MSVC compiler (toolchain), set the **msvcBatchPath** setting to a valid path.  
-An example path would be **"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvarsall.bat"**.  
-Then set the **useMsvc** to true, to not use GCC/Clang tools in the current workspace.  
-If you want to stop using the MSVC compiler, just set **useMsvc** to false.  
-Note: Only the 64-bit (no cross-compiling) version of MSVC is supported.
 
 ## Release Notes
 

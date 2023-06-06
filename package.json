@@ -372,7 +372,19 @@
         "C_Cpp_Runner.useAddressSanitizer": {
           "type": "boolean",
           "default": false,
-          "description": "Whether to activate the address (memory) sanitizer for the debug build (Iff the compiler has implemented this).",
+          "description": "Whether to activate the address sanitizer for the debug build (Iff the compiler has it implemented).",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.useUndefinedSanitizer": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to activate the undefined sanitizer for the debug build (Iff the compiler has it implemented).",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.useLeakSanitizer": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to activate the leak sanitizer for the debug build (Iff the compiler has it implemented).",
           "scope": "resource"
         },
         "C_Cpp_Runner.showCompilationTime": {

@@ -52,6 +52,8 @@ export class SettingsProvider extends FileProvider {
   static DEFAULT_ENABLE_WARNINGS = true;
   static DEFAULT_WARNINGS_AS_ERRORS = false;
   static DEFAULT_MEMORY_SANITIZER = false;
+  static DEFAULT_UNDEFINED_SANITIZER = false;
+  static DEFAULT_LEAK_SANITIZER = false;
   static DEFAULT_SHOW_COMPILATION_TIME = false;
 
   static DEFAULT_WARNINGS_UNIX = [
@@ -122,7 +124,10 @@ export class SettingsProvider extends FileProvider {
   public warnings: string[] = SettingsProvider.DEFAULT_WARNINGS_UNIX;
   public msvcWarnings: string[] = SettingsProvider.DEFAULT_WARNINGS_MSVC;
   public useAddressSanitizer: boolean =
-    SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
+    SettingsProvider.DEFAULT_MEMORY_SANITIZER;
+  public useUndefinedSanitizer: boolean =
+    SettingsProvider.DEFAULT_UNDEFINED_SANITIZER;
+  public useLeakSanitizer: boolean = SettingsProvider.DEFAULT_LEAK_SANITIZER;
   public showCompilationTime: boolean =
     SettingsProvider.DEFAULT_SHOW_COMPILATION_TIME;
 
@@ -365,6 +370,16 @@ export class SettingsProvider extends FileProvider {
       'useAddressSanitizer',
       SettingsProvider.DEFAULT_MEMORY_SANITIZER,
     );
+    this.useUndefinedSanitizer = this.getSettingsValue(
+      settingsLocal,
+      'useUndefinedSanitizer',
+      SettingsProvider.DEFAULT_UNDEFINED_SANITIZER,
+    );
+    this.useLeakSanitizer = this.getSettingsValue(
+      settingsLocal,
+      'useLeakSanitizer',
+      SettingsProvider.DEFAULT_LEAK_SANITIZER,
+    );
 
     this.showCompilationTime = this.getSettingsValue(
       settingsLocal,
@@ -593,6 +608,14 @@ export class SettingsProvider extends FileProvider {
       'useAddressSanitizer',
       SettingsProvider.DEFAULT_MEMORY_SANITIZER,
     );
+    this.useUndefinedSanitizer = this.getGlobalSettingsValue(
+      'useUndefinedSanitizer',
+      SettingsProvider.DEFAULT_UNDEFINED_SANITIZER,
+    );
+    this.useLeakSanitizer = this.getGlobalSettingsValue(
+      'useLeakSanitizer',
+      SettingsProvider.DEFAULT_LEAK_SANITIZER,
+    );
     this.showCompilationTime = this.getGlobalSettingsValue(
       'showCompilationTime',
       SettingsProvider.DEFAULT_SHOW_COMPILATION_TIME,
@@ -623,6 +646,8 @@ export class SettingsProvider extends FileProvider {
     this.update('excludeSearch', this.excludeSearch);
 
     this.update('useAddressSanitizer', this.useAddressSanitizer);
+    this.update('useUndefinedSanitizer', this.useUndefinedSanitizer);
+    this.update('useLeakSanitizer', this.useLeakSanitizer);
     this.update('showCompilationTime', this.showCompilationTime);
   }
 

@@ -170,6 +170,14 @@ function executeBuildTaskUnixBased(
   if (useAddressSanitizer && buildMode === Builds.debug) {
     fullCompilerArgs += ' -fsanitize=address';
   }
+  const useUndefinedSanitizer = settingsProvider.useUndefinedSanitizer;
+  if (useUndefinedSanitizer && buildMode === Builds.debug) {
+    fullCompilerArgs += ' -fsanitize=undefined';
+  }
+  const useLeakSanitizer = settingsProvider.useLeakSanitizer;
+  if (useLeakSanitizer && buildMode === Builds.debug) {
+    fullCompilerArgs += ' -fsanitize=leak';
+  }
 
   const showCompilationTime = settingsProvider.showCompilationTime;
   if (showCompilationTime) {

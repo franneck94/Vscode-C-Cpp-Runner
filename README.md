@@ -29,7 +29,7 @@ Besides that, you can also select a folder by right-clicking in the context menu
 The keyboard shortcut is *ctrl+alt+g*.  
 ![TaskStatusBar](./media/ModeStatusBar.png)  
 3️⃣ Now you can build/run/debug the binary.  
-The keyboard shortcut for the building is *ctrl+b*, for debugging is *ctrl+alt+d* and for running is *ctrl+alt+r*.  
+The keyboard shortcut for the building is *ctrl+b*, for debugging is *ctrl+alt+d*, and for running is *ctrl+alt+r*.  
 ![TaskStatusBar](./media/TaskStatusBar.png)
 
 - ⚙️ Build: This task will compile all C/C++ files in the selected folder and will link them into a binary.
@@ -106,7 +106,7 @@ There, the compiler path, the C/C++ standard, and the included paths are **synce
 #### Advanced Settings
 
 - ⚙️ Address Sanitizer: Activate the compiler's address (memory) sanitizer for the **debug build**
-- ⚙️ Show detailed Information aboutthe Compilation Time
+- ⚙️ Show detailed Information about the Compilation Time
 - ⚙️ Compiler Arguments (string array, e.g. **\[\"-flto\"\]**)
 - ⚙️ Linker Arguments (string array, e.g. **\[\"-lpthread\"\]**).
   - Note: It is **expected** to prefix the arguments with the appropriate flags (e.g. -l or -L)
@@ -135,7 +135,7 @@ To use the MSVC compiler (toolchain), set the **msvcBatchPath** setting to a val
 An example path would be **"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvarsall.bat"**.  
 Then set the **useMsvc** to true, to not use GCC/Clang tools in the current workspace.  
 If you want to stop using the MSVC compiler, just set **useMsvc** to false.  
-Note: Only the 64bit (no cross-compiling) version of MSVC is supported.
+Note: Only the 64-bit (no cross-compiling) version of MSVC is supported.
 
 ## Release Notes
 

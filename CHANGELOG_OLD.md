@@ -1,4 +1,101 @@
-# Changelog Pre 2.0.0
+# Changelog Pre 4.0.0
+
+## Version 3.4.0: May 4, 2022
+
+- **Info**: Shortened the msvc commands to have a better overview of the executed command
+- **Info**: Added currently known problems list to the README
+
+## Version 3.3.0: April 14, 2022
+
+- **Info**: For debugging the internal console is now used on all operating systems
+- **Info**: Removed not working logging
+
+## Version 3.2.4: March 24, 2022
+
+- **Regression**: Fixed MSVC compiling issue
+
+## Version 3.2.3: March 22, 2022
+
+- **Bugfix**: Fixed cmd argument bugs
+- **Bugfix**: Fixed double folder entries in folder selection
+
+## Version 3.2.2: March 6, 2022
+
+- **Internal**: Removed task provider
+- **Regression**: Fixed CMD arguments bug with whitespaces
+
+## Version 3.2.1: March 5, 2022
+
+- **Regression**: Fixed problem with whitespaces in workspace dir
+
+## Version 3.2.0: March 5, 2022
+
+- **Info**: Now using relative paths for building the binary, hence the console output is shortened and more readable
+- **Bugfix**: Hotfix since the extension was not working anymore with VSCode 1.65.0
+
+## Version 3.1.1: January 31, 2022
+
+- **Info**: Updated MSVC instructions
+
+## Version 3.1.0: January 19, 2022
+
+- **Info**: Removed Makefile deactivation
+- **Info**: Updated README
+
+## Version 3.0.0: December 31, 2021
+
+- **Feature**: MSVC Compiler Support
+  - Add Compiler Commands
+  - Add Setting for MSVC Batch Path
+    - E.g.: "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvarsall.bat"
+  - MSVC Host/Target architecture is equal to current architecture
+  - Added debug config for MSVC
+  - Default warning level for MSVC is **/W4**, this will be set if MSVC "mode" is active
+  - Default C version is c17 for MSVC
+- **Info**: Removed warnings from compiler args in c_cpp_properties.json
+- **Feature**: Updated logic for excluding patterns for folder selection
+- **Feature**: Added Include pattern for folder selection
+
+## Version 2.1.1: December 21, 2021
+
+- **Bugfix**: Now passing linker args after the object files
+
+## Version 2.1.0: December 07, 2021
+
+- **Info**: Load global *C_Cpp.default.includePath* setting for the extensions *includePaths*
+- **Bugfix**: Opening a project for the first time with the C/C++ Runner extension and an already existing c_cpp_properties.json file, the compiler args are now correctly read-in.
+
+## Version 2.0.5: November 29, 2021
+
+- **Info**: Updated README
+- **Info**: Now using the internal console for debugging on Mac M1
+- **Bugfix**: Command-line arguments are now stored in a single line in launch.json's args array, thus whitespaces in the arguments are handled correctly
+
+## Version 2.0.4: November 23, 2021
+
+- **Info**: On Windows, the paths in the launch.json file are now stored with "/" instead of "\\"
+- **Info**: On Windows, the commands are now always launched in an extra CMD instance
+
+## Version 2.0.3: November 22, 2021
+
+- **Regression Bugfix**: Fixed issue with cmd arguments
+
+## Version 2.0.2: November 22, 2021
+
+- **Bugfix**: Fixed issue for ARM64 Mac user
+
+## Version 2.0.1: November 17, 2021
+
+- **Regression Bugfix**: Fixed issue for handling whitespaces in paths
+
+## Version 2.0.0: November 16, 2021
+
+- **Info**: Makefile is not used anymore and hence it is no dependency, instead all commands are directly executed with VSCode's task API
+- **Info**: Added C++23 Standard to **C_Cpp_Runner.cppStandard** setting
+- **Improvement**: Added shortcut for active folder selection **ctrl+alt+f**
+- **Improvement**: Added shortcut for build mode selection **ctrl+alt+g**
+- **Info**: Added **vadimcn.vscode-lldb** as an extension dependency since this will be used for debugging on Mac with an M1 chip
+- **Info**: Updated debug target on MacOS with an ARM chip
 
 ## Version 1.5.5: November 12, 2021
 
@@ -41,7 +138,7 @@
 
 ## Version 1.4.1: September 20, 2021
 
-- **Bugfix**: Fixed big for deactivation event with Makefile projects.
+- **Bugfix**: Fixed bug for deactivation event with Makefile projects.
 
 ## Version 1.4.0: September 18, 2021
 
@@ -52,7 +149,7 @@
 
 ## Version 1.3.0: August 28, 2021
 
-- **Improvement**: Update gcc/clang search logic, to only search in */usr/* and */usr/bin/* on Linux, and only in paths containing Cygwin, mingw, or msys on windows
+- **Improvement**: Update gcc/clang search logic, to only search in */usr/* and */usr/bin/* on Linux, and only in paths containing Cygwin, mingw, or msys on Windows
 - **Improvement**: If the build path contains whitespaces or non-extended ASCII chars the extension's experimental code runner is used instead of Makefile
 - **Bugfix**: Fixed using incorrect compiler path in the experimental setting
 
@@ -62,7 +159,7 @@
 
 ## Version 1.1.5: August 16, 2021
 
-- **Bugfix**: Fixed problem with empty arguments for executing the binary on windows with mingw compiler
+- **Bugfix**: Fixed problem with empty arguments for executing the binary on Windows with mingw compiler
 
 ## Version 1.1.4: August 15, 2021
 
@@ -75,7 +172,7 @@
 
 ## Version 1.1.2: July 26, 2021
 
-- **Bugfix**: Updated run task for windows such that the executable name has .exe file extension since this is needed for MinGW
+- **Bugfix**: Updated run task for Windows such that the executable name has .exe file extension since this is needed for MinGW
 - **Bugfix**: Fixed bug that debugging the release build was not possible
 
 ## Version 1.1.1: July 26, 2021
@@ -96,7 +193,7 @@
 
 ## Version 1.0.0: July 3, 2021
 
-- **Improvement**: Following settings are now array of strings instead of strings:
+- **Improvement**: Following settings are now an array of strings instead of strings:
   - `C_Cpp_runner.warnings`
   - `C_Cpp_runner.includePaths`
   - `C_Cpp_runner.compilerArgs`
@@ -144,7 +241,7 @@ This would now be:
 ## Version 0.16.0: June 12, 2021
 
 - **Improvement**: Updating c_cpp_properties.json and launch.json do trigger an update for settings.json. Hence, the user can edit any of these files and all other files are updated accordingly.
-- **Improvement**: Updated compiler search on windows, to speed up the process.
+- **Improvement**: Updated compiler search on Windows, to speed up the process.
 - **Info**: Added some unit tests. Will be extended in the future.
 - **Bugfix**: Several bug fixes
 
@@ -207,14 +304,14 @@ A multi-workspace setting is now fully compatible with the extension.
 ## Version 0.9.0: April 23, 2021
 
 - **Bugfix**: Makefile issue with Windows/MinGW
-- **Info**: Added try/catch clauses to all IO related functions
+- **Info**: Added try/catch clauses to all IO-related functions
 - **Info**: Added logger to log certain info/errors. Also added the setting loggingActive to activate the logger
 
 ## Version 0.8.2: April 19, 2021
 
 - **Bugfix**: Set debug console to external for lldb (MacOS) - see: [github issue](https://github.com/microsoft/vscode-cpptools/issues/5079)
 - **Bugfix**: Makefile arguments that can hold multiple values are now passed with "" instead of ''
-- **Bugfix**: In a multi-root workspace use case, the file watchers were not updated to a new selected workspace (on workspace change)
+- **Bugfix**: In a multi-root workspace use case, the file watchers were not updated to a newly selected workspace (on workspace change)
 - **Info**: In a multi-root workspace use case, the extension's settings are stored in the '.code-workspace' file
 
 ## Version 0.8.1: April 14, 2021
@@ -231,7 +328,7 @@ A multi-workspace setting is now fully compatible with the extension.
 - **Feature**: Added command `Shift+Alt+R` to toggle (hide/show) the status bar items
 - **Improvement**: Renamed launch (debug) config to 'C/C++ Runner: Debug Session'
 - **Bugfix**: Fixed bug of passing the warnings flags to the Makefile
-- **Info**: Folders with a '.' in their name are not displayed in the folder quick pick menu
+- **Info**: Folders with a '.' in their name is not displayed in the folder quick pick menu
 
 ## Version 0.7.0: April 12, 2021
 
@@ -241,7 +338,7 @@ A multi-workspace setting is now fully compatible with the extension.
 - **Bugfix**: Fixed behavior of settings/launch/c_cpp_properties.json files if these were already present without the extension entries
 - **Bugfix**: Fixed makefile issue when 'Warnings' is an empty string
 - **Info**: Updated C Standard default to c99
-- **Info**: Update README regarding context menu
+- **Info**: Update README regarding the context menu
 
 ## Version 0.6.2: April 11, 2021
 
@@ -258,7 +355,7 @@ A multi-workspace setting is now fully compatible with the extension.
 - **Feature**: Removed extension activation when CMakeLists.txt is present in the root folder of the workspace
 - **Feature**: Select the root folder automatically, if this is the only folder in the workspace
 - **Bugfix**: Corrected packing with webpack
-- **Bugfix**: settings.json is now re-created on delete event
+- **Bugfix**: settings.json is now re-created on the delete event
 - **Info**: Added Microsoft's C/C++ extension as "extensionDependencies" entry
 - **Info**: Updated README for an easier introduction
 
@@ -297,7 +394,7 @@ A multi-workspace setting is now fully compatible with the extension.
 - **Feature**: Updated task provider behavior:
   - Only provide tasks if the user has selected a working directory
   - Only run and clean tasks are provided if there is a build folder in the selected working directory
-- **Feature**: Output binary with unified name (non-dependent on the C/C++ file name), always called outDebug (.exe for windows)
+- **Feature**: Output binary with unified name (non-dependent on the C/C++ file name), always called outDebug (.exe for Windows)
 
 ## Version 0.3.0: April 1, 2021
 

@@ -3,6 +3,9 @@
 ## Version 6.0.0: June 6, 2023
 
 - **Info**: Added separate compiler warning setting for MSVC
+- **Info**: Added the following sanitizers (GCC/Clang):
+  - Undefined Sanitizer
+  - Leak Sanitizer
 
 ## Version 5.4.0: May 10, 2023
 

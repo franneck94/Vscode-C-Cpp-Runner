@@ -55,18 +55,23 @@ export class SettingsProvider extends FileProvider {
   static DEFAULT_SHOW_COMPILATION_TIME = false;
 
   static DEFAULT_WARNINGS_UNIX = [
-    '-Wall', // This enables all the warnings about constructions that some users consider questionable
+    // Baseline
+    '-Wall', // This enables all the warns about constructions that some users consider questionable
     '-Wextra', // This enables some extra warning flags that are not enabled by -Wall
-    '-Wpedantic', // Issue all the warnings demanded by strict ISO C and ISO C++
+    '-Wpedantic', // Issue all the warns demanded by strict ISO C and ISO C++
     '-Wshadow', // Whenever a local variable or type declaration shadows another variable
+    // C and C++ Warnings
     '-Wformat=2', // Check calls to printf and scanf, etc.
+    '-Wcast-align', // potential performance problem casts
     '-Wconversion', // on type conversions that may lose data
-    '-Wnull-dereference', // if a null dereference is detected
     '-Wsign-conversion', // for implicit conversions that may change the sign of an integer value
+    '-Wnull-dereference', // if a null dereference is detected
   ];
   static DEFAULT_WARNINGS_MSVC = [
-    // C and C++ Related Warnings
+    // Baseline
     '/W4',
+    '/permissive-',
+    // C and C++ Related Warnings
     '/w14242', //	'identfier': conversion from 'type1' to 'type1', possible loss of data
     '/w14287', // 'operator': unsigned/negative constant mismatch
     '/w14296', // 'operator': expression is always 'boolean_value'
@@ -74,6 +79,8 @@ export class SettingsProvider extends FileProvider {
     '/w14826', // Conversion from 'type1' to 'type_2' is sign-extended. This may cause unexpected runtime behavior
     '/w44062', //	enumerator 'identifier' in a switch of enum 'enumeration' is not handled
     '/w44242', //	'identifier': conversion from 'type1' to 'type2', possible loss of data
+    '/w14905', // wide string literal cast to 'LPSTR'
+    '/w14906', // string literal cast to 'LPWSTR'
     // C++ Related Warnings
     '/w14263', // 'function': member function does not override any base class virtual member function
     '/w44265', //	'class': class has virtual functions, but destructor is not virtual
@@ -113,6 +120,7 @@ export class SettingsProvider extends FileProvider {
   public enableWarnings: boolean = SettingsProvider.DEFAULT_ENABLE_WARNINGS;
   public warningsAsError: boolean = SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
   public warnings: string[] = SettingsProvider.DEFAULT_WARNINGS_UNIX;
+  public msvcWarnings: string[] = SettingsProvider.DEFAULT_WARNINGS_MSVC;
   public useAddressSanitizer: boolean =
     SettingsProvider.DEFAULT_WARNINGS_AS_ERRORS;
   public showCompilationTime: boolean =
@@ -301,15 +309,11 @@ export class SettingsProvider extends FileProvider {
       SettingsProvider.DEFAULT_WARNINGS_UNIX,
     );
 
-    const msvcWarnings = this.warnings.some((warning: string) =>
-      warning.includes('/'),
+    this.msvcWarnings = this.getSettingsValue(
+      settingsLocal,
+      'msvcWarnings',
+      SettingsProvider.DEFAULT_WARNINGS_MSVC,
     );
-
-    if (this.useMsvc && !msvcWarnings) {
-      this.warnings = SettingsProvider.DEFAULT_WARNINGS_MSVC;
-    } else if (!this.useMsvc && msvcWarnings) {
-      this.warnings = SettingsProvider.DEFAULT_WARNINGS_UNIX;
-    }
 
     this.warningsAsError = this.getSettingsValue(
       settingsLocal,
@@ -549,6 +553,10 @@ export class SettingsProvider extends FileProvider {
       'warnings',
       SettingsProvider.DEFAULT_WARNINGS_UNIX,
     );
+    this.msvcWarnings = this.getGlobalSettingsValue(
+      'msvcWarnings',
+      SettingsProvider.DEFAULT_WARNINGS_MSVC,
+    );
     this.enableWarnings = this.getGlobalSettingsValue(
       'enableWarnings',
       SettingsProvider.DEFAULT_ENABLE_WARNINGS,
@@ -603,6 +611,7 @@ export class SettingsProvider extends FileProvider {
     this.update('useMsvc', this.useMsvc);
 
     this.update('warnings', this.warnings);
+    this.update('msvcWarnings', this.msvcWarnings);
     this.update('enableWarnings', this.enableWarnings);
     this.update('warningsAsError', this.warningsAsError);
 

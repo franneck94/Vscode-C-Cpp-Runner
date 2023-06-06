@@ -151,27 +151,20 @@ function executeBuildTaskUnixBased(
 
   const useWarnings = settingsProvider.enableWarnings;
   const warningsAsErrors = settingsProvider.warningsAsError;
+
   let warnings: string = '';
   if (useWarnings) {
-    if (settingsProvider.useMsvc) {
-      warnings = SettingsProvider.DEFAULT_WARNINGS_UNIX.join(' ');
-    } else {
-      warnings = settingsProvider.warnings.join(' ');
-    }
+    warnings = settingsProvider.warnings.join(' ');
   }
-  if (useWarnings && warningsAsErrors) {
+  if (warningsAsErrors) {
     warnings += ' -Werror';
   }
   const includePaths = settingsProvider.includePaths;
   const compilerArgs = settingsProvider.compilerArgs;
   const linkerArgs = settingsProvider.linkerArgs;
 
-  let fullCompilerArgs = '';
+  let fullCompilerArgs = warnings;
   let fullLinkerArgs = '';
-
-  if (warnings) {
-    fullCompilerArgs += warnings;
-  }
 
   const useAddressSanitizer = settingsProvider.useAddressSanitizer;
   if (useAddressSanitizer && buildMode === Builds.debug) {
@@ -340,20 +333,16 @@ function executeBuildTaskMsvcBased(
   const warningsAsErrors = settingsProvider.warningsAsError;
   let warnings: string = '';
   if (useWarnings) {
-    warnings = settingsProvider.warnings.join(' ');
+    warnings = settingsProvider.msvcWarnings.join(' ');
   }
-  if (useWarnings && warningsAsErrors) {
-    warnings += ' -WX';
+  if (warningsAsErrors) {
+    warnings += ' /WX';
   }
   const includePaths = settingsProvider.includePaths;
   const compilerArgs = settingsProvider.compilerArgs;
   const linkerArgs = settingsProvider.linkerArgs;
 
-  let fullCompilerArgs = '';
-
-  if (useWarnings && warnings !== '') {
-    fullCompilerArgs += warnings;
-  }
+  let fullCompilerArgs = warnings;
 
   const useAddressSanitizer = settingsProvider.useAddressSanitizer;
   if (useAddressSanitizer && buildMode === Builds.debug) {

@@ -218,6 +218,24 @@
           "description": "Warnings to check by the compiler. (MSVC uses different warnings)",
           "scope": "resource"
         },
+        "C_Cpp_Runner.msvcWarnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "-Wall",
+            "-Wextra",
+            "-Wpedantic",
+            "-Wshadow",
+            "-Wformat=2",
+            "-Wconversion",
+            "-Wnull-dereference",
+            "-Wsign-conversion"
+          ],
+          "description": "Warnings to check by the compiler. (MSVC uses different warnings)",
+          "scope": "resource"
+        },
         "C_Cpp_Runner.warningsAsError": {
           "type": "boolean",
           "default": false,
@@ -354,7 +372,7 @@
         "C_Cpp_Runner.useAddressSanitizer": {
           "type": "boolean",
           "default": false,
-          "description": "Whether to activate the address (memory) sanitizer for the debug build (Make sure your compiler has implemented this).",
+          "description": "Whether to activate the address (memory) sanitizer for the debug build (Iff the compiler has implemented this).",
           "scope": "resource"
         },
         "C_Cpp_Runner.showCompilationTime": {

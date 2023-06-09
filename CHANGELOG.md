@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 6.1.0: June 9, 2023
+
+- **Info**:  Added the "_DEBUG" define for debug builds. Note that release builds have the "NDEBUG" define
+
 ## Version 6.0.0: June 6, 2023
 
 - **Info**: Added separate compiler warning setting for MSVC

@@ -12,7 +12,7 @@ You do not need to know about any compiler commands. 😎
 - 🔧 Any GCC, Clang, or MSVC compiler
 
 Make sure that your GCC/Clang compiler is either in your PATH or you have to manually set the **C/ C++ Compiler Path** setting of this extension.  
-For Windows Users with the MSVC compiler see [here](#using-the-msvc-compiler).
+For Windows Users with the **MSVC** compiler see [here](#using-the-msvc-compiler).
 
 ## Extension Activation Conditions
 

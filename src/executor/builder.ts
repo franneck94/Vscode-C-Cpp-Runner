@@ -188,7 +188,7 @@ function executeBuildTaskUnixBased(
     fullCompilerArgs += ` --std=${standard}`;
   }
   if (buildMode === Builds.debug) {
-    fullCompilerArgs += ' -g3 -O0';
+    fullCompilerArgs += ' -g3 -O0 -D_DEBUG';
   } else {
     fullCompilerArgs += ' -O3 -DNDEBUG';
   }
@@ -377,7 +377,7 @@ function executeBuildTaskMsvcBased(
   }
 
   if (buildMode === Builds.debug) {
-    fullCompilerArgs += ' /Od /Zi';
+    fullCompilerArgs += ' /Od /Zi /D_DEBUG';
   } else {
     fullCompilerArgs += ' /Ox /GL /DNDEBUG';
   }

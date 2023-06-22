@@ -90,7 +90,7 @@ You don't have to edit this file.
 
 ### Extension Settings
 
-#### Primitive settings
+#### Basic settings
 
 - ⚙️ C Compiler Path (string, defaults to \"gcc\")
 - ⚙️ C Standard (string, defaults to the compiler's default)

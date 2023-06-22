@@ -2,11 +2,11 @@
 
 ## Version 6.2.0: June 22, 2023
 
-- **Info**:  Removed the "_DEBUG" define for debug builds. This caused linker errors with MSVC
+- **Info**: Removed the "_DEBUG" define for debug builds. This caused linker errors with MSVC
 
 ## Version 6.1.0: June 9, 2023
 
-- **Info**:  Added the "_DEBUG" define for debug builds. Note that release builds have the "NDEBUG" define
+- **Info**: Added the "_DEBUG" define for debug builds. Note that release builds have the "NDEBUG" define
 
 ## Version 6.0.0: June 6, 2023
 

@@ -3,11 +3,13 @@ import * as vscode from 'vscode';
 
 import { SettingsProvider } from '../provider/settingsProvider';
 import {
-  filesInDir,
-  getLanguage,
+  gatherIncludeDirsMsvc,
+  gatherIncludeDirsUnix,
+} from '../utils/compilerUtils';
+import {
+  getAllSourceFilesInDir,
   isCppSourceFile,
   isCSourceFile,
-  isSourceFile,
   mkdirRecursive,
   pathExists,
 } from '../utils/fileUtils';
@@ -26,28 +28,10 @@ export async function executeBuildTask(
 ) {
   const appendSymbol = '&&';
 
-  let language = getLanguage(activeFolder);
-
-  let files: string[];
-  if (!singleFileBuild) {
-    files = filesInDir(activeFolder);
-  } else {
-    const currentFile = vscode.window.activeTextEditor?.document.fileName;
-    if (!currentFile) return;
-
-    language = isCppSourceFile(path.extname(currentFile))
-      ? Languages.cpp
-      : Languages.c;
-
-    const isSource = isSourceFile(path.extname(currentFile));
-    if (!isSource) return;
-
-    if (currentFile.includes(' ')) {
-      files = [path.basename(currentFile)];
-    } else {
-      files = [currentFile];
-    }
-  }
+  const { files: files, language: language } = getAllSourceFilesInDir(
+    activeFolder,
+    singleFileBuild,
+  );
 
   const buildDir = path.join(activeFolder, 'build');
   const modeDir = path.join(buildDir, `${buildMode}`);
@@ -195,19 +179,8 @@ function executeBuildTaskUnixBased(
   if (compilerArgs && compilerArgs.length > 0 && !settingsProvider.useMsvc) {
     fullCompilerArgs += ' ' + compilerArgs.join(' ');
   }
-  if (includePaths && includePaths.length > 0) {
-    for (const includePath of includePaths) {
-      if (includePath.includes('$(default)')) continue;
 
-      const hasSpace = includePath.includes(' ');
-
-      if (hasSpace) {
-        fullCompilerArgs += ` -I"${includePath}"`;
-      } else {
-        fullCompilerArgs += ` -I${includePath}`;
-      }
-    }
-  }
+  fullCompilerArgs += gatherIncludeDirsUnix(includePaths);
 
   if (linkerArgs && linkerArgs.length > 0 && !settingsProvider.useMsvc) {
     fullLinkerArgs += ' ' + linkerArgs.join(' ');
@@ -383,19 +356,7 @@ function executeBuildTaskMsvcBased(
   }
   fullCompilerArgs += ' /EHsc';
 
-  if (includePaths && includePaths.length > 0) {
-    for (const includePath of includePaths) {
-      if (includePath.includes('$(default)')) continue;
-
-      const hasSpace = includePath.includes(' ');
-
-      if (hasSpace) {
-        fullCompilerArgs += ` /I"${includePath}"`;
-      } else {
-        fullCompilerArgs += ` /I${includePath}`;
-      }
-    }
-  }
+  fullCompilerArgs += gatherIncludeDirsMsvc(includePaths);
 
   let fullLinkerArgs: string = '';
   if (linkerArgs && linkerArgs.length > 0) {

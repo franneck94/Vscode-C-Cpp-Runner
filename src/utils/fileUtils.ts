@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as JSON5 from 'json5';
 import * as minimatch from 'minimatch';
 import * as path from 'path';
+import * as vscode from 'vscode';
 
 import { JsonSettings, Languages } from './types';
 
@@ -228,4 +229,31 @@ export function getOccurenceIndicies(text: string, char: string) {
   }
 
   return indices;
+}
+
+export function getAllSourceFilesInDir(dir: string, singleFileBuild: boolean) {
+  let language = getLanguage(dir);
+
+  let files: string[] = [];
+  if (!singleFileBuild) {
+    files = filesInDir(dir);
+  } else {
+    const currentFile = vscode.window.activeTextEditor?.document.fileName;
+    if (!currentFile) return { files: [], language: language };
+
+    language = isCppSourceFile(path.extname(currentFile))
+      ? Languages.cpp
+      : Languages.c;
+
+    const isSource = isSourceFile(path.extname(currentFile));
+    if (!isSource) return { files: [], language: language };
+
+    if (currentFile.includes(' ')) {
+      files = [path.basename(currentFile)];
+    } else {
+      files = [currentFile];
+    }
+  }
+
+  return { files: files, language: language };
 }

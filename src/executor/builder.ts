@@ -191,6 +191,10 @@ function executeBuildTaskUnixBased(
   const objectFiles: string[] = [];
   const fullFileArgs: string[] = [];
 
+  const useLto =
+    settingsProvider.useLinkTimeOptimization && buildMode === Builds.release;
+  const ltoFlag = useLto ? '-flto' : '';
+
   for (const file of files) {
     const fileExtension = path.parse(file).ext;
 
@@ -211,9 +215,9 @@ function executeBuildTaskUnixBased(
 
     let fullFileArg;
     if (hasSpace) {
-      fullFileArg = `-c '${file}' -o '${objectFilePath}'`;
+      fullFileArg = `${ltoFlag} -c '${file}' -o '${objectFilePath}'`;
     } else {
-      fullFileArg = `-c ${file} -o ${objectFilePath}`;
+      fullFileArg = `${ltoFlag} -c ${file} -o ${objectFilePath}`;
     }
 
     objectFiles.push(objectFilePath);
@@ -275,7 +279,7 @@ function executeBuildTaskUnixBased(
   }
 
   if (objectFiles.length < LOWER_LIMIT_WILDARD_COMPILE) {
-    const fullObjectFileArgs = `${objectFilesStr} -o ${executablePath}`;
+    const fullObjectFileArgs = `${ltoFlag} ${objectFilesStr} -o ${executablePath}`;
     commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullObjectFileArgs}`;
   }
 
@@ -354,19 +358,27 @@ function executeBuildTaskMsvcBased(
   } else {
     fullCompilerArgs += ' /Ox /GL /DNDEBUG';
   }
+
+  if (settingsProvider.useLinkTimeOptimization && buildMode === Builds.release)
+    fullCompilerArgs += ' /LTCG';
+
   fullCompilerArgs += ' /EHsc';
 
   fullCompilerArgs += gatherIncludeDirsMsvc(includePaths);
 
   let fullLinkerArgs: string = '';
+
   if (linkerArgs && linkerArgs.length > 0) {
     fullLinkerArgs += ' ' + linkerArgs.join(' ');
   }
-  fullCompilerArgs += fullLinkerArgs;
+
+  if (fullLinkerArgs.length > 0) fullLinkerArgs = ' /link ' + fullLinkerArgs;
 
   if (compilerArgs && compilerArgs.length > 0) {
     fullCompilerArgs += ' ' + compilerArgs.join(' ');
   }
+
+  fullCompilerArgs += fullLinkerArgs;
 
   let commandLine: string = `"${settingsProvider.msvcBatchPath}" ${settingsProvider.architecture} ${appendSymbol} `;
 

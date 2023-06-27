@@ -236,7 +236,8 @@ function generateAssemblerMsvcBased(
   let commandLine: string = `"${settingsProvider.msvcBatchPath}" ${settingsProvider.architecture} ${appendSymbol} `;
 
   modeDir = modeDir.replace(activeFolder, '.');
-  const pathArgs = `/Fd${modeDir}\\ /Fa${modeDir}\\ /c\\ /FoNUL`;
+  const executablePath = activeFolder + 'main.exe';
+  const pathArgs = `/Fa${modeDir}\\ /Fd${modeDir}\\ /Fo${modeDir}\\ /Fe${executablePath}`;
 
   const assemblerFiles: string[] = [];
 

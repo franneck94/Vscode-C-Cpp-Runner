@@ -2,9 +2,9 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import {
-	pathExists,
-	replaceBackslashes,
-	rmdirRecursive,
+  pathExists,
+  replaceBackslashes,
+  rmdirRecursive,
 } from '../utils/fileUtils';
 import { Builds, OperatingSystems } from '../utils/types';
 import { getProcessExecution } from '../utils/vscodeUtils';
@@ -23,7 +23,10 @@ export async function executeCleanTask(
   let relativeModeDir = modeDir.replace(workspaceFolder, '');
   relativeModeDir = replaceBackslashes(relativeModeDir);
 
-  const commandLine = `echo Cleaning ${modeDir}...`;
+  const commandLine = `echo Cleaning ${modeDir.replace(
+    workspaceFolder,
+    '.',
+  )} ...`;
 
   if (!pathExists(modeDir)) return;
 

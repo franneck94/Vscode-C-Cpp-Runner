@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 7.0.0: June 27, 2023
+
+- **Info**: Added command to generate asembler code for currently viewed c/c++ file. Currently its only working for single file examples.
+
 ## Version 6.2.0: June 22, 2023
 
 - **Info**: Removed the "_DEBUG" define for debug builds. This caused linker errors with MSVC

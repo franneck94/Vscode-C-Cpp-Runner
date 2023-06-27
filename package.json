@@ -2,7 +2,7 @@
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
   "description": "🚀 Compile, run and debug single or multiple C/C++ files with ease. 🚀",
-  "version": "6.2.0",
+  "version": "7.0.0",
   "publisher": "franneck94",
   "license": "MIT",
   "icon": "icon.png",
@@ -128,6 +128,12 @@
       {
         "command": "C_Cpp_Runner.debugCurrentSelection",
         "title": "Debug Single File",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
+      },
+      {
+        "command": "C_Cpp_Runner.generateAssembler",
+        "title": "Generate Assembler Code",
         "when": "C_Cpp_Runner:activatedExtension",
         "category": "C/C++ Runner"
       }

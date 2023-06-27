@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
+import { generateAssemblerCode } from './executor/assemble';
 import { executeBuildTask } from './executor/builder';
 import { executeCleanTask } from './executor/cleaner';
 import { runDebugger } from './executor/debugger';
@@ -48,6 +49,7 @@ let commandDebugDisposable: vscode.Disposable | undefined;
 let commandCleanDisposable: vscode.Disposable | undefined;
 let commandArgumentDisposable: vscode.Disposable | undefined;
 let commandResetDisposable: vscode.Disposable | undefined;
+let commanAssemblerDisposable: vscode.Disposable | undefined;
 let eventConfigurationDisposable: vscode.Disposable | undefined;
 let eventRenameFilesDisposable: vscode.Disposable | undefined;
 let eventDeleteFilesDisposable: vscode.Disposable | undefined;
@@ -115,6 +117,8 @@ export function activate(context: vscode.ExtensionContext) {
   initRunStatusBar();
   initDebugStatusBar();
   initCleanStatusBar();
+
+  initAssemblerGenerator();
 
   initBuildSingleFile();
   initRunCurrentSelection();
@@ -649,6 +653,37 @@ function initDebugCurrentSelection() {
     },
   );
   extensionContext?.subscriptions.push(commandDebugCurrentSelectionDisposable);
+}
+
+function initAssemblerGenerator() {
+  if (commanAssemblerDisposable) return;
+
+  const commandName = `${EXTENSION_NAME}.generateAssembler`;
+
+  commanAssemblerDisposable = vscode.commands.registerCommand(
+    commandName,
+    async () => {
+      if (!activeFolder) {
+        initProviderBasedOnSingleFile();
+      }
+      generateAssemblerCallback();
+    },
+  );
+
+  extensionContext?.subscriptions.push(commanAssemblerDisposable);
+}
+
+async function generateAssemblerCallback() {
+  if (!activeFolder) return;
+
+  const buildDir = path.join(activeFolder, 'build');
+  const modeDir = path.join(buildDir, `${buildMode}`);
+
+  if (!pathExists(modeDir)) mkdirRecursive(modeDir);
+
+  if (!settingsProvider) return;
+
+  await generateAssemblerCode(settingsProvider, activeFolder, buildMode, true);
 }
 
 async function buildTaskCallback(singleFileBuild: boolean) {

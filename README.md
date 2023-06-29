@@ -11,15 +11,23 @@ You do not need to know about any compiler commands. 😎
 
 - 🔧 Any GCC, Clang, or MSVC compiler
 
-Make sure that your GCC/Clang compiler is either in your PATH or you have to manually set the **C/ C++ Compiler Path** setting of this extension.  
-For Windows Users with the **MSVC** compiler see [here](#using-the-msvc-compiler).
+Make sure that your GCC/Clang compiler is either in your PATH or you have to manually set the **C/ C++ Compiler** setting of this extension.  
+For Windows Users that want to use the Visual Studio **MSVC** compiler see instructions [here](#using-the-msvc-compiler).
 
 ## Extension Activation Conditions
 
-- Whenever there is a C/C++ file in the **base** directory of your workspace
+- Whenever there is a C/C++ file in the **root** directory of your workspace
 - Whenever you open a C/C++ file in your workspace
 
-## How to use: Compile **all** files in a folder
+## How to use: Compile a **single** file
+
+1️⃣ Open the C/C++ file you want to compile (build).  
+2️⃣ Select either debug or release mode for building the binary (debug is the default case).  
+3️⃣ To build the binary press **ctrl+alt+b**.  
+4️⃣ To run the binary press **ctrl+alt+r**.  
+5️⃣ To debug the binary press **ctrl+alt+d**.  
+
+## How to use: Compile **all** files in one folder
 
 1️⃣ Select the folder that contains the C/C++ files.  
 You can select the folder by the quick pick menu from the status bar.  
@@ -39,15 +47,32 @@ The keyboard shortcut for the building is *ctrl+b*, for debugging is *ctrl+alt+d
 
 *This task is a no-op if the build task was not executed previously.
 
-## How to use: Compile a **single** file
+## Basic Features
 
-1️⃣ Open the C/C++ file you want to compile (build).  
-2️⃣ Select either debug or release mode for building the binary (debug is the default case).  
-3️⃣ To build the binary press **ctrl+alt+b**.  
-4️⃣ To run the binary press **ctrl+alt+r**.  
-5️⃣ To debug the binary press **ctrl+alt+d**.  
+### Configuration
 
-## Extension Features
+The configuration settings will be stored **locally** in *".vscode/settings.json"*.  
+![FoundCompiler](./media/Settings.png)  
+
+Based on that, the local *.vscode/c_cpp_properties.json* file is created.  
+It will be used by [Microsoft's *C/C++*](https://code.visualstudio.com/docs/cpp/c-cpp-properties-schema-reference) extension for intellisense etc.  
+Note: You **don't** have to edit this file.  
+
+### Basic settings
+
+- ⚙️ C Compiler Path (string, defaults to \"gcc\")
+- ⚙️ C Standard (string, defaults to the compiler's default, e.g. "c99")
+- ⚙️ C++ Compiler Path (string, defaults to \"g++\")
+- ⚙️ C++ Standard (string, defaults to the compiler's default, e.g. "c++20")
+- ⚙️ Debugger Path (string, defaults to \"gdb\")
+- ⚙️ MSVC Batch Path (string, defaults to \"\")
+- ⚙️ Use MSVC (boolean, defaults to false)
+- ⚙️ To enable Warnings (boolean, defaults to True)
+- ⚙️ GCC/Clang Compiler Warnings (string array, e.g. "-Wall")
+- ⚙️ MSVC Compiler Warnings (string array, e.g. "\W4")
+- ⚙️ To treat Warnings as Errors (boolean, defaults to False)
+
+## Advanced Features
 
 ### Passing Commandline Arguments
 
@@ -80,41 +105,18 @@ The folder selection would change from left to right.
 
 For more information about the glob pattern see [here](https://en.wikipedia.org/wiki/Glob_(programming)#Syntax).
 
-### Configuration
+### Advanced Settings
 
-The configuration settings will be stored locally in *".vscode/settings.json"*.  
-![FoundCompiler](./media/Settings.png)  
-
-Based on the settings, the local *.vscode/c_cpp_properties.json* file is created and will be used by [Microsoft's *C/C++*](https://code.visualstudio.com/docs/cpp/c-cpp-properties-schema-reference) extension for intellisense.  
-You don't have to edit this file.  
-
-### Extension Settings
-
-#### Basic settings
-
-- ⚙️ C Compiler Path (string, defaults to \"gcc\")
-- ⚙️ C Standard (string, defaults to the compiler's default)
-- ⚙️ C++ Compiler Path (string, defaults to \"g++\")
-- ⚙️ C++ Standard (string, defaults to the compiler's default)
-- ⚙️ Debugger Path (string, defaults to \"gdb\")
-- ⚙️ MSVC Batch Path (string, defaults to \"\")
-- ⚙️ Use MSVC (boolean, defaults to false)
-- ⚙️ To enable Warnings (boolean, defaults to True)
-- ⚙️ GCC/Clang Compiler Warnings (string array)
-- ⚙️ MSVC Compiler Warnings (string array)
-- ⚙️ To treat Warnings as Errors (boolean, defaults to False)
-
-#### Advanced Settings
-
-- ⚙️ Address Sanitizer: Activate the address sanitizer for the **debug build**, iff the compiler has it implemented
-- ⚙️ Undefined Sanitizer: Activate the undefined sanitizer for the **debug build**, iff the compiler has it implemented
-- ⚙️ Leak Sanitizer: Activate the leak sanitizer for the **debug build**, iff the compiler has it implemented
+- ⚙️ Address Sanitizer: Activate the address sanitizer for the **debug build**, if the compiler has it implemented
+- ⚙️ Undefined Sanitizer: Activate the undefined sanitizer for the **debug build**, if the compiler has it implemented
+- ⚙️ Leak Sanitizer: Activate the leak sanitizer for the **debug build**, if the compiler has it implemented
 - ⚙️ Show detailed Information about the Compilation Time
-- ⚙️ Compiler Arguments (string array, e.g. **\[\"-flto\"\]**)
+- ⚙️ Use link time optimization for release builds
+- ⚙️ Compiler Arguments (string array, e.g. **\[\"-pthreads\"\]**)
 - ⚙️ Linker Arguments (string array, e.g. **\[\"-lpthread\"\]**).
-  - Note: It is **expected** to prefix the arguments with the appropriate flags (e.g. -l or -L)
+  - Note: It is **expected** to prefix the arguments with the appropriate flags (e.g. -l or -L for Gcc/Clang)
 - ⚙️ Include Paths (string array, e.g. **\[\"path/to/headers/\"\]**)
-  - Note: It is **not (!) expected** to prefix the arguments with the **-I** flag
+  - Note: It is **not (!) expected** to prefix the arguments with the **-I** or **/I** flag
 - ⚙️ Include Glob Pattern for the Folder Selection (string array, defaults to **["\*", "\*\*/\*"]**)
 - ⚙️ Exclude Glob Pattern for the Folder Selection (string array, defaults to **["\*\*/build", "\*\*/.\*", "\*\*/.vscode",]**)
 

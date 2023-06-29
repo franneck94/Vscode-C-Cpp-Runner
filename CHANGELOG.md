@@ -2,8 +2,9 @@
 
 ## Version 7.0.0: June 27, 2023
 
-- **Info**: Added command to generate asembler code for currently viewed c/c++ file. Currently its only working for single file examples
+- **Info**: Added command to generate assembler code for currently viewed c/c++ file. Currently it's only working for single-file examples
 - **Info**: Added useAddressSanitizer flag to optimize builds in release mode
+- **Info**: Refactored README.md
 
 ## Version 6.2.0: June 22, 2023
 
@@ -133,28 +134,6 @@
 - **Bugfix**: On windows gcc, the external console for debugging is true
 - **Bugfix**: Fixed issue with MIDebuggerPath on Mac with non-ARM chip
 
-## Version 4.0.3: May 24, 2022
-
-- **Info**: Updated README
-- **Regression**: Removed include paths sync with Microsoft's extension, the user should rather set the include paths settings value of this extension
-
-## Version 4.0.2: May 23, 2022
-
-- **Regression**: Fixed properties <=> settings sync bugs
-
-## Version 4.0.1: May 22, 2022
-
-- **Regression**: Fixed failing msvc compilation with multiple source files
-- **Regression**: Fixed properties <=> settings sync bug
-
-## Version 4.0.0: May 17, 2022
-
-- **Info**: Major update about the settings handling. Now, the global (default) settings are used to generate the local .vscode settings files, instead of searching for any compiler installation on your computer. If you do not set an absolute compiler path in the settings, it is expected to have the compiler in the PATH variables (like calling `gcc` in the terminal).
-- **Info**: Added boolean flag setting **useMsvc** to indicate if the user wants to use MSVC instead of GCC/Clang in the current workspace.
-- **Info**: Clang on Windows (backed by MSVC) will also use the MSVC debuggee type
-- **Info**: Updated settings.json <=> c_cpp_properties.json sync:
-  - **Only** Only syncing: C/C++ compiler path, C/C++ standard and include paths
-
 ## Older Updates
 
-- For older updates see [here](./CHANGELOG_OLD.md)
+- For updates older than one year, see [here](./CHANGELOG_OLD.md)

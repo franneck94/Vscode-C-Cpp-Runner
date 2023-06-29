@@ -404,6 +404,12 @@
           "default": true,
           "description": "Whether to output the compilation time.",
           "scope": "resource"
+        },
+        "C_Cpp_Runner.useLinkTimeOptimization": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to use LTO/IPO for release build.",
+          "scope": "resource"
         }
       }
     }

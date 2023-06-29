@@ -2,7 +2,8 @@
 
 ## Version 7.0.0: June 27, 2023
 
-- **Info**: Added command to generate asembler code for currently viewed c/c++ file. Currently its only working for single file examples.
+- **Info**: Added command to generate asembler code for currently viewed c/c++ file. Currently its only working for single file examples
+- **Info**: Added useAddressSanitizer flag to optimize builds in release mode
 
 ## Version 6.2.0: June 22, 2023
 

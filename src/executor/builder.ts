@@ -191,6 +191,10 @@ function executeBuildTaskUnixBased(
   const objectFiles: string[] = [];
   const fullFileArgs: string[] = [];
 
+  const useLto =
+    settingsProvider.useLinkTimeOptimization && buildMode === Builds.release;
+  const ltoFlag = useLto ? '-flto' : '';
+
   for (const file of files) {
     const fileExtension = path.parse(file).ext;
 
@@ -211,9 +215,9 @@ function executeBuildTaskUnixBased(
 
     let fullFileArg;
     if (hasSpace) {
-      fullFileArg = `-c '${file}' -o '${objectFilePath}'`;
+      fullFileArg = `${ltoFlag} -c '${file}' -o '${objectFilePath}'`;
     } else {
-      fullFileArg = `-c ${file} -o ${objectFilePath}`;
+      fullFileArg = `${ltoFlag} -c ${file} -o ${objectFilePath}`;
     }
 
     objectFiles.push(objectFilePath);
@@ -247,35 +251,31 @@ function executeBuildTaskUnixBased(
   }
 
   if (objectFiles.length >= LOWER_LIMIT_WILDARD_COMPILE) {
+    commandLine += `${compiler} ${fullCompilerArgs}`;
+
     if (language === Languages.cpp) {
       const has_cpp = files.some((f: string) => f.endsWith('.cpp'));
       const has_cc = files.some((f: string) => f.endsWith('.cc'));
       const has_cxx = files.some((f: string) => f.endsWith('.cxx'));
 
-      if (has_cpp && !has_cc && !has_cxx)
-        commandLine += `${compiler} ${fullCompilerArgs} *.cpp`;
-      if (!has_cpp && has_cc && !has_cxx)
-        commandLine += `${compiler} ${fullCompilerArgs} *.cc`;
-      if (!has_cpp && !has_cc && has_cxx)
-        commandLine += `${compiler} ${fullCompilerArgs} *.cxx`;
+      if (has_cpp && !has_cc && !has_cxx) commandLine += ' *.cpp';
+      if (!has_cpp && has_cc && !has_cxx) commandLine += ' *.cc';
+      if (!has_cpp && !has_cc && has_cxx) commandLine += ' *.cxx';
 
-      if (!has_cpp && has_cc && has_cxx)
-        commandLine += `${compiler} ${fullCompilerArgs} *.cc *.cxx`;
-      if (has_cpp && !has_cc && has_cxx)
-        commandLine += `${compiler} ${fullCompilerArgs} *.cpp *.cxx`;
-      if (has_cpp && has_cc && !has_cxx)
-        commandLine += `${compiler} ${fullCompilerArgs} *.cpp *.cc`;
+      if (!has_cpp && has_cc && has_cxx) commandLine += ' *.cc *.cxx';
+      if (has_cpp && !has_cc && has_cxx) commandLine += ' *.cpp *.cxx';
+      if (has_cpp && has_cc && !has_cxx) commandLine += ' *.cpp *.cc';
 
-      if (has_cpp && has_cc && has_cxx)
-        commandLine += `${compiler} ${fullCompilerArgs} *.cpp *.cc *.cxx`;
+      if (has_cpp && has_cc && has_cxx) commandLine += ' *.cpp *.cc *.cxx';
     } else {
-      commandLine += `${compiler} ${fullCompilerArgs} *.c`;
+      commandLine += ' *.c';
     }
+
     commandLine += ` -o ${executablePath}`;
   }
 
   if (objectFiles.length < LOWER_LIMIT_WILDARD_COMPILE) {
-    const fullObjectFileArgs = `${objectFilesStr} -o ${executablePath}`;
+    const fullObjectFileArgs = `${ltoFlag} ${objectFilesStr} -o ${executablePath}`;
     commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullObjectFileArgs}`;
   }
 
@@ -359,10 +359,15 @@ function executeBuildTaskMsvcBased(
   fullCompilerArgs += gatherIncludeDirsMsvc(includePaths);
 
   let fullLinkerArgs: string = '';
+
   if (linkerArgs && linkerArgs.length > 0) {
     fullLinkerArgs += ' ' + linkerArgs.join(' ');
   }
-  fullCompilerArgs += fullLinkerArgs;
+
+  if (fullLinkerArgs.length > 0) fullLinkerArgs = ' /link ' + fullLinkerArgs;
+
+  if (settingsProvider.useLinkTimeOptimization && buildMode === Builds.release)
+    fullLinkerArgs += ' /LTCG';
 
   if (compilerArgs && compilerArgs.length > 0) {
     fullCompilerArgs += ' ' + compilerArgs.join(' ');
@@ -402,34 +407,28 @@ function executeBuildTaskMsvcBased(
 
   if (objectFiles.length >= LOWER_LIMIT_WILDARD_COMPILE) {
     commandLine += ` cd ${activeFolder} &&`;
+    commandLine += `${compiler} ${fullCompilerArgs} ${fullLinkerArgs} ${pathArgs}`;
 
     if (language === Languages.cpp) {
       const has_cpp = files.some((f: string) => f.endsWith('.cpp'));
       const has_cc = files.some((f: string) => f.endsWith('.cc'));
       const has_cxx = files.some((f: string) => f.endsWith('.cxx'));
 
-      if (has_cpp && !has_cc && !has_cxx)
-        commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} *.cpp`;
-      if (!has_cpp && has_cc && !has_cxx)
-        commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} *.cc`;
-      if (!has_cpp && !has_cc && has_cxx)
-        commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} *.cxx`;
+      if (has_cpp && !has_cc && !has_cxx) commandLine += ' *.cpp';
+      if (!has_cpp && has_cc && !has_cxx) commandLine += ' *.cc';
+      if (!has_cpp && !has_cc && has_cxx) commandLine += ' *.cxx';
 
-      if (!has_cpp && has_cc && has_cxx)
-        commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} *.cc *.cxx`;
-      if (has_cpp && !has_cc && has_cxx)
-        commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} *.cpp *.cxx`;
-      if (has_cpp && has_cc && !has_cxx)
-        commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} *.cpp *.cc`;
+      if (!has_cpp && has_cc && has_cxx) commandLine += ' *.cc *.cxx';
+      if (has_cpp && !has_cc && has_cxx) commandLine += ' *.cpp *.cxx';
+      if (has_cpp && has_cc && !has_cxx) commandLine += ' *.cpp *.cc';
 
-      if (has_cpp && has_cc && has_cxx)
-        commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} *.cpp *.cc *.cxx`;
+      if (has_cpp && has_cc && has_cxx) commandLine += ' *.cpp *.cc *.cxx';
     } else {
-      commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} *.c`;
+      commandLine += ' *.c';
     }
   } else {
     commandLine += ` cd ${activeFolder} &&`;
-    commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} ${fullFileArgs}`;
+    commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} ${fullLinkerArgs} ${fullFileArgs}`;
   }
 
   if (hadSpaces) {

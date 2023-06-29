@@ -55,6 +55,7 @@ export class SettingsProvider extends FileProvider {
   static DEFAULT_UNDEFINED_SANITIZER = false;
   static DEFAULT_LEAK_SANITIZER = false;
   static DEFAULT_SHOW_COMPILATION_TIME = false;
+  static DEFAULT_USE_LTO = false;
 
   static DEFAULT_WARNINGS_UNIX = [
     // Baseline
@@ -130,6 +131,7 @@ export class SettingsProvider extends FileProvider {
   public useLeakSanitizer: boolean = SettingsProvider.DEFAULT_LEAK_SANITIZER;
   public showCompilationTime: boolean =
     SettingsProvider.DEFAULT_SHOW_COMPILATION_TIME;
+  public useLinkTimeOptimization: boolean = SettingsProvider.DEFAULT_USE_LTO;
 
   constructor(public workspaceFolder: string, public activeFolder: string) {
     super(workspaceFolder, undefined, OUTPUT_FILENAME);
@@ -386,6 +388,12 @@ export class SettingsProvider extends FileProvider {
       'showCompilationTime',
       SettingsProvider.DEFAULT_SHOW_COMPILATION_TIME,
     );
+
+    this.useLinkTimeOptimization = this.getSettingsValue(
+      settingsLocal,
+      'useLinkTimeOptimization',
+      SettingsProvider.DEFAULT_USE_LTO,
+    );
   }
 
   private getSettingsFromProperties() {
@@ -620,6 +628,10 @@ export class SettingsProvider extends FileProvider {
       'showCompilationTime',
       SettingsProvider.DEFAULT_SHOW_COMPILATION_TIME,
     );
+    this.useLinkTimeOptimization = this.getGlobalSettingsValue(
+      'useLinkTimeOptimization',
+      SettingsProvider.DEFAULT_USE_LTO,
+    );
   }
 
   private storeSettings() {
@@ -649,6 +661,7 @@ export class SettingsProvider extends FileProvider {
     this.update('useUndefinedSanitizer', this.useUndefinedSanitizer);
     this.update('useLeakSanitizer', this.useLeakSanitizer);
     this.update('showCompilationTime', this.showCompilationTime);
+    this.update('useLinkTimeOptimization', this.useLinkTimeOptimization);
   }
 
   /********************/

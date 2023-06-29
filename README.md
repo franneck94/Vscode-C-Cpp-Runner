@@ -105,6 +105,12 @@ The folder selection would change from left to right.
 
 For more information about the glob pattern see [here](https://en.wikipedia.org/wiki/Glob_(programming)#Syntax).
 
+### Generate Assembler Code
+
+When executing the command: "Generate Assembler Code".  
+There will be The assembler code generated in a **.s** file that will be in the build directory next to the executable.  
+Currently, this feature is experimental.  
+
 ### Advanced Settings
 
 - ⚙️ Address Sanitizer: Activate the address sanitizer for the **debug build**, if the compiler has it implemented

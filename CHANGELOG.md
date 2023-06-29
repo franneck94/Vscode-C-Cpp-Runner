@@ -1,6 +1,10 @@
 # C/C++ Runner Change Log
 
-## Version 7.0.0: June 27, 2023
+## Version 7.0.1: June 29, 2023
+
+- **Info**: Updated README.md
+
+## Version 7.0.0: June 29, 2023
 
 - **Info**: Added command to generate assembler code for currently viewed c/c++ file. Currently it's only working for single-file examples
 - **Info**: Added useAddressSanitizer flag to optimize builds in release mode

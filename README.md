@@ -11,13 +11,13 @@ You do not need to know about any compiler commands. 😎
 
 - 🔧 Any GCC, Clang, or MSVC compiler
 
-Make sure that your GCC/Clang compiler is either in your PATH or you have to manually set the **C/ C++ Compiler** setting of this extension.  
-For Windows Users that want to use the Visual Studio **MSVC** compiler see instructions [here](#using-the-msvc-compiler).
+Make sure that your GCC/Clang compiler is either in your [PATH](https://superuser.com/a/284351) or you have to manually set the **C/ C++ Compiler** setting of this extension.  
+For Windows Users that want to use the [Visual Studio **MSVC**](https://visualstudio.microsoft.com/) compiler see instructions [here](#using-the-msvc-compiler).
 
-## Extension Activation Conditions
+## The Extension activates when
 
-- Whenever there is a C/C++ file in the **root** directory of your workspace
-- Whenever you open a C/C++ file in your workspace
+- There is a C/C++ file in the **root** directory of your workspace
+- You open a C/C++ file in your workspace
 
 ## How to use: Compile a **single** file
 
@@ -29,7 +29,7 @@ For Windows Users that want to use the Visual Studio **MSVC** compiler see instr
 
 ## How to use: Compile **all** files in one folder
 
-1️⃣ Select the folder that contains the C/C++ files.  
+1️⃣ Select the folder that contains the C/C++ files you want to compile.  
 You can select the folder by the quick pick menu from the status bar.  
 ![TaskStatusBar](./media/FolderStatusBar.png)  
 Besides that, you can also select a folder by right-clicking in the context menu or pressing *ctrl+alt+f*.  
@@ -54,8 +54,8 @@ The keyboard shortcut for the building is *ctrl+b*, for debugging is *ctrl+alt+d
 The configuration settings will be stored **locally** in *".vscode/settings.json"*.  
 ![FoundCompiler](./media/Settings.png)  
 
-Based on that, the local *.vscode/c_cpp_properties.json* file is created.  
-It will be used by [Microsoft's *C/C++*](https://code.visualstudio.com/docs/cpp/c-cpp-properties-schema-reference) extension for intellisense etc.  
+Based on that, the local *".vscode/c_cpp_properties.json"* file is created.  
+It will be used by [Microsoft's *C/C++*](https://code.visualstudio.com/docs/cpp/c-cpp-properties-schema-reference) extension for intellisense (auto-completion etc.).  
 Note: You **don't** have to edit this file.  
 
 ### Basic settings
@@ -67,9 +67,9 @@ Note: You **don't** have to edit this file.
 - ⚙️ Debugger Path (string, defaults to \"gdb\")
 - ⚙️ MSVC Batch Path (string, defaults to \"\")
 - ⚙️ Use MSVC (boolean, defaults to false)
-- ⚙️ To enable Warnings (boolean, defaults to True)
-- ⚙️ GCC/Clang Compiler Warnings (string array, e.g. "-Wall")
-- ⚙️ MSVC Compiler Warnings (string array, e.g. "\W4")
+- ⚙️ To enable Compiler Warnings (boolean, defaults to True)
+- ⚙️ GCC/Clang [Compiler Warnings](https://clang.llvm.org/docs/DiagnosticsReference.html) (string array, e.g. "-Wall")
+- ⚙️ MSVC [Compiler Warnings](https://learn.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warnings-by-compiler-version?view=msvc-170) (string array, e.g. "\W4")
 - ⚙️ To treat Warnings as Errors (boolean, defaults to False)
 
 ## Advanced Features
@@ -77,7 +77,11 @@ Note: You **don't** have to edit this file.
 ### Passing Commandline Arguments
 
 You can pass in command-line arguments for running or debugging the binary.  
-Make sure to select the active folder beforehand, then press `ctrl+alt+a` to open the message box to type in the arguments:
+
+![Alt text](./media/cmdArgs.png)
+
+Make sure to select the active folder that should be compiled beforehand.  
+Then press `ctrl+alt+a` to open the message box to type in the arguments:
 
 ![Arguments](./media/arguments.png)
 
@@ -86,12 +90,12 @@ These arguments will be stored in the launch.json config for debugging the binar
 ![ArgumentsDebug](./media/argumentsDebug.png)
 
 If you now run or debug your program these values will be fed into **argc**/**argv**.  
-The stored arguments will be reset after selecting a new active folder.  
+Important: The stored arguments will be reset after selecting a new active folder.  
 Note: For strings with whitespaces please use \" (not single \').
 
 ### Include & Exclude Folders for Selection
 
-You can add glob patterns to include and exclude folders from the search to shorten the list.  
+You can add [glob](https://en.wikipedia.org/wiki/Glob_(programming)#Syntax) patterns to include and exclude folders from the folder selection.  
 Note: The include pattern is used before the exclude pattern.
 
 For example with the following exclude glob pattern:
@@ -103,19 +107,18 @@ The folder selection would change from left to right.
 ![ExcludePaths1](./media/excludePaths1.png)
 ![ExcludePaths2](./media/excludePaths2.png)
 
-For more information about the glob pattern see [here](https://en.wikipedia.org/wiki/Glob_(programming)#Syntax).
-
 ### Generate Assembler Code
 
 When executing the command: "Generate Assembler Code".  
-There will be The assembler code generated in a **.s** file that will be in the build directory next to the executable.  
-Currently, this feature is experimental.  
+The assembler code will be generated in a **.s** file that will be in the build directory next to the executable.  
+👷🏻 Currently, this feature is experimental and only works for single-file builds.  
 
 ### Advanced Settings
 
-- ⚙️ Address Sanitizer: Activate the address sanitizer for the **debug build**, if the compiler has it implemented
-- ⚙️ Undefined Sanitizer: Activate the undefined sanitizer for the **debug build**, if the compiler has it implemented
-- ⚙️ Leak Sanitizer: Activate the leak sanitizer for the **debug build**, if the compiler has it implemented
+- **If** the compiler has it implemented and only in **debug build**
+  - ⚙️ Activate the [address sanitizer](https://clang.llvm.org/docs/AddressSanitizer.html)
+  - ⚙️ Activate the [undefined sanitizer](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - ⚙️ Activate the [leak sanitizer](https://clang.llvm.org/docs/LeakSanitizer.html)
 - ⚙️ Show detailed Information about the Compilation Time
 - ⚙️ Use link time optimization for release builds
 - ⚙️ Compiler Arguments (string array, e.g. **\[\"-pthreads\"\]**)
@@ -130,16 +133,17 @@ Currently, this feature is experimental.
 
 ## Using the MSVC Compiler
 
-To use the MSVC compiler (toolchain), set the **msvcBatchPath** setting to a valid path.  
-An example path would be: **"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvarsall.bat"**.  
-Then set the **useMsvc** to true, to not use GCC/Clang tools in the current workspace.  
+To use the **Visual Studio MSVC** compiler, e.g. VS2022, set the **msvcBatchPath** setting to a valid path.  
+As an example installation path of the compiler:  
+**"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvarsall.bat"**.  
+Then set the **useMsvc** extension setting to true, to use MSVC and not GCC/Clang.  
 If you want to stop using the MSVC compiler, just set **useMsvc** to false.  
-Note: Only the 64-bit (no cross-compiling) version of MSVC is supported.
+⚠️ Only the 64-bit (no cross-compiling) version of MSVC is supported.
 
 ### Constraints with Files and Folders
 
-- 📝 Allowed file extensions for headers: \*.h, \*.hpp, \*.hh, \*.hxx
-- 📝 Allowed file extensions for sources: \*.c, \*.cpp, \*.cc, \*.cxx
+- 📝 File extensions for headers: \*.h, \*.hpp, \*.hh, \*.hxx
+- 📝 File extensions for sources: \*.c, \*.cpp, \*.cc, \*.cxx
 - ⚠️ Include paths with whitespaces can make the compilation fail
 
 ### CMake Projects in the Workspace Directory

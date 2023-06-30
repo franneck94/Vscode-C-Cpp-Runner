@@ -5,6 +5,7 @@ import { SettingsProvider } from '../provider/settingsProvider';
 import {
   gatherIncludeDirsMsvc,
   gatherIncludeDirsUnix,
+  GetWildcardPatterns,
 } from '../utils/compilerUtils';
 import {
   getAllSourceFilesInDir,
@@ -65,6 +66,7 @@ export async function executeBuildTask(
       modeDir,
       appendSymbol,
       executablePath,
+      singleFileBuild,
     );
   } else {
     commandLine = executeBuildTaskUnixBased(
@@ -76,6 +78,7 @@ export async function executeBuildTask(
       modeDir,
       appendSymbol,
       executablePath,
+      singleFileBuild,
     );
   }
 
@@ -121,6 +124,7 @@ function executeBuildTaskUnixBased(
   modeDir: string,
   appendSymbol: string,
   executablePath: string,
+  singleFileBuild: boolean,
 ) {
   let compiler: string | undefined;
   let standard: string | undefined;
@@ -192,7 +196,9 @@ function executeBuildTaskUnixBased(
   const fullFileArgs: string[] = [];
 
   const useLto =
-    settingsProvider.useLinkTimeOptimization && buildMode === Builds.release;
+    settingsProvider.useLinkTimeOptimization &&
+    buildMode === Builds.release &&
+    !singleFileBuild;
   const ltoFlag = useLto ? '-flto' : '';
 
   for (const file of files) {
@@ -254,19 +260,7 @@ function executeBuildTaskUnixBased(
     commandLine += `${compiler} ${fullCompilerArgs}`;
 
     if (language === Languages.cpp) {
-      const has_cpp = files.some((f: string) => f.endsWith('.cpp'));
-      const has_cc = files.some((f: string) => f.endsWith('.cc'));
-      const has_cxx = files.some((f: string) => f.endsWith('.cxx'));
-
-      if (has_cpp && !has_cc && !has_cxx) commandLine += ' *.cpp';
-      if (!has_cpp && has_cc && !has_cxx) commandLine += ' *.cc';
-      if (!has_cpp && !has_cc && has_cxx) commandLine += ' *.cxx';
-
-      if (!has_cpp && has_cc && has_cxx) commandLine += ' *.cc *.cxx';
-      if (has_cpp && !has_cc && has_cxx) commandLine += ' *.cpp *.cxx';
-      if (has_cpp && has_cc && !has_cxx) commandLine += ' *.cpp *.cc';
-
-      if (has_cpp && has_cc && has_cxx) commandLine += ' *.cpp *.cc *.cxx';
+      commandLine += GetWildcardPatterns(files);
     } else {
       commandLine += ' *.c';
     }
@@ -297,6 +291,7 @@ function executeBuildTaskMsvcBased(
   modeDir: string,
   appendSymbol: string,
   executablePath: string,
+  singleFileBuild: boolean,
 ) {
   let compiler: string | undefined;
   let standard: string | undefined;
@@ -366,7 +361,11 @@ function executeBuildTaskMsvcBased(
 
   if (fullLinkerArgs.length > 0) fullLinkerArgs = ' /link ' + fullLinkerArgs;
 
-  if (settingsProvider.useLinkTimeOptimization && buildMode === Builds.release)
+  if (
+    settingsProvider.useLinkTimeOptimization &&
+    buildMode === Builds.release &&
+    !singleFileBuild
+  )
     fullLinkerArgs += ' /LTCG';
 
   if (compilerArgs && compilerArgs.length > 0) {
@@ -407,28 +406,16 @@ function executeBuildTaskMsvcBased(
 
   if (objectFiles.length >= LOWER_LIMIT_WILDARD_COMPILE) {
     commandLine += ` cd ${activeFolder} &&`;
-    commandLine += `${compiler} ${fullCompilerArgs} ${fullLinkerArgs} ${pathArgs}`;
+    commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} ${fullLinkerArgs} `;
 
     if (language === Languages.cpp) {
-      const has_cpp = files.some((f: string) => f.endsWith('.cpp'));
-      const has_cc = files.some((f: string) => f.endsWith('.cc'));
-      const has_cxx = files.some((f: string) => f.endsWith('.cxx'));
-
-      if (has_cpp && !has_cc && !has_cxx) commandLine += ' *.cpp';
-      if (!has_cpp && has_cc && !has_cxx) commandLine += ' *.cc';
-      if (!has_cpp && !has_cc && has_cxx) commandLine += ' *.cxx';
-
-      if (!has_cpp && has_cc && has_cxx) commandLine += ' *.cc *.cxx';
-      if (has_cpp && !has_cc && has_cxx) commandLine += ' *.cpp *.cxx';
-      if (has_cpp && has_cc && !has_cxx) commandLine += ' *.cpp *.cc';
-
-      if (has_cpp && has_cc && has_cxx) commandLine += ' *.cpp *.cc *.cxx';
+      commandLine += GetWildcardPatterns(files);
     } else {
       commandLine += ' *.c';
     }
   } else {
     commandLine += ` cd ${activeFolder} &&`;
-    commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} ${fullLinkerArgs} ${fullFileArgs}`;
+    commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} ${fullFileArgs} ${fullLinkerArgs}`;
   }
 
   if (hadSpaces) {

@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 7.0.3: Jul 20, 2023
+
+- **Info**: Updated README.md
+
 ## Version 7.0.2: June 30, 2023
 
 - **Info**: Only use LTO flag when there are multiple translation units

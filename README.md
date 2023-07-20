@@ -12,7 +12,7 @@ You do not need to know about any compiler commands. 😎
 - 🔧 Any GCC, Clang, or MSVC compiler
 
 Make sure that your GCC/Clang compiler is either in your [PATH](https://superuser.com/a/284351) or you have to manually set the **C/ C++ Compiler** setting of this extension.  
-For Windows Users that want to use the [Visual Studio **MSVC**](https://visualstudio.microsoft.com/) compiler see instructions [here](#using-the-msvc-compiler).
+For Windows Users that want to use the [Visual Studio](https://visualstudio.microsoft.com/) compiler (called MSVC) see instructions [here](#using-the-msvc-compiler).
 
 ## The Extension activates when
 
@@ -71,6 +71,15 @@ Note: You **don't** have to edit this file.
 - ⚙️ GCC/Clang [Compiler Warnings](https://clang.llvm.org/docs/DiagnosticsReference.html) (string array, e.g. "-Wall")
 - ⚙️ MSVC [Compiler Warnings](https://learn.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warnings-by-compiler-version?view=msvc-170) (string array, e.g. "\W4")
 - ⚙️ To treat Warnings as Errors (boolean, defaults to False)
+
+## Using the MSVC Compiler
+
+To use the **Visual Studio MSVC** compiler, e.g. VS2022, set the **msvcBatchPath** setting to a valid path.  
+As an example installation path of the compiler:  
+**"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvarsall.bat"**.  
+Then set the **useMsvc** extension setting to true, to use MSVC and not GCC/Clang.  
+If you want to stop using the MSVC compiler, just set **useMsvc** to false.  
+⚠️ Only the 64-bit (no cross-compiling) version of MSVC is supported.
 
 ## Advanced Features
 
@@ -131,15 +140,6 @@ The assembler code will be generated in a **.s** file that will be in the build 
 
 ## Important Notes
 
-## Using the MSVC Compiler
-
-To use the **Visual Studio MSVC** compiler, e.g. VS2022, set the **msvcBatchPath** setting to a valid path.  
-As an example installation path of the compiler:  
-**"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvarsall.bat"**.  
-Then set the **useMsvc** extension setting to true, to use MSVC and not GCC/Clang.  
-If you want to stop using the MSVC compiler, just set **useMsvc** to false.  
-⚠️ Only the 64-bit (no cross-compiling) version of MSVC is supported.
-
 ### Constraints with Files and Folders
 
 - 📝 File extensions for headers: \*.h, \*.hpp, \*.hh, \*.hxx
@@ -148,7 +148,7 @@ If you want to stop using the MSVC compiler, just set **useMsvc** to false.
 
 ### CMake Projects in the Workspace Directory
 
-This extension does not start whenever there is a CMakeLists.txt in the workspace root directory.  
+The extension buttons are hidden if there is a CMakeLists.txt in the workspace root directory.  
 This prevents an overloaded status bar with a lot of icons due to Microsoft's CMake extension.  
 However, the user can trigger the start-up of this extension by pressing `ctrl+alt+t`.
 

@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 7.0.4: Jul 24, 2023
+
+- **Info**: Updated README.md
+
 ## Version 7.0.3: Jul 20, 2023
 
 - **Info**: Updated README.md

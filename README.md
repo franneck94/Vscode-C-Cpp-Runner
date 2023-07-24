@@ -1,6 +1,6 @@
 # VSCode C/C++ Runner
 
-🚀 Compile, run and debug **single** or **multiple** C/C++ files with ease. 🚀  
+🚀 Compile, run and debug [**single**](#compile-a-single-file) or [**multiple**](#compile-all-files-in-one-folder) C/C++ files with ease. 🚀  
 You do not need to know about any compiler commands. 😎
 
 ## Example
@@ -12,38 +12,38 @@ You do not need to know about any compiler commands. 😎
 - 🔧 Any GCC, Clang, or MSVC compiler
 
 Make sure that your GCC/Clang compiler is either in your [PATH](https://superuser.com/a/284351) or you have to manually set the **C/ C++ Compiler** setting of this extension.  
-For Windows Users that want to use the [Visual Studio](https://visualstudio.microsoft.com/) compiler (called MSVC) see instructions [here](#using-the-msvc-compiler).
+For Windows Users that want to use the [Visual Studio compiler](https://visualstudio.microsoft.com/) (called **MSVC**) see instructions [here](#using-the-msvc-compiler).
 
-## The Extension activates when
+## The Extension automatically activates when
 
 - There is a C/C++ file in the **root** directory of your workspace
 - You open a C/C++ file in your workspace
 
-## How to use: Compile a **single** file
+## Compile a single file
 
 1️⃣ Open the C/C++ file you want to compile (build).  
 2️⃣ Select either debug or release mode for building the binary (debug is the default case).  
 3️⃣ To build the binary press **ctrl+alt+b**.  
-4️⃣ To run the binary press **ctrl+alt+r**.  
-5️⃣ To debug the binary press **ctrl+alt+d**.  
+4️⃣ To run the binary press **ctrl+alt+r**, or you can click on the play symbol in the status bar down below.  
+5️⃣ To debug the binary press **ctrl+alt+d**, or you can click on the bug symbol in the status bar down below.  
 
-## How to use: Compile **all** files in one folder
+## Compile all files in one folder
 
 1️⃣ Select the folder that contains the C/C++ files you want to compile.  
 You can select the folder by the quick pick menu from the status bar.  
 ![TaskStatusBar](./media/FolderStatusBar.png)  
-Besides that, you can also select a folder by right-clicking in the context menu or pressing *ctrl+alt+f*.  
 2️⃣ Select either debug or release mode for building the binary (debug is the default case).  
-The keyboard shortcut is *ctrl+alt+g*.  
 ![TaskStatusBar](./media/ModeStatusBar.png)  
 3️⃣ Now you can build/run/debug the binary.  
-The keyboard shortcut for the building is *ctrl+b*, for debugging is *ctrl+alt+d*, and for running is *ctrl+alt+r*.  
 ![TaskStatusBar](./media/TaskStatusBar.png)
 
-- ⚙️ Build: This task will compile all C/C++ files in the selected folder and will link them into a binary.
-- ▶️ Run*: This task will execute the built binary.
+- ⚙️ Build: This task will compile all C/C++ files in the selected folder and will link them into a binary.  
+The shortcut is: *ctrl+alt+b*
+- ▶️ Run*: This task will execute the built binary.  
+The shortcut is: *ctrl+alt+r*
 - 🗑️ Clean*: This helper task will delete all files in the build dir.
-- 🐞 Debug*: This task will start a debugging session for the binary.
+- 🐞 Debug*: This task will start a debugging session for the binary.  
+The shortcut is: *ctrl+alt+d*
 
 *This task is a no-op if the build task was not executed previously.
 

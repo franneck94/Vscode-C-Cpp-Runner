@@ -127,6 +127,9 @@ export function activate(context: vscode.ExtensionContext) {
   initWorkspaceProvider();
   initWorkspaceDisposables();
   initEventListener();
+
+  initEditorBuildDebug();
+  initEditorBuildRun();
 }
 
 export function deactivate() {
@@ -252,6 +255,36 @@ function initEventListener() {
   initConfigurationChangeDisposable();
   initFileRenameDisposable();
   initFileDeleteDisposable();
+}
+
+function initEditorBuildDebug() {
+  extensionContext?.subscriptions.push(
+    vscode.commands.registerTextEditorCommand(
+      'C_Cpp_Runner.BuildAndDebugFile',
+      async () => {
+        const commandNameBuild = `${EXTENSION_NAME}.buildSingleFile`;
+        await vscode.commands.executeCommand(commandNameBuild);
+
+        const commandNameDebug = `${EXTENSION_NAME}.debugCurrentSelection`;
+        await vscode.commands.executeCommand(commandNameDebug);
+      },
+    ),
+  );
+}
+
+function initEditorBuildRun() {
+  extensionContext?.subscriptions.push(
+    vscode.commands.registerTextEditorCommand(
+      'C_Cpp_Runner.BuildAndRunFile',
+      async () => {
+        const commandNameBuild = `${EXTENSION_NAME}.buildSingleFile`;
+        await vscode.commands.executeCommand(commandNameBuild);
+
+        const commandNameRun = `${EXTENSION_NAME}.runCurrentSelection`;
+        await vscode.commands.executeCommand(commandNameRun);
+      },
+    ),
+  );
 }
 
 function initConfigurationChangeDisposable() {

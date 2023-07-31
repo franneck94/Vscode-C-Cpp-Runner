@@ -136,6 +136,18 @@
         "title": "Generate Assembler Code",
         "when": "C_Cpp_Runner:activatedExtension",
         "category": "C/C++ Runner"
+      },
+      {
+        "command": "C_Cpp_Runner.BuildAndDebugFile",
+        "title": "C/C++ Runner: Debug File",
+        "category": "C/C++",
+        "icon": "$(debug-alt)"
+      },
+      {
+        "command": "C_Cpp_Runner.BuildAndRunFile",
+        "title": "C/C++ Runner: Run File",
+        "category": "C/C++",
+        "icon": "$(run)"
       }
     ],
     "keybindings": [
@@ -193,6 +205,16 @@
           "command": "C_Cpp_Runner.folderContextMenu",
           "when": "explorerResourceIsFolder",
           "group": "cCppRunnerGroup@1"
+        }
+      ],
+      "editor/title/run": [
+        {
+          "command": "C_Cpp_Runner.BuildAndDebugFile",
+          "when": "editorLangId =~ /^(c|(cuda-)?cpp)$/"
+        },
+        {
+          "command": "C_Cpp_Runner.BuildAndRunFile",
+          "when": "editorLangId =~ /^(c|(cuda-)?cpp)$/"
         }
       ]
     },

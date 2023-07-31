@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 7.1.0: Jul 31, 2023
+
+- **Info**: Added Run and Debug Single File Action to the play button in the upper right corner
+
 ## Version 7.0.4: Jul 24, 2023
 
 - **Info**: Updated README.md

@@ -11,6 +11,7 @@ import {
   getAllSourceFilesInDir,
   isCppSourceFile,
   isCSourceFile,
+  isCudaSourceFile,
   mkdirRecursive,
   pathExists,
 } from '../utils/fileUtils';
@@ -20,6 +21,16 @@ import { getProcessExecution } from '../utils/vscodeUtils';
 const EXTENSION_NAME = 'C_Cpp_Runner';
 
 const LOWER_LIMIT_WILDARD_COMPILE = 7;
+
+function isNonMatchingSourceFile(language: Languages, fileExtension: string) {
+  if (language === Languages.c && !isCSourceFile(fileExtension)) {
+    return true;
+  } else if (language === Languages.cpp && !isCppSourceFile(fileExtension)) {
+    return true;
+  } else if (language === Languages.cuda && !isCudaSourceFile(fileExtension)) {
+    return true;
+  }
+}
 
 export async function executeBuildTask(
   settingsProvider: SettingsProvider,
@@ -55,7 +66,8 @@ export async function executeBuildTask(
   let commandLine: string | undefined;
   if (
     operatingSystem === OperatingSystems.windows &&
-    settingsProvider.useMsvc
+    settingsProvider.useMsvc &&
+    language !== Languages.cuda
   ) {
     commandLine = executeBuildTaskMsvcBased(
       settingsProvider,
@@ -68,7 +80,7 @@ export async function executeBuildTask(
       executablePath,
       singleFileBuild,
     );
-  } else {
+  } else if (language !== Languages.cuda) {
     commandLine = executeBuildTaskUnixBased(
       settingsProvider,
       activeFolder,
@@ -79,6 +91,17 @@ export async function executeBuildTask(
       appendSymbol,
       executablePath,
       singleFileBuild,
+    );
+  } else {
+    commandLine = executeBuildCudaTaskUnixBased(
+      settingsProvider,
+      activeFolder,
+      buildMode,
+      language,
+      files,
+      modeDir,
+      appendSymbol,
+      executablePath,
     );
   }
 
@@ -204,11 +227,7 @@ function executeBuildTaskUnixBased(
   for (const file of files) {
     const fileExtension = path.parse(file).ext;
 
-    if (language === Languages.c && !isCSourceFile(fileExtension)) {
-      continue;
-    } else if (language === Languages.cpp && !isCppSourceFile(fileExtension)) {
-      continue;
-    }
+    if (isNonMatchingSourceFile(language, fileExtension)) continue;
 
     const hasSpace = file.includes(' ');
     const fileBaseName = path.parse(file).name.replace(' ', '');
@@ -270,6 +289,133 @@ function executeBuildTaskUnixBased(
 
   if (objectFiles.length < LOWER_LIMIT_WILDARD_COMPILE) {
     const fullObjectFileArgs = `${ltoFlag} ${objectFilesStr} -o ${executablePath}`;
+    commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullObjectFileArgs}`;
+  }
+
+  if (fullLinkerArgs && fullLinkerArgs !== '') {
+    commandLine += fullLinkerArgs;
+  }
+
+  commandLine = commandLine.replace('  ', ' ');
+
+  return commandLine;
+}
+
+function executeBuildCudaTaskUnixBased(
+  settingsProvider: SettingsProvider,
+  activeFolder: string,
+  buildMode: Builds,
+  language: Languages,
+  files: string[],
+  modeDir: string,
+  appendSymbol: string,
+  executablePath: string,
+) {
+  const compiler = 'nvcc';
+  const standard =
+    settingsProvider.cppStandard !== '' ? settingsProvider.cppStandard : '';
+
+  const includePaths = settingsProvider.includePaths;
+  const compilerArgs = settingsProvider.compilerArgs;
+  const linkerArgs = settingsProvider.linkerArgs;
+
+  let fullCompilerArgs = '';
+  let fullLinkerArgs = '';
+
+  if (standard) {
+    fullCompilerArgs += ` --std=${standard}`;
+  }
+  if (buildMode === Builds.debug) {
+    fullCompilerArgs += ' -O0';
+  } else {
+    fullCompilerArgs += ' -Xptxas -O3';
+  }
+  if (compilerArgs && compilerArgs.length > 0 && !settingsProvider.useMsvc) {
+    fullCompilerArgs += ' ' + compilerArgs.join(' ');
+  }
+
+  fullCompilerArgs += gatherIncludeDirsUnix(includePaths);
+
+  if (linkerArgs && linkerArgs.length > 0 && !settingsProvider.useMsvc) {
+    fullLinkerArgs += ' ' + linkerArgs.join(' ');
+  }
+
+  let commandLine: string = '';
+
+  const objectFiles: string[] = [];
+  const fullFileArgs: string[] = [];
+
+  const operatingSystem = settingsProvider.operatingSystem;
+  for (const file of files) {
+    const fileExtension = path.parse(file).ext;
+
+    if (isNonMatchingSourceFile(language, fileExtension)) continue;
+
+    const hasSpace = file.includes(' ');
+    const fileBaseName = path.parse(file).name.replace(' ', '');
+    modeDir = modeDir.replace(activeFolder, '');
+
+    let objectFilePath: string;
+    if (operatingSystem === OperatingSystems.windows) {
+      objectFilePath = path.join(modeDir, fileBaseName + '.obj');
+    } else {
+      objectFilePath = path.join(modeDir, fileBaseName + '.o');
+    }
+    if (!objectFilePath.startsWith('.')) {
+      objectFilePath = '.' + objectFilePath;
+    }
+
+    let fullFileArg;
+    if (hasSpace) {
+      fullFileArg = ` -c '${file}' -o '${objectFilePath}'`;
+    } else {
+      fullFileArg = ` -c ${file} -o ${objectFilePath}`;
+    }
+
+    objectFiles.push(objectFilePath);
+    fullFileArgs.push(fullFileArg);
+  }
+
+  let idx = 0;
+  if (objectFiles.length < LOWER_LIMIT_WILDARD_COMPILE) {
+    for (const fullFileArg of fullFileArgs) {
+      if (idx === 0) {
+        commandLine += `${compiler} ${fullCompilerArgs} ${fullFileArg}`;
+      } else {
+        commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullFileArg}`;
+      }
+      idx++;
+    }
+  }
+
+  // Exe task
+  let objectFilesStr: string = '';
+  for (const objectfile of objectFiles) {
+    if (objectfile.includes(' ')) objectFilesStr += ` "${objectfile}"`;
+    else objectFilesStr += ` ${objectfile}`;
+  }
+
+  if (objectFilesStr === '') return;
+
+  executablePath = executablePath.replace(activeFolder, '');
+  if (!executablePath.startsWith('.')) {
+    executablePath = '.' + executablePath;
+  }
+
+  if (objectFiles.length >= LOWER_LIMIT_WILDARD_COMPILE) {
+    commandLine += `${compiler} ${fullCompilerArgs}`;
+
+    if (language === Languages.cpp) {
+      commandLine += GetWildcardPatterns(files);
+    } else {
+      commandLine += ' *.c';
+    }
+
+    commandLine += ` -o ${executablePath}`;
+  }
+
+  if (objectFiles.length < LOWER_LIMIT_WILDARD_COMPILE) {
+    const fullObjectFileArgs = ` ${objectFilesStr} -o ${executablePath}`;
     commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullObjectFileArgs}`;
   }
 
@@ -384,11 +530,7 @@ function executeBuildTaskMsvcBased(
   for (const file of files) {
     const fileExtension = path.parse(file).ext;
 
-    if (language === Languages.c && !isCSourceFile(fileExtension)) {
-      continue;
-    } else if (language === Languages.cpp && !isCppSourceFile(fileExtension)) {
-      continue;
-    }
+    if (isNonMatchingSourceFile(language, fileExtension)) continue;
 
     objectFiles.push(file);
 

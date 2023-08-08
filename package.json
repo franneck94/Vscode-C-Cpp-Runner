@@ -44,7 +44,8 @@
     "workspaceContains:*.hxx",
     "workspaceContains:*.cxx",
     "workspaceContains:*.hpp",
-    "workspaceContains:*.cpp"
+    "workspaceContains:*.cpp",
+    "workspaceContains:*.cu"
   ],
   "main": "./dist/main",
   "contributes": {

@@ -11,7 +11,7 @@ You do not need to know about any compiler commands. 😎
 
 - 🔧 Any GCC, Clang, or MSVC compiler
 
-Make sure that your GCC/Clang compiler is either in your [PATH](https://superuser.com/a/284351) or you have to manually set the **C/ C++ Compiler** setting of this extension.  
+Make sure that your GCC/Clang compiler is either in your [PATH](https://superuser.com/a/284351) or you have to manually set the **C/C++ Compiler** setting of this extension.  
 For Windows Users that want to use the [Visual Studio compiler](https://visualstudio.microsoft.com/) (called **MSVC**) see instructions [here](#using-the-msvc-compiler).
 
 ## The Extension automatically activates when
@@ -24,26 +24,23 @@ For Windows Users that want to use the [Visual Studio compiler](https://visualst
 1️⃣ Open the C/C++ file you want to compile (build).  
 2️⃣ Select either debug or release mode for building the binary (debug is the default case).  
 3️⃣ To build the binary press **ctrl+alt+b**.  
-4️⃣ To run the binary press **ctrl+alt+r**, or you can click on the play symbol in the status bar down below.  
-5️⃣ To debug the binary press **ctrl+alt+d**, or you can click on the bug symbol in the status bar down below.  
+4️⃣ To run the binary press **ctrl+alt+r**, or you can click on the play icon in the status bar down below.  
+5️⃣ To debug the binary press **ctrl+alt+d**, or you can click on the bug icon in the status bar down below.  
 
 ## Compile all files in one folder
 
 1️⃣ Select the folder that contains the C/C++ files you want to compile.  
 You can select the folder by the quick pick menu from the status bar.  
 ![TaskStatusBar](./media/FolderStatusBar.png)  
-2️⃣ Select either debug or release mode for building the binary (debug is the default case).  
+2️⃣ Optional: Select either debug or release mode for building the binary (debug is the default case).  
 ![TaskStatusBar](./media/ModeStatusBar.png)  
 3️⃣ Now you can build/run/debug the binary.  
 ![TaskStatusBar](./media/TaskStatusBar.png)
 
 - ⚙️ Build: This task will compile all C/C++ files in the selected folder and will link them into a binary.  
-The shortcut is: *ctrl+alt+b*
 - ▶️ Run*: This task will execute the built binary.  
-The shortcut is: *ctrl+alt+r*
 - 🗑️ Clean*: This helper task will delete all files in the build dir.
 - 🐞 Debug*: This task will start a debugging session for the binary.  
-The shortcut is: *ctrl+alt+d*
 
 *This task is a no-op if the build task was not executed previously.
 
@@ -57,6 +54,7 @@ The configuration settings will be stored **locally** in *".vscode/settings.json
 Based on that, the local *".vscode/c_cpp_properties.json"* file is created.  
 It will be used by [Microsoft's *C/C++*](https://code.visualstudio.com/docs/cpp/c-cpp-properties-schema-reference) extension for intellisense (auto-completion etc.).  
 Note: You **don't** have to edit this file.  
+Some commands have also a keyboard shortcut. For more info see in the **Features Contributing** section.
 
 ### Basic settings
 
@@ -118,9 +116,9 @@ The folder selection would change from left to right.
 
 ### Generate Assembler Code
 
-When executing the command: "Generate Assembler Code".  
+When executing the command: **Generate Assembler Code**.  
 The assembler code will be generated in a **.s** file that will be in the build directory next to the executable.  
-👷🏻 Currently, this feature is experimental and only works for single-file builds.  
+👷🏻 Note: Currently, this feature is experimental and only works for single-file builds.  
 
 ### Advanced Settings
 
@@ -150,7 +148,7 @@ The assembler code will be generated in a **.s** file that will be in the build 
 
 The extension buttons are hidden if there is a CMakeLists.txt in the workspace root directory.  
 This prevents an overloaded status bar with a lot of icons due to Microsoft's CMake extension.  
-However, the user can trigger the start-up of this extension by pressing `ctrl+alt+t`.
+However, the user can trigger the start-up of this extension by executing the command: **Toggle extension buttons in status bar**.
 
 ## Release Notes
 

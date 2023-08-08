@@ -1,6 +1,7 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
+#include <iostream>
 #include <stdlib.h>
 
 #define N 10000000
@@ -39,6 +40,8 @@ int main()
     cudaFree(d_b);
     free(a);
     free(b);
+
+    std::cout << "Test\n";
 
     return 0;
 }

@@ -84,9 +84,15 @@ export function isCudaSourceFile(fileExtLower: string) {
 
 export function getLanguage(dir: string) {
   const files = filesInDir(dir);
+
+  const anyCudaFile = files.some((file) =>
+    isCudaSourceFile(path.extname(file)),
+  );
   const anyCppFile = files.some((file) => isCppSourceFile(path.extname(file)));
 
-  if (anyCppFile) {
+  if (anyCudaFile) {
+    return Languages.cuda;
+  } else if (anyCppFile) {
     return Languages.cpp;
   } else {
     return Languages.c;

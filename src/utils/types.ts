@@ -44,6 +44,7 @@ export class Task extends vscode.Task {
 export enum Languages {
   c = 'C',
   cpp = 'Cpp',
+  cuda = 'Cuda',
 }
 
 export enum CompilerSystems {

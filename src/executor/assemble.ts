@@ -7,6 +7,7 @@ import {
   getAllSourceFilesInDir,
   isCppSourceFile,
   isCSourceFile,
+  isCudaSourceFile,
   mkdirRecursive,
   pathExists,
 } from '../utils/fileUtils';
@@ -143,6 +144,8 @@ function generateAssemblerUnixBased(
       continue;
     } else if (language === Languages.cpp && !isCppSourceFile(fileExtension)) {
       continue;
+    } else if (language === Languages.cuda) {
+      continue;
     }
 
     const hasSpace = file.includes(' ');
@@ -248,6 +251,8 @@ function generateAssemblerMsvcBased(
     if (language === Languages.c && !isCSourceFile(fileExtension)) {
       continue;
     } else if (language === Languages.cpp && !isCppSourceFile(fileExtension)) {
+      continue;
+    } else if (language === Languages.cuda) {
       continue;
     }
 

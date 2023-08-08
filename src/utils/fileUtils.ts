@@ -43,7 +43,11 @@ export function isSourceFile(fileExt: string) {
     return false;
   }
 
-  if (!(isCSourceFile(fileExtLower) || isCppSourceFile(fileExtLower))) {
+  if (
+    !isCSourceFile(fileExtLower) &&
+    !isCppSourceFile(fileExtLower) &&
+    !isCudaSourceFile(fileExtLower)
+  ) {
     return false;
   }
 
@@ -71,6 +75,11 @@ export function isCppSourceFile(fileExtLower: string) {
 export function isCSourceFile(fileExtLower: string) {
   fileExtLower = addFileExtensionDot(fileExtLower);
   return fileExtLower === '.c';
+}
+
+export function isCudaSourceFile(fileExtLower: string) {
+  fileExtLower = addFileExtensionDot(fileExtLower);
+  return fileExtLower === '.cu';
 }
 
 export function getLanguage(dir: string) {
@@ -241,9 +250,13 @@ export function getAllSourceFilesInDir(dir: string, singleFileBuild: boolean) {
     const currentFile = vscode.window.activeTextEditor?.document.fileName;
     if (!currentFile) return { files: [], language: language };
 
-    language = isCppSourceFile(path.extname(currentFile))
-      ? Languages.cpp
-      : Languages.c;
+    if (isCppSourceFile(path.extname(currentFile))) {
+      language = Languages.cpp;
+    } else if (isCSourceFile(path.extname(currentFile))) {
+      language = Languages.c;
+    } else {
+      language = Languages.cuda;
+    }
 
     const isSource = isSourceFile(path.extname(currentFile));
     if (!isSource) return { files: [], language: language };

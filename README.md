@@ -1,6 +1,6 @@
 # VSCode C/C++ Runner
 
-🚀 Compile, run and debug [**single**](#compile-a-single-file) or [**multiple**](#compile-all-files-in-one-folder) C/C++ files with ease. 🚀  
+🚀 Compile, run and debug [**single**](#compile-a-single-file) or [**multiple**](#compile-all-files-in-one-folder) C/C++/Cuda files with ease. 🚀  
 You do not need to know about any compiler commands. 😎
 
 ## Example
@@ -9,10 +9,11 @@ You do not need to know about any compiler commands. 😎
 
 ## Software Requirements
 
-- 🔧 Any GCC, Clang, or MSVC compiler
+- 🔧 Any GCC, Clang, MSVC or Cuda NVCC compiler
 
 Make sure that your GCC/Clang compiler is either in your [PATH](https://superuser.com/a/284351) or you have to manually set the **C/C++ Compiler** setting of this extension.  
-For Windows Users that want to use the [Visual Studio compiler](https://visualstudio.microsoft.com/) (called **MSVC**) see instructions [here](#using-the-msvc-compiler).
+For Windows Users that want to use the [Visual Studio compiler](https://visualstudio.microsoft.com/) (called **MSVC**) see instructions [here](#using-the-msvc-compiler).  
+For Cuda code the **NVCC** Compiler will be automatically called.
 
 ## The Extension automatically activates when
 

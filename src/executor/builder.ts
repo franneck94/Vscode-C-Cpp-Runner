@@ -93,7 +93,7 @@ export async function executeBuildTask(
       singleFileBuild,
     );
   } else {
-    commandLine = executeBuildCudaTaskUnixBased(
+    commandLine = executeCudaBuildTask(
       settingsProvider,
       activeFolder,
       buildMode,
@@ -301,7 +301,7 @@ function executeBuildTaskUnixBased(
   return commandLine;
 }
 
-function executeBuildCudaTaskUnixBased(
+function executeCudaBuildTask(
   settingsProvider: SettingsProvider,
   activeFolder: string,
   buildMode: Builds,
@@ -322,13 +322,18 @@ function executeBuildCudaTaskUnixBased(
   let fullCompilerArgs = '';
   let fullLinkerArgs = '';
 
+  const showCompilationTime = settingsProvider.showCompilationTime;
+  if (showCompilationTime) {
+    fullCompilerArgs += ' --time -';
+  }
+
   if (standard) {
     fullCompilerArgs += ` --std=${standard}`;
   }
   if (buildMode === Builds.debug) {
-    fullCompilerArgs += ' -O0';
+    fullCompilerArgs += ' -g -O0';
   } else {
-    fullCompilerArgs += ' -Xptxas -O3';
+    fullCompilerArgs += ' -O3';
   }
   if (compilerArgs && compilerArgs.length > 0 && !settingsProvider.useMsvc) {
     fullCompilerArgs += ' ' + compilerArgs.join(' ');
@@ -345,7 +350,11 @@ function executeBuildCudaTaskUnixBased(
   const objectFiles: string[] = [];
   const fullFileArgs: string[] = [];
 
+  const useLto =
+    settingsProvider.useLinkTimeOptimization && buildMode === Builds.release;
+  const ltoFlag = useLto ? '--lto' : '';
   const operatingSystem = settingsProvider.operatingSystem;
+
   for (const file of files) {
     const fileExtension = path.parse(file).ext;
 
@@ -367,9 +376,9 @@ function executeBuildCudaTaskUnixBased(
 
     let fullFileArg;
     if (hasSpace) {
-      fullFileArg = ` -c '${file}' -o '${objectFilePath}'`;
+      fullFileArg = `${ltoFlag} -c '${file}' -o '${objectFilePath}'`;
     } else {
-      fullFileArg = ` -c ${file} -o ${objectFilePath}`;
+      fullFileArg = `${ltoFlag} -c ${file} -o ${objectFilePath}`;
     }
 
     objectFiles.push(objectFilePath);
@@ -415,7 +424,7 @@ function executeBuildCudaTaskUnixBased(
   }
 
   if (objectFiles.length < LOWER_LIMIT_WILDARD_COMPILE) {
-    const fullObjectFileArgs = ` ${objectFilesStr} -o ${executablePath}`;
+    const fullObjectFileArgs = `${ltoFlag} ${objectFilesStr} -o ${executablePath}`;
     commandLine += ` ${appendSymbol} ${compiler} ${fullCompilerArgs} ${fullObjectFileArgs}`;
   }
 

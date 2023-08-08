@@ -1,5 +1,10 @@
 # C/C++ Runner Change Log
 
+## Version 8.1.0: Aug 08, 2023
+
+- **Info**: Added LTO for Cuda Code
+- **Info**: Added Compile Time Info for Cuda Code
+
 ## Version 8.0.0: Aug 08, 2023
 
 - **Info**: Added the ability to compile Cuda (.cu) code with the Cuda NVCC compiler

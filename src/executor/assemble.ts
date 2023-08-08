@@ -7,7 +7,6 @@ import {
   getAllSourceFilesInDir,
   isCppSourceFile,
   isCSourceFile,
-  isCudaSourceFile,
   mkdirRecursive,
   pathExists,
 } from '../utils/fileUtils';

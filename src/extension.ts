@@ -720,7 +720,14 @@ async function generateAssemblerCallback() {
 }
 
 async function buildTaskCallback(singleFileBuild: boolean) {
-  if (!activeFolder) return;
+  if (!activeFolder) {
+    const currentFile = vscode.window.activeTextEditor?.document.fileName;
+    if (!currentFile) return;
+    const currentFolder = path.dirname(currentFile);
+
+    activeFolder = currentFolder;
+    updateFolderData();
+  }
 
   const buildDir = path.join(activeFolder, 'build');
   const modeDir = path.join(buildDir, `${buildMode}`);
@@ -738,12 +745,22 @@ async function buildTaskCallback(singleFileBuild: boolean) {
 }
 
 async function runTaskCallback() {
-  if (!activeFolder) return;
+  if (!activeFolder) {
+    const currentFile = vscode.window.activeTextEditor?.document.fileName;
+    if (!currentFile) return;
+    const currentFolder = path.dirname(currentFile);
+
+    activeFolder = currentFolder;
+    updateFolderData();
+  }
 
   const buildDir = path.join(activeFolder, 'build');
   const modeDir = path.join(buildDir, `${buildMode}`);
 
-  if (!pathExists(modeDir)) return;
+  if (!pathExists(modeDir)) {
+    vscode.window.showErrorMessage('The executable is not yet built.');
+    return;
+  }
 
   if (!settingsProvider) {
     return;
@@ -776,8 +793,24 @@ async function cleanTaskCallback() {
 }
 
 function debugTaskCallback() {
-  if (!activeFolder) return;
   if (!workspaceFolder) return;
+
+  if (!activeFolder) {
+    const currentFile = vscode.window.activeTextEditor?.document.fileName;
+    if (!currentFile) return;
+    const currentFolder = path.dirname(currentFile);
+
+    activeFolder = currentFolder;
+    updateFolderData();
+  }
+
+  const buildDir = path.join(activeFolder, 'build');
+  const modeDir = path.join(buildDir, `${buildMode}`);
+
+  if (!pathExists(modeDir)) {
+    vscode.window.showErrorMessage('The executable is not yet built.');
+    return;
+  }
 
   runDebugger(activeFolder, workspaceFolder, buildMode);
 }

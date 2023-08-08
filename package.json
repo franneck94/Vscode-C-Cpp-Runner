@@ -2,7 +2,7 @@
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
   "description": "🚀 Compile, run and debug single or multiple C/C++ files with ease. 🚀",
-  "version": "7.1.0",
+  "version": "8.0.0",
   "publisher": "franneck94",
   "license": "MIT",
   "icon": "icon.png",
@@ -11,7 +11,7 @@
     "theme": "dark"
   },
   "engines": {
-    "vscode": "^1.78.0"
+    "vscode": "^1.79.0"
   },
   "categories": [
     "Programming Languages",
@@ -104,7 +104,7 @@
       },
       {
         "command": "C_Cpp_Runner.toggleExtensionState",
-        "title": "Activate/Deactivate the extension",
+        "title": "Toggle extension buttons in status bar",
         "category": "C/C++ Runner"
       },
       {
@@ -152,26 +152,9 @@
     ],
     "keybindings": [
       {
-        "command": "C_Cpp_Runner.toggleExtensionState",
-        "key": "ctrl+alt+t",
-        "mac": "ctrl+alt+t"
-      },
-      {
-        "command": "C_Cpp_Runner.selectFolder",
-        "key": "ctrl+alt+f",
-        "mac": "ctrl+alt+f",
-        "when": "C_Cpp_Runner:activatedExtension"
-      },
-      {
-        "command": "C_Cpp_Runner.selectMode",
-        "key": "ctrl+alt+g",
-        "mac": "ctrl+alt+g",
-        "when": "C_Cpp_Runner:activatedExtension"
-      },
-      {
         "command": "C_Cpp_Runner.buildFolder",
-        "key": "ctrl+b",
-        "mac": "ctrl+b",
+        "key": "ctrl+k b",
+        "mac": "ctrl+k b",
         "when": "C_Cpp_Runner:activatedExtension"
       },
       {

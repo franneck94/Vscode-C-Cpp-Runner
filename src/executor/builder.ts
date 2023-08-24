@@ -25,6 +25,8 @@ const LOWER_LIMIT_WILDARD_COMPILE = 7;
 function getFileArgs(file: string, ltoFlag: string, objectFilePath: string) {
   const hasSpace = file.includes(' ');
   const hasAmpersand = file.includes('&');
+  if (hasAmpersand) file = file.replace('&', '&');
+  if (hasAmpersand) objectFilePath = objectFilePath.replace('&', '&');
   if (hasSpace) return `${ltoFlag} -c '${file}' -o '${objectFilePath}'`;
   return `${ltoFlag} -c ${file} -o ${objectFilePath}`;
 }

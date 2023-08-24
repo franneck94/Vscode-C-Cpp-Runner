@@ -22,6 +22,14 @@ const EXTENSION_NAME = 'C_Cpp_Runner';
 
 const LOWER_LIMIT_WILDARD_COMPILE = 7;
 
+function getFileArgs(file: string, ltoFlag: string, objectFilePath: string) {
+  const hasSpace = file.includes(' ');
+  const hasAmpersand = file.includes('&');
+  if (hasSpace || hasAmpersand)
+    return `${ltoFlag} -c '${file}' -o '${objectFilePath}'`;
+  return `${ltoFlag} -c ${file} -o ${objectFilePath}`;
+}
+
 function isNonMatchingSourceFile(language: Languages, fileExtension: string) {
   if (language === Languages.c && !isCSourceFile(fileExtension)) {
     return true;
@@ -229,7 +237,6 @@ function executeBuildTaskUnixBased(
 
     if (isNonMatchingSourceFile(language, fileExtension)) continue;
 
-    const hasSpace = file.includes(' ');
     const fileBaseName = path.parse(file).name.replace(' ', '');
     modeDir = modeDir.replace(activeFolder, '');
 
@@ -238,12 +245,7 @@ function executeBuildTaskUnixBased(
       objectFilePath = '.' + objectFilePath;
     }
 
-    let fullFileArg;
-    if (hasSpace) {
-      fullFileArg = `${ltoFlag} -c '${file}' -o '${objectFilePath}'`;
-    } else {
-      fullFileArg = `${ltoFlag} -c ${file} -o ${objectFilePath}`;
-    }
+    const fullFileArg = getFileArgs(file, ltoFlag, objectFilePath);
 
     objectFiles.push(objectFilePath);
     fullFileArgs.push(fullFileArg);
@@ -360,7 +362,6 @@ function executeCudaBuildTask(
 
     if (isNonMatchingSourceFile(language, fileExtension)) continue;
 
-    const hasSpace = file.includes(' ');
     const fileBaseName = path.parse(file).name.replace(' ', '');
     modeDir = modeDir.replace(activeFolder, '');
 
@@ -374,12 +375,7 @@ function executeCudaBuildTask(
       objectFilePath = '.' + objectFilePath;
     }
 
-    let fullFileArg;
-    if (hasSpace) {
-      fullFileArg = `${ltoFlag} -c '${file}' -o '${objectFilePath}'`;
-    } else {
-      fullFileArg = `${ltoFlag} -c ${file} -o ${objectFilePath}`;
-    }
+    const fullFileArg = getFileArgs(file, ltoFlag, objectFilePath);
 
     objectFiles.push(objectFilePath);
     fullFileArgs.push(fullFileArg);
@@ -544,7 +540,6 @@ function executeBuildTaskMsvcBased(
     objectFiles.push(file);
 
     const hasSpace = file.includes(' ');
-
     if (hasSpace) {
       fullFileArgs += ` "${file}"`;
       hadSpaces = true;

@@ -5,20 +5,6 @@ import {
   isCudaSourceFile,
 } from '../../utils/fileUtils';
 
-export function getFileArgs(
-  file: string,
-  ltoFlag: string,
-  objectFilePath: string,
-) {
-  const hasSpace = file.includes(' ');
-  const hasAmpersand = file.includes('&');
-
-  if (hasSpace || hasAmpersand)
-    return `${ltoFlag} -c '${file}' -o '${objectFilePath}'`;
-
-  return `${ltoFlag} -c ${file} -o ${objectFilePath}`;
-}
-
 export function isNonMatchingSourceFile(
   language: Languages,
   fileExtension: string,
@@ -36,26 +22,6 @@ export function isNonMatchingSourceFile(
   }
 
   return false;
-}
-
-export function gatherIncludeDirsUnix(includePaths: string[]) {
-  let args = '';
-
-  if (includePaths && includePaths.length > 0) {
-    for (const includePath of includePaths) {
-      if (includePath.includes('$(default)')) continue;
-
-      const hasSpace = includePath.includes(' ');
-
-      if (hasSpace) {
-        args += ` -I"${includePath}"`;
-      } else {
-        args += ` -I${includePath}`;
-      }
-    }
-  }
-
-  return args;
 }
 
 export function GetWildcardPatterns(files: string[]) {

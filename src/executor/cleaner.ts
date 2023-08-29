@@ -6,7 +6,7 @@ import {
   replaceBackslashes,
   rmdirRecursive,
 } from '../utils/fileUtils';
-import { runVscodeTask } from './utils';
+import { runVscodeTask } from '../utils/vscodeUtils';
 
 export async function executeCleanTask(
   activeFolder: string,

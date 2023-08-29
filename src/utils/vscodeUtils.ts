@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import { extensionState } from '../extension';
+import { EXTENSION_NAME } from '../params/params';
 import {
   JsonLaunchConfig,
   JsonSettings,
@@ -155,4 +156,45 @@ function unixProcessExecution(commandLine: string, options: { cwd: string }) {
     ['-c', commandLine],
     options,
   );
+}
+
+export async function runVscodeTask(
+  task_name: string,
+  commandLine: string,
+  activeFolder: string,
+  operatingSystem: OperatingSystems,
+  problemMatcher: string[] | undefined = undefined,
+) {
+  const execution = getProcessExecution(
+    operatingSystem,
+    false,
+    commandLine,
+    activeFolder,
+  );
+
+  const definition = {
+    type: 'shell',
+    task: task_name,
+  };
+
+  let task: vscode.Task;
+  if (problemMatcher !== undefined) {
+    task = new vscode.Task(
+      definition,
+      vscode.TaskScope.Workspace,
+      task_name,
+      EXTENSION_NAME,
+      execution,
+    );
+  } else {
+    task = new vscode.Task(
+      definition,
+      vscode.TaskScope.Workspace,
+      task_name,
+      EXTENSION_NAME,
+      execution,
+    );
+  }
+
+  await vscode.tasks.executeTask(task);
 }

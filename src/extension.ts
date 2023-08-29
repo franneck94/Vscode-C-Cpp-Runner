@@ -1,8 +1,8 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import { generateAssemblerCode } from './executor/builder/assemble';
-import { executeBuildTask } from './executor/builder/builder';
+import { generateAssemblerCode } from './executor/assemble';
+import { executeBuildTask } from './executor/builder';
 import { executeCleanTask } from './executor/cleaner';
 import { runDebugger } from './executor/debugger';
 import { executeRunTask } from './executor/runner';

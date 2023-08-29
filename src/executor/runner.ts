@@ -2,7 +2,7 @@ import * as path from 'path';
 
 import { Builds, OperatingSystems } from '../types/types';
 import { pathExists } from '../utils/fileUtils';
-import { runVscodeTask } from './utils';
+import { runVscodeTask } from '../utils/vscodeUtils';
 
 export async function executeRunTask(
   activeFolder: string,

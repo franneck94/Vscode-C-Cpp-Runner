@@ -1,20 +1,18 @@
 import * as path from 'path';
-import * as vscode from 'vscode';
 
-import { SettingsProvider } from '../../provider/settingsProvider';
-import { Builds, Languages, OperatingSystems } from '../../types/types';
+import { SettingsProvider } from '../provider/settingsProvider';
+import { Builds, Languages, OperatingSystems } from '../types/types';
 import {
   getAllSourceFilesInDir,
   mkdirRecursive,
   pathExists,
-} from '../../utils/fileUtils';
-import { getProcessExecution } from '../../utils/vscodeUtils';
-import { EXTENSION_NAME } from './params';
+} from '../utils/fileUtils';
+import { runVscodeTask } from '../utils/vscodeUtils';
 import {
   executeBuildTaskUnixBased,
   executeCudaBuildTask,
-} from './unix/builder';
-import { executeBuildTaskMsvcBased } from './win/builder';
+} from './builder/unix/builder';
+import { executeBuildTaskMsvcBased } from './builder/win/builder';
 
 export async function executeBuildTask(
   settingsProvider: SettingsProvider,
@@ -91,33 +89,18 @@ export async function executeBuildTask(
 
   if (!commandLine) return;
 
-  const task_name = 'Build';
-
-  const definition = {
-    type: 'shell',
-    task: task_name,
-  };
-
-  const execution = getProcessExecution(
-    operatingSystem,
-    settingsProvider.useMsvc,
-    commandLine,
-    activeFolder,
-  );
-
   const problemMatcher =
     operatingSystem === OperatingSystems.windows && settingsProvider.useMsvc
       ? ['$msCompile']
       : ['$gcc'];
 
-  const task = new vscode.Task(
-    definition,
-    vscode.TaskScope.Workspace,
+  const task_name = 'Build';
+
+  await runVscodeTask(
     task_name,
-    EXTENSION_NAME,
-    execution,
+    commandLine,
+    activeFolder,
+    operatingSystem,
     problemMatcher,
   );
-
-  await vscode.tasks.executeTask(task);
 }

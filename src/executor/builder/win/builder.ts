@@ -1,6 +1,11 @@
+import * as path from 'path';
+
+import { LOWER_LIMIT_WILDARD_COMPILE } from '../../../params/params';
 import { SettingsProvider } from '../../../provider/settingsProvider';
 import { Builds, Languages } from '../../../types/types';
-import { gatherIncludeDirsMsvc } from '../../../utils/compilerUtils';
+import { isCppSourceFile, isCSourceFile } from '../../../utils/fileUtils';
+import { GetWildcardPatterns, isNonMatchingSourceFile } from '../utils';
+import { gatherIncludeDirsMsvc } from './utils';
 
 export function executeBuildTaskMsvcBased(
   settingsProvider: SettingsProvider,
@@ -132,6 +137,115 @@ export function executeBuildTaskMsvcBased(
     commandLine += ` cd ${activeFolder} &&`;
     commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} ${fullFileArgs} ${fullLinkerArgs}`;
   }
+
+  if (hadSpaces) {
+    commandLine = `"${commandLine}"`;
+  }
+
+  return commandLine;
+}
+
+export function generateAssemblerMsvcBased(
+  settingsProvider: SettingsProvider,
+  activeFolder: string,
+  buildMode: Builds,
+  language: Languages,
+  files: string[],
+  modeDir: string,
+  appendSymbol: string,
+) {
+  let compiler: string | undefined;
+  let standard: string | undefined;
+  let hadSpaces = false;
+
+  if (language === Languages.cpp) {
+    compiler = SettingsProvider.MSVC_COMPILER_NAME;
+    standard = settingsProvider.cppStandard;
+  } else {
+    compiler = SettingsProvider.MSVC_COMPILER_NAME;
+    standard = settingsProvider.cStandard;
+  }
+
+  const includePaths = settingsProvider.includePaths;
+  const compilerArgs = settingsProvider.compilerArgs;
+
+  let fullCompilerArgs = '';
+
+  // Note: The c standard in msvc is either c11 or newer
+  const old_standard = ['c89', 'c99', 'gnu89', 'gnu99'].some(
+    (ext) => settingsProvider.cStandard === ext,
+  );
+
+  if (standard && (language === Languages.cpp || !old_standard)) {
+    fullCompilerArgs += ` /std:${standard}`;
+  }
+  if (language === Languages.c) {
+    if (old_standard) {
+      fullCompilerArgs += ' /D_CRT_SECURE_NO_WARNINGS';
+    }
+  }
+
+  if (buildMode === Builds.debug) {
+    fullCompilerArgs += ' /Od /Zi';
+  } else {
+    fullCompilerArgs += ' /Ox /GL /DNDEBUG';
+  }
+  fullCompilerArgs += ' /EHsc';
+
+  if (includePaths && includePaths.length > 0) {
+    for (const includePath of includePaths) {
+      if (includePath.includes('$(default)')) continue;
+
+      const hasSpace = includePath.includes(' ');
+
+      if (hasSpace) {
+        fullCompilerArgs += ` /I"${includePath}"`;
+      } else {
+        fullCompilerArgs += ` /I${includePath}`;
+      }
+    }
+  }
+
+  if (compilerArgs && compilerArgs.length > 0) {
+    fullCompilerArgs += ' ' + compilerArgs.join(' ');
+  }
+
+  let commandLine: string = `"${settingsProvider.msvcBatchPath}" ${settingsProvider.architecture} ${appendSymbol} `;
+
+  modeDir = modeDir.replace(activeFolder, '.');
+  const executablePath = activeFolder + 'main.exe';
+  const pathArgs = `/Fa${modeDir}\\ /Fd${modeDir}\\ /Fo${modeDir}\\ /Fe${executablePath}`;
+
+  const assemblerFiles: string[] = [];
+
+  let fullFileArgs: string = '';
+  for (const file of files) {
+    const fileExtension = path.parse(file).ext;
+
+    if (language === Languages.c && !isCSourceFile(fileExtension)) {
+      continue;
+    } else if (language === Languages.cpp && !isCppSourceFile(fileExtension)) {
+      continue;
+    } else if (language === Languages.cuda) {
+      continue;
+    }
+
+    assemblerFiles.push(file);
+
+    const hasSpace = file.includes(' ');
+
+    if (hasSpace) {
+      fullFileArgs += ` "${file}"`;
+      hadSpaces = true;
+    } else {
+      fullFileArgs += ` ${file}`;
+    }
+  }
+
+  if (fullFileArgs === '') return;
+
+  commandLine += ` cd ${activeFolder} &&`;
+  commandLine += `${compiler} ${fullCompilerArgs} ${pathArgs} ${fullFileArgs}`;
 
   if (hadSpaces) {
     commandLine = `"${commandLine}"`;

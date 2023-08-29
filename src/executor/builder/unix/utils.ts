@@ -1,4 +1,4 @@
-import { LOWER_LIMIT_WILDARD_COMPILE } from '../params';
+import { LOWER_LIMIT_WILDARD_COMPILE } from '../../../params/params';
 
 export function mergeUnixCompileFilesStr(
   objectFiles: string[],
@@ -33,4 +33,38 @@ export function getUnixObjectFilesStr(objectFiles: string[]) {
   }
 
   return objectFilesStr;
+}
+
+export function gatherIncludeDirsUnix(includePaths: string[]) {
+  let args = '';
+
+  if (includePaths && includePaths.length > 0) {
+    for (const includePath of includePaths) {
+      if (includePath.includes('$(default)')) continue;
+
+      const hasSpace = includePath.includes(' ');
+
+      if (hasSpace) {
+        args += ` -I"${includePath}"`;
+      } else {
+        args += ` -I${includePath}`;
+      }
+    }
+  }
+
+  return args;
+}
+
+export function getUnixFileArgs(
+  file: string,
+  ltoFlag: string,
+  objectFilePath: string,
+) {
+  const hasSpace = file.includes(' ');
+  const hasAmpersand = file.includes('&');
+
+  if (hasSpace || hasAmpersand)
+    return `${ltoFlag} -c '${file}' -o '${objectFilePath}'`;
+
+  return `${ltoFlag} -c ${file} -o ${objectFilePath}`;
 }

@@ -1,7 +1,6 @@
-import * as path from 'path';
-
 import { Builds, OperatingSystems } from '../types/types';
 import {
+  getBuildModeDir,
   pathExists,
   replaceBackslashes,
   rmdirRecursive,
@@ -14,8 +13,7 @@ export async function executeCleanTask(
   workspaceFolder: string,
   operatingSystem: OperatingSystems,
 ) {
-  const buildDir = path.join(activeFolder, 'build');
-  const modeDir = path.join(buildDir, `${buildMode}`);
+  const modeDir = getBuildModeDir(activeFolder, buildMode);
 
   let relativeModeDir = modeDir.replace(workspaceFolder, '');
   relativeModeDir = replaceBackslashes(relativeModeDir);

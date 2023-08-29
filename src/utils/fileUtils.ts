@@ -276,3 +276,10 @@ export function getAllSourceFilesInDir(dir: string, singleFileBuild: boolean) {
 
   return { files: files, language: language };
 }
+
+export function getBuildModeDir(activeFolder: string, buildMode: string) {
+  const buildDir = path.join(activeFolder, 'build');
+  const modeDir = path.join(buildDir, `${buildMode}`);
+
+  return modeDir;
+}

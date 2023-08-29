@@ -1,9 +1,9 @@
-import * as path from 'path';
-
+import { APPEND_SYMBOL } from '../params/params';
 import { SettingsProvider } from '../provider/settingsProvider';
 import { Builds, OperatingSystems } from '../types/types';
 import {
   getAllSourceFilesInDir,
+  getBuildModeDir,
   mkdirRecursive,
   pathExists,
 } from '../utils/fileUtils';
@@ -17,15 +17,12 @@ export async function generateAssemblerCode(
   buildMode: Builds,
   singleFileBuild: boolean,
 ) {
-  const appendSymbol = '&&';
-
   const { files: files, language: language } = getAllSourceFilesInDir(
     activeFolder,
     singleFileBuild,
   );
 
-  const buildDir = path.join(activeFolder, 'build');
-  const modeDir = path.join(buildDir, `${buildMode}`);
+  const modeDir = getBuildModeDir(activeFolder, buildMode);
 
   if (!pathExists(modeDir)) {
     mkdirRecursive(modeDir);
@@ -45,7 +42,7 @@ export async function generateAssemblerCode(
       language,
       files,
       modeDir,
-      appendSymbol,
+      APPEND_SYMBOL,
     );
   } else {
     commandLine = generateAssemblerUnixBased(

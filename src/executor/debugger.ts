@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import { Builds, JsonLaunchConfig } from '../types/types';
-import { pathExists, readJsonFile } from '../utils/fileUtils';
+import { getBuildModeDir, pathExists, readJsonFile } from '../utils/fileUtils';
 import { getLaunchConfigIndex } from '../utils/vscodeUtils';
 
 const CONFIG_NAME = 'C/C++ Runner: Debug Session';
@@ -24,8 +24,7 @@ export async function runDebugger(
 
   if (configIdx === undefined) return;
 
-  const buildDir = path.join(activeFolder, 'build');
-  const modeDir = path.join(buildDir, `${buildMode}`);
+  const modeDir = getBuildModeDir(activeFolder, buildMode);
 
   if (!pathExists(modeDir)) return;
 

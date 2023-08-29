@@ -23,6 +23,7 @@ import { Builds } from './types/types';
 import {
   excludePatternFromList,
   foldersInDir,
+  getBuildModeDir,
   mkdirRecursive,
   pathExists,
 } from './utils/fileUtils';
@@ -709,8 +710,7 @@ function initAssemblerGenerator() {
 async function generateAssemblerCallback() {
   if (!activeFolder) return;
 
-  const buildDir = path.join(activeFolder, 'build');
-  const modeDir = path.join(buildDir, `${buildMode}`);
+  const modeDir = getBuildModeDir(activeFolder, buildMode);
 
   if (!pathExists(modeDir)) mkdirRecursive(modeDir);
 
@@ -729,8 +729,7 @@ async function buildTaskCallback(singleFileBuild: boolean) {
     updateFolderData();
   }
 
-  const buildDir = path.join(activeFolder, 'build');
-  const modeDir = path.join(buildDir, `${buildMode}`);
+  const modeDir = getBuildModeDir(activeFolder, buildMode);
 
   if (!pathExists(modeDir)) mkdirRecursive(modeDir);
 
@@ -754,8 +753,7 @@ async function runTaskCallback() {
     updateFolderData();
   }
 
-  const buildDir = path.join(activeFolder, 'build');
-  const modeDir = path.join(buildDir, `${buildMode}`);
+  const modeDir = getBuildModeDir(activeFolder, buildMode);
 
   if (!pathExists(modeDir)) {
     vscode.window.showErrorMessage('The executable is not yet built.');
@@ -804,8 +802,7 @@ function debugTaskCallback() {
     updateFolderData();
   }
 
-  const buildDir = path.join(activeFolder, 'build');
-  const modeDir = path.join(buildDir, `${buildMode}`);
+  const modeDir = getBuildModeDir(activeFolder, buildMode);
 
   if (!pathExists(modeDir)) {
     vscode.window.showErrorMessage('The executable is not yet built.');

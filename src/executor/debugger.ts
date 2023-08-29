@@ -1,11 +1,10 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
+import { DEBUG_CONFIG_NAME } from '../params/params';
 import { Builds, JsonLaunchConfig } from '../types/types';
 import { getBuildModeDir, pathExists, readJsonFile } from '../utils/fileUtils';
 import { getLaunchConfigIndex } from '../utils/vscodeUtils';
-
-const CONFIG_NAME = 'C/C++ Runner: Debug Session';
 
 export async function runDebugger(
   activeFolder: string,
@@ -20,7 +19,7 @@ export async function runDebugger(
 
   if (!configJson) return;
 
-  const configIdx = getLaunchConfigIndex(configJson, CONFIG_NAME);
+  const configIdx = getLaunchConfigIndex(configJson, DEBUG_CONFIG_NAME);
 
   if (configIdx === undefined) return;
 

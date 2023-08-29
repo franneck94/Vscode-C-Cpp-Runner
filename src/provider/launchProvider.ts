@@ -1,5 +1,6 @@
 import * as path from 'path';
 
+import { DEBUG_CONFIG_NAME } from '../params/params';
 import {
   Builds,
   Debuggers,
@@ -19,7 +20,6 @@ import { SettingsProvider } from './settingsProvider';
 
 const TEMPLATE_FILENAME = 'launch_template.json';
 const OUTPUT_FILENAME = 'launch.json';
-const CONFIG_NAME = 'C/C++ Runner: Debug Session';
 
 export class LaunchProvider extends FileProvider {
   public buildMode: Builds = Builds.debug;
@@ -105,7 +105,7 @@ export class LaunchProvider extends FileProvider {
       return;
     }
 
-    let configIdx = getLaunchConfigIndex(launchLocal, CONFIG_NAME);
+    let configIdx = getLaunchConfigIndex(launchLocal, DEBUG_CONFIG_NAME);
 
     if (configIdx === undefined) {
       configIdx = launchLocal.configurations.length;
@@ -191,7 +191,7 @@ export class LaunchProvider extends FileProvider {
 
     if (!launchLocal) return;
 
-    const configIdx = getLaunchConfigIndex(launchLocal, CONFIG_NAME);
+    const configIdx = getLaunchConfigIndex(launchLocal, DEBUG_CONFIG_NAME);
 
     if (configIdx !== undefined) {
       const currentConfig = launchLocal.configurations[configIdx];
@@ -205,7 +205,7 @@ export class LaunchProvider extends FileProvider {
   private msvcBasedDebugger(launchTemplate: JsonLaunchConfig) {
     if (launchTemplate.configurations[0] === undefined) return;
 
-    launchTemplate.configurations[0].name = CONFIG_NAME;
+    launchTemplate.configurations[0].name = DEBUG_CONFIG_NAME;
 
     delete launchTemplate.configurations[0].MIMode;
     delete launchTemplate.configurations[0].miDebuggerPath;
@@ -235,7 +235,7 @@ export class LaunchProvider extends FileProvider {
   private unixBasedDebugger(launchTemplate: JsonLaunchConfig) {
     if (launchTemplate.configurations[0] === undefined) return;
 
-    launchTemplate.configurations[0].name = CONFIG_NAME;
+    launchTemplate.configurations[0].name = DEBUG_CONFIG_NAME;
     if (this.settings.debuggerPath) {
       launchTemplate.configurations[0].MIMode = this.settings.debuggerPath
         .toLowerCase()

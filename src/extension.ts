@@ -1,8 +1,8 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import { generateAssemblerCode } from './executor/assemble';
-import { executeBuildTask } from './executor/builder';
+import { generateAssemblerCode } from './executor/builder/assemble';
+import { executeBuildTask } from './executor/builder/builder';
 import { executeCleanTask } from './executor/cleaner';
 import { runDebugger } from './executor/debugger';
 import { executeRunTask } from './executor/runner';
@@ -19,13 +19,13 @@ import {
 import { LaunchProvider } from './provider/launchProvider';
 import { PropertiesProvider } from './provider/propertiesProvider';
 import { SettingsProvider } from './provider/settingsProvider';
+import { Builds } from './types/types';
 import {
   excludePatternFromList,
   foldersInDir,
   mkdirRecursive,
   pathExists,
 } from './utils/fileUtils';
-import { Builds } from './utils/types';
 import {
   createStatusBarItem,
   disposeItem,

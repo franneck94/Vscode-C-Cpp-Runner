@@ -1,8 +1,8 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
+import { Builds } from '../types/types';
 import { replaceBackslashes } from '../utils/fileUtils';
-import { Builds } from '../utils/types';
 
 export function updateFolderStatus(
   status: vscode.StatusBarItem | undefined,

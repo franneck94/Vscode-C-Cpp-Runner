@@ -4,7 +4,7 @@ import * as minimatch from 'minimatch';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import { JsonSettings, Languages } from './types';
+import { JsonSettings, Languages } from '../types/types';
 
 export function replaceBackslashes(text: string) {
   return text.replace(/\\/g, '/');

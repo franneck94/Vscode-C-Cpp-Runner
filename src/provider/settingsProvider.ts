@@ -2,6 +2,14 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import {
+  Architectures,
+  CompilerSystems,
+  JsonPropertiesConfig,
+  JsonPropertiesConfigEntry,
+  JsonSettings,
+  OperatingSystems,
+} from '../types/types';
+import {
   foldersInDir,
   localSettingExist,
   pathExists,
@@ -13,14 +21,6 @@ import {
   getCompilerArchitecture,
   getOperatingSystem,
 } from '../utils/systemUtils';
-import {
-  Architectures,
-  CompilerSystems,
-  JsonPropertiesConfig,
-  JsonPropertiesConfigEntry,
-  JsonSettings,
-  OperatingSystems,
-} from '../utils/types';
 import { FileProvider } from './fileProvider';
 
 const OUTPUT_FILENAME = 'settings.json';

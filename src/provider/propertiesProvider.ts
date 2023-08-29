@@ -1,18 +1,18 @@
 import * as path from 'path';
 
 import {
-	pathExists,
-	readJsonFile,
-	replaceBackslashes,
-	writeJsonFile,
+  Architectures,
+  CompilerSystems,
+  JsonPropertiesConfig,
+  OperatingSystems,
+} from '../types/types';
+import {
+  pathExists,
+  readJsonFile,
+  replaceBackslashes,
+  writeJsonFile,
 } from '../utils/fileUtils';
 import { commandExists } from '../utils/systemUtils';
-import {
-	Architectures,
-	CompilerSystems,
-	JsonPropertiesConfig,
-	OperatingSystems,
-} from '../utils/types';
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
 

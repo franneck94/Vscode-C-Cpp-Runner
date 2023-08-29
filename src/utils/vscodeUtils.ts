@@ -2,8 +2,12 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import { extensionState } from '../extension';
+import {
+  JsonLaunchConfig,
+  JsonSettings,
+  OperatingSystems,
+} from '../types/types';
 import { filesInDir, pathExists, readJsonFile } from './fileUtils';
-import { JsonLaunchConfig, JsonSettings, OperatingSystems } from './types';
 
 const STATUS_BAR_ALIGN = vscode.StatusBarAlignment.Left;
 const STATUS_BAR_PRIORITY = 50;

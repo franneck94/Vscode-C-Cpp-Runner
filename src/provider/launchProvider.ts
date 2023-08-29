@@ -1,18 +1,18 @@
 import * as path from 'path';
 
 import {
-	getOccurenceIndicies,
-	pathExists,
-	readJsonFile,
-	replaceBackslashes,
-	writeJsonFile,
-} from '../utils/fileUtils';
+  Builds,
+  Debuggers,
+  JsonLaunchConfig,
+  OperatingSystems,
+} from '../types/types';
 import {
-	Builds,
-	Debuggers,
-	JsonLaunchConfig,
-	OperatingSystems,
-} from '../utils/types';
+  getOccurenceIndicies,
+  pathExists,
+  readJsonFile,
+  replaceBackslashes,
+  writeJsonFile,
+} from '../utils/fileUtils';
 import { getLaunchConfigIndex } from '../utils/vscodeUtils';
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';

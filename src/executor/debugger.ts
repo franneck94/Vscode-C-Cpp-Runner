@@ -1,8 +1,8 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
+import { Builds, JsonLaunchConfig } from '../types/types';
 import { pathExists, readJsonFile } from '../utils/fileUtils';
-import { Builds, JsonLaunchConfig } from '../utils/types';
 import { getLaunchConfigIndex } from '../utils/vscodeUtils';
 
 const CONFIG_NAME = 'C/C++ Runner: Debug Session';

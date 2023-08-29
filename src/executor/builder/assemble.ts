@@ -1,19 +1,16 @@
 import * as path from 'path';
-import * as vscode from 'vscode';
 
-import { SettingsProvider } from '../provider/settingsProvider';
-import { gatherIncludeDirsUnix } from '../utils/compilerUtils';
+import { SettingsProvider } from '../../provider/settingsProvider';
+import { Builds, Languages, OperatingSystems } from '../../types/types';
 import {
   getAllSourceFilesInDir,
   isCppSourceFile,
   isCSourceFile,
   mkdirRecursive,
   pathExists,
-} from '../utils/fileUtils';
-import { Builds, Languages, OperatingSystems } from '../utils/types';
-import { getProcessExecution } from '../utils/vscodeUtils';
-
-const EXTENSION_NAME = 'C_Cpp_Runner';
+} from '../../utils/fileUtils';
+import { runVscodeTask } from '../utils';
+import { gatherIncludeDirsUnix } from './utils';
 
 export async function generateAssemblerCode(
   settingsProvider: SettingsProvider,
@@ -65,34 +62,7 @@ export async function generateAssemblerCode(
   if (!commandLine) return;
 
   const task_name = 'Build';
-
-  const definition = {
-    type: 'shell',
-    task: task_name,
-  };
-
-  const execution = getProcessExecution(
-    operatingSystem,
-    settingsProvider.useMsvc,
-    commandLine,
-    activeFolder,
-  );
-
-  const problemMatcher =
-    operatingSystem === OperatingSystems.windows && settingsProvider.useMsvc
-      ? ['$msCompile']
-      : ['$gcc'];
-
-  const task = new vscode.Task(
-    definition,
-    vscode.TaskScope.Workspace,
-    task_name,
-    EXTENSION_NAME,
-    execution,
-    problemMatcher,
-  );
-
-  await vscode.tasks.executeTask(task);
+  await runVscodeTask(task_name, commandLine, activeFolder, operatingSystem);
 }
 
 function generateAssemblerUnixBased(

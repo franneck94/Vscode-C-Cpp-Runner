@@ -8,8 +8,8 @@ import {
   pathExists,
 } from '../utils/fileUtils';
 import { runVscodeTask } from '../utils/vscodeUtils';
-import { generateAssemblerUnixBased } from './builder/unix/builder';
-import { generateAssemblerMsvcBased } from './builder/win/builder';
+import { generateAssemblerUnixBased } from './builder/unix/cuda';
+import { generateAssemblerMsvcBased } from './builder/win/msvc';
 
 export async function generateAssemblerCode(
   settingsProvider: SettingsProvider,

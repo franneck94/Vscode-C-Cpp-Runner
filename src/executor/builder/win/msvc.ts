@@ -4,8 +4,8 @@ import { LOWER_LIMIT_WILDARD_COMPILE } from '../../../params/params';
 import { SettingsProvider } from '../../../provider/settingsProvider';
 import { Builds, Languages } from '../../../types/enums';
 import { isCppSourceFile, isCSourceFile } from '../../../utils/fileUtils';
-import { GetWildcardPatterns, isNonMatchingSourceFile } from '../utils';
-import { gatherIncludeDirsMsvc } from './utils';
+import { GetWildcardPatterns, isNonMatchingSourceFile } from '../build_utils';
+import { gatherIncludeDirsMsvc } from './msvc_utils';
 
 export function executeBuildTaskMsvcBased(
   settingsProvider: SettingsProvider,

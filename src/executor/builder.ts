@@ -10,11 +10,9 @@ import {
   pathExists,
 } from '../utils/fileUtils';
 import { runVscodeTask } from '../utils/vscodeUtils';
-import {
-  executeBuildTaskUnixBased,
-  executeCudaBuildTask,
-} from './builder/unix/builder';
-import { executeBuildTaskMsvcBased } from './builder/win/builder';
+import { executeCudaBuildTask } from './builder/unix/cuda';
+import { executeBuildTaskUnixBased } from './builder/unix/gcc_clang';
+import { executeBuildTaskMsvcBased } from './builder/win/msvc';
 
 export async function executeBuildTask(
   settingsProvider: SettingsProvider,

@@ -34,7 +34,8 @@ export class SettingsProvider extends FileProvider {
   static DEFAULT_DEBUGGER_PATH_NON_MAC = 'gdb';
   static DEFAULT_DEBUGGER_PATH_MAC = 'lldb';
   static DEFAULT_MSVC_BATCH_PATH =
-    'C:/Program Files/Microsoft Visual Studio/VR_NR/Community/VC/Auxiliary/Build/vcvarsall.bat';
+    'C:/Program Files/Microsoft Visual Studio/' +
+    'VR_NR/Community/VC/Auxiliary/Build/vcvarsall.bat';
   static DEFAULT_MSVC_TOOLS_PATH = '';
   static DEFAULT_C_STANDARD_UNIX = '';
   static DEFAULT_C_STANDARD_MSVC = 'c11';
@@ -60,35 +61,35 @@ export class SettingsProvider extends FileProvider {
 
   static DEFAULT_WARNINGS_UNIX = [
     // Baseline
-    '-Wall', // This enables all the warns about constructions that some users consider questionable
-    '-Wextra', // This enables some extra warning flags that are not enabled by -Wall
-    '-Wpedantic', // Issue all the warns demanded by strict ISO C and ISO C++
-    '-Wshadow', // Whenever a local variable or type declaration shadows another variable
+    '-Wall', // Base set of warnings
+    '-Wextra', // Some extra warning flags
+    '-Wpedantic', // Demanded warnings by strict ISO C and ISO C++
+    '-Wshadow', // Whenever a local variable or type shadows another
     // C and C++ Warnings
     '-Wformat=2', // Check calls to printf and scanf, etc.
-    '-Wcast-align', // potential performance problem casts
-    '-Wconversion', // on type conversions that may lose data
-    '-Wsign-conversion', // for implicit conversions that may change the sign of an integer value
-    '-Wnull-dereference', // if a null dereference is detected
+    '-Wcast-align', // Potential performance problem casts
+    '-Wconversion', // On type conversions that may lose data
+    '-Wsign-conversion', // Implicit conversions that may change the sign
+    '-Wnull-dereference', // If a null dereference is detected
   ];
   static DEFAULT_WARNINGS_MSVC = [
     // Baseline
     '/W4',
     '/permissive-',
     // C and C++ Related Warnings
-    '/w14242', //	'identfier': conversion from 'type1' to 'type1', possible loss of data
+    '/w14242', //	'identfier': conversion from 'type1' to 'type1'
     '/w14287', // 'operator': unsigned/negative constant mismatch
     '/w14296', // 'operator': expression is always 'boolean_value'
     '/w14311', // 'variable': pointer truncation from 'type1' to 'type2'
-    '/w14826', // Conversion from 'type1' to 'type_2' is sign-extended. This may cause unexpected runtime behavior
-    '/w44062', //	enumerator 'identifier' in a switch of enum 'enumeration' is not handled
-    '/w44242', //	'identifier': conversion from 'type1' to 'type2', possible loss of data
+    '/w14826', // Conversion from 'type1' to 'type_2' is sign-extended.
+    '/w44062', //	enumerator in a switch of enum 'enumeration' is not handled
+    '/w44242', //	'identifier': conversion from 'type1' to 'type2'
     '/w14905', // wide string literal cast to 'LPSTR'
     '/w14906', // string literal cast to 'LPWSTR'
     // C++ Related Warnings
-    '/w14263', // 'function': member function does not override any base class virtual member function
-    '/w44265', //	'class': class has virtual functions, but destructor is not virtual
-    '/w14928', // illegal copy-initialization; more than one user-defined conversion has been implicitly applied
+    '/w14263', // member function does not override base class virtual function
+    '/w44265', //	class has virtual functions, but destructor is not virtual
+    '/w14928', // illegal copy-initialization
   ];
   static DEFAULT_COMPILER_ARGS = [];
   static DEFAULT_LINKER_ARGS = [];
@@ -286,6 +287,9 @@ export class SettingsProvider extends FileProvider {
         this.update('msvcBatchPath', this.msvcBatchPath);
       } else if (pathExists(this.msvcBatchPath.replace('VR_NR', '2015'))) {
         this.msvcBatchPath = this.msvcBatchPath.replace('VR_NR', '2015');
+        this.update('msvcBatchPath', this.msvcBatchPath);
+      } else if (pathExists(this.msvcBatchPath.replace('VR_NR', '2013'))) {
+        this.msvcBatchPath = this.msvcBatchPath.replace('VR_NR', '2013');
         this.update('msvcBatchPath', this.msvcBatchPath);
       } else {
         this.msvcBatchPath = '';

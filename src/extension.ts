@@ -16,10 +16,11 @@ import {
   updateModeStatus,
   updateRunStatus,
 } from './items/statusBarItems';
+import { EXTENSION_NAME } from './params/params';
 import { LaunchProvider } from './provider/launchProvider';
 import { PropertiesProvider } from './provider/propertiesProvider';
 import { SettingsProvider } from './provider/settingsProvider';
-import { Builds } from './types/types';
+import { Builds } from './types/enums';
 import {
   excludePatternFromList,
   foldersInDir,
@@ -72,8 +73,6 @@ let activeFolder: string | undefined;
 let buildMode: Builds = Builds.debug;
 let showStatusBarItems: boolean = true;
 let createExtensionFiles: boolean = true;
-
-const EXTENSION_NAME = 'C_Cpp_Runner';
 
 export let extensionContext: vscode.ExtensionContext | undefined;
 export let extensionState: vscode.Memento | undefined;
@@ -278,11 +277,12 @@ function initEditorBuildRun() {
     vscode.commands.registerTextEditorCommand(
       'C_Cpp_Runner.BuildAndRunFile',
       async () => {
-        const commandNameBuild = `${EXTENSION_NAME}.buildSingleFile`;
-        await vscode.commands.executeCommand(commandNameBuild);
-
-        const commandNameRun = `${EXTENSION_NAME}.runCurrentSelection`;
-        await vscode.commands.executeCommand(commandNameRun);
+        await vscode.commands.executeCommand(
+          `${EXTENSION_NAME}.buildSingleFile`,
+        );
+        await vscode.commands.executeCommand(
+          `${EXTENSION_NAME}.runCurrentSelection`,
+        );
       },
     ),
   );
@@ -719,8 +719,8 @@ async function generateAssemblerCallback() {
   await generateAssemblerCode(settingsProvider, activeFolder, buildMode, true);
 }
 
-async function buildTaskCallback(singleFileBuild: boolean) {
-  if (!activeFolder) {
+function fallbackToInitFolderData() {
+  if (activeFolder === undefined) {
     const currentFile = vscode.window.activeTextEditor?.document.fileName;
     if (!currentFile) return;
     const currentFolder = path.dirname(currentFile);
@@ -728,6 +728,13 @@ async function buildTaskCallback(singleFileBuild: boolean) {
     activeFolder = currentFolder;
     updateFolderData();
   }
+
+  return activeFolder;
+}
+
+async function buildTaskCallback(singleFileBuild: boolean) {
+  activeFolder = fallbackToInitFolderData();
+  if (activeFolder === undefined) return;
 
   const modeDir = getBuildModeDir(activeFolder, buildMode);
 
@@ -744,14 +751,8 @@ async function buildTaskCallback(singleFileBuild: boolean) {
 }
 
 async function runTaskCallback() {
-  if (!activeFolder) {
-    const currentFile = vscode.window.activeTextEditor?.document.fileName;
-    if (!currentFile) return;
-    const currentFolder = path.dirname(currentFile);
-
-    activeFolder = currentFolder;
-    updateFolderData();
-  }
+  activeFolder = fallbackToInitFolderData();
+  if (activeFolder === undefined) return;
 
   const modeDir = getBuildModeDir(activeFolder, buildMode);
 
@@ -793,14 +794,8 @@ async function cleanTaskCallback() {
 function debugTaskCallback() {
   if (!workspaceFolder) return;
 
-  if (!activeFolder) {
-    const currentFile = vscode.window.activeTextEditor?.document.fileName;
-    if (!currentFile) return;
-    const currentFolder = path.dirname(currentFile);
-
-    activeFolder = currentFolder;
-    updateFolderData();
-  }
+  activeFolder = fallbackToInitFolderData();
+  if (activeFolder === undefined) return;
 
   const modeDir = getBuildModeDir(activeFolder, buildMode);
 

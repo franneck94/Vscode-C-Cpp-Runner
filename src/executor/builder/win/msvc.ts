@@ -64,9 +64,14 @@ export function executeBuildTaskMsvcBased(
     fullCompilerArgs += ` /std:${standard}`;
   }
   if (language === Languages.c) {
-    if (old_standard) {
+    if (old_standard || settingsProvider.msvcSecureNoWarnings) {
       fullCompilerArgs += ' /D_CRT_SECURE_NO_WARNINGS';
     }
+  } else if (
+    language === Languages.cpp &&
+    settingsProvider.msvcSecureNoWarnings
+  ) {
+    fullCompilerArgs += ' /D_CRT_SECURE_NO_WARNINGS';
   }
 
   if (buildMode === Builds.debug) {

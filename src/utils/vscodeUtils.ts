@@ -2,16 +2,14 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import { extensionState } from '../extension';
-import { EXTENSION_NAME } from '../params/params';
 import {
-  JsonLaunchConfig,
-  JsonSettings,
-  OperatingSystems,
-} from '../types/types';
+  EXTENSION_NAME,
+  STATUS_BAR_ALIGN,
+  STATUS_BAR_PRIORITY,
+} from '../params/params';
+import { OperatingSystems } from '../types/enums';
+import { JsonLaunchConfig, JsonSettings } from '../types/interfaces';
 import { filesInDir, pathExists, readJsonFile } from './fileUtils';
-
-const STATUS_BAR_ALIGN = vscode.StatusBarAlignment.Left;
-const STATUS_BAR_PRIORITY = 50;
 
 export function disposeItem(disposableItem: vscode.Disposable | undefined) {
   disposableItem?.dispose();

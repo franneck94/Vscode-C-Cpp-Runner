@@ -2,7 +2,7 @@ import { execSync } from 'child_process';
 import { lookpath } from 'lookpath';
 import { platform } from 'os';
 
-import { Architectures, OperatingSystems } from '../types/types';
+import { Architectures, OperatingSystems } from '../types/enums';
 
 export async function commandExists(command: string) {
   let commandPath = await lookpath(command);

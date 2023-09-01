@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { Builds } from '../types/types';
+import { Builds } from '../types/enums';
 
 export async function modeHandler() {
   const combinations = [Builds.debug, Builds.release];

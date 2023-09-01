@@ -1,11 +1,16 @@
 import * as path from 'path';
 
 import {
+  PROPERTIES_INCLUDE_PATTERN,
+  PROPERTIES_OUTPUT_FILENAME,
+  PROPERTIES_TEMPLATE_FILENAME,
+} from '../params/params';
+import {
   Architectures,
   CompilerSystems,
-  JsonPropertiesConfig,
   OperatingSystems,
-} from '../types/types';
+} from '../types/enums';
+import { JsonPropertiesConfig } from '../types/interfaces';
 import {
   pathExists,
   readJsonFile,
@@ -16,10 +21,6 @@ import { commandExists } from '../utils/systemUtils';
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
 
-const TEMPLATE_FILENAME = 'properties_template.json';
-const OUTPUT_FILENAME = 'c_cpp_properties.json';
-const INCLUDE_PATTERN = '${workspaceFolder}/**';
-
 export class PropertiesProvider extends FileProvider {
   protected lastConfig: JsonPropertiesConfig | undefined;
   constructor(
@@ -27,7 +28,11 @@ export class PropertiesProvider extends FileProvider {
     public workspaceFolder: string,
     public activeFolder: string | undefined,
   ) {
-    super(workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
+    super(
+      workspaceFolder,
+      PROPERTIES_TEMPLATE_FILENAME,
+      PROPERTIES_OUTPUT_FILENAME,
+    );
 
     const updateRequired = this.updateCheck();
 
@@ -106,19 +111,19 @@ export class PropertiesProvider extends FileProvider {
     if (configLocalEntry === undefined) return;
 
     if (this.settings.includePaths.length > 0) {
-      configLocalEntry.includePath = [INCLUDE_PATTERN];
+      configLocalEntry.includePath = [PROPERTIES_INCLUDE_PATTERN];
       for (const path of this.settings.includePaths) {
         const includePathSet = new Set(configLocalEntry.includePath);
         if (
           !includePathSet.has(path) &&
-          path !== INCLUDE_PATTERN &&
+          path !== PROPERTIES_INCLUDE_PATTERN &&
           !path.includes('$(default)')
         ) {
           configLocalEntry.includePath.push(path);
         }
       }
     } else {
-      configLocalEntry.includePath = [INCLUDE_PATTERN];
+      configLocalEntry.includePath = [PROPERTIES_INCLUDE_PATTERN];
     }
     const old_standard = ['c89', 'c99', 'gnu89', 'gnu99'].some(
       (ext) => this.settings.cStandard === ext,

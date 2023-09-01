@@ -1,4 +1,4 @@
-import { Languages } from '../../types/types';
+import { Languages } from '../../types/enums';
 import {
   isCppSourceFile,
   isCSourceFile,

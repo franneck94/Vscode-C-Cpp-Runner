@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import { Builds, OperatingSystems } from '../types/types';
+import { Builds, OperatingSystems } from '../types/enums';
 import { pathExists } from '../utils/fileUtils';
 import { runVscodeTask } from '../utils/vscodeUtils';
 

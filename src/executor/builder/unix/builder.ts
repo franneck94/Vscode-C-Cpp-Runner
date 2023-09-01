@@ -2,7 +2,7 @@ import * as path from 'path';
 
 import { LOWER_LIMIT_WILDARD_COMPILE } from '../../../params/params';
 import { SettingsProvider } from '../../../provider/settingsProvider';
-import { Builds, Languages, OperatingSystems } from '../../../types/types';
+import { Builds, Languages, OperatingSystems } from '../../../types/enums';
 import { isCppSourceFile, isCSourceFile } from '../../../utils/fileUtils';
 import { GetWildcardPatterns, isNonMatchingSourceFile } from '../utils';
 import {

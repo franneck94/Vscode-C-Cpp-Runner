@@ -2,7 +2,8 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import { DEBUG_CONFIG_NAME } from '../params/params';
-import { Builds, JsonLaunchConfig } from '../types/types';
+import { Builds } from '../types/enums';
+import { JsonLaunchConfig } from '../types/interfaces';
 import { getBuildModeDir, pathExists, readJsonFile } from '../utils/fileUtils';
 import { getLaunchConfigIndex } from '../utils/vscodeUtils';
 

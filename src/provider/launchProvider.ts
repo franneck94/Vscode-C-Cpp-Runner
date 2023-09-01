@@ -1,12 +1,12 @@
 import * as path from 'path';
 
-import { DEBUG_CONFIG_NAME } from '../params/params';
 import {
-  Builds,
-  Debuggers,
-  JsonLaunchConfig,
-  OperatingSystems,
-} from '../types/types';
+  DEBUG_CONFIG_NAME,
+  LAUNCH_OUTPUT_FILENAME,
+  LAUNCH_TEMPLATE_FILENAME,
+} from '../params/params';
+import { Builds, Debuggers, OperatingSystems } from '../types/enums';
+import { JsonLaunchConfig } from '../types/interfaces';
 import {
   getOccurenceIndicies,
   pathExists,
@@ -18,9 +18,6 @@ import { getLaunchConfigIndex } from '../utils/vscodeUtils';
 import { FileProvider } from './fileProvider';
 import { SettingsProvider } from './settingsProvider';
 
-const TEMPLATE_FILENAME = 'launch_template.json';
-const OUTPUT_FILENAME = 'launch.json';
-
 export class LaunchProvider extends FileProvider {
   public buildMode: Builds = Builds.debug;
   public argumentsString: string[] | undefined;
@@ -30,7 +27,7 @@ export class LaunchProvider extends FileProvider {
     public workspaceFolder: string,
     public activeFolder: string,
   ) {
-    super(workspaceFolder, TEMPLATE_FILENAME, OUTPUT_FILENAME);
+    super(workspaceFolder, LAUNCH_TEMPLATE_FILENAME, LAUNCH_OUTPUT_FILENAME);
 
     if (!this.activeFolder) {
       this.activeFolder = this.workspaceFolder;

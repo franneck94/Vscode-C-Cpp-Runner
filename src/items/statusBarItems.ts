@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import { Builds } from '../types/types';
+import { Builds } from '../types/enums';
 import { replaceBackslashes } from '../utils/fileUtils';
 
 export function updateFolderStatus(

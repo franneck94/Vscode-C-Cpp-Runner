@@ -1,14 +1,17 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
+import { EXTENSION_NAME, SETTINGS_OUTPUT_FILENAME } from '../params/params';
 import {
   Architectures,
   CompilerSystems,
+  OperatingSystems,
+} from '../types/enums';
+import {
   JsonPropertiesConfig,
   JsonPropertiesConfigEntry,
   JsonSettings,
-  OperatingSystems,
-} from '../types/types';
+} from '../types/interfaces';
 import {
   foldersInDir,
   localSettingExist,
@@ -22,9 +25,6 @@ import {
   getOperatingSystem,
 } from '../utils/systemUtils';
 import { FileProvider } from './fileProvider';
-
-const OUTPUT_FILENAME = 'settings.json';
-const EXTENSION_NAME = 'C_Cpp_Runner';
 
 export class SettingsProvider extends FileProvider {
   static DEFAULT_C_COMPILER_PATH_NON_MAC = 'gcc';
@@ -134,7 +134,7 @@ export class SettingsProvider extends FileProvider {
   public useLinkTimeOptimization: boolean = SettingsProvider.DEFAULT_USE_LTO;
 
   constructor(public workspaceFolder: string, public activeFolder: string) {
-    super(workspaceFolder, undefined, OUTPUT_FILENAME);
+    super(workspaceFolder, undefined, SETTINGS_OUTPUT_FILENAME);
 
     this.cCompilerPath =
       this.operatingSystem !== OperatingSystems.mac

@@ -1,6 +1,6 @@
 import { APPEND_SYMBOL } from '../params/params';
 import { SettingsProvider } from '../provider/settingsProvider';
-import { Builds, OperatingSystems } from '../types/types';
+import { Builds, OperatingSystems } from '../types/enums';
 import {
   getAllSourceFilesInDir,
   getBuildModeDir,

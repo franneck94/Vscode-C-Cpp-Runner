@@ -1,4 +1,4 @@
-import { Builds, OperatingSystems } from '../types/types';
+import { Builds, OperatingSystems } from '../types/enums';
 import {
   getBuildModeDir,
   pathExists,

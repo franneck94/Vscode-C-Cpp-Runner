@@ -2,7 +2,7 @@ import * as path from 'path';
 
 import { APPEND_SYMBOL } from '../params/params';
 import { SettingsProvider } from '../provider/settingsProvider';
-import { Builds, Languages, OperatingSystems } from '../types/types';
+import { Builds, Languages, OperatingSystems } from '../types/enums';
 import {
   getAllSourceFilesInDir,
   getBuildModeDir,

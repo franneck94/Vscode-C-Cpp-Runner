@@ -70,6 +70,7 @@ Some commands have also a keyboard shortcut. For more info see the **Features Co
 - ⚙️ GCC/Clang [Compiler Warnings](https://clang.llvm.org/docs/DiagnosticsReference.html) (string array, e.g. "-Wall")
 - ⚙️ MSVC [Compiler Warnings](https://learn.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warnings-by-compiler-version?view=msvc-170) (string array, e.g. "\W4")
 - ⚙️ To treat Warnings as Errors (boolean, defaults to False)
+- ⚙️ To disable MSVC Security Warnings (boolean, defaults to False)
 
 ## Using the MSVC Compiler
 
@@ -78,7 +79,9 @@ As an example installation path of the compiler:
 **"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvarsall.bat"**.  
 Then set the **useMsvc** extension setting to true, to use MSVC and not GCC/Clang.  
 If you want to stop using the MSVC compiler, just set **useMsvc** to false.  
-⚠️ Only the 64-bit (no cross-compiling) version of MSVC is supported.
+⚠️ Only the 64-bit (no cross-compiling) version of MSVC is supported.  
+⚠️ The extension is only tested for VS2019 and VS2022.  
+⚠️ For auto detecting the installed VS you have to install it in **C:/Program Files/Microsoft Visual Studio**
 
 ## Advanced Features
 

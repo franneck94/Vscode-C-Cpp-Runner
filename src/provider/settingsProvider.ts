@@ -56,6 +56,7 @@ export class SettingsProvider extends FileProvider {
   static DEFAULT_LEAK_SANITIZER = false;
   static DEFAULT_SHOW_COMPILATION_TIME = false;
   static DEFAULT_USE_LTO = false;
+  static DEFAULT_MSVC_SECURE_NO_WARNINGS = false;
 
   static DEFAULT_WARNINGS_UNIX = [
     // Baseline
@@ -132,6 +133,8 @@ export class SettingsProvider extends FileProvider {
   public showCompilationTime: boolean =
     SettingsProvider.DEFAULT_SHOW_COMPILATION_TIME;
   public useLinkTimeOptimization: boolean = SettingsProvider.DEFAULT_USE_LTO;
+  public msvcSecureNoWarnings: boolean =
+    SettingsProvider.DEFAULT_MSVC_SECURE_NO_WARNINGS;
 
   constructor(public workspaceFolder: string, public activeFolder: string) {
     super(workspaceFolder, undefined, SETTINGS_OUTPUT_FILENAME);
@@ -394,6 +397,12 @@ export class SettingsProvider extends FileProvider {
       'useLinkTimeOptimization',
       SettingsProvider.DEFAULT_USE_LTO,
     );
+
+    this.msvcSecureNoWarnings = this.getSettingsValue(
+      settingsLocal,
+      'msvcSecureNoWarnings',
+      SettingsProvider.DEFAULT_MSVC_SECURE_NO_WARNINGS,
+    );
   }
 
   private getSettingsFromProperties() {
@@ -632,6 +641,10 @@ export class SettingsProvider extends FileProvider {
       'useLinkTimeOptimization',
       SettingsProvider.DEFAULT_USE_LTO,
     );
+    this.msvcSecureNoWarnings = this.getGlobalSettingsValue(
+      'msvcSecureNoWarnings',
+      SettingsProvider.DEFAULT_MSVC_SECURE_NO_WARNINGS,
+    );
   }
 
   private storeSettings() {
@@ -662,6 +675,7 @@ export class SettingsProvider extends FileProvider {
     this.update('useLeakSanitizer', this.useLeakSanitizer);
     this.update('showCompilationTime', this.showCompilationTime);
     this.update('useLinkTimeOptimization', this.useLinkTimeOptimization);
+    this.update('msvcSecureNoWarnings', this.msvcSecureNoWarnings);
   }
 
   /********************/

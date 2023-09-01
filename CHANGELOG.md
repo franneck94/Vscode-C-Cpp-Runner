@@ -1,5 +1,10 @@
 # C/C++ Runner Change Log
 
+## Version 9.0.0: Sep 01, 2023
+
+- **Info**: Huge internal refactoring
+- **Info**: Added option for MSVC to deactivate safety warnings about functions like scanf, printf etc.
+
 ## Version 8.1.0: Aug 08, 2023
 
 - **Info**: Added LTO for Cuda Code

@@ -2,7 +2,7 @@
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
   "description": "🚀 Compile, run and debug single or multiple C/C++ files with ease. 🚀",
-  "version": "8.1.0",
+  "version": "9.0.0",
   "publisher": "franneck94",
   "license": "MIT",
   "icon": "icon.png",
@@ -415,6 +415,12 @@
           "type": "boolean",
           "default": false,
           "description": "Whether to use LTO/IPO for release build.",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.msvcSecureNoWarnings'": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to disable security warnings by functions like scanf etc.",
           "scope": "resource"
         }
       }

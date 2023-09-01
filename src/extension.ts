@@ -260,7 +260,7 @@ function initEventListener() {
 function initEditorBuildDebug() {
   extensionContext?.subscriptions.push(
     vscode.commands.registerTextEditorCommand(
-      'C_Cpp_Runner.BuildAndDebugFile',
+      `${EXTENSION_NAME}.BuildAndDebugFile`,
       async () => {
         const commandNameBuild = `${EXTENSION_NAME}.buildSingleFile`;
         await vscode.commands.executeCommand(commandNameBuild);
@@ -275,7 +275,7 @@ function initEditorBuildDebug() {
 function initEditorBuildRun() {
   extensionContext?.subscriptions.push(
     vscode.commands.registerTextEditorCommand(
-      'C_Cpp_Runner.BuildAndRunFile',
+      `${EXTENSION_NAME}.BuildAndRunFile`,
       async () => {
         await vscode.commands.executeCommand(
           `${EXTENSION_NAME}.buildSingleFile`,

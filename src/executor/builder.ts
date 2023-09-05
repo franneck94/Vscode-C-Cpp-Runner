@@ -99,5 +99,6 @@ export async function executeBuildTask(
     activeFolder,
     operatingSystem,
     problemMatcher,
+    settingsProvider.useMsvc,
   );
 }

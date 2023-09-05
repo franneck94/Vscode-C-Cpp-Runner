@@ -162,10 +162,11 @@ export async function runVscodeTask(
   activeFolder: string,
   operatingSystem: OperatingSystems,
   problemMatcher: string[] | undefined = undefined,
+  isMsvcTask: boolean = false,
 ) {
   const execution = getProcessExecution(
     operatingSystem,
-    false,
+    isMsvcTask,
     commandLine,
     activeFolder,
   );

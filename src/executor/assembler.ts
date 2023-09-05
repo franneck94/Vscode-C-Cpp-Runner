@@ -58,5 +58,12 @@ export async function generateAssemblerCode(
   if (!commandLine) return;
 
   const task_name = 'Build';
-  await runVscodeTask(task_name, commandLine, activeFolder, operatingSystem);
+  await runVscodeTask(
+    task_name,
+    commandLine,
+    activeFolder,
+    operatingSystem,
+    undefined,
+    settingsProvider.useMsvc,
+  );
 }

@@ -66,4 +66,6 @@ export async function generateAssemblerCode(
     undefined,
     settingsProvider.useMsvc,
   );
+
+  // TODO open that assembler file to the side
 }

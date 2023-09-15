@@ -54,7 +54,7 @@ The configuration settings will be stored **locally** in *".vscode/settings.json
 
 Based on that, the local *".vscode/c_cpp_properties.json"* file is created.  
 It will be used by [Microsoft's *C/C++*](https://code.visualstudio.com/docs/cpp/c-cpp-properties-schema-reference) extension for intellisense (auto-completion etc.).  
-Note: You **don't** have to edit this file.  
+Note: You **don't** have to edit the **c_cpp_properties.json** file.  
 Some commands have also a keyboard shortcut. For more info see the **Features Contributing** section.
 
 ### Basic settings

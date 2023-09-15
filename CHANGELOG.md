@@ -4,7 +4,7 @@
 
 - **Info**: Huge internal refactoring
 - **Info**: Added option for MSVC to deactivate safety warnings about functions like scanf, printf etc.
-- **TODO**: open that assembler file to the side
+- **TODO**: Upcommign feature: open the generated assembler file to the side
 
 ## Version 8.1.0: Aug 08, 2023
 

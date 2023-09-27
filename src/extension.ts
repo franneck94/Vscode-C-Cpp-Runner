@@ -24,6 +24,7 @@ import { Builds } from './types/enums';
 import {
   excludePatternFromList,
   foldersInDir,
+  getAllSourceFilesInDir,
   getBuildModeDir,
   mkdirRecursive,
   pathExists,
@@ -466,6 +467,17 @@ function initFolderStatusBar() {
         activeFolder = workspaceFolderFs;
         updateFolderData();
       } else {
+        if (workspaceFolder && !activeFolder) {
+          const { files: files, language: _ } = getAllSourceFilesInDir(
+            workspaceFolder,
+            true,
+          );
+
+          if (files.length > 0) {
+            activeFolder = workspaceFolder;
+          }
+        }
+
         updateFolderStatus(
           folderStatusBar,
           workspaceFolder,

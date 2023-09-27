@@ -1,10 +1,14 @@
 # C/C++ Runner Change Log
 
+## Planned
+
+- **TODO**: Upcomming feature: open the generated assembler file to the side
+
 ## Version 9.0.0: Sep 01, 2023
 
-- **Info**: Huge internal refactoring
+- **Info**: Huge internal refactoring (users shouldn't care about this ;))
 - **Info**: Added option for MSVC to deactivate safety warnings about functions like scanf, printf etc.
-- **TODO**: Upcomming feature: open the generated assembler file to the side
+- **Info**: Auto select workspace dir if there are source files as the active folder on startup
 
 ## Version 8.1.0: Aug 08, 2023
 

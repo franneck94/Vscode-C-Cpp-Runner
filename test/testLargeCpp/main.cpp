@@ -16,7 +16,7 @@ int main()
     f5();
     f6();
 
-    std::cout << "TEST!";
+    std::cout << "Done!\n";
 
     return 0;
 }

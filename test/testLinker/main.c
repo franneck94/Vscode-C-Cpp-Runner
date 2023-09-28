@@ -26,6 +26,12 @@ void loop()
     }
 }
 
+/**
+  "C_Cpp_Runner.compilerArgs": [
+    "-pthread",
+    "-fopenmp"
+  ],
+ */
 int main()
 {
     pthread_t thread1, thread2;

@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "lib1.h"
 #include "lib2.h"
 #include "lib3.h"
@@ -13,6 +15,8 @@ int main()
     f4();
     f5();
     f6();
+
+    printf("Done\n");
 
     return 0;
 }

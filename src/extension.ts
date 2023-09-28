@@ -470,7 +470,7 @@ function initFolderStatusBar() {
         if (workspaceFolder && !activeFolder) {
           const { files: files, language: _ } = getAllSourceFilesInDir(
             workspaceFolder,
-            true,
+            false,
           );
 
           if (files.length > 0) {

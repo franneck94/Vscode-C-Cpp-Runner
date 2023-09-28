@@ -247,35 +247,48 @@ export function getOccurenceIndicies(text: string, char: string) {
   return indices;
 }
 
-export function getAllSourceFilesInDir(dir: string, singleFileBuild: boolean) {
-  let language = getLanguage(dir);
+function getAllSourceFilesFolderBased(dir: string) {
+  const language = getLanguage(dir);
 
   let files: string[] = [];
-  if (!singleFileBuild) {
-    files = filesInDir(dir);
+  files = filesInDir(dir);
+  const filteredFiles = files.filter((file: string) =>
+    isSourceFile(path.extname(file)),
+  );
+  return { files: filteredFiles, language: language };
+}
+
+function getAllSourceFilesSingleFileBased() {
+  let language = Languages.c;
+  let files: string[] = [];
+
+  const currentFile = vscode.window.activeTextEditor?.document.fileName;
+  if (!currentFile) return { files: [], language: language };
+
+  if (isCppSourceFile(path.extname(currentFile))) {
+    language = Languages.cpp;
+  } else if (isCSourceFile(path.extname(currentFile))) {
+    language = Languages.c;
   } else {
-    const currentFile = vscode.window.activeTextEditor?.document.fileName;
-    if (!currentFile) return { files: [], language: language };
+    language = Languages.cuda;
+  }
 
-    if (isCppSourceFile(path.extname(currentFile))) {
-      language = Languages.cpp;
-    } else if (isCSourceFile(path.extname(currentFile))) {
-      language = Languages.c;
-    } else {
-      language = Languages.cuda;
-    }
+  const isSource = isSourceFile(path.extname(currentFile));
+  if (!isSource) return { files: [], language: language };
 
-    const isSource = isSourceFile(path.extname(currentFile));
-    if (!isSource) return { files: [], language: language };
-
-    if (currentFile.includes(' ')) {
-      files = [path.basename(currentFile)];
-    } else {
-      files = [currentFile];
-    }
+  if (currentFile.includes(' ')) {
+    files = [path.basename(currentFile)];
+  } else {
+    files = [currentFile];
   }
 
   return { files: files, language: language };
+}
+
+export function getAllSourceFilesInDir(dir: string, singleFileBuild: boolean) {
+  if (singleFileBuild) return getAllSourceFilesSingleFileBased();
+
+  return getAllSourceFilesFolderBased(dir);
 }
 
 export function getBuildModeDir(activeFolder: string, buildMode: string) {

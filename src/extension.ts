@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import { generateAssemblerCode } from './executor/assembler';
-import { executeBuildTask } from './executor/builder';
+import { executeBuildTask, getExecutableName } from './executor/builder';
 import { executeCleanTask } from './executor/cleaner';
 import { runDebugger } from './executor/debugger';
 import { executeRunTask } from './executor/runner';
@@ -765,15 +765,18 @@ async function buildTaskCallback(singleFileBuild: boolean) {
 async function runTaskCallback() {
   activeFolder = fallbackToInitFolderData();
   if (activeFolder === undefined) return;
+  if (!settingsProvider) return;
 
   const modeDir = getBuildModeDir(activeFolder, buildMode);
 
-  if (!pathExists(modeDir)) {
-    vscode.window.showErrorMessage('The executable is not yet built.');
-    return;
-  }
+  const executableName = getExecutableName(
+    settingsProvider.operatingSystem,
+    buildMode,
+  );
+  const executablePath = path.join(modeDir, executableName);
 
-  if (!settingsProvider) {
+  if (!pathExists(modeDir) || !pathExists(executablePath)) {
+    vscode.window.showErrorMessage('The executable is not yet built.');
     return;
   }
 

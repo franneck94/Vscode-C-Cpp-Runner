@@ -14,6 +14,16 @@ import { executeCudaBuildTask } from './builder/unix/cuda';
 import { executeBuildTaskUnixBased } from './builder/unix/gcc_clang';
 import { executeBuildTaskMsvcBased } from './builder/win/msvc';
 
+export function getExecutableName(
+  operatingSystem: OperatingSystems,
+  buildMode: Builds,
+) {
+  if (operatingSystem === OperatingSystems.windows)
+    return `out${buildMode}.exe`;
+
+  return `out${buildMode}`;
+}
+
 export async function executeBuildTask(
   settingsProvider: SettingsProvider,
   activeFolder: string,
@@ -33,13 +43,7 @@ export async function executeBuildTask(
 
   const operatingSystem = settingsProvider.operatingSystem;
 
-  let executableName: string;
-  if (operatingSystem === OperatingSystems.windows) {
-    executableName = `out${buildMode}.exe`;
-  } else {
-    executableName = `out${buildMode}`;
-  }
-
+  const executableName = getExecutableName(operatingSystem, buildMode);
   const executablePath = path.join(modeDir, executableName);
 
   let commandLine: string | undefined;

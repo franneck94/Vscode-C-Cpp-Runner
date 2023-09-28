@@ -9,7 +9,7 @@
 - **Info**: Huge internal refactoring (users shouldn't care about this ;))
 - **Info**: Added option for MSVC to deactivate safety warnings about functions like scanf, printf etc.
 - **Info**: Auto select workspace dir if there are source files as the active folder on startup
-- **TODO**: Add error message on single file run, when the exe is not present
+- **Info**: Add error message on single file run, when the exe is not present
 
 ## Version 8.1.0: Aug 08, 2023
 

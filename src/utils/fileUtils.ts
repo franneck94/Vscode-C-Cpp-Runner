@@ -247,7 +247,7 @@ export function getOccurenceIndicies(text: string, char: string) {
   return indices;
 }
 
-function getAllSourceFilesFolderBased(dir: string) {
+export function getAllSourceFilesFolderBased(dir: string) {
   const language = getLanguage(dir);
 
   let files: string[] = [];
@@ -258,7 +258,7 @@ function getAllSourceFilesFolderBased(dir: string) {
   return { files: filteredFiles, language: language };
 }
 
-function getAllSourceFilesSingleFileBased() {
+export function getAllSourceFilesSingleFileBased() {
   let language = Languages.c;
   let files: string[] = [];
 

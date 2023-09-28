@@ -24,7 +24,8 @@ import { Builds } from './types/enums';
 import {
   excludePatternFromList,
   foldersInDir,
-  getAllSourceFilesInDir,
+  getAllSourceFilesFolderBased,
+  getAllSourceFilesSingleFileBased,
   getBuildModeDir,
   mkdirRecursive,
   pathExists,
@@ -468,13 +469,18 @@ function initFolderStatusBar() {
         updateFolderData();
       } else {
         if (workspaceFolder && !activeFolder) {
-          const { files: files, language: _ } = getAllSourceFilesInDir(
-            workspaceFolder,
-            false,
-          );
+          const { files: filesFolder, language: _ } =
+            getAllSourceFilesFolderBased(workspaceFolder);
 
-          if (files.length > 0) {
+          const { files: filesSingle, language: __ } =
+            getAllSourceFilesSingleFileBased();
+
+          if (filesFolder.length > 0) {
             activeFolder = workspaceFolder;
+          } else if (filesSingle.length > 0 && filesSingle[0] !== undefined) {
+            const openedFile = filesSingle[0];
+            const openedFileDir = path.dirname(openedFile);
+            activeFolder = openedFileDir;
           }
         }
 

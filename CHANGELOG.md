@@ -4,6 +4,11 @@
 
 - **TODO**: Upcomming feature: open the generated assembler file to the side
 
+## Version 9.1.0: Oct 07, 2023
+
+- **Info**: Added better understandable error messages
+- **Bugfix**: Fixed some debug config issues
+
 ## Version 9.0.0: Sep 01, 2023
 
 - **Info**: Huge internal refactoring (users shouldn't care about this ;))

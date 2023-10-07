@@ -451,55 +451,49 @@ function initFolderStatusBar() {
   extensionContext?.subscriptions.push(folderStatusBar);
 
   const workspaceFolders = vscode.workspace.workspaceFolders;
-  if (workspaceFolders) {
-    if (workspaceFolders.length === 1) {
-      if (!workspaceFolders[0] || !workspaceFolders[0].uri.fsPath) return;
 
-      const workspaceFolderFs = workspaceFolders[0].uri.fsPath;
-      let folders = foldersInDir(workspaceFolderFs);
+  if (workspaceFolders === undefined) return;
+  if (workspaceFolders.length > 1) return;
+  if (!workspaceFolders[0] || !workspaceFolders[0].uri.fsPath) return;
 
-      folders = excludePatternFromList(
-        SettingsProvider.DEFAULT_EXCLUDE_SEARCH,
-        folders,
-      );
+  const workspaceFolderFs = workspaceFolders[0].uri.fsPath;
+  let folders = foldersInDir(workspaceFolderFs);
 
-      if (folders.length === 0) {
-        workspaceFolder = workspaceFolderFs;
-        activeFolder = workspaceFolderFs;
-        updateFolderData();
-      } else {
-        if (workspaceFolder && !activeFolder) {
-          const { files: filesFolder, language: _ } =
-            getAllSourceFilesFolderBased(workspaceFolder);
+  folders = excludePatternFromList(
+    SettingsProvider.DEFAULT_EXCLUDE_SEARCH,
+    folders,
+  );
 
-          const { files: filesSingle, language: __ } =
-            getAllSourceFilesSingleFileBased();
+  if (folders.length === 0) {
+    workspaceFolder = workspaceFolderFs;
+    activeFolder = workspaceFolderFs;
+    updateFolderData();
+  } else {
+    if (workspaceFolder && !activeFolder) {
+      const { files: filesFolder, language: _ } =
+        getAllSourceFilesFolderBased(workspaceFolder);
 
-          if (filesFolder.length > 0) {
-            activeFolder = workspaceFolder;
-          } else if (filesSingle.length > 0 && filesSingle[0] !== undefined) {
-            const openedFile = filesSingle[0];
-            const openedFileDir = path.dirname(openedFile);
-            activeFolder = openedFileDir;
-          }
-        }
+      const { files: filesSingle, language: __ } =
+        getAllSourceFilesSingleFileBased();
 
-        updateFolderStatus(
-          folderStatusBar,
-          workspaceFolder,
-          activeFolder,
-          showStatusBarItems,
-        );
+      if (filesFolder.length > 0) {
+        activeFolder = workspaceFolder;
+      } else if (filesSingle.length > 0 && filesSingle[0] !== undefined) {
+        const openedFile = filesSingle[0];
+        const openedFileDir = path.dirname(openedFile);
+        activeFolder = openedFileDir;
       }
-    } else {
-      updateFolderStatus(
-        folderStatusBar,
-        workspaceFolder,
-        activeFolder,
-        showStatusBarItems,
-      );
     }
+
+    updateFolderData();
   }
+
+  updateFolderStatus(
+    folderStatusBar,
+    workspaceFolder,
+    activeFolder,
+    showStatusBarItems,
+  );
 
   if (commandFolderDisposable) return;
 
@@ -782,7 +776,9 @@ async function runTaskCallback() {
   const executablePath = path.join(modeDir, executableName);
 
   if (!pathExists(modeDir) || !pathExists(executablePath)) {
-    vscode.window.showErrorMessage('The executable is not yet built.');
+    vscode.window.showErrorMessage(
+      'The executable you want to run does not (yet) exist.',
+    );
     return;
   }
 
@@ -816,14 +812,21 @@ function debugTaskCallback() {
   if (!workspaceFolder) return;
 
   activeFolder = fallbackToInitFolderData();
-  if (activeFolder === undefined) return;
+  if (activeFolder === undefined || settingsProvider === undefined) return;
 
   const modeDir = getBuildModeDir(activeFolder, buildMode);
+  const executableName = getExecutableName(
+    settingsProvider.operatingSystem,
+    buildMode,
+  );
+  const executablePath = path.join(modeDir, executableName);
 
-  if (!pathExists(modeDir)) {
-    vscode.window.showErrorMessage('The executable is not yet built.');
+  if (!pathExists(modeDir) || !pathExists(executablePath)) {
+    vscode.window.showErrorMessage(
+      'The executable you want to debug does not (yet) exist.',
+    );
     return;
   }
 
-  runDebugger(activeFolder, workspaceFolder, buildMode);
+  runDebugger(activeFolder, workspaceFolder, buildMode, settingsProvider);
 }

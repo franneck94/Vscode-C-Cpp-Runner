@@ -55,7 +55,6 @@ The configuration settings will be stored **locally** in *".vscode/settings.json
 Based on that, the local *".vscode/c_cpp_properties.json"* file is created.  
 It will be used by [Microsoft's *C/C++*](https://code.visualstudio.com/docs/cpp/c-cpp-properties-schema-reference) extension for intellisense (auto-completion etc.).  
 Note: You **don't** have to edit the **c_cpp_properties.json** file.  
-Some commands have also a keyboard shortcut. For more info see the **Features Contributing** section.
 
 ### Basic settings
 
@@ -146,7 +145,7 @@ The assembler code will be generated in a **.s** file that will be in the build 
 
 - 📝 File extensions for headers: \*.h, \*.hpp, \*.hh, \*.hxx
 - 📝 File extensions for sources: \*.c, \*.cpp, \*.cc, \*.cxx
-- ⚠️ Include paths with whitespaces can make the compilation fail
+- ⚠️ Include paths and file names with whitespaces and special characters (e.g. &) can make the compilation fail
 
 ### CMake Projects in the Workspace Directory
 

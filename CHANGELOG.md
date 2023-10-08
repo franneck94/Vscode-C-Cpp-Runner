@@ -6,7 +6,7 @@
 
 ## Version 9.2.0: Oct 08, 2023
 
-- **TODO**: Added better understandable error messages for compilers
+- **Info**: Added better understandable error messages for compilers
 
 ## Version 9.1.0: Oct 07, 2023
 

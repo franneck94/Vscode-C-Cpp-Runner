@@ -297,3 +297,7 @@ export function getBuildModeDir(activeFolder: string, buildMode: string) {
 
   return modeDir;
 }
+
+export function isNonRelativePath(path: string) {
+  return path.includes('/') || path.includes('\\');
+}

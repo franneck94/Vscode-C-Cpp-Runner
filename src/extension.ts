@@ -20,13 +20,14 @@ import { EXTENSION_NAME } from './params/params';
 import { LaunchProvider } from './provider/launchProvider';
 import { PropertiesProvider } from './provider/propertiesProvider';
 import { SettingsProvider } from './provider/settingsProvider';
-import { Builds } from './types/enums';
+import { Builds, Languages } from './types/enums';
 import {
   excludePatternFromList,
   foldersInDir,
   getAllSourceFilesFolderBased,
   getAllSourceFilesSingleFileBased,
   getBuildModeDir,
+  isNonRelativePath,
   mkdirRecursive,
   pathExists,
 } from './utils/fileUtils';
@@ -732,14 +733,14 @@ async function generateAssemblerCallback() {
 }
 
 function fallbackToInitFolderData() {
-  if (activeFolder === undefined) {
-    const currentFile = vscode.window.activeTextEditor?.document.fileName;
-    if (!currentFile) return;
-    const currentFolder = path.dirname(currentFile);
+  if (activeFolder !== undefined) return activeFolder;
 
-    activeFolder = currentFolder;
-    updateFolderData();
-  }
+  const currentFile = vscode.window.activeTextEditor?.document.fileName;
+  if (!currentFile) return;
+  const currentFolder = path.dirname(currentFile);
+
+  activeFolder = currentFolder;
+  updateFolderData();
 
   return activeFolder;
 }
@@ -753,6 +754,34 @@ async function buildTaskCallback(singleFileBuild: boolean) {
   if (!pathExists(modeDir)) mkdirRecursive(modeDir);
 
   if (!settingsProvider) return;
+
+  if (singleFileBuild && !settingsProvider.useMsvc) {
+    const { files: _, language: language } = getAllSourceFilesSingleFileBased();
+
+    if (
+      language === Languages.c &&
+      isNonRelativePath(settingsProvider.cCompilerPath)
+    ) {
+      if (!pathExists(settingsProvider.cCompilerPath)) {
+        vscode.window.showErrorMessage(
+          "The C compiler that you have set does not exist or wasn't installed properly.",
+        );
+        return;
+      }
+    }
+
+    if (
+      language === Languages.cpp &&
+      isNonRelativePath(settingsProvider.cppCompilerPath)
+    ) {
+      if (!pathExists(settingsProvider.cppCompilerPath)) {
+        vscode.window.showErrorMessage(
+          "The C++ compiler that you have set does not exist or wasn't installed properly.",
+        );
+        return;
+      }
+    }
+  }
 
   await executeBuildTask(
     settingsProvider,

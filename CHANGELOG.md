@@ -4,6 +4,10 @@
 
 - **TODO**: Upcomming feature: open the generated assembler file to the side
 
+## Version 9.2.1: Oct 16, 2023
+
+- **Regression**: Fixed compiler warnings not showing in problems tab
+
 ## Version 9.2.0: Oct 08, 2023
 
 - **Info**: Added better understandable error messages for compilers

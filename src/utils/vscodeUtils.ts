@@ -184,6 +184,7 @@ export async function runVscodeTask(
       task_name,
       EXTENSION_NAME,
       execution,
+      problemMatcher,
     );
   } else {
     task = new vscode.Task(

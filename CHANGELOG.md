@@ -4,6 +4,10 @@
 
 - **TODO**: Upcomming feature: open the generated assembler file to the side
 
+## Version 9.2.2: Nov 27, 2023
+
+- **Regression**: Fixed setting name "msvcSecureNoWarnings'" to "msvcSecureNoWarnings"
+
 ## Version 9.2.1: Oct 16, 2023
 
 - **Regression**: Fixed compiler warnings not showing in problems tab

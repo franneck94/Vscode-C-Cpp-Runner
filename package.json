@@ -2,7 +2,7 @@
   "name": "c-cpp-runner",
   "displayName": "C/C++ Runner",
   "description": "🚀 Compile, run and debug single or multiple C/C++ files with ease. 🚀",
-  "version": "9.2.1",
+  "version": "9.2.2",
   "publisher": "franneck94",
   "license": "MIT",
   "icon": "icon.png",
@@ -11,7 +11,7 @@
     "theme": "dark"
   },
   "engines": {
-    "vscode": "^1.81.0"
+    "vscode": "^1.84.0"
   },
   "categories": [
     "Programming Languages",
@@ -220,14 +220,15 @@
           "default": [
             "-Wall",
             "-Wextra",
-            "-Wpedantic",
             "-Wshadow",
-            "-Wformat=2",
+            "-Wpedantic",
+            "-Wunused",
             "-Wconversion",
-            "-Wnull-dereference",
-            "-Wsign-conversion"
+            "-Wformat=2",
+            "-Wsign-conversion",
+            "-Wnull-dereference"
           ],
-          "description": "Warnings to check by the GCC/CLANG compiler.",
+          "description": "Warnings to check by the gcc/clang compiler.",
           "scope": "resource"
         },
         "C_Cpp_Runner.msvcWarnings": {
@@ -281,13 +282,13 @@
         "C_Cpp_Runner.msvcBatchPath": {
           "type": "string",
           "default": "",
-          "description": "The path to the MSVC batch file (Needed to use the Visual Studio Compiler).",
+          "description": "The path to the MSVC batch file (e.g. VS2022 Compiler) - Windows only setting.",
           "scope": "resource"
         },
         "C_Cpp_Runner.useMsvc": {
           "type": "boolean",
           "default": false,
-          "description": "Whether to use MSVC compiler or Unix Compilers (Windows only).",
+          "description": "Whether to use MSVC compiler or gcc/clang - Windows only setting.",
           "scope": "resource"
         },
         "C_Cpp_Runner.cStandard": {
@@ -306,7 +307,7 @@
             "gnu23"
           ],
           "default": "",
-          "description": "C-Standard for the C Compiler. (If empty, compiler's default is used)",
+          "description": "C-Standard for the C Compiler.",
           "scope": "resource"
         },
         "C_Cpp_Runner.cppStandard": {
@@ -329,7 +330,7 @@
             "gnu++23"
           ],
           "default": "",
-          "description": "C++ Standard for the C++ Compiler. If empty, compiler's default is used.",
+          "description": "C++ Standard for the C++ Compiler.",
           "scope": "resource"
         },
         "C_Cpp_Runner.compilerArgs": {
@@ -390,37 +391,37 @@
         "C_Cpp_Runner.useAddressSanitizer": {
           "type": "boolean",
           "default": false,
-          "description": "Whether to activate the address sanitizer for the debug build (Iff the compiler has it implemented).",
+          "description": "Whether to activate the address sanitizer in debug builds.",
           "scope": "resource"
         },
         "C_Cpp_Runner.useUndefinedSanitizer": {
           "type": "boolean",
           "default": false,
-          "description": "Whether to activate the undefined sanitizer for the debug build (Iff the compiler has it implemented).",
+          "description": "Whether to activate the undefined sanitizer in debug builds.",
           "scope": "resource"
         },
         "C_Cpp_Runner.useLeakSanitizer": {
           "type": "boolean",
           "default": false,
-          "description": "Whether to activate the leak sanitizer for the debug build (Iff the compiler has it implemented).",
+          "description": "Whether to activate the leak sanitizer in debug builds.",
           "scope": "resource"
         },
         "C_Cpp_Runner.showCompilationTime": {
           "type": "boolean",
           "default": true,
-          "description": "Whether to output the compilation time.",
+          "description": "Whether to output the compilation time statistics.",
           "scope": "resource"
         },
         "C_Cpp_Runner.useLinkTimeOptimization": {
           "type": "boolean",
           "default": false,
-          "description": "Whether to use LTO/IPO for release build.",
+          "description": "Whether to use LTO/IPO in release builds.",
           "scope": "resource"
         },
-        "C_Cpp_Runner.msvcSecureNoWarnings'": {
+        "C_Cpp_Runner.msvcSecureNoWarnings": {
           "type": "boolean",
           "default": false,
-          "description": "Whether to disable security warnings by functions like scanf etc.",
+          "description": "Whether to disable security warnings in MSVC builds. (Functions like scanf etc.)",
           "scope": "resource"
         }
       }

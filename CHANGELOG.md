@@ -4,6 +4,10 @@
 
 - **TODO**: Upcomming feature: open the generated assembler file to the side
 
+## Version 9.3.0: Nov 30, 2023
+
+- **Regression**: Some changes for default MSVC Path (internal)
+
 ## Version 9.2.2: Nov 27, 2023
 
 - **Regression**: Fixed setting name "msvcSecureNoWarnings'" to "msvcSecureNoWarnings"

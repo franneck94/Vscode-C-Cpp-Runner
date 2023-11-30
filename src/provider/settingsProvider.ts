@@ -278,7 +278,13 @@ export class SettingsProvider extends FileProvider {
       'msvcBatchPath',
       SettingsProvider.DEFAULT_MSVC_BATCH_PATH,
     );
-    if (this.msvcBatchPath === SettingsProvider.DEFAULT_MSVC_BATCH_PATH) {
+    if (
+      this.msvcBatchPath === SettingsProvider.DEFAULT_MSVC_BATCH_PATH ||
+      this.msvcBatchPath === ''
+    ) {
+      if (this.msvcBatchPath === '')
+        this.msvcBatchPath = SettingsProvider.DEFAULT_MSVC_BATCH_PATH;
+
       if (pathExists(this.msvcBatchPath.replace('VR_NR', '2022'))) {
         this.msvcBatchPath = this.msvcBatchPath.replace('VR_NR', '2022');
         this.update('msvcBatchPath', this.msvcBatchPath);

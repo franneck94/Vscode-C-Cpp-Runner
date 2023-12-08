@@ -1,0 +1,464 @@
+{
+  "name": "c-cpp-runner",
+  "displayName": "C/C++ Runner",
+  "description": "🚀 Compile, run and debug single or multiple C/C++ files with ease. 🚀",
+  "version": "9.3.0",
+  "publisher": "franneck94",
+  "license": "MIT",
+  "icon": "icon.png",
+  "galleryBanner": {
+    "color": "#9c9c9c",
+    "theme": "dark"
+  },
+  "engines": {
+    "vscode": "^1.84.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Debuggers",
+    "Snippets"
+  ],
+  "tags": [
+    "c",
+    "c++",
+    "run",
+    "compile",
+    "build",
+    "debug"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/franneck94/vscode-c-cpp-runner.git"
+  },
+  "homepage": "https://github.com/franneck94/vscode-c-cpp-runner/README.md",
+  "bugs": {
+    "url": "https://github.com/franneck94/vscode-c-cpp-runner/issues"
+  },
+  "activationEvents": [
+    "onLanguage:c",
+    "onLanguage:cpp",
+    "workspaceContains:*.h",
+    "workspaceContains:*.c",
+    "workspaceContains:*.hh",
+    "workspaceContains:*.cc",
+    "workspaceContains:*.hxx",
+    "workspaceContains:*.cxx",
+    "workspaceContains:*.hpp",
+    "workspaceContains:*.cpp",
+    "workspaceContains:*.cu"
+  ],
+  "main": "./dist/main",
+  "contributes": {
+    "taskDefinitions": [
+      {
+        "type": "C_Cpp_Runner"
+      }
+    ],
+    "commands": [
+      {
+        "command": "C_Cpp_Runner.selectFolder",
+        "title": "Select Folder",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
+      },
+      {
+        "command": "C_Cpp_Runner.selectMode",
+        "title": "Select Mode",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
+      },
+      {
+        "command": "C_Cpp_Runner.buildFolder",
+        "title": "Build Folder",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
+      },
+      {
+        "command": "C_Cpp_Runner.runFolder",
+        "title": "Run Folder",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
+      },
+      {
+        "command": "C_Cpp_Runner.debugFolder",
+        "title": "Debug Folder",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
+      },
+      {
+        "command": "C_Cpp_Runner.cleanFolder",
+        "title": "Clean Folder",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
+      },
+      {
+        "command": "C_Cpp_Runner.folderContextMenu",
+        "title": "Select folder from context menu",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
+      },
+      {
+        "command": "C_Cpp_Runner.resetLocalSettings",
+        "title": "Reset local settings",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
+      },
+      {
+        "command": "C_Cpp_Runner.toggleExtensionState",
+        "title": "Toggle extension buttons in status bar",
+        "category": "C/C++ Runner"
+      },
+      {
+        "command": "C_Cpp_Runner.addCmdArgs",
+        "title": "Commandline Arguments",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
+      },
+      {
+        "command": "C_Cpp_Runner.buildSingleFile",
+        "title": "Build Single File",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
+      },
+      {
+        "command": "C_Cpp_Runner.runCurrentSelection",
+        "title": "Run Single File",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
+      },
+      {
+        "command": "C_Cpp_Runner.debugCurrentSelection",
+        "title": "Debug Single File",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
+      },
+      {
+        "command": "C_Cpp_Runner.generateAssembler",
+        "title": "Generate Assembler Code",
+        "when": "C_Cpp_Runner:activatedExtension",
+        "category": "C/C++ Runner"
+      },
+      {
+        "command": "C_Cpp_Runner.BuildAndDebugFile",
+        "title": "C/C++ Runner: Debug File",
+        "category": "C/C++",
+        "icon": "$(debug-alt)"
+      },
+      {
+        "command": "C_Cpp_Runner.BuildAndRunFile",
+        "title": "C/C++ Runner: Run File",
+        "category": "C/C++",
+        "icon": "$(run)"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "C_Cpp_Runner.buildFolder",
+        "key": "ctrl+k b",
+        "mac": "ctrl+k b",
+        "when": "C_Cpp_Runner:activatedExtension"
+      },
+      {
+        "command": "C_Cpp_Runner.buildSingleFile",
+        "key": "ctrl+alt+b",
+        "mac": "ctrl+alt+b",
+        "when": "C_Cpp_Runner:activatedExtension"
+      },
+      {
+        "command": "C_Cpp_Runner.runCurrentSelection",
+        "key": "ctrl+alt+r",
+        "mac": "ctrl+alt+r",
+        "when": "C_Cpp_Runner:activatedExtension"
+      },
+      {
+        "command": "C_Cpp_Runner.debugCurrentSelection",
+        "key": "ctrl+alt+d",
+        "mac": "ctrl+alt+d",
+        "when": "C_Cpp_Runner:activatedExtension"
+      },
+      {
+        "command": "C_Cpp_Runner.addCmdArgs",
+        "key": "ctrl+alt+a",
+        "mac": "ctrl+alt+a",
+        "when": "C_Cpp_Runner:activatedExtension"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "C_Cpp_Runner.folderContextMenu",
+          "when": "explorerResourceIsFolder",
+          "group": "cCppRunnerGroup@1"
+        }
+      ],
+      "editor/title/run": [
+        {
+          "command": "C_Cpp_Runner.BuildAndDebugFile",
+          "when": "editorLangId =~ /^(c|(cuda-)?cpp)$/"
+        },
+        {
+          "command": "C_Cpp_Runner.BuildAndRunFile",
+          "when": "editorLangId =~ /^(c|(cuda-)?cpp)$/"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "C/C++ Runner",
+      "properties": {
+        "C_Cpp_Runner.enableWarnings": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to enable checking warnings or not.",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "-Wall",
+            "-Wextra",
+            "-Wshadow",
+            "-Wpedantic",
+            "-Wunused",
+            "-Wconversion",
+            "-Wformat=2",
+            "-Wsign-conversion",
+            "-Wnull-dereference"
+          ],
+          "description": "Warnings to check by the gcc/clang compiler.",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.msvcWarnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "/W4",
+            "/permissive-",
+            "/w14242",
+            "/w14287",
+            "/w14296",
+            "/w14311",
+            "/w14826",
+            "/w44062",
+            "/w44242",
+            "/w14905",
+            "/w14906",
+            "/w14263",
+            "/w44265",
+            "/w14928"
+          ],
+          "description": "Warnings to check by the MSVC compiler.",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.warningsAsError": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to treat warnings as compiler errors or not.",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.cCompilerPath": {
+          "type": "string",
+          "default": "gcc",
+          "description": "The path to the C Compiler (either gcc or clang).",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.cppCompilerPath": {
+          "type": "string",
+          "default": "g++",
+          "description": "The path to the C++ Compiler (either g++ or clang++).",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.debuggerPath": {
+          "type": "string",
+          "default": "gdb",
+          "description": "The path to the debugger (either gdb or lldb).",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.msvcBatchPath": {
+          "type": "string",
+          "default": "",
+          "description": "The path to the MSVC batch file (e.g. VS2022 Compiler) - Windows only setting.",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.useMsvc": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to use MSVC compiler or gcc/clang - Windows only setting.",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.cStandard": {
+          "type": "string",
+          "enum": [
+            "",
+            "c89",
+            "c99",
+            "c11",
+            "c17",
+            "c23",
+            "gnu89",
+            "gnu99",
+            "gnu11",
+            "gnu17",
+            "gnu23"
+          ],
+          "default": "",
+          "description": "C-Standard for the C Compiler.",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.cppStandard": {
+          "type": "string",
+          "enum": [
+            "",
+            "c++98",
+            "c++03",
+            "c++11",
+            "c++14",
+            "c++17",
+            "c++20",
+            "c++23",
+            "gnu++98",
+            "gnu++03",
+            "gnu++11",
+            "gnu++14",
+            "gnu++17",
+            "gnu++20",
+            "gnu++23"
+          ],
+          "default": "",
+          "description": "C++ Standard for the C++ Compiler.",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.compilerArgs": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "description": "Additional compiler arguments.",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.linkerArgs": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "description": "Additional linker arguments.",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.includePaths": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "description": "Additional include paths.",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.includeSearch": {
+          "type": "array",
+          "default": [
+            "*",
+            "**/*"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Include glob patterns for folder selection. (Ran before exclude pattern)",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.excludeSearch": {
+          "type": "array",
+          "default": [
+            "**/build",
+            "**/build/**",
+            "**/.*",
+            "**/.*/**",
+            "**/.vscode",
+            "**/.vscode/**"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Exclude glob patterns for folder selection. (Ran after include pattern)",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.useAddressSanitizer": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to activate the address sanitizer in debug builds.",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.useUndefinedSanitizer": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to activate the undefined sanitizer in debug builds.",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.useLeakSanitizer": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to activate the leak sanitizer in debug builds.",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.showCompilationTime": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to output the compilation time statistics.",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.useLinkTimeOptimization": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to use LTO/IPO in release builds.",
+          "scope": "resource"
+        },
+        "C_Cpp_Runner.msvcSecureNoWarnings": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to disable security warnings in MSVC builds. (Functions like scanf etc.)",
+          "scope": "resource"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "webpack": "webpack --mode development",
+    "webpack-watch": "webpack --mode development --watch",
+    "vscode:prepublish": "npm run webpack",
+    "compile": "npm run webpack",
+    "compile-watch": "npm run webpack-watch",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/minimatch": "^3.0.5",
+    "@types/node": "^14.0.27",
+    "@types/vscode": "^1.53.0",
+    "@typescript-eslint/eslint-plugin": "^4.1.1",
+    "@typescript-eslint/eslint-plugin-tslint": "^4.20.0",
+    "@typescript-eslint/parser": "^4.1.1",
+    "eslint": "^7.9.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsdoc": "^32.3.0",
+    "prettier": "^2.2.1",
+    "typescript": "^4.0.2",
+    "webpack": "^5.28.0",
+    "webpack-cli": "^4.10.0"
+  },
+  "dependencies": {
+    "json5": "^2.2.0",
+    "lookpath": "^1.2.0",
+    "minimatch": "^3.0.4",
+    "ts-loader": "^8.1.0",
+    "vsce": "^2.15.0"
+  },
+  "extensionDependencies": [
+    "ms-vscode.cpptools",
+    "vadimcn.vscode-lldb"
+  ]
+}

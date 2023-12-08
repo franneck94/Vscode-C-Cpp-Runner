@@ -1,0 +1,13 @@
+.vscode/
+node_modules/
+test/
+src/
+
+.editorconfig
+.eslintignore
+.eslintrc.js
+.gitattributes
+.gitignore
+.prettierrc.json
+tsconfig.json
+webpack.config.js

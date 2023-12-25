@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import { exec, execSync } from 'child_process';
 import { lookpath } from 'lookpath';
 import { platform } from 'os';
 
@@ -60,4 +60,28 @@ export function getCompilerArchitecture(compiler: string) {
   }
 
   return { architecture: architecture, isCygwin: isCygwin };
+}
+
+interface CommandResult {
+  success: boolean;
+  stdout?: string;
+  stderr?: string;
+}
+
+async function executeCommand(command: string): Promise<CommandResult> {
+  return new Promise((resolve) => {
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        resolve({ success: false, stderr: stderr || error.message });
+      } else {
+        resolve({ success: true, stdout: stdout.trim() });
+      }
+    });
+  });
+}
+
+export async function checkForCompilerIsValid(command: string) {
+  const result = await executeCommand(command);
+
+  return result.success;
 }

@@ -4,6 +4,10 @@
 
 - **TODO**: Upcomming feature: open the generated assembler file to the side
 
+## Version 9.4.0: Dec 25, 2023
+
+- **Regression**: Improved error messages when the user selected c/c++ compiler does not exits/work
+
 ## Version 9.3.0: Nov 30, 2023
 
 - **Regression**: Some changes for default MSVC Path (internal)

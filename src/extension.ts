@@ -31,6 +31,7 @@ import {
   mkdirRecursive,
   pathExists,
 } from './utils/fileUtils';
+import { checkForCompilerIsValid } from './utils/systemUtils';
 import {
   createStatusBarItem,
   disposeItem,
@@ -164,11 +165,24 @@ export function deactivate() {
   disposeItem(eventRenameFilesDisposable);
 }
 
-function initWorkspaceProvider() {
+async function initWorkspaceProvider() {
   if (!workspaceFolder || !createExtensionFiles || !activeFolder) return;
 
   if (!settingsProvider) {
     settingsProvider = new SettingsProvider(workspaceFolder, activeFolder);
+
+    const cCompilerIsValid = await checkForCompilerIsValid(
+      `${settingsProvider.cCompilerPath} --version`,
+    );
+    const cppCompilerIsValid = await checkForCompilerIsValid(
+      `${settingsProvider.cppCompilerPath} --version`,
+    );
+
+    if (!cCompilerIsValid && !cppCompilerIsValid) {
+      vscode.window.showErrorMessage(
+        "The compiler that you have set does not exist or wasn't installed properly.",
+      );
+    }
   }
 
   if (!propertiesProvider) {
@@ -658,6 +672,7 @@ async function initCleanStatusBar() {
 function initProviderBasedOnSingleFile() {
   const currentFile = vscode.window.activeTextEditor?.document.fileName;
   if (!currentFile) return;
+
   const currentFolder = path.dirname(currentFile);
   if (activeFolder !== currentFolder) {
     activeFolder = currentFolder;
@@ -764,7 +779,7 @@ async function buildTaskCallback(singleFileBuild: boolean) {
     ) {
       if (!pathExists(settingsProvider.cCompilerPath)) {
         vscode.window.showErrorMessage(
-          "The C compiler that you have set does not exist or wasn't installed properly.",
+          "The C compiler (gcc/clang) that you have set does not exist or wasn't installed properly.",
         );
         return;
       }
@@ -776,7 +791,7 @@ async function buildTaskCallback(singleFileBuild: boolean) {
     ) {
       if (!pathExists(settingsProvider.cppCompilerPath)) {
         vscode.window.showErrorMessage(
-          "The C++ compiler that you have set does not exist or wasn't installed properly.",
+          "The C++ compiler (g++/clang++) that you have set does not exist or wasn't installed properly.",
         );
         return;
       }
@@ -806,7 +821,7 @@ async function runTaskCallback() {
 
   if (!pathExists(modeDir) || !pathExists(executablePath)) {
     vscode.window.showErrorMessage(
-      'The executable you want to run does not (yet) exist.',
+      'The executable you want to run does not (yet) exist. You need to build it first.',
     );
     return;
   }
@@ -852,7 +867,7 @@ function debugTaskCallback() {
 
   if (!pathExists(modeDir) || !pathExists(executablePath)) {
     vscode.window.showErrorMessage(
-      'The executable you want to debug does not (yet) exist.',
+      'The executable you want to debug does not (yet) exist. You need to build it first.',
     );
     return;
   }

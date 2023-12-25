@@ -74,20 +74,21 @@ export class LaunchProvider extends FileProvider {
 
     if (!launchTemplate) return;
 
-    if (
-      this.settings.operatingSystem === OperatingSystems.windows &&
-      (this.settings.useMsvc ||
-        this.settings.cCompilerPath.toLowerCase().includes('clang'))
-    ) {
-      this.msvcBasedDebugger(launchTemplate);
-      delete launchTemplate.configurations[0]?.externalConsole;
-    } else if (
-      this.settings.operatingSystem === OperatingSystems.windows &&
-      launchTemplate.configurations[0]
-    ) {
-      this.unixBasedDebugger(launchTemplate);
-      delete launchTemplate.configurations[0]?.console;
-      launchTemplate.configurations[0].externalConsole = true;
+    const is_windows =
+      this.settings.operatingSystem === OperatingSystems.windows;
+    const is_windows_based_compiler =
+      this.settings.useMsvc ||
+      this.settings.cCompilerPath.toLowerCase().includes('clang');
+
+    if (is_windows) {
+      if (is_windows_based_compiler) {
+        this.msvcBasedDebugger(launchTemplate);
+        delete launchTemplate.configurations[0]?.externalConsole;
+      } else if (launchTemplate.configurations[0]) {
+        this.unixBasedDebugger(launchTemplate);
+        delete launchTemplate.configurations[0]?.console;
+        launchTemplate.configurations[0].externalConsole = true;
+      }
     } else {
       this.unixBasedDebugger(launchTemplate);
       delete launchTemplate.configurations[0]?.console;

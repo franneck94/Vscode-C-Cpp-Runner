@@ -3,26 +3,26 @@ import * as vscode from 'vscode';
 
 import { EXTENSION_NAME, SETTINGS_OUTPUT_FILENAME } from '../params/params';
 import {
-  Architectures,
-  CompilerSystems,
-  OperatingSystems,
+	Architectures,
+	CompilerSystems,
+	OperatingSystems,
 } from '../types/enums';
 import {
-  JsonPropertiesConfig,
-  JsonPropertiesConfigEntry,
-  JsonSettings,
+	JsonPropertiesConfig,
+	JsonPropertiesConfigEntry,
+	JsonSettings,
 } from '../types/interfaces';
 import {
-  foldersInDir,
-  localSettingExist,
-  pathExists,
-  readJsonFile,
-  replaceBackslashes,
-  writeJsonFile,
+	foldersInDir,
+	localSettingExist,
+	pathExists,
+	readJsonFile,
+	replaceBackslashes,
+	writeJsonFile,
 } from '../utils/fileUtils';
 import {
-  getCompilerArchitecture,
-  getOperatingSystem,
+	getCompilerArchitecture,
+	getOperatingSystem,
 } from '../utils/systemUtils';
 import { FileProvider } from './fileProvider';
 
@@ -658,34 +658,63 @@ export class SettingsProvider extends FileProvider {
   }
 
   private storeSettings() {
-    this.updateBasedOnEnv('cCompilerPath', this.cCompilerPath);
-    this.updateBasedOnEnv('cppCompilerPath', this.cppCompilerPath);
-    this.updateBasedOnEnv('debuggerPath', this.debuggerPath);
+    let settingsJson: JsonSettings | undefined = readJsonFile(this._outputPath);
+    if (!settingsJson) settingsJson = {};
 
-    this.update('cStandard', this.cStandard);
-    this.update('cppStandard', this.cppStandard);
+    this.updateKeyBasedOnEnv(settingsJson, 'cCompilerPath', this.cCompilerPath);
+    this.updateKeyBasedOnEnv(
+      settingsJson,
+      'cppCompilerPath',
+      this.cppCompilerPath,
+    );
+    this.updateKeyBasedOnEnv(settingsJson, 'debuggerPath', this.debuggerPath);
 
-    this.update('msvcBatchPath', this.msvcBatchPath);
-    this.update('useMsvc', this.useMsvc);
+    this.updateKey(settingsJson, 'cStandard', this.cStandard);
+    this.updateKey(settingsJson, 'cppStandard', this.cppStandard);
 
-    this.update('warnings', this.warnings);
-    this.update('msvcWarnings', this.msvcWarnings);
-    this.update('enableWarnings', this.enableWarnings);
-    this.update('warningsAsError', this.warningsAsError);
+    this.updateKey(settingsJson, 'msvcBatchPath', this.msvcBatchPath);
+    this.updateKey(settingsJson, 'useMsvc', this.useMsvc);
 
-    this.update('compilerArgs', this.compilerArgs);
-    this.update('linkerArgs', this.linkerArgs);
-    this.update('includePaths', this.includePaths);
+    this.updateKey(settingsJson, 'warnings', this.warnings);
+    this.updateKey(settingsJson, 'msvcWarnings', this.msvcWarnings);
+    this.updateKey(settingsJson, 'enableWarnings', this.enableWarnings);
+    this.updateKey(settingsJson, 'warningsAsError', this.warningsAsError);
 
-    this.update('includeSearch', this.includeSearch);
-    this.update('excludeSearch', this.excludeSearch);
+    this.updateKey(settingsJson, 'compilerArgs', this.compilerArgs);
+    this.updateKey(settingsJson, 'linkerArgs', this.linkerArgs);
+    this.updateKey(settingsJson, 'includePaths', this.includePaths);
 
-    this.update('useAddressSanitizer', this.useAddressSanitizer);
-    this.update('useUndefinedSanitizer', this.useUndefinedSanitizer);
-    this.update('useLeakSanitizer', this.useLeakSanitizer);
-    this.update('showCompilationTime', this.showCompilationTime);
-    this.update('useLinkTimeOptimization', this.useLinkTimeOptimization);
-    this.update('msvcSecureNoWarnings', this.msvcSecureNoWarnings);
+    this.updateKey(settingsJson, 'includeSearch', this.includeSearch);
+    this.updateKey(settingsJson, 'excludeSearch', this.excludeSearch);
+
+    this.updateKey(
+      settingsJson,
+      'useAddressSanitizer',
+      this.useAddressSanitizer,
+    );
+    this.updateKey(
+      settingsJson,
+      'useUndefinedSanitizer',
+      this.useUndefinedSanitizer,
+    );
+    this.updateKey(settingsJson, 'useLeakSanitizer', this.useLeakSanitizer);
+    this.updateKey(
+      settingsJson,
+      'showCompilationTime',
+      this.showCompilationTime,
+    );
+    this.updateKey(
+      settingsJson,
+      'useLinkTimeOptimization',
+      this.useLinkTimeOptimization,
+    );
+    this.updateKey(
+      settingsJson,
+      'msvcSecureNoWarnings',
+      this.msvcSecureNoWarnings,
+    );
+
+    writeJsonFile(this._outputPath, settingsJson);
   }
 
   /********************/
@@ -737,11 +766,24 @@ export class SettingsProvider extends FileProvider {
     writeJsonFile(this._outputPath, settingsJson);
   }
 
-  private updateBasedOnEnv(settingsName: string, settingsValue: string) {
+  public updateKey(settingsJson: JsonSettings, key: string, value: any) {
+    const settingName = `${EXTENSION_NAME}.${key}`;
+    settingsJson[settingName] = value;
+  }
+
+  private updateKeyBasedOnEnv(
+    settingsJson: JsonSettings,
+    settingsName: string,
+    settingsValue: string,
+  ) {
     if (this.operatingSystem === OperatingSystems.windows) {
-      this.update(settingsName, replaceBackslashes(settingsValue));
+      this.updateKey(
+        settingsJson,
+        settingsName,
+        replaceBackslashes(settingsValue),
+      );
     } else {
-      this.update(settingsName, settingsValue);
+      this.updateKey(settingsJson, settingsName, settingsValue);
     }
   }
 }

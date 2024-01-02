@@ -4,6 +4,10 @@
 
 - **TODO**: Upcomming feature: open the generated assembler file to the side
 
+## Version 9.4.1: Jan 02, 2024
+
+- **Info**: Fasten up storage of local settings
+
 ## Version 9.4.0: Dec 25, 2023
 
 - **Regression**: Improved error messages when the user selected c/c++ compiler does not exits/work

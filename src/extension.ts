@@ -78,6 +78,8 @@ let buildMode: Builds = Builds.debug;
 let showStatusBarItems: boolean = true;
 let createExtensionFiles: boolean = true;
 
+let updatedFileContent: boolean = false;
+
 export let extensionContext: vscode.ExtensionContext | undefined;
 export let extensionState: vscode.Memento | undefined;
 export let extensionPath: string | undefined;
@@ -314,6 +316,11 @@ function initConfigurationChangeDisposable() {
       const extensionIsActive = getActivationState();
 
       if (isChanged && extensionIsActive) {
+        if (updatedFileContent) {
+          updatedFileContent = false;
+          return;
+        }
+
         settingsProvider?.updateFileContent();
         propertiesProvider?.updateFileContent();
         launchProvider?.updateFileContent();
@@ -412,6 +419,8 @@ function updateFolderData() {
 
   if (workspaceFolder && activeFolder) {
     if (settingsProvider) {
+      updatedFileContent = true;
+
       settingsProvider.updateFolderData(workspaceFolder);
       settingsProvider.updateFileContent();
 

@@ -71,7 +71,6 @@ export class LaunchProvider extends FileProvider {
     const launchTemplate: JsonLaunchConfig | undefined = readJsonFile(
       this.templatePath,
     );
-
     if (!launchTemplate) return;
 
     const is_windows =

@@ -1,8 +1,8 @@
 # C/C++ Runner Change Log
 
-## Planned
+## Version 9.4.2: Jan 03, 2024
 
-- **TODO**: Upcomming feature: open the generated assembler file to the side
+- **Info**: Tried to fix infinite loop of settings.json update
 
 ## Version 9.4.1: Jan 02, 2024
 

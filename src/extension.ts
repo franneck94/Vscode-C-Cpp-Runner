@@ -321,7 +321,6 @@ function initConfigurationChangeDisposable() {
           return;
         }
 
-        settingsProvider?.updateFileContent();
         propertiesProvider?.updateFileContent();
         launchProvider?.updateFileContent();
       }
@@ -431,7 +430,7 @@ function updateFolderData() {
       if (launchProvider) {
         launchProvider.updateFolderData(workspaceFolder, activeFolder);
         launchProvider.updateModeData(buildMode);
-        launchProvider?.updateArgumentsData(argumentsString);
+        launchProvider.updateArgumentsData(argumentsString);
         launchProvider.updateFileContent();
       }
     }

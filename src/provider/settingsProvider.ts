@@ -3,26 +3,26 @@ import * as vscode from 'vscode';
 
 import { EXTENSION_NAME, SETTINGS_OUTPUT_FILENAME } from '../params/params';
 import {
-	Architectures,
-	CompilerSystems,
-	OperatingSystems,
+  Architectures,
+  CompilerSystems,
+  OperatingSystems,
 } from '../types/enums';
 import {
-	JsonPropertiesConfig,
-	JsonPropertiesConfigEntry,
-	JsonSettings,
+  JsonPropertiesConfig,
+  JsonPropertiesConfigEntry,
+  JsonSettings,
 } from '../types/interfaces';
 import {
-	foldersInDir,
-	localSettingExist,
-	pathExists,
-	readJsonFile,
-	replaceBackslashes,
-	writeJsonFile,
+  foldersInDir,
+  localSettingExist,
+  pathExists,
+  readJsonFile,
+  replaceBackslashes,
+  writeJsonFile,
 } from '../utils/fileUtils';
 import {
-	getCompilerArchitecture,
-	getOperatingSystem,
+  getCompilerArchitecture,
+  getOperatingSystem,
 } from '../utils/systemUtils';
 import { FileProvider } from './fileProvider';
 
@@ -279,8 +279,9 @@ export class SettingsProvider extends FileProvider {
       SettingsProvider.DEFAULT_MSVC_BATCH_PATH,
     );
     if (
-      this.msvcBatchPath === SettingsProvider.DEFAULT_MSVC_BATCH_PATH ||
-      this.msvcBatchPath === ''
+      this.operatingSystem === OperatingSystems.windows &&
+      (this.msvcBatchPath === SettingsProvider.DEFAULT_MSVC_BATCH_PATH ||
+        this.msvcBatchPath === '')
     ) {
       if (this.msvcBatchPath === '')
         this.msvcBatchPath = SettingsProvider.DEFAULT_MSVC_BATCH_PATH;

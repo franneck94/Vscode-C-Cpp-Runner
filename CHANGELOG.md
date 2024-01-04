@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 9.4.3: Jan 04, 2024
+
+- **Info**: Fixed infinite loop of settings.json update
+
 ## Version 9.4.2: Jan 03, 2024
 
 - **Info**: Tried to fix infinite loop of settings.json update

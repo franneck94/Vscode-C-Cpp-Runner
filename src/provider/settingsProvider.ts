@@ -302,6 +302,9 @@ export class SettingsProvider extends FileProvider {
         this.msvcBatchPath = '';
         this.update('msvcBatchPath', this.msvcBatchPath);
       }
+    } else if (this.operatingSystem !== OperatingSystems.windows) {
+      this.msvcBatchPath = '';
+      this.update('msvcBatchPath', this.msvcBatchPath);
     }
 
     if (this.operatingSystem === OperatingSystems.windows) {

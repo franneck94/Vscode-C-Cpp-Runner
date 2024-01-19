@@ -1,18 +1,18 @@
 import * as path from 'path';
 
 import {
-  DEBUG_CONFIG_NAME,
-  LAUNCH_OUTPUT_FILENAME,
-  LAUNCH_TEMPLATE_FILENAME,
+	DEBUG_CONFIG_NAME,
+	LAUNCH_OUTPUT_FILENAME,
+	LAUNCH_TEMPLATE_FILENAME,
 } from '../params/params';
 import { Builds, Debuggers, OperatingSystems } from '../types/enums';
 import { JsonLaunchConfig } from '../types/interfaces';
 import {
-  getOccurenceIndicies,
-  pathExists,
-  readJsonFile,
-  replaceBackslashes,
-  writeJsonFile,
+	getOccurenceIndicies,
+	pathExists,
+	readJsonFile,
+	replaceBackslashes,
+	writeJsonFile,
 } from '../utils/fileUtils';
 import { getLaunchConfigIndex } from '../utils/vscodeUtils';
 import { FileProvider } from './fileProvider';
@@ -248,12 +248,7 @@ export class LaunchProvider extends FileProvider {
         SettingsProvider.DEFAULT_DEBUGGER_PATH_NON_MAC;
     }
 
-    if (
-      OperatingSystems.mac === this.settings.operatingSystem &&
-      (this.settings.cCompilerPath.toLowerCase().includes('clang') ||
-        this.settings.cppCompilerPath.toLowerCase().includes('clang++')) &&
-      this.settings.debuggerPath.toLowerCase().includes('lldb')
-    ) {
+    if (this.settings.debuggerPath.toLowerCase().includes('lldb')) {
       launchTemplate.configurations[0].type = 'lldb';
 
       delete launchTemplate.configurations[0]?.setupCommands;

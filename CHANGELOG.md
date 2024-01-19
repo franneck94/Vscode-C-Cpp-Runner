@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 9.4.4: Jan 19, 2024
+
+- **Info**: Hotfix for lldb debugger selection in launch.json file
+
 ## Version 9.4.3: Jan 04, 2024
 
 - **Info**: Fixed infinite loop of settings.json update

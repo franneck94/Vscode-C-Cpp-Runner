@@ -1,18 +1,19 @@
 import * as path from 'path';
+import * as vscode from 'vscode';
 
 import {
-	DEBUG_CONFIG_NAME,
-	LAUNCH_OUTPUT_FILENAME,
-	LAUNCH_TEMPLATE_FILENAME,
+  DEBUG_CONFIG_NAME,
+  LAUNCH_OUTPUT_FILENAME,
+  LAUNCH_TEMPLATE_FILENAME,
 } from '../params/params';
 import { Builds, Debuggers, OperatingSystems } from '../types/enums';
 import { JsonLaunchConfig } from '../types/interfaces';
 import {
-	getOccurenceIndicies,
-	pathExists,
-	readJsonFile,
-	replaceBackslashes,
-	writeJsonFile,
+  getOccurenceIndicies,
+  pathExists,
+  readJsonFile,
+  replaceBackslashes,
+  writeJsonFile,
 } from '../utils/fileUtils';
 import { getLaunchConfigIndex } from '../utils/vscodeUtils';
 import { FileProvider } from './fileProvider';
@@ -73,11 +74,23 @@ export class LaunchProvider extends FileProvider {
     );
     if (!launchTemplate) return;
 
+    const is_clang_compiler =
+      this.settings.cCompilerPath.toLowerCase().includes('clang') ||
+      this.settings.cppCompilerPath.toLowerCase().includes('clang++');
+    const is_clang_debugger = this.settings.debuggerPath
+      .toLowerCase()
+      .includes('lldb');
+
+    if (is_clang_compiler && !is_clang_debugger) {
+      vscode.window.showErrorMessage(
+        'You have to use the LLDB Debugger for the Clang/Clang++ Compiler!',
+      );
+    }
+
     const is_windows =
       this.settings.operatingSystem === OperatingSystems.windows;
     const is_windows_based_compiler =
-      this.settings.useMsvc ||
-      this.settings.cCompilerPath.toLowerCase().includes('clang');
+      this.settings.useMsvc || is_clang_compiler;
 
     if (is_windows) {
       if (is_windows_based_compiler) {
@@ -248,7 +261,11 @@ export class LaunchProvider extends FileProvider {
         SettingsProvider.DEFAULT_DEBUGGER_PATH_NON_MAC;
     }
 
-    if (this.settings.debuggerPath.toLowerCase().includes('lldb')) {
+    if (
+      this.settings.debuggerPath.toLowerCase().includes('lldb') &&
+      (this.settings.operatingSystem === OperatingSystems.linux ||
+        this.settings.operatingSystem === OperatingSystems.mac)
+    ) {
       launchTemplate.configurations[0].type = 'lldb';
 
       delete launchTemplate.configurations[0]?.setupCommands;

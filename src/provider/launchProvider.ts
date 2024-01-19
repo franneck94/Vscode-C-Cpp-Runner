@@ -262,9 +262,9 @@ export class LaunchProvider extends FileProvider {
     }
 
     if (
-      this.settings.debuggerPath.toLowerCase().includes('lldb') &&
-      (this.settings.operatingSystem === OperatingSystems.linux ||
-        this.settings.operatingSystem === OperatingSystems.mac)
+      (this.settings.debuggerPath.toLowerCase().includes('lldb') &&
+        this.settings.operatingSystem === OperatingSystems.linux) ||
+      this.settings.operatingSystem === OperatingSystems.mac
     ) {
       launchTemplate.configurations[0].type = 'lldb';
 

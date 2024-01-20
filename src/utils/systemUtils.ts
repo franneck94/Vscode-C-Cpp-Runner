@@ -47,7 +47,10 @@ export function getCompilerArchitecture(compiler: string) {
   let architecture = Architectures.x64;
   let isCygwin = false;
 
-  if (str.toLowerCase().includes('arm')) {
+  if (
+    str.toLowerCase().includes('arm') ||
+    str.toLowerCase().includes('aarch')
+  ) {
     architecture = Architectures.ARM64;
   } else if (str.includes('64')) {
     architecture = Architectures.x64;

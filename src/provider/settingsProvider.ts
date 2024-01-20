@@ -3,26 +3,26 @@ import * as vscode from 'vscode';
 
 import { EXTENSION_NAME, SETTINGS_OUTPUT_FILENAME } from '../params/params';
 import {
-	Architectures,
-	CompilerSystems,
-	OperatingSystems,
+  Architectures,
+  CompilerSystems,
+  OperatingSystems,
 } from '../types/enums';
 import {
-	JsonPropertiesConfig,
-	JsonPropertiesConfigEntry,
-	JsonSettings,
+  JsonPropertiesConfig,
+  JsonPropertiesConfigEntry,
+  JsonSettings,
 } from '../types/interfaces';
 import {
-	foldersInDir,
-	localSettingExist,
-	pathExists,
-	readJsonFile,
-	replaceBackslashes,
-	writeJsonFile,
+  foldersInDir,
+  localSettingExist,
+  pathExists,
+  readJsonFile,
+  replaceBackslashes,
+  writeJsonFile,
 } from '../utils/fileUtils';
 import {
-	getCompilerArchitecture,
-	getOperatingSystem,
+  getCompilerArchitecture,
+  getOperatingSystem,
 } from '../utils/systemUtils';
 import { FileProvider } from './fileProvider';
 
@@ -302,7 +302,10 @@ export class SettingsProvider extends FileProvider {
         this.msvcBatchPath = '';
         this.update('msvcBatchPath', this.msvcBatchPath);
       }
-    } else if (this.operatingSystem !== OperatingSystems.windows && this.msvcBatchPath !== '') {
+    } else if (
+      this.operatingSystem !== OperatingSystems.windows &&
+      this.msvcBatchPath !== ''
+    ) {
       this.msvcBatchPath = '';
       this.update('msvcBatchPath', this.msvcBatchPath);
     }
@@ -528,8 +531,8 @@ export class SettingsProvider extends FileProvider {
   }
 
   private getArchitecture() {
-    if (this.useMsvc) {
-      this.architecture = Architectures.x64;
+    if (this.useMsvc && this.operatingSystem === OperatingSystems.windows) {
+      this.architecture = Architectures.x64; // only msvc 64bit is supported
       this.isCygwin = false;
       return;
     }

@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 9.4.6: Jan 20, 2024
+
+- **Info**: Bugfix for system architecture validation
+
 ## Version 9.4.5: Jan 19, 2024
 
 - **Info**: Hotfix for lldb debugger selection in launch.json file

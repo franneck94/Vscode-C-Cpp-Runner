@@ -26,6 +26,11 @@ export abstract class CallbackProvider {
       '.vscode/**',
     );
 
+    const excludeSettingsFilePattern = new vscode.RelativePattern(
+      this._workspaceFolder,
+      '.vscode/{launch.json,c_cpp_properties.json}',
+    );
+
     this._fileWatcherOnDelete = vscode.workspace.createFileSystemWatcher(
       filePattern,
       true,
@@ -34,7 +39,7 @@ export abstract class CallbackProvider {
     );
 
     this._fileWatcherOnChange = vscode.workspace.createFileSystemWatcher(
-      filePattern,
+      excludeSettingsFilePattern,
       true,
       false,
       true,

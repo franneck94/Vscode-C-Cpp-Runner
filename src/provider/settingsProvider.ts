@@ -278,14 +278,12 @@ export class SettingsProvider extends FileProvider {
       'msvcBatchPath',
       SettingsProvider.DEFAULT_MSVC_BATCH_PATH,
     );
-    if (
-      this.operatingSystem === OperatingSystems.windows &&
-      (this.msvcBatchPath === SettingsProvider.DEFAULT_MSVC_BATCH_PATH ||
-        this.msvcBatchPath === '')
-    ) {
-      if (this.msvcBatchPath === '')
-        this.msvcBatchPath = SettingsProvider.DEFAULT_MSVC_BATCH_PATH;
 
+    const isMsvcPathNotSet =
+      this.msvcBatchPath === SettingsProvider.DEFAULT_MSVC_BATCH_PATH ||
+      this.msvcBatchPath === '';
+
+    if (this.operatingSystem === OperatingSystems.windows && isMsvcPathNotSet) {
       if (pathExists(this.msvcBatchPath.replace('VR_NR', '2022'))) {
         this.msvcBatchPath = this.msvcBatchPath.replace('VR_NR', '2022');
         this.update('msvcBatchPath', this.msvcBatchPath);
@@ -297,9 +295,6 @@ export class SettingsProvider extends FileProvider {
         this.update('msvcBatchPath', this.msvcBatchPath);
       } else if (pathExists(this.msvcBatchPath.replace('VR_NR', '2013'))) {
         this.msvcBatchPath = this.msvcBatchPath.replace('VR_NR', '2013');
-        this.update('msvcBatchPath', this.msvcBatchPath);
-      } else {
-        this.msvcBatchPath = '';
         this.update('msvcBatchPath', this.msvcBatchPath);
       }
     } else if (
@@ -320,7 +315,7 @@ export class SettingsProvider extends FileProvider {
       this.useMsvc = false;
     }
 
-    if (this.useMsvc) {
+    if (this.operatingSystem === OperatingSystems.windows && this.useMsvc) {
       this.searchMsvcToolsPath();
     }
 

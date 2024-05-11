@@ -130,11 +130,11 @@
 
 ## Version 5.2.2: April 21, 2023
 
-- **Bugfx**: Whitespaces in filenames should be no problem anymore
+- **Bugfix**: Whitespaces in filenames should be no problem anymore
 
 ## Version 5.2.1: Mar 29, 2023
 
-- **Bugfx**: Compilation was broken
+- **Bugfix**: Compilation was broken
 
 ## Version 5.2.0: Mar 28, 2023
 
@@ -144,11 +144,11 @@
 
 ## Version 5.1.2: Feb 20, 2023
 
-- **Info**: Better settings descr. for the address sanitizer and fixed the typo
+- **Info**: Better settings description for the address sanitizer and fixed the typo
 
 ## Version 5.1.1: Feb 20, 2023
 
-- **Info**: Better settings descr. for the address sanitizer
+- **Info**: Better settings description for the address sanitizer
 - **Bugfix**: Now the address sanitizer is only run in debug build
 
 ## Version 5.1.0: Feb 17, 2023

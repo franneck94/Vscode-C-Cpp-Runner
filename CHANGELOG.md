@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 9.4.8: May 11, 2024
+
+- **Info**: Fixed infinite loop of settings.json update
+
 ## Version 9.4.7: Jan 20, 2024
 
 - **Info**: Another bugfix for system architecture validation

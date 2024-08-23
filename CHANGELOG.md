@@ -1,5 +1,10 @@
 # C/C++ Runner Change Log
 
+## Version 9.4.9: Aug 23, 2024
+
+- **Info**: Fixed rel. paths are replaced in local settings on start up
+- **Info**: Partially fixed passing strings as cmd args to exe
+
 ## Version 9.4.8: May 11, 2024
 
 - **Info**: Fixed infinite loop of settings.json update

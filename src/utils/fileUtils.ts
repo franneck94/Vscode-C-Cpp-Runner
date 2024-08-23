@@ -37,6 +37,14 @@ export function pathExists(filepath: string) {
   return true;
 }
 
+export function pathIsAbsolute(filepath: string) {
+  return path.isAbsolute(filepath);
+}
+
+export function pathIsRelative(filepath: string) {
+  return !pathIsAbsolute(filepath);
+}
+
 export function isSourceFile(fileExt: string) {
   const fileExtLower = fileExt.toLowerCase();
 
@@ -211,7 +219,7 @@ export function localSettingExist(key: string, jsonData: JsonSettings) {
 
   if (!commandPath) return false;
 
-  if (!pathExists(commandPath)) return false;
+  if (pathIsAbsolute(commandPath) && !pathExists(commandPath)) return false;
 
   return true;
 }

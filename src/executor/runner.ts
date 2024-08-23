@@ -35,7 +35,7 @@ export async function executeRunTask(
   }
 
   if (argumentsString) {
-    commandLine += ` ${argumentsString.replace(/"/g, '')}`;
+    commandLine += ` ${argumentsString}`;
   }
 
   if (!commandLine) return;

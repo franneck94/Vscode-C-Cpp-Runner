@@ -1,5 +1,9 @@
 # C/C++ Runner Change Log
 
+## Version 9.4.10: Feb 09, 2025
+
+- **Info**: Try to Fix infinite loop of settings.json update
+
 ## Version 9.4.9: Aug 23, 2024
 
 - **Info**: Fixed rel. paths are replaced in local settings on start up

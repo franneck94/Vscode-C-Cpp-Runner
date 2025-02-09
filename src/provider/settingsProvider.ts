@@ -284,6 +284,9 @@ export class SettingsProvider extends FileProvider {
       this.msvcBatchPath === '';
 
     if (this.operatingSystem === OperatingSystems.windows && isMsvcPathNotSet) {
+      if (this.msvcBatchPath === '')
+        this.msvcBatchPath = SettingsProvider.DEFAULT_MSVC_BATCH_PATH;
+
       if (pathExists(this.msvcBatchPath.replace('VR_NR', '2022'))) {
         this.msvcBatchPath = this.msvcBatchPath.replace('VR_NR', '2022');
         this.update('msvcBatchPath', this.msvcBatchPath);

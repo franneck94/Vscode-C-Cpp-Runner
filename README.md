@@ -133,7 +133,7 @@ The assembler code will be generated in a **.s** file that will be in the build 
 - ⚙️ Use link time optimization for release builds
 - ⚙️ Compiler Arguments (string array, e.g. **\[\"-pthreads\"\]**)
 - ⚙️ Linker Arguments (string array, e.g. **\[\"-lpthread\"\]**).
-  - Note: It is **expected** to prefix the arguments with the appropriate flags (e.g. -l or -L for Gcc/Clang)
+  - Note: It is **expected** to prefix the arguments with the appropriate flags (e.g. -l or -L for GCC/Clang)
 - ⚙️ Include Paths (string array, e.g. **\[\"path/to/headers/\"\]**)
   - Note: It is **not (!) expected** to prefix the arguments with the **-I** or **/I** flag
 - ⚙️ Include Glob Pattern for the Folder Selection (string array, defaults to **["\*", "\*\*/\*"]**)

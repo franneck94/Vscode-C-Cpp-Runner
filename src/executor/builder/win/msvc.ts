@@ -18,15 +18,13 @@ export function executeBuildTaskMsvcBased(
   executablePath: string,
   singleFileBuild: boolean,
 ) {
-  let compiler: string | undefined;
   let standard: string | undefined;
   let hadSpaces = false;
 
+  const compiler = SettingsProvider.MSVC_COMPILER_NAME;
   if (language === Languages.cpp) {
-    compiler = SettingsProvider.MSVC_COMPILER_NAME;
     standard = settingsProvider.cppStandard;
   } else {
-    compiler = SettingsProvider.MSVC_COMPILER_NAME;
     standard = settingsProvider.cStandard;
   }
 

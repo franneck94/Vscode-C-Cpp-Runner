@@ -296,12 +296,16 @@ function initEditorBuildRun() {
     vscode.commands.registerTextEditorCommand(
       `${EXTENSION_NAME}.BuildAndRunFile`,
       async () => {
-        await vscode.commands.executeCommand(
-          `${EXTENSION_NAME}.buildSingleFile`,
-        );
-        await vscode.commands.executeCommand(
-          `${EXTENSION_NAME}.runCurrentSelection`,
-        );
+        try {
+          await vscode.commands.executeCommand(
+            `${EXTENSION_NAME}.buildSingleFile`,
+          );
+          await vscode.commands.executeCommand(
+            `${EXTENSION_NAME}.runCurrentSelection`,
+          );
+        } catch (error) {
+          vscode.window.showErrorMessage(`Build and run failed: ${error}`);
+        }
       },
     ),
   );
@@ -616,7 +620,7 @@ function initBuildStatusBar() {
   const commandName = `${EXTENSION_NAME}.buildFolder`;
   commandBuildDisposable = vscode.commands.registerCommand(
     commandName,
-    async () => buildTaskCallback(false),
+    async () => await buildTaskCallback(false),
   );
   buildStatusBar.command = commandName;
   extensionContext?.subscriptions.push(commandBuildDisposable);
@@ -633,7 +637,7 @@ function initRunStatusBar() {
   const commandName = `${EXTENSION_NAME}.runFolder`;
   commandRunDisposable = vscode.commands.registerCommand(
     commandName,
-    async () => runTaskCallback(),
+    async () => await runTaskCallback(),
   );
 
   runStatusBar.command = commandName;
@@ -669,7 +673,7 @@ async function initCleanStatusBar() {
   commandCleanDisposable = vscode.commands.registerCommand(
     commandName,
     async () => {
-      cleanTaskCallback();
+      await cleanTaskCallback();
     },
   );
 
@@ -695,7 +699,7 @@ function initBuildSingleFile() {
     commandName,
     async () => {
       initProviderBasedOnSingleFile();
-      buildTaskCallback(true);
+      await buildTaskCallback(true);
     },
   );
   extensionContext?.subscriptions.push(commandBuildSingleFileDisposable);
@@ -707,7 +711,7 @@ function initRunCurrentSelection() {
     commandName,
     async () => {
       initProviderBasedOnSingleFile();
-      runTaskCallback();
+      await runTaskCallback();
     },
   );
   extensionContext?.subscriptions.push(commandRunCurrentSelectionDisposable);

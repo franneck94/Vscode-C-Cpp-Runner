@@ -1,5 +1,11 @@
 # Changelog Pre 5.0.0
 
+## Version 4.4.0: Oct 1, 2025
+
+- **Bugfix**: Fixed bug for async race condition in BuildAndRunFile command
+- **Info**: Added c++latest, c++23preview, clatest for msvc
+- **Info**: Added c++26
+
 ## Version 4.3.1: Dec 4, 2022
 
 - **Bugfix**: Fixed bug for single file compile if C **and** C++ files are in the same directory

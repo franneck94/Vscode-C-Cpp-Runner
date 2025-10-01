@@ -1,5 +1,11 @@
 # C/C++ Runner Change Log
 
+## Version 9.5.0: Oct 01, 2025
+
+- **Bugfix**: Fixed bug for async race condition in BuildAndRunFile command
+- **Info**: Added c++latest, c++23preview, clatest for msvc
+- **Info**: Added c++26
+
 ## Version 9.4.10: Feb 09, 2025
 
 - **Info**: Try to Fix infinite loop of settings.json update

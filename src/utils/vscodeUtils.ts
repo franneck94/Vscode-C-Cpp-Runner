@@ -196,5 +196,19 @@ export async function runVscodeTask(
     );
   }
 
-  await vscode.tasks.executeTask(task);
+  const taskExecution = await vscode.tasks.executeTask(task);
+  
+  // Wait for task completion using process end event
+  return new Promise<void>((resolve, reject) => {
+    const disposable = vscode.tasks.onDidEndTaskProcess((e) => {
+      if (e.execution === taskExecution) {
+        disposable.dispose();
+        if (e.exitCode === 0) {
+          resolve();
+        } else {
+          reject(new Error(`Task '${task_name}' failed with exit code ${e.exitCode}`));
+        }
+      }
+    });
+  });
 }

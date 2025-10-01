@@ -24,7 +24,7 @@ export function updateFolderStatus(
       text = `${dirs[0]}/.../${dirs[lastElement]}`;
     }
 
-    status.backgroundColor = '';
+    status.backgroundColor = undefined;
     status.text = `$(folder-active) ${text}`;
   } else {
     status.backgroundColor = new vscode.ThemeColor(
